@@ -17,7 +17,8 @@ int main(void)
 
 	// Loading the user prefered language
 	ifstream fin("Data/Settings.conf");
-	if (fin) // If user saved prefered language before it will be loaded
+	// If user saved prefered language before it will be loaded
+	if (fin)
 	{
 		int langOption;
 		fin >> langOption;

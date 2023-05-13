@@ -44,7 +44,8 @@ Gladiator::Gladiator(
 	weapon(wweapon)
 { }
 
-Gladiator::~Gladiator() {
+Gladiator::~Gladiator()
+{
 	if (weapon)
 		delete weapon;
 }
