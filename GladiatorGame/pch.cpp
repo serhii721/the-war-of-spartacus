@@ -41,7 +41,7 @@ void setLanguage(Language llanguage)
 		else
 		{
 			currentLine = 0;
-			while(getline(finEng, line))
+			while (getline(finEng, line))
 			{
 				if (currentLine == i)
 				{
@@ -81,11 +81,11 @@ Gladiator* createRandomGladiator()
 	const string PATH_BASE = "Data/Language/Names/", FORMAT = ".lang";
 	ifstream fin;
 	// Open file containing roman first names
-	if (localization.language == 0)		// English
+	if (localization.language == 0)
 		fin.open(PATH_BASE + "En_FirstNames" + FORMAT);
-	else if (localization.language == 1)	// Ukrainian
+	else if (localization.language == 1)
 		fin.open(PATH_BASE + "Uk_FirstNames" + FORMAT);
-	else						// Russian
+	else
 		fin.open(PATH_BASE + "Ru_FirstNames" + FORMAT);
 
 	if (!fin)
@@ -104,11 +104,11 @@ Gladiator* createRandomGladiator()
 	name = line; // Assign random name
 
 	// Open file containing roman last names
-	if (localization.language == 0)		// English
+	if (localization.language == 0)
 		fin.open(PATH_BASE + "En_LastNames" + FORMAT);
-	else if (localization.language == 1)	// Ukrainian
+	else if (localization.language == 1)
 		fin.open(PATH_BASE + "Uk_LastNames" + FORMAT);
-	else						// Russian
+	else
 		fin.open(PATH_BASE + "Ru_LastNames" + FORMAT);
 
 	if (!fin)
@@ -144,7 +144,7 @@ Gladiator* createRandomGladiator()
 void displayGladiator(Gladiator& g)
 {
 	output(localization.messages[Localized::STATUS_NAME] + ' ');
-	output(g.name + '\n' , 14);
+	output(g.name + '\n', 14);
 	output(localization.messages[Localized::STATUS_AGE] + ' ');
 	output(to_string(g.age) + '\n', 14);
 	output(localization.messages[Localized::STATUS_HEALTH] + ' ');
@@ -211,11 +211,19 @@ void createGladiator(Gladiator& player)
 		SetConsoleTextAttribute(hConsole, 14);
 		cin >> player.age;
 
-		bool setAttributes = true, setStrength = true, setConstitution = true,
-			setDexterity = true, setIntelligence = true, setWisdom = true, setCharisma = true;
-		while (setAttributes && (setStrength || setConstitution || setDexterity || setIntelligence || setWisdom || setCharisma))
-		{
-			// Attribute points instruction
+		// Input of player's attributes
+		bool setAttributes = true,
+			setStrength = true,
+			setConstitution = true,
+			setDexterity = true,
+			setIntelligence = true,
+			setWisdom = true,
+			setCharisma = true;
+		while (
+			setAttributes &&
+			(setStrength || setConstitution || setDexterity || setIntelligence || setWisdom || setCharisma)
+			) {
+			// Attribute points' instruction
 			output("\n");
 			output(localization.messages[Localized::CREATION_INPUT_POINTS_INSTRUCTION] + "\n");
 			output(localization.messages[Localized::STRENGTH] + ' ', 4);
@@ -241,9 +249,7 @@ void createGladiator(Gladiator& player)
 				{
 					player.strength += BASIC_PLAYER_ATTRIBUTES;
 					if (attributes - (player.strength - 10) < 0)
-					{
 						output(localization.messages[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-					}
 					else
 					{
 						attributes -= player.strength - 10;
@@ -269,9 +275,7 @@ void createGladiator(Gladiator& player)
 				{
 					player.constitution += BASIC_PLAYER_ATTRIBUTES;
 					if (attributes - (player.constitution - 10) < 0)
-					{
 						output(localization.messages[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-					}
 					else
 					{
 						attributes -= player.constitution - 10;
@@ -297,9 +301,7 @@ void createGladiator(Gladiator& player)
 				{
 					player.dexterity += BASIC_PLAYER_ATTRIBUTES;
 					if (attributes - (player.dexterity - 10) < 0)
-					{
 						output(localization.messages[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-					}
 					else
 					{
 						attributes -= player.dexterity - 10;
@@ -325,9 +327,7 @@ void createGladiator(Gladiator& player)
 				{
 					player.intelligence += BASIC_PLAYER_ATTRIBUTES;
 					if (attributes - (player.intelligence - 10) < 0)
-					{
 						output(localization.messages[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-					}
 					else
 					{
 						attributes -= player.intelligence - 10;
@@ -353,9 +353,7 @@ void createGladiator(Gladiator& player)
 				{
 					player.wisdom += BASIC_PLAYER_ATTRIBUTES;
 					if (attributes - (player.wisdom - 10) < 0)
-					{
 						output(localization.messages[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-					}
 					else
 					{
 						attributes -= player.wisdom - 10;
@@ -381,9 +379,7 @@ void createGladiator(Gladiator& player)
 				{
 					player.charisma += BASIC_PLAYER_ATTRIBUTES;
 					if (attributes - (player.charisma - 10) < 0)
-					{
 						output(localization.messages[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-					}
 					else
 					{
 						attributes -= player.charisma - 10;
@@ -393,10 +389,11 @@ void createGladiator(Gladiator& player)
 			}
 			if (!attributes)
 				setAttributes = false;
-		} // Character created
+		}
 
-		bool exit = false;
-		while (!exit)
+		// Confirming player's parameters
+		bool notConfirmed = true;
+		while (notConfirmed)
 		{
 			// Show created character
 			output(OUTPUT_DIVIDER + '\n' + localization.messages[Localized::STATUS_GLADIATOR] + "\n\n");
@@ -419,8 +416,8 @@ void createGladiator(Gladiator& player)
 
 			if (attributes > 0)
 			{
-				output(localization.messages[Localized::CREATION_INPUT_POINTS]);
-				output(' ' + to_string(attributes) + "\n\n", 10);
+				output(localization.messages[Localized::CREATION_INPUT_POINTS] + ' ');
+				output(to_string(attributes) + "\n\n", 10);
 			}
 			output(localization.messages[Localized::CREATION_INPUT_CORRECT] + '\n');
 			output("1. " + localization.messages[Localized::YES] + '\n');
@@ -432,17 +429,17 @@ void createGladiator(Gladiator& player)
 			{
 			case 1:
 				characterCreation = false;
-				exit = true;
+				notConfirmed = false;
 				break;
 			case 2:
 				characterCreation = true;
-				exit = true;
+				notConfirmed = false;
 				output(OUTPUT_DIVIDER);
 				break;
 			default:
 				output("\n");
 				output(localization.messages[Localized::WRONG_INPUT] + "\n", 4);
-				exit = false;
+				notConfirmed = true;
 				break;
 			}
 		}
@@ -453,7 +450,7 @@ void createGladiator(Gladiator& player)
 	player.weapon = createRandomWeapon();
 
 	output("\n");
-	output(localization.messages[Localized::CREATION_INPUT_SUCCESS] + '\n' , 10);
+	output(localization.messages[Localized::CREATION_INPUT_SUCCESS] + '\n', 10);
 }
 
 bool gladiatorFight(Gladiator& player, Gladiator& bot)
@@ -715,24 +712,25 @@ void displayWeapon(Weapon& weapon)
 	output(to_string(weapon.durability / 10) + "%\n\n", 11);
 }
 
-// Save&Load functions 
+// Save&Load functions
 
 bool saveGame(Gladiator& player, Gladiator* bots)
 {
-	const string DIR_NAME = "Saves", PATH_PLAYER = "/Player", PATH_ENEMIES = "/Enemies", FORMAT = ".save";
+	const string DIR_NAME = "Saves/", FILE_PLAYER = "Player", FILE_OPPONENTS = "Opponents", FORMAT = ".save";
 	ofstream fout;
 
-	if (_mkdir(DIR_NAME.c_str()) == 0) // Creating "save games" folder if it doesn't exist
+	// Creating the folder of saved games if it doesn't exist
+	if (_mkdir(DIR_NAME.c_str()) == 0)
 	{
-		// Directories for savefiles with data
-		fout.open(DIR_NAME + PATH_PLAYER + FORMAT);
+		// Directories for save files with data
+		fout.open(DIR_NAME + FILE_PLAYER + FORMAT);
 		fout.close();
-		fout.open(DIR_NAME + PATH_ENEMIES + FORMAT);
+		fout.open(DIR_NAME + FILE_OPPONENTS + FORMAT);
 		fout.close();
 	}
 
 	// Open file for saving player's character and empty it
-	fout.open(DIR_NAME + PATH_PLAYER + FORMAT, ios::binary); // write
+	fout.open(DIR_NAME + FILE_PLAYER + FORMAT, ios::binary);
 	// Check if file is open
 	if (fout)
 	{
@@ -741,11 +739,11 @@ bool saveGame(Gladiator& player, Gladiator* bots)
 		fout.write((char*)&*player.weapon, sizeof(*player.weapon));
 		fout.close();
 	}
-	else
-		return false; // If save file couldn't be opened - save unsucessful
+	else // If save file couldn't be opened - save unsucessful
+		return false;
 
 	// Open file for saving enemies and empty it
-	fout.open(DIR_NAME + PATH_ENEMIES + FORMAT, ios::binary); // write
+	fout.open(DIR_NAME + FILE_OPPONENTS + FORMAT, ios::binary);
 	// Check if file is open
 	if (fout)
 	{
@@ -759,7 +757,8 @@ bool saveGame(Gladiator& player, Gladiator* bots)
 		fout.close();
 		return true;
 	}
-	return false; // If save file couldn't be opened - save unsucessful
+	// If save file couldn't be opened - save unsucessful
+	return false;
 }
 
 bool loadGame(Gladiator& player, Gladiator* bots)
@@ -771,9 +770,10 @@ bool loadGame(Gladiator& player, Gladiator* bots)
 
 bool loadPlayer(Gladiator& player)
 {
-	const string DIR_NAME = "Saves", PATH_PLAYER = "/Player", FORMAT = ".save";
 	// Open file with player's character
-	ifstream fin(DIR_NAME + PATH_PLAYER + FORMAT, ios::binary); // read
+	const string DIR_NAME = "Saves/", FILE_NAME = "Player", FORMAT = ".save";
+	ifstream fin(DIR_NAME + FILE_NAME + FORMAT, ios::binary);
+
 	// Check if save file is open and not empty
 	if (fin)
 	{
@@ -781,17 +781,22 @@ bool loadPlayer(Gladiator& player)
 		player.weapon = new Weapon();
 		fin.read((char*)&*player.weapon, sizeof(*player.weapon));
 		fin.close();
-		return true; // Load sucessful
+
+		// Load sucessful
+		return true;
 	}
+
 	fin.close();
-	return false; // Load unsucessful
+	// Load unsucessful
+	return false;
 }
 
 bool loadBots(Gladiator* bots)
 {
-	const string DIR_NAME = "Saves", PATH_ENEMIES = "/Enemies", FORMAT = ".save";
 	// Open file for loading enemies
-	ifstream fin(DIR_NAME + PATH_ENEMIES + FORMAT, ios::binary); // read
+	const string DIR_NAME = "Saves/", FILE_NAME = "Opponents", FORMAT = ".save";
+	ifstream fin(DIR_NAME + FILE_NAME + FORMAT, ios::binary);
+
 	// Check if save file is open and not empty
 	if (fin)
 	{
@@ -801,11 +806,14 @@ bool loadBots(Gladiator* bots)
 			bots[i].weapon = new Weapon();
 			fin.read((char*)&*bots[i].weapon, sizeof(*bots[i].weapon));
 		}
-		// Close save file
 		fin.close();
-		return true; // Load sucessful
+
+		// Load sucessful
+		return true;
 	}
-	return false; // Load unsucessful
+
+	// Load unsucessful
+	return false;
 }
 
 // Game process functions
@@ -835,9 +843,10 @@ void skipDay(Gladiator& player, Gladiator* bots, int n)
 		}
 		else
 		{
-			output(localization.messages[Localized::TIME_REGEN]);
-			output(' ' + to_string(BASIC_REGEN) + '\n', 10);
-			output(localization.messages[Localized::TIME_CURRENT_HEALTH]); output(' ' + to_string(player.health) + '\n', 10);
+			output(localization.messages[Localized::TIME_REGEN] + ' ');
+			output(to_string(BASIC_REGEN) + '\n', 10);
+			output(localization.messages[Localized::TIME_CURRENT_HEALTH] + ' ');
+			output(to_string(player.health) + '\n', 10);
 		}
 	}
 	else
@@ -856,11 +865,13 @@ bool outputStartMenu(Gladiator& player, Gladiator* bots)
 	output(OUTPUT_DIVIDER);
 	while (true)
 	{
-		output("1. " + localization.messages[Localized::START_MENU_START_GAME] + '\n'
-			+ "2. " + localization.messages[Localized::START_MENU_LOAD_GAME] + '\n'
-			+ "3. " + localization.messages[Localized::START_MENU_CHANGE_LANGUAGE] + '\n'
-			+ "4. " + localization.messages[Localized::EXIT] + "\n\n"
-			+ localization.messages[Localized::CHOOSE_OPTION] + ' ');
+		output(
+			"1. " + localization.messages[Localized::START_MENU_START_GAME] + '\n' +
+			"2. " + localization.messages[Localized::START_MENU_LOAD_GAME] + '\n' +
+			"3. " + localization.messages[Localized::START_MENU_CHANGE_LANGUAGE] + '\n' +
+			"4. " + localization.messages[Localized::EXIT] + "\n\n" +
+			localization.messages[Localized::CHOOSE_OPTION] + ' '
+		);
 		cin >> option;
 		cin.get();
 		output(OUTPUT_DIVIDER);
@@ -891,26 +902,32 @@ bool outputStartMenu(Gladiator& player, Gladiator* bots)
 		case 3: // Change language
 			while (!languageChanged)
 			{
-				output("1. English\n"
-					+ string("2. Українська\n")
-					+ "3. Русский\n"
-					+ "4. Latin\n\n"
-					+ localization.messages[Localized::CHOOSE_OPTION] + ' ');
+				output(
+					"1. English\n" +
+					string("2. Українська\n") +
+					"3. Русский\n" +
+					"4. Latin\n\n" +
+					localization.messages[Localized::CHOOSE_OPTION] + ' '
+				);
 				cin >> option;
 				output(OUTPUT_DIVIDER);
 
 				switch (option)
 				{
-				case 1: langOption = Language::ENGLISH;
+				case 1:
+					langOption = Language::ENGLISH;
 					languageChanged = true;
 					break;
-				case 2: langOption = Language::UKRAINIAN;
+				case 2:
+					langOption = Language::UKRAINIAN;
 					languageChanged = true;
 					break;
-				case 3: langOption = Language::RUSSIAN;
+				case 3:
+					langOption = Language::RUSSIAN;
 					languageChanged = true;
 					break;
-				case 4: langOption = Language::LATIN;
+				case 4:
+					langOption = Language::LATIN;
 					languageChanged = true;
 					break;
 				default: // If choosen option is not in the menu
@@ -927,7 +944,7 @@ bool outputStartMenu(Gladiator& player, Gladiator* bots)
 
 		case 4: // Exit game
 			output(localization.messages[Localized::EXIT_MESSAGE] + '\n', 10);
-			output (OUTPUT_DIVIDER);
+			output(OUTPUT_DIVIDER);
 			return false;
 
 		default: // If chosen option is not in the menu
@@ -944,13 +961,15 @@ bool outputGameMenu(Gladiator& player, Gladiator* bots)
 	bool fight;
 	while (true)
 	{
-		output("1. " + localization.messages[Localized::GAME_MENU_WAIT] + '\n'
-			+ "2. " + localization.messages[Localized::GAME_MENU_START_FIGHT] + '\n'
-			+ "3. " + localization.messages[Localized::GAME_MENU_VIEW_GLADIATOR] + '\n'
-			+ "4. " + localization.messages[Localized::GAME_MENU_VIEW_OPPONENTS] + '\n'
-			+ "5. " + localization.messages[Localized::GAME_MENU_SAVE_GAME] + '\n'
-			+ "6. " + localization.messages[Localized::EXIT] + "\n\n"
-			+ localization.messages[Localized::CHOOSE_OPTION] + ' ');
+		output(
+			"1. " + localization.messages[Localized::GAME_MENU_WAIT] + '\n' +
+			"2. " + localization.messages[Localized::GAME_MENU_START_FIGHT] + '\n' +
+			"3. " + localization.messages[Localized::GAME_MENU_VIEW_GLADIATOR] + '\n' +
+			"4. " + localization.messages[Localized::GAME_MENU_VIEW_OPPONENTS] + '\n' +
+			"5. " + localization.messages[Localized::GAME_MENU_SAVE_GAME] + '\n' +
+			"6. " + localization.messages[Localized::EXIT] + "\n\n" +
+			localization.messages[Localized::CHOOSE_OPTION] + ' '
+		);
 		cin >> option;
 		output(OUTPUT_DIVIDER);
 
@@ -1003,7 +1022,7 @@ bool outputGameMenu(Gladiator& player, Gladiator* bots)
 					}
 					else
 					{
-						output(localization.messages[Localized::FIGHT_PLAYER_LOST] + '\n' , 4);
+						output(localization.messages[Localized::FIGHT_PLAYER_LOST] + '\n', 4);
 						bots[0].fame += player.fame / 10;
 						output(OUTPUT_DIVIDER);
 					}
@@ -1021,12 +1040,13 @@ bool outputGameMenu(Gladiator& player, Gladiator* bots)
 						output(localization.messages[Localized::FIGHT_PLAYER_WON] + "\n\n", 10);
 						player.fame += bots[1].fame / 10;
 						output(localization.messages[Localized::FIGHT_GAINED_LOOT] + '\n');
-						output(localization.messages[Localized::FIGHT_GAINED_FAME] + ' '); output(to_string(bots[0].fame / 10) + "\n\n", 6);
+						output(localization.messages[Localized::FIGHT_GAINED_FAME] + ' ');
+						output(to_string(bots[0].fame / 10) + "\n\n", 6);
 						output(OUTPUT_DIVIDER);
 					}
 					else
 					{
-						output(localization.messages[Localized::FIGHT_PLAYER_LOST] + '\n' , 4);
+						output(localization.messages[Localized::FIGHT_PLAYER_LOST] + '\n', 4);
 						bots[1].fame += player.fame / 10;
 						output(OUTPUT_DIVIDER);
 					}
@@ -1049,7 +1069,7 @@ bool outputGameMenu(Gladiator& player, Gladiator* bots)
 					}
 					else
 					{
-						output(localization.messages[Localized::FIGHT_PLAYER_LOST] + '\n' , 4);
+						output(localization.messages[Localized::FIGHT_PLAYER_LOST] + '\n', 4);
 						bots[2].fame += player.fame / 10;
 						output(OUTPUT_DIVIDER);
 					}
@@ -1067,6 +1087,7 @@ bool outputGameMenu(Gladiator& player, Gladiator* bots)
 				}
 			}
 			break;
+
 		case 3: // Show player
 			output(localization.messages[Localized::STATUS_YOUR_GLADIATOR] + "\n\n");
 			displayGladiator(player);
@@ -1081,8 +1102,7 @@ bool outputGameMenu(Gladiator& player, Gladiator* bots)
 			output(OUTPUT_DIVIDER);
 			break;
 
-		case 5: // Save 
-			// Using `saveGame()` function which returns true if save is sucessful
+		case 5: // Save
 			if (saveGame(player, bots))
 				output(localization.messages[Localized::GAME_MENU_SAVE_GAME_SUCCESS] + '\n', 10);
 			else

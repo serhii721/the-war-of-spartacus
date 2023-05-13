@@ -7,10 +7,10 @@
 #ifndef PCH_H
 #define PCH_H
 
-#include <array> // array for localization
-#include <cstdlib> // rand(), srand()
-#include <ctime> // time()
-#include <fstream> // ifstream, ofstream
+#include <array> // `array` for localization
+#include <cstdlib> // `rand()`, `srand()`
+#include <ctime> // `time()`
+#include <fstream> // `ifstream`, `ofstream`
 #include <iostream>
 #include <string>
 using namespace std;
@@ -47,7 +47,7 @@ const int BASIC_DURABILITY = 1000;
 const int BASIC_DAMAGE = 1;
 const int BASIC_LENGTH = 50; // Centimetres
 const int BASIC_WEIGHT = 800; // Grams
-const int BASIC_SPEED = 100; // Atack speed
+const int BASIC_SPEED = 100; // Attack speed
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 Localization localization;
@@ -68,14 +68,15 @@ Weapon* createRandomGladius();	// Sword
 Weapon* createRandomSpatha();	// Sword
 Weapon* createRandomHasta();	// Spear
 Weapon* createRandomFasces();	// Axe
-Weapon* createRandomMace();	// Mace
+Weapon* createRandomMace();		// Mace
 Weapon* createRandomPugio();	// Dagger
 Weapon* createRandomPilum();	// Javelin
 Weapon* createRandomWeapon();
 void displayWeapon(Weapon&);
 
 bool saveGame(Gladiator&, Gladiator*);
-bool loadGame(Gladiator&, Gladiator*); // Function `loadGame()` calls other load functions
+// Function `loadGame()` calls other load functions
+bool loadGame(Gladiator&, Gladiator*);
 bool loadPlayer(Gladiator&);
 bool loadBots(Gladiator*);
 
