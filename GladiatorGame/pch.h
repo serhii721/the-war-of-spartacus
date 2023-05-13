@@ -49,10 +49,8 @@ const int BASIC_LENGTH = 50; // Centimetres
 const int BASIC_WEIGHT = 800; // Grams
 const int BASIC_SPEED = 100; // Attack speed
 
-HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-Localization localization;
-
-void setLanguage(Language = Language::ENGLISH);
+const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+extern Localization localization;
 
 string toStringPrecision(double, int = 2);
 void output(string, int = 15);

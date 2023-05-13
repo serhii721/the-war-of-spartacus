@@ -24,17 +24,17 @@ int main(void)
 		fin >> langOption;
 		switch (langOption)
 		{
-		default: case 0: setLanguage(Language::ENGLISH);
+		default: case 0: localization.setLanguage(); // English
 			break;
-		case 1: setLanguage(Language::UKRAINIAN);
+		case 1: localization.setLanguage(Language::UKRAINIAN);
 			break;
-		case 2: setLanguage(Language::RUSSIAN);
+		case 2: localization.setLanguage(Language::RUSSIAN);
 			break;
-		case 3: setLanguage(Language::LATIN);
+		case 3: localization.setLanguage(Language::LATIN);
 		}
 	}
 	else // If used didn't change language before it will be set to English
-		setLanguage();
+		localization.setLanguage();
 
 	Gladiator* player = new Gladiator();
 

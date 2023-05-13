@@ -6,4 +6,6 @@ struct Localization
 	array<string, Localized::MESSAGE_NUMBER> messages;
 
 	Localization();
+
+	void setLanguage(Language = ENGLISH);
 };
