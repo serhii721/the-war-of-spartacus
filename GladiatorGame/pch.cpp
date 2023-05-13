@@ -684,9 +684,7 @@ bool saveGame(Gladiator& player, Gladiator* bots)
 	// Check if file is open
 	if (fout)
 	{
-		// Save player
-		fout.write((char*)&player, sizeof(player));
-		fout.write((char*)&*player.weapon, sizeof(*player.weapon));
+		// TODO: serialization
 		fout.close();
 	}
 	else // If save file couldn't be opened - save unsucessful
@@ -700,8 +698,7 @@ bool saveGame(Gladiator& player, Gladiator* bots)
 		// Save bots
 		for (int i = 0; i < OPPONENTS_NUMBER; i++)
 		{
-			fout.write((char*)&bots[i], sizeof(bots[i]));
-			fout.write((char*)&*bots[i].weapon, sizeof(*bots[i].weapon));
+			// TODO: serialization
 		}
 		// Close save files
 		fout.close();
@@ -727,9 +724,7 @@ bool loadPlayer(Gladiator& player)
 	// Check if save file is open and not empty
 	if (fin)
 	{
-		fin.read((char*)&player, sizeof(player));
-		player.weapon = new Weapon();
-		fin.read((char*)&*player.weapon, sizeof(*player.weapon));
+		// TODO: structurization
 		fin.close();
 
 		// Load sucessful
@@ -752,9 +747,7 @@ bool loadBots(Gladiator* bots)
 	{
 		for (int i = 0; i < OPPONENTS_NUMBER; i++)
 		{
-			fin.read((char*)&bots[i], sizeof(bots[i]));
-			bots[i].weapon = new Weapon();
-			fin.read((char*)&*bots[i].weapon, sizeof(*bots[i].weapon));
+			// TODO: structurization
 		}
 		fin.close();
 
