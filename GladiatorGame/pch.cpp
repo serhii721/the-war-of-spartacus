@@ -4,59 +4,9 @@
 
 // When you are using pre-compiled headers, this source file is necessary for compilation to succeed.
 
-// Development, technical functions
+Localization localization;
 
-void setLanguage(Language llanguage)
-{
-	// Determinating the language file
-	string fileName = "";
-	switch (llanguage)
-	{
-	default: case Language::ENGLISH:
-		fileName = "English";
-		break;
-	case Language::UKRAINIAN:
-		fileName = "Ukrainian";
-		break;
-	case Language::RUSSIAN:
-		fileName = "Russian";
-		break;
-	case Language::LATIN:
-		fileName = "Latin";
-		break;
-	}
-	const string PATH = "Data/Language/", FORMAT = ".lang";
-	ifstream fin(PATH + fileName + FORMAT);
-	ifstream finEng(PATH + "English" + FORMAT);
-	string line;
-	int currentLine;
-
-	// Reading the file and filling the localization array
-	int size = Localized::MESSAGE_NUMBER;
-	for (int i = 0; i < size; i++)
-	{
-		getline(fin, line);
-		if (!line.empty())
-			localization.messages[i] = line;
-		else
-		{
-			currentLine = 0;
-			while (getline(finEng, line))
-			{
-				if (currentLine == i)
-				{
-					localization.messages[i] = line;
-					finEng.clear();
-					finEng.seekg(0);
-					break;
-				}
-				currentLine++;
-			}
-		}
-	}
-
-	fin.close();
-}
+// __________ Other __________
 
 string toStringPrecision(double n, int precision)
 {
@@ -74,7 +24,7 @@ void output(string s, int color)
 	cout << s;
 }
 
-// Gladiator functions
+// __________ Gladiator __________
 
 Gladiator* createRandomGladiator()
 {
@@ -563,7 +513,7 @@ bool gladiatorFight(Gladiator& player, Gladiator& bot)
 
 }
 
-// Weapon functions
+// __________ Weapon __________
 
 Weapon* createRandomGladius()
 {
@@ -712,7 +662,7 @@ void displayWeapon(Weapon& weapon)
 	output(to_string(weapon.durability / 10) + "%\n\n", 11);
 }
 
-// Save&Load functions
+// __________ Save&Load __________
 
 bool saveGame(Gladiator& player, Gladiator* bots)
 {
@@ -816,7 +766,7 @@ bool loadBots(Gladiator* bots)
 	return false;
 }
 
-// Game process functions
+// __________ Game process __________
 
 void skipDay(Gladiator& player, Gladiator* bots, int n)
 {
@@ -935,7 +885,7 @@ bool outputStartMenu(Gladiator& player, Gladiator* bots)
 					break;
 				}
 			}
-			setLanguage(langOption);
+			localization.setLanguage(langOption);
 			fout.open("Data/Settings.conf");
 			fout << langOption;
 			fout.close();
