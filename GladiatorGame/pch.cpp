@@ -24,6 +24,12 @@ void output(string s, int color)
 	cout << s;
 }
 
+void outputError(const string& s, int color)
+{
+	SetConsoleTextAttribute(hConsole, color);
+	cerr << s;
+}
+
 // __________ Gladiator __________
 
 Gladiator* createRandomGladiator()
@@ -511,6 +517,138 @@ bool gladiatorFight(Gladiator& player, Gladiator& bot)
 		return true;
 	}
 
+}
+
+FightStatus checkFightStatus(Gladiator& rPlayer, Gladiator& rOpponent)
+{
+	if (rOpponent.health < 10)
+	{
+		if (!rOpponent.isAlive())
+			return FightStatus::OPPONENT_LOST;
+
+		// Offer to surrender to the opponent
+		// TODO: if (yes)
+		// return FightStatus::OPPONNENT_SURRENDERED;
+	}
+
+	if (rPlayer.health < 10)
+	{
+		if (!rPlayer.isAlive())
+			return FightStatus::PLAYER_LOST;
+
+		// Offer to surrender to the player
+		// TODO: if (yes)
+		// return FightStatus::PLAYER_SURRENDERED;
+	}
+
+	return FightStatus::CONTINUE;
+}
+
+void outputFightResult(FightStatus sstatus, int playerHealth, int opponentHealth)
+{
+	switch (sstatus)
+	{
+	case FightStatus::OPPONENT_LOST:
+		output("The opponent has lost" + string(".\n"));
+		break;
+	case FightStatus::OPPONNENT_SURRENDERED:
+		output("The opponent has surrendered with health points of" + ' ' + to_string(opponentHealth) + ".\n");
+		break;
+	case FightStatus::PLAYER_SURRENDERED:
+		output("You have lost" + string(".\n"));
+		break;
+	case FightStatus::PLAYER_LOST:
+		output("You have surrendered with health points of" + ' ' + to_string(playerHealth) + ".\n");
+		break;
+	case FightStatus::CONTINUE:
+		break;
+	default:
+		outputError("ERROR_UNKNOWN_FIGHT_STATUS" + '\n');
+		break;
+	}
+}
+
+void fightGladiator(Gladiator& rPlayer, Gladiator& rOpponent)
+{
+	// # 1. Determining whether the bot attacks first
+	// TODO: if (botAttack) { rOpponent.attack(rPlayer, result, damage); output opponent's attack; check of the fighting status;... }
+	// Otherwise:
+
+	// # 2. Fighting
+	AttackResult result;
+	int damage;
+
+	FightStatus status = FightStatus::CONTINUE;
+	while (status == FightStatus::CONTINUE)
+	{
+		// Player's attack
+		rPlayer.attack(rOpponent, result, damage);
+
+		// Output of the result of player's attack
+		Sleep(500);
+		switch (result)
+		{
+		case AttackResult::DEALT_DAMAGE:
+			output("You have dealt" + ' ' + to_string(damage) + ' ' + "damage");
+			break;
+		case AttackResult::STUNNED:
+			output("You have stunned the opponent and dealt" + ' ' + to_string(damage) + ' ' + "damage");
+			break;
+		case AttackResult::WERE_DODGED:
+			output("The opponent has dodged");
+			break;
+		case AttackResult::WERE_BLOCKED:
+			output("The opponent has blocked and taken" + ' ' + to_string(damage) + ' ' + "damage");
+			break;
+		case AttackResult::WERE_COUNTERATTAKED:
+			output("The opponent has counterattacked and dealt" + ' ' + to_string(damage) + ' ' + "damage");
+			break;
+		default:
+			outputError("ERROR_UNKNOWN_ATTACK_RESULT" + '\n');
+			return;
+		}
+		output(".\n");
+
+		// Checking the status of the fighting
+		status = checkFightStatus(rPlayer, rOpponent);
+
+		if (status != FightStatus::CONTINUE)
+			outputFightResult(status, rPlayer.health, rOpponent.health);
+
+		// Opponent's attack
+		rOpponent.attack(rPlayer, result, damage);
+
+		// Output of the result of the opponent's attack
+		Sleep(500);
+		switch (result)
+		{
+		case AttackResult::DEALT_DAMAGE:
+			output("You have been dealt" + ' ' + to_string(damage) + ' ' + "damage");
+			break;
+		case AttackResult::STUNNED:
+			output("You have been stunned and been dealt" + ' ' + to_string(damage) + ' ' + "damage");
+			break;
+		case AttackResult::WERE_DODGED:
+			output("You have dodged");
+			break;
+		case AttackResult::WERE_BLOCKED:
+			output("You have blocked and taken" + ' ' + to_string(damage) + ' ' + "damage");
+			break;
+		case AttackResult::WERE_COUNTERATTAKED:
+			output("You have counterattacked and dealt" + ' ' + to_string(damage) + ' ' + "damage");
+			break;
+		default:
+			outputError("ERROR_UNKNOWN_ATTACK_RESULT" + '\n');
+			return;
+		}
+		output(".\n");
+
+		// Checking the status of the fighting
+		status = checkFightStatus(rPlayer, rOpponent);
+
+		if (status != FightStatus::CONTINUE)
+			outputFightResult(status, rPlayer.health, rOpponent.health);
+	}
 }
 
 // __________ Weapon __________

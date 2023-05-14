@@ -1,0 +1,10 @@
+#pragma once
+
+enum AttackResult
+{
+	DEALT_DAMAGE,
+	STUNNED,
+	WERE_DODGED,
+	WERE_BLOCKED,
+	WERE_COUNTERATTAKED
+};

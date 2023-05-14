@@ -1,0 +1,10 @@
+#pragma once
+
+enum FightStatus
+{
+	CONTINUE,
+	OPPONENT_LOST,
+	OPPONNENT_SURRENDERED,
+	PLAYER_SURRENDERED,
+	PLAYER_LOST
+};

@@ -165,7 +165,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Converter.h" />
+    <ClInclude Include="FightEnums.h" />
     <ClInclude Include="Gladiator.h" />
+    <ClInclude Include="GladiatorEnums.h" />
     <ClInclude Include="Localization.h" />
     <ClInclude Include="LocalizationEnums.h" />
     <ClInclude Include="pch.h" />

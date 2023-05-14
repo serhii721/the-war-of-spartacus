@@ -11,5 +11,8 @@ struct Gladiator
 	Gladiator();
 	Gladiator(string, unsigned, int, int, int, int, int, int, int, int, int, Weapon*);
 
+	bool isAlive();
+	void attack(Gladiator&, AttackResult&, int&);
+
 	~Gladiator();
 };

@@ -20,7 +20,9 @@ using namespace std;
 
 #include "LocalizationEnums.h"
 #include "Localization.h"
+#include "FightEnums.h"
 #include "Weapon.h"
+#include "GladiatorEnums.h"
 #include "Gladiator.h"
 #include "Converter.h"
 
@@ -54,6 +56,7 @@ extern Localization localization;
 
 string toStringPrecision(double, int = 2);
 void output(string, int = 15);
+void outputError(const string&, int = 4);
 
 Gladiator* createRandomGladiator();
 void displayGladiator(Gladiator&);
@@ -61,6 +64,9 @@ void displayBot(Gladiator&);
 void displayGladiatorBatch(Gladiator*, int);
 void createGladiator(Gladiator&);
 bool gladiatorFight(Gladiator&, Gladiator&);
+FightStatus checkFightStatus(Gladiator&, Gladiator&);
+void outputFightResult(FightStatus, int, int);
+void fightGladiator(Gladiator&, Gladiator&);
 
 Weapon* createRandomGladius();	// Sword
 Weapon* createRandomSpatha();	// Sword

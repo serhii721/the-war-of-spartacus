@@ -44,6 +44,19 @@ Gladiator::Gladiator(
 	weapon(wweapon)
 { }
 
+bool Gladiator::isAlive()
+{
+	return health > 0;
+}
+
+void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage)
+{
+	// TODO
+	// dodge = 
+	// damage = (weapon_damage + strength) / 10 * (1 - ) * (1 - dodge) * (1 - 0.7) * (1 + 0.3) * (1 - )
+	// 
+}
+
 Gladiator::~Gladiator()
 {
 	if (weapon)
