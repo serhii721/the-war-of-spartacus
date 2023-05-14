@@ -575,45 +575,54 @@ void fightGladiator(Gladiator& rPlayer, Gladiator& rOpponent)
 	// Otherwise:
 
 	// # 2. Fighting
-	AttackResult result;
+	// Will be overwritten. Need to ensure it is not equal to AttackResult::STUNNED.
+	AttackResult result = AttackResult::DEALT_DAMAGE;
 	int damage;
 
 	FightStatus status = FightStatus::CONTINUE;
 	while (status == FightStatus::CONTINUE)
 	{
-		// Player's attack
-		rPlayer.attack(rOpponent, result, damage);
-
-		// Output of the result of player's attack
-		Sleep(500);
-		switch (result)
+		// Checking whether the player is not stunned
+		if (result != AttackResult::STUNNED)
 		{
-		case AttackResult::DEALT_DAMAGE:
-			output("You have dealt" + ' ' + to_string(damage) + ' ' + "damage");
-			break;
-		case AttackResult::STUNNED:
-			output("You have stunned the opponent and dealt" + ' ' + to_string(damage) + ' ' + "damage");
-			break;
-		case AttackResult::WERE_DODGED:
-			output("The opponent has dodged");
-			break;
-		case AttackResult::WERE_BLOCKED:
-			output("The opponent has blocked and taken" + ' ' + to_string(damage) + ' ' + "damage");
-			break;
-		case AttackResult::WERE_COUNTERATTAKED:
-			output("The opponent has counterattacked and dealt" + ' ' + to_string(damage) + ' ' + "damage");
-			break;
-		default:
-			outputError("ERROR_UNKNOWN_ATTACK_RESULT" + '\n');
-			return;
+			// Player's attack
+			rPlayer.attack(rOpponent, result, damage);
+
+			// Output of the result of player's attack
+			Sleep(500);
+			switch (result)
+			{
+			case AttackResult::DEALT_DAMAGE:
+				output("You have dealt" + ' ' + to_string(damage) + ' ' + "damage");
+				break;
+			case AttackResult::STUNNED:
+				output("You have stunned the opponent and dealt" + ' ' + to_string(damage) + ' ' + "damage");
+				break;
+			case AttackResult::WERE_DODGED:
+				output("The opponent has dodged");
+				break;
+			case AttackResult::WERE_BLOCKED:
+				output("The opponent has blocked and taken" + ' ' + to_string(damage) + ' ' + "damage");
+				break;
+			case AttackResult::WERE_COUNTERATTAKED:
+				output("The opponent has counterattacked and dealt" + ' ' + to_string(damage) + ' ' + "damage");
+				break;
+			default:
+				outputError("ERROR_UNKNOWN_ATTACK_RESULT" + '\n');
+				return;
+			}
+			output(".\n");
+
+			// Checking the status of the fighting
+			status = checkFightStatus(rPlayer, rOpponent);
+
+			if (status != FightStatus::CONTINUE)
+				outputFightResult(status, rPlayer.health, rOpponent.health);
 		}
-		output(".\n");
 
-		// Checking the status of the fighting
-		status = checkFightStatus(rPlayer, rOpponent);
-
-		if (status != FightStatus::CONTINUE)
-			outputFightResult(status, rPlayer.health, rOpponent.health);
+		// Checking whether the opponent is stunned
+		if (result == AttackResult::STUNNED)
+			continue; // Skip opponent's attack
 
 		// Opponent's attack
 		rOpponent.attack(rPlayer, result, damage);
