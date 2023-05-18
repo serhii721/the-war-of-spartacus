@@ -1,0 +1,35 @@
+#pragma once
+
+enum AttackResult
+{
+	DEALT_DAMAGE,
+	STUNNED,
+	WERE_DODGED,
+	WERE_BLOCKED,
+	WERE_COUNTERATTAKED
+};
+
+enum FightStatus
+{
+	CONTINUE,
+	OPPONENT_LOST,
+	OPPONNENT_SURRENDERED,
+	PLAYER_SURRENDERED,
+	PLAYER_LOST
+};
+
+enum ArmourType
+{
+	LIGHT,
+	HEAVY
+};
+
+enum WeaponType
+{
+	SWORD,
+	SPEAR,
+	DAGGER,
+	AXE,
+	MACE,
+	NUMBER
+};

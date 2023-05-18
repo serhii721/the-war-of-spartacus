@@ -2,26 +2,55 @@
 #include "Weapon.h"
 
 Weapon::Weapon() :
-	name(""),
-	durability(BASIC_DURABILITY),
-	damage(BASIC_DAMAGE),
-	length(BASIC_LENGTH),
-	weigth(BASIC_WEIGHT),
-	speed(BASIC_SPEED)
+	damage(BASIC_WEAPON_DAMAGE),
+	type(BASIC_WEAPON_TYPE),
+	damageAddition(0),
+	name("")
 { }
 
 Weapon::Weapon(
-	string nname,
-	int ddurability,
 	int ddamage,
-	int llength,
-	int wweigth,
-	int sspeed
+	WeaponType ttype,
+	int ddamageAddition,
+	const string& nname
 ) :
-	name(nname),
-	durability(ddurability),
 	damage(ddamage),
-	length(llength),
-	weigth(wweigth),
-	speed(sspeed)
+	type(ttype),
+	damageAddition(ddamageAddition),
+	name(nname)
 { }
+
+void Weapon::update(int sstrength, int ddexterity)
+{
+	switch (type)
+	{
+	case WeaponType::SWORD:
+		// 50% strength + 50% dexterity
+		damageAddition = sstrength / 2 + ddexterity / 2;
+		break;
+	case WeaponType::SPEAR:
+		// 25% strength + 75% dexterity
+		damageAddition = sstrength / 4 + ddexterity * 3 / 4;
+		break;
+	case WeaponType::DAGGER:
+		// 15% strength + 85% dexterity
+		damageAddition = sstrength * 3 / 20 + ddexterity * 17 / 20;
+		break;
+	case WeaponType::AXE:
+		// 85% strength + 15% dexterity
+		damageAddition = sstrength * 17 / 20 + ddexterity * 3 / 20;
+		break;
+	case WeaponType::MACE:
+		// 75% strength + 25% dexterity
+		damageAddition = sstrength * 3 / 4 + ddexterity / 4;
+		break;
+	default:
+		outputError("Unknown weapon type!\n");
+		break;
+	}
+}
+
+int Weapon::getTotalDamage()
+{
+	return damage + damageAddition;
+}

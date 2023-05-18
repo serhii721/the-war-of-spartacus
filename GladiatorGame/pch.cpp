@@ -436,7 +436,6 @@ bool gladiatorFight(Gladiator& player, Gladiator& bot)
 			{
 				output(localization.messages[Localized::FIGHT_PLAYER_HITS] + '\n', 2);
 				bot.health -= playerDamage;
-				player.weapon->durability -= 1;
 				if (1 + rand() / (RAND_MAX / (100 - 1)) < playerBash) // Check player chance to bash
 				{
 					botStun = true;
@@ -465,7 +464,6 @@ bool gladiatorFight(Gladiator& player, Gladiator& bot)
 			{
 				output(localization.messages[Localized::FIGHT_ENEMY_HITS] + '\n', 12);
 				player.health -= botDamage;
-				bot.weapon->durability -= 1;
 				if (1 + rand() / (RAND_MAX / (100 - 1)) < botBash) // Check bot chance to bash
 				{
 					playerStun = true;
@@ -660,156 +658,65 @@ void fightGladiator(Gladiator& rPlayer, Gladiator& rOpponent)
 	}
 }
 
-// __________ Weapon __________
+// __________ Weapon and Armour __________
 
-Weapon* createRandomGladius()
+Weapon* createRandomWeapon(WeaponType ttype)
 {
-	int length = 45 + rand() / (RAND_MAX / (68 - 45));
-	int weigth = length * 16;
-	int speed = (int)(weigth * 0.125);
 	return new Weapon(
-		"Gladius",
-		BASIC_DURABILITY,
-		10 + rand() / (RAND_MAX / (35 - 10)),
-		length,
-		weigth,
-		speed
+		BASIC_WEAPON_DAMAGE + rand() % WEAPON_RAND_DMG_ADDTN,
+		ttype != WeaponType::NUMBER ? ttype : WeaponType(rand() % WeaponType::NUMBER),
+		0,
+		""
 	);
 }
 
-Weapon* createRandomSpatha()
+void displayWeapon(const Weapon& rWeapon)
 {
-	int length = 70 + rand() / (RAND_MAX / (90 - 70));
-	int weigth = length * 18;
-	int speed = (int)(weigth * 0.125);
-	return new Weapon(
-		"Spatha",
-		BASIC_DURABILITY,
-		15 + rand() / (RAND_MAX / (40 - 15)),
-		length,
-		weigth,
-		speed
-	);
-}
+	if (rWeapon.name != "")
+		output("Name: " + rWeapon.name + '\n');
 
-Weapon* createRandomHasta()
-{
-	int length = 190 + rand() / (RAND_MAX / (230 - 190));
-	int weigth = length * 5.5;
-	int speed = (int)(weigth * 0.125);
-	return new Weapon(
-		"Hasta",
-		BASIC_DURABILITY,
-		10 + rand() / (RAND_MAX / (45 - 10)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomFasces()
-{
-	int length = 30 + rand() / (RAND_MAX / (55 - 30));
-	int weigth = length * 25;
-	int speed = (int)(weigth * 0.150);
-	return new Weapon(
-		"Fasces",
-		BASIC_DURABILITY,
-		20 + rand() / (RAND_MAX / (50 - 20)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomMace()
-{
-	int length = 30 + rand() / (RAND_MAX / (55 - 30));
-	int weigth = length * 25;
-	int speed = (int)(weigth * 0.150);
-	return new Weapon(
-		"Mace",
-		BASIC_DURABILITY,
-		10 + rand() / (RAND_MAX / (25 - 10)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomPugio()
-{
-	int length = 18 + rand() / (RAND_MAX / (28 - 18));
-	int weigth = length * 14;
-	int speed = (int)(weigth * 0.140);
-	return new Weapon(
-		"Pugio",
-		BASIC_DURABILITY,
-		10 + rand() / (RAND_MAX / (25 - 10)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomPilum()
-{
-	int length = 190 + rand() / (RAND_MAX / (230 - 190));
-	int weigth = length * 10;
-	int speed = (int)(weigth * 0.085);
-	return new Weapon(
-		"Hasta",
-		BASIC_DURABILITY,
-		25 + rand() / (RAND_MAX / (55 - 25)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomWeapon()
-{
-	int randomIndex = rand() % WEAPON_NUMBER;
-	switch (randomIndex)
-	{
-	case 0: // Gladius
-		return createRandomGladius();
-	case 1: // Spatha
-		return createRandomSpatha();
-	case 2: // Hasta
-		return createRandomHasta();
-	case 3: // Fasces
-		return createRandomFasces();
-	case 4: // Mace
-		return createRandomMace();
-	case 5: // Pugio
-		return createRandomPugio();
-	case 6: // Pilum
-		return createRandomPilum();
-	default:
-		output(localization.messages[Localized::ERROR_UNKNOWN_WEAPON_TYPE] + '\n');
-		return new Weapon();
-	}
-}
-
-void displayWeapon(Weapon& weapon)
-{
-	Converter converter;
 	output(localization.messages[Localized::WEAPON_STATUS_TYPE] + ' ');
-	output(weapon.name + '\n', 14);
+	string typeName;
+	switch (rWeapon.type)
+	{
+	case WeaponType::SWORD: typeName = "Sword";
+		break;
+	case WeaponType::SPEAR: typeName = "Spear";
+		break;
+	case WeaponType::DAGGER: typeName = "Dagger";
+		break;
+	case WeaponType::AXE: typeName = "Axe";
+		break;
+	case WeaponType::MACE: typeName = "Mace";
+		break;
+	default:
+		outputError("Unknown weapon type!\n");
+		break;
+	}
+	output(typeName + '\n', 14);
+
 	output(localization.messages[Localized::WEAPON_STATUS_DAMAGE] + ' ');
-	output(to_string(weapon.damage) + '\n', 4);
-	output(localization.messages[Localized::WEAPON_STATUS_LENGTH] + ' ');
-	output(toStringPrecision((converter.toMetres(weapon.length))), 2);
-	output(" (m)\n" + localization.messages[Localized::WEAPON_STATUS_WEIGTH] + ' ');
-	output(toStringPrecision((converter.toKilograms(weapon.weigth))), 12);
-	output(" (kg)\n" + localization.messages[Localized::WEAPON_STATUS_SPEED] + ' ');
-	output(to_string(weapon.speed) + '\n', 6);
-	output(localization.messages[Localized::WEAPON_STATUS_DURABILITY] + ' ');
-	output(to_string(weapon.durability / 10) + "%\n\n", 11);
+	output(to_string(rWeapon.damage) + '\n', 4);
 }
 
-// __________ Save&Load __________
+void displayArmour(const Armour& rArmour)
+{
+	string typeName;
+	switch (rArmour.type)
+	{
+	case ArmourType::LIGHT: typeName = "Light";
+		break;
+	case ArmourType::HEAVY: typeName = "Heavy";
+		break;
+	default:
+		outputError("Unknown armour type!\n");
+		break;
+	}
+	output("Type: " + typeName + '\n');
+	output("Defense: " + to_string(rArmour.getTotalDefense()));
+}
+
+// __________ Save and Load __________
 
 bool saveGame(Gladiator& player, Gladiator* bots)
 {

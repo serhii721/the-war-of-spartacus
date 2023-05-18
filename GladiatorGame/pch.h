@@ -18,38 +18,14 @@ using namespace std;
 #include <direct.h> // Library for creating folders (save games, etc.)
 #include <Windows.h>
 
+#include "Enums.h"
+#include "Constants.h"
 #include "LocalizationEnums.h"
 #include "Localization.h"
-#include "FightEnums.h"
 #include "Weapon.h"
-#include "GladiatorEnums.h"
+#include "Armour.h"
 #include "Gladiator.h"
 #include "Converter.h"
-
-const int OPPONENTS_NUMBER = 3;
-const int BASIC_REGEN = 5;
-const int BASIC_PLAYER_ATTRIBUTES = 10;
-const string OUTPUT_DIVIDER = "\n______________________________________________\n\n\n";
-
-// Gladiator's statistics
-const unsigned MIN_AGE = 20, MAX_AGE = 30;
-const int BASIC_HEALTH = 100;
-const int BASIC_FAME = 0;
-const int BASIC_FATIGUE = 0;
-const int MIN_STRENGTH = 1, MAX_STRENGTH = 100;
-const int MIN_CONSTITUTION = 1, MAX_CONSTITUTION = 100;
-const int MIN_DEXTERITY = 1, MAX_DEXTERITY = 100;
-const int MIN_INTELLIGENCE = 1, MAX_INTELLIGENCE = 100;
-const int MIN_WISDOM = 1, MAX_WISDOM = 100;
-const int MIN_CHARISMA = 1, MAX_CHARISMA = 100;
-
-// Weapons' statistics
-const int WEAPON_NUMBER = 7; // Number of weapons implemented in game
-const int BASIC_DURABILITY = 1000;
-const int BASIC_DAMAGE = 1;
-const int BASIC_LENGTH = 50; // Centimetres
-const int BASIC_WEIGHT = 800; // Grams
-const int BASIC_SPEED = 100; // Attack speed
 
 const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 extern Localization localization;
@@ -68,15 +44,9 @@ FightStatus checkFightStatus(Gladiator&, Gladiator&);
 void outputFightResult(FightStatus, int, int);
 void fightGladiator(Gladiator&, Gladiator&);
 
-Weapon* createRandomGladius();	// Sword
-Weapon* createRandomSpatha();	// Sword
-Weapon* createRandomHasta();	// Spear
-Weapon* createRandomFasces();	// Axe
-Weapon* createRandomMace();		// Mace
-Weapon* createRandomPugio();	// Dagger
-Weapon* createRandomPilum();	// Javelin
-Weapon* createRandomWeapon();
-void displayWeapon(Weapon&);
+Weapon* createRandomWeapon(WeaponType = WeaponType::NUMBER);
+void displayWeapon(const Weapon&);
+void displayArmour(const Armour&);
 
 bool saveGame(Gladiator&, Gladiator*);
 // Function `loadGame()` calls other load functions
