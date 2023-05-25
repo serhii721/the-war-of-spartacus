@@ -31,17 +31,18 @@ const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 extern Localization localization;
 
 string toStringPrecision(double, int = 2);
-void output(string, int = 15);
+void output(const string&, int = 15);
 void outputError(const string&, int = 4);
 
 Gladiator* createRandomGladiator();
-void displayGladiator(Gladiator&);
-void displayBot(Gladiator&);
-void displayGladiatorBatch(Gladiator*, int);
+void displayGladiator(const Gladiator&);
+void displayBot(const Gladiator&);
+void displayGladiatorBatch(const Gladiator*, int);
 void createGladiator(Gladiator&);
-bool gladiatorFight(Gladiator&, Gladiator&);
-FightStatus checkFightStatus(Gladiator&, Gladiator&);
+
+FightStatus checkFightStatus(const Gladiator&, const Gladiator&);
 void outputFightResult(FightStatus, int, int);
+void outputOpponentAttackResult(AttackResult, int);
 void fightGladiator(Gladiator&, Gladiator&);
 
 Weapon* createRandomWeapon(WeaponType = WeaponType::NUMBER);
@@ -49,7 +50,6 @@ void displayWeapon(const Weapon&);
 void displayArmour(const Armour&);
 
 bool saveGame(Gladiator&, Gladiator*);
-// Function `loadGame()` calls other load functions
 bool loadGame(Gladiator&, Gladiator*);
 bool loadPlayer(Gladiator&);
 bool loadBots(Gladiator*);

@@ -3,6 +3,7 @@
 enum AttackResult
 {
 	DEALT_DAMAGE,
+	DEALT_CRIT_DAMAGE,
 	STUNNED,
 	WERE_DODGED,
 	WERE_BLOCKED,
@@ -31,5 +32,6 @@ enum WeaponType
 	DAGGER,
 	AXE,
 	MACE,
+	SHIELD,
 	NUMBER
 };

@@ -24,3 +24,32 @@ const WeaponType BASIC_WEAPON_TYPE = WeaponType::SWORD;
 
 // Armour's statistics
 const ArmourType BASIC_ARMOUR_TYPE = ArmourType::LIGHT;
+/*
+ * Maximum values of the parameters are assumed.
+ *
+ * Health - (Damage - Defense).
+ * Health == Basic health + Constitution + Strength:
+ * 500 == 100 + 300 + 100.
+ *
+ * Weapon damage == Basic weapon damage + Strength scale (50~10) + Dexterity scale (50~10).
+ * Damage == Strength + Dexterity + Weapon damage:
+ * 450 == 100 + 100 + (25 + 50 + 50) * 2.
+ *
+ * Armour defense compensates weapon damage.
+ * 250.
+ *
+ * ~Number of hits for one == 4 == 500 / (200 * (1000 - 375) / 1000).
+ * [* (1000 - 375) / 1000] is 37.5% damage reduction to prolong a fight.
+ * Fight == ~(4 * 2) hits.
+ *
+ * Minimum values.
+ * Health: 140 == 100 + 30 + 10.
+ * Damage: 64 == 10 + 10 + (20 + 1 + 1) * 2.
+ * Armour: 31.
+ * ~Number of hits for one == 7 == 140 / (33 * (1000 - 375) / 1000).
+ * Fight == ~(7 * 2) hits.
+ */
+const int MIN_ARMOUR_DEFENSE = 60, MAX_ARMOUR_DEFENSE = 140;
+
+// Fight's statistics
+const int PERCENT_DAMAGE_REDUCTION = 375; // 37.5%.

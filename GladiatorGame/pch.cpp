@@ -18,7 +18,7 @@ string toStringPrecision(double n, int precision)
 	return "";
 }
 
-void output(string s, int color)
+void output(const string& s, int color)
 {
 	SetConsoleTextAttribute(hConsole, color);
 	cout << s;
@@ -97,7 +97,7 @@ Gladiator* createRandomGladiator()
 	);
 }
 
-void displayGladiator(Gladiator& g)
+void displayGladiator(const Gladiator& g)
 {
 	output(localization.messages[Localized::STATUS_NAME] + ' ');
 	output(g.name + '\n', 14);
@@ -123,15 +123,20 @@ void displayGladiator(Gladiator& g)
 	output(to_string(g.charisma) + "\n\n", 6);
 }
 
-void displayBot(Gladiator& g)
+void displayBot(const Gladiator& rGladiator)
 {
 	output("\n");
 	displayGladiator(g);
 	output(localization.messages[Localized::STATUS_WEAPON] + "\n\n", 14);
-	displayWeapon(*g.weapon);
+	if (rGladiator.isRightHandOccupied())
+		displayWeapon(*rGladiator.rightHand);
+	if (rGladiator.isLeftHandOccupied())
+		displayWeapon(*rGladiator.leftHand);
+	if (rGladiator.isArmourEquipped())
+		displayArmour(*rGladiator.armour);
 }
 
-void displayGladiatorBatch(Gladiator* arr, int number)
+void displayGladiatorBatch(const Gladiator* arr, int number)
 {
 	for (int i = 0; i < number; i++)
 	{
@@ -409,115 +414,115 @@ void createGladiator(Gladiator& player)
 	output(localization.messages[Localized::CREATION_INPUT_SUCCESS] + '\n', 10);
 }
 
-bool gladiatorFight(Gladiator& player, Gladiator& bot)
-{
-	// Calculating damage (weapon damage * (strength scale + dexterity scale)). Max scale from 100 attributes is 70% increase
-	int playerDamage = player.weapon->damage * ((1 + player.strength / 140) + (1 + player.dexterity / 140) - 1);
-	int botDamage = bot.weapon->damage * ((1 + bot.strength / 140) + (1 + bot.dexterity / 140) - 1);
+//bool gladiatorFight(Gladiator& player, Gladiator& bot)
+//{
+//	// Calculating damage (weapon damage * (strength scale + dexterity scale)). Max scale from 100 attributes is 70% increase
+//	int playerDamage = player.weapon->damage * ((1 + player.strength / 140) + (1 + player.dexterity / 140) - 1);
+//	int botDamage = bot.weapon->damage * ((1 + bot.strength / 140) + (1 + bot.dexterity / 140) - 1);
+//
+//	// Calculating evasion chance from dexterity. Min 5% chance to max 35% chance from 100 attribute
+//	int playerEvasion = player.dexterity * 0.3030 + 5;
+//	int botEvasion = bot.dexterity * 0.3030 + 5;
+//
+//	// Calculating bash chance from strength. Min 3% chance to max 20% chance from 100 attribute
+//	int playerBash = player.strength * 0.17 + 3;
+//	int botBash = bot.strength * 0.17 + 3;
+//	bool playerStun = false, botStun = false;
+//
+//	output(localization.messages[Localized::FIGHT_START] + "\n\n", 4);
+//
+//	while (player.health > 0 && bot.health > 0) // Fight until both opponents have health
+//	{
+//		if (!playerStun) // If player is not bashed he attacks
+//		{
+//			output(localization.messages[Localized::FIGHT_PLAYER_ATTACKS] + '\n');
+//			Sleep(200);
+//			if (1 + rand() / (RAND_MAX / (100 - 1)) > botEvasion) // Check bot evasion chance
+//			{
+//				output(localization.messages[Localized::FIGHT_PLAYER_HITS] + '\n', 2);
+//				bot.health -= playerDamage;
+//				if (1 + rand() / (RAND_MAX / (100 - 1)) < playerBash) // Check player chance to bash
+//				{
+//					botStun = true;
+//					Sleep(100);
+//					output(localization.messages[Localized::FIGHT_ENEMY_STUNNED] + '\n', 2);
+//				}
+//			}
+//			else
+//				output(localization.messages[Localized::FIGHT_ENEMY_EVADES] + '\n', 12);
+//		}
+//		else
+//			playerStun = false;
+//
+//		Sleep(500);
+//
+//		if (bot.health < 1) // If bot is alive fight continues
+//			break;
+//
+//		output("\n\n");
+//
+//		if (!botStun) // If bot is not bashed he attacks
+//		{
+//			output(localization.messages[Localized::FIGHT_ENEMY_ATTACKS] + '\n');
+//			Sleep(200);
+//			if (1 + rand() / (RAND_MAX / (100 - 1)) > playerEvasion) // Check player evasion chance
+//			{
+//				output(localization.messages[Localized::FIGHT_ENEMY_HITS] + '\n', 12);
+//				player.health -= botDamage;
+//				if (1 + rand() / (RAND_MAX / (100 - 1)) < botBash) // Check bot chance to bash
+//				{
+//					playerStun = true;
+//					Sleep(100);
+//					output(localization.messages[Localized::FIGHT_PLAYER_STUNNED] + '\n', 12);
+//				}
+//			}
+//			else
+//				output(localization.messages[Localized::FIGHT_PLAYER_EVADES] + '\n', 2);
+//		}
+//		else
+//			botStun = false;
+//
+//		Sleep(500);
+//
+//		output("\n\n");
+//
+//		if (player.health < 1) // If player is alive fight continues
+//			break;
+//
+//		// Display player's health
+//		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
+//		output(to_string(player.health) + '\n', 10);
+//		// Display enemy's health
+//		output(localization.messages[Localized::FIGHT_ENEMY_HEALTH] + ' ');
+//		output(to_string(bot.health) + "\n\n", 4);
+//
+//		Sleep(500);
+//	}
+//
+//	if (player.health < 1) // Player lost
+//	{
+//		player.health = 1;
+//
+//		output(localization.messages[Localized::FIGHT_ENEMY_LAST_HIT] + "\n\n", 4);
+//		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
+//		output(to_string(player.health) + "\n", 10);
+//		output(localization.messages[Localized::FIGHT_ENEMY_HEALTH] + ' ');
+//		output(to_string(bot.health) + "\n\n", 4);
+//		return false;
+//	}
+//	else // Player won
+//	{
+//		bot.health = 1;
+//
+//		output(localization.messages[Localized::FIGHT_PLAYER_LAST_HIT] + "\n\n", 10);
+//		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
+//		output(to_string(player.health) + "\n\n", 10);
+//		return true;
+//	}
+//
+//}
 
-	// Calculating evasion chance from dexterity. Min 5% chance to max 35% chance from 100 attribute
-	int playerEvasion = player.dexterity * 0.3030 + 5;
-	int botEvasion = bot.dexterity * 0.3030 + 5;
-
-	// Calculating bash chance from strength. Min 3% chance to max 20% chance from 100 attribute
-	int playerBash = player.strength * 0.17 + 3;
-	int botBash = bot.strength * 0.17 + 3;
-	bool playerStun = false, botStun = false;
-
-	output(localization.messages[Localized::FIGHT_START] + "\n\n", 4);
-
-	while (player.health > 0 && bot.health > 0) // Fight until both opponents have health
-	{
-		if (!playerStun) // If player is not bashed he attacks
-		{
-			output(localization.messages[Localized::FIGHT_PLAYER_ATTACKS] + '\n');
-			Sleep(200);
-			if (1 + rand() / (RAND_MAX / (100 - 1)) > botEvasion) // Check bot evasion chance
-			{
-				output(localization.messages[Localized::FIGHT_PLAYER_HITS] + '\n', 2);
-				bot.health -= playerDamage;
-				if (1 + rand() / (RAND_MAX / (100 - 1)) < playerBash) // Check player chance to bash
-				{
-					botStun = true;
-					Sleep(100);
-					output(localization.messages[Localized::FIGHT_ENEMY_STUNNED] + '\n', 2);
-				}
-			}
-			else
-				output(localization.messages[Localized::FIGHT_ENEMY_EVADES] + '\n', 12);
-		}
-		else
-			playerStun = false;
-
-		Sleep(500);
-
-		if (bot.health < 1) // If bot is alive fight continues
-			break;
-
-		output("\n\n");
-
-		if (!botStun) // If bot is not bashed he attacks
-		{
-			output(localization.messages[Localized::FIGHT_ENEMY_ATTACKS] + '\n');
-			Sleep(200);
-			if (1 + rand() / (RAND_MAX / (100 - 1)) > playerEvasion) // Check player evasion chance
-			{
-				output(localization.messages[Localized::FIGHT_ENEMY_HITS] + '\n', 12);
-				player.health -= botDamage;
-				if (1 + rand() / (RAND_MAX / (100 - 1)) < botBash) // Check bot chance to bash
-				{
-					playerStun = true;
-					Sleep(100);
-					output(localization.messages[Localized::FIGHT_PLAYER_STUNNED] + '\n', 12);
-				}
-			}
-			else
-				output(localization.messages[Localized::FIGHT_PLAYER_EVADES] + '\n', 2);
-		}
-		else
-			botStun = false;
-
-		Sleep(500);
-
-		output("\n\n");
-
-		if (player.health < 1) // If player is alive fight continues
-			break;
-
-		// Display player's health
-		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
-		output(to_string(player.health) + '\n', 10);
-		// Display enemy's health
-		output(localization.messages[Localized::FIGHT_ENEMY_HEALTH] + ' ');
-		output(to_string(bot.health) + "\n\n", 4);
-
-		Sleep(500);
-	}
-
-	if (player.health < 1) // Player lost
-	{
-		player.health = 1;
-
-		output(localization.messages[Localized::FIGHT_ENEMY_LAST_HIT] + "\n\n", 4);
-		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
-		output(to_string(player.health) + "\n", 10);
-		output(localization.messages[Localized::FIGHT_ENEMY_HEALTH] + ' ');
-		output(to_string(bot.health) + "\n\n", 4);
-		return false;
-	}
-	else // Player won
-	{
-		bot.health = 1;
-
-		output(localization.messages[Localized::FIGHT_PLAYER_LAST_HIT] + "\n\n", 10);
-		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
-		output(to_string(player.health) + "\n\n", 10);
-		return true;
-	}
-
-}
-
-FightStatus checkFightStatus(Gladiator& rPlayer, Gladiator& rOpponent)
+FightStatus checkFightStatus(const Gladiator& rPlayer, const Gladiator& rOpponent)
 {
 	if (rOpponent.health < 10)
 	{
@@ -542,7 +547,7 @@ FightStatus checkFightStatus(Gladiator& rPlayer, Gladiator& rOpponent)
 	return FightStatus::CONTINUE;
 }
 
-void outputFightResult(FightStatus sstatus, int playerHealth, int opponentHealth)
+void outputFightResult(const FightStatus sstatus, const int playerHealth, const int opponentHealth)
 {
 	switch (sstatus)
 	{
@@ -566,18 +571,60 @@ void outputFightResult(FightStatus sstatus, int playerHealth, int opponentHealth
 	}
 }
 
+void outputOpponentAttackResult(const AttackResult rresult, const int ddamage)
+{
+	Sleep(500);
+	switch (rresult)
+	{
+	case AttackResult::DEALT_DAMAGE:
+		output("You have been dealt" + ' ' + to_string(ddamage) + ' ' + "damage");
+		break;
+	case AttackResult::STUNNED:
+		output("You have been stunned and been dealt" + ' ' + to_string(ddamage) + ' ' + "damage");
+		break;
+	case AttackResult::WERE_DODGED:
+		output("You have dodged");
+		break;
+	case AttackResult::WERE_BLOCKED:
+		output("You have blocked and taken" + ' ' + to_string(ddamage) + ' ' + "damage");
+		break;
+	case AttackResult::WERE_COUNTERATTAKED:
+		output("You have counterattacked and dealt" + ' ' + to_string(ddamage) + ' ' + "damage");
+		break;
+	default:
+		outputError("ERROR_UNKNOWN_ATTACK_RESULT" + '\n');
+		return;
+	}
+	output(".\n");
+}
+
 void fightGladiator(Gladiator& rPlayer, Gladiator& rOpponent)
 {
-	// # 1. Determining whether the bot attacks first
-	// TODO: if (botAttack) { rOpponent.attack(rPlayer, result, damage); output opponent's attack; check of the fighting status;... }
-	// Otherwise:
-
-	// # 2. Fighting
-	// Will be overwritten. Need to ensure it is not equal to AttackResult::STUNNED.
-	AttackResult result = AttackResult::DEALT_DAMAGE;
+	// # 1. Determining whether the mob attacks first
+	AttackResult result;
 	int damage;
 
-	FightStatus status = FightStatus::CONTINUE;
+	FightStatus status;
+
+	if (rOpponent.wisdom > rPlayer.wisdom)
+	{
+		output("Opponent has higher wisdom, so he attacks first.\n");
+
+		// Opponent's attack
+		rOpponent.attack(rPlayer, result, damage);
+
+		outputOpponentAttackResult(result, damage);
+
+		// Checking the status of the fighting
+		status = checkFightStatus(rPlayer, rOpponent);
+
+		if (status != FightStatus::CONTINUE)
+			outputFightResult(status, rPlayer.health, rOpponent.health);
+	}
+	else
+		output("You have higher wisdom, so you attack first.\n");
+
+	// # 2. Fighting
 	while (status == FightStatus::CONTINUE)
 	{
 		// Checking whether the player is not stunned
@@ -625,30 +672,7 @@ void fightGladiator(Gladiator& rPlayer, Gladiator& rOpponent)
 		// Opponent's attack
 		rOpponent.attack(rPlayer, result, damage);
 
-		// Output of the result of the opponent's attack
-		Sleep(500);
-		switch (result)
-		{
-		case AttackResult::DEALT_DAMAGE:
-			output("You have been dealt" + ' ' + to_string(damage) + ' ' + "damage");
-			break;
-		case AttackResult::STUNNED:
-			output("You have been stunned and been dealt" + ' ' + to_string(damage) + ' ' + "damage");
-			break;
-		case AttackResult::WERE_DODGED:
-			output("You have dodged");
-			break;
-		case AttackResult::WERE_BLOCKED:
-			output("You have blocked and taken" + ' ' + to_string(damage) + ' ' + "damage");
-			break;
-		case AttackResult::WERE_COUNTERATTAKED:
-			output("You have counterattacked and dealt" + ' ' + to_string(damage) + ' ' + "damage");
-			break;
-		default:
-			outputError("ERROR_UNKNOWN_ATTACK_RESULT" + '\n');
-			return;
-		}
-		output(".\n");
+		outputOpponentAttackResult(result, damage);
 
 		// Checking the status of the fighting
 		status = checkFightStatus(rPlayer, rOpponent);
@@ -662,9 +686,11 @@ void fightGladiator(Gladiator& rPlayer, Gladiator& rOpponent)
 
 Weapon* createRandomWeapon(WeaponType ttype)
 {
+	// TODO Shield, rename func
 	return new Weapon(
 		BASIC_WEAPON_DAMAGE + rand() % WEAPON_RAND_DMG_ADDTN,
-		ttype != WeaponType::NUMBER ? ttype : WeaponType(rand() % WeaponType::NUMBER),
+		// `- 1` is a shield.
+		ttype != WeaponType::NUMBER ? ttype : WeaponType(rand() % WeaponType::NUMBER - 1),
 		0,
 		""
 	);

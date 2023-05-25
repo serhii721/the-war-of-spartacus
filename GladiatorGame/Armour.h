@@ -6,7 +6,7 @@ struct Armour
 
 	ArmourType type;
 	int defAddition;
-	int evasionProb, stunSubtractionProb;
+	int evasionProbAddition, stunProbSubtraction;
 
 	Armour();
 	Armour(int, ArmourType);
