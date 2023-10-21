@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "stdafx.h"
 #include "Localization.h"
 
 Localization::Localization() : language(Language::ENGLISH), messages() { }

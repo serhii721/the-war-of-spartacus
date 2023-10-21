@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "stdafx.h"
 #include "Gladiator.h"
 
 Gladiator::Gladiator() :
@@ -104,7 +104,7 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 				if (rOpponent.isRightHandOccupied())
 					opponentWeaponDamage += rOpponent.rightHand->getTotalDamage();
 				// The left hand is checked when determining whether a shield
-					opponentWeaponDamage += rOpponent.leftHand->getTotalDamage();
+				opponentWeaponDamage += rOpponent.leftHand->getTotalDamage();
 				break;
 			case 1: // Left hand
 				if (rOpponent.isRightHandOccupied())
@@ -112,7 +112,7 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 				break;
 			case 2: // Right hand
 				// The left hand is checked when determining whether a shield
-					opponentWeaponDamage = rOpponent.leftHand->getTotalDamage();
+				opponentWeaponDamage = rOpponent.leftHand->getTotalDamage();
 				break;
 			}
 
@@ -149,9 +149,9 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 	// Determining the weapon damage
 	int weaponDamage = 0;
 	if (isLeftHandOccupied() && leftHand->type != WeaponType::SHIELD)
-			weaponDamage += leftHand->getTotalDamage();
+		weaponDamage += leftHand->getTotalDamage();
 	if (isRightHandOccupied() && rightHand->type != WeaponType::SHIELD)
-			weaponDamage += rightHand->getTotalDamage();
+		weaponDamage += rightHand->getTotalDamage();
 
 	/*
 	 * Is the attack blocked?
@@ -175,7 +175,7 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 	// Is the attack critical?
 	if (rand() % 100 < dexterity * 3 / 10)
 	{
-		rResult = AttackResult::DEALT_CRIT_DAMAGE; 
+		rResult = AttackResult::DEALT_CRIT_DAMAGE;
 		/*
 		 * (Player damage - Opponent defense) is increased by the crit (30% + <=40% from the dexterity) and
 		 * reduced to prolong fight.

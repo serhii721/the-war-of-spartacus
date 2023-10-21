@@ -1,7 +1,8 @@
 #pragma once
 
-struct Localization
+class Localization
 {
+public:
 	Language language;
 	array<string, Localized::MESSAGE_NUMBER> messages;
 

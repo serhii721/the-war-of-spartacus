@@ -1,11 +1,16 @@
-// pch.h: This is a precompiled header file.
-// Files listed below are compiled only once, improving build performance for future builds.
-// This also affects IntelliSense performance, including code completion and many code browsing features.
-// However, files listed here are ALL re-compiled if any one of them is updated between builds.
-// Do not add files here that you will be updating frequently as this negates the performance advantage.
+// stdafx.h : include file for standard system include files,
+// or project specific include files that are used frequently, but
+// are changed infrequently
+//
 
-#ifndef PCH_H
-#define PCH_H
+#if !defined(AFX_STDAFX_H__A9DB83DB_A9FD_11D0_BFD1_444553540000__INCLUDED_)
+#define AFX_STDAFX_H__A9DB83DB_A9FD_11D0_BFD1_444553540000__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 
 #include <array> // `array` for localization
 #include <cstdlib> // `rand()`, `srand()`
@@ -17,7 +22,8 @@
 using namespace std;
 
 #include <direct.h> // Library for creating folders (save games, etc.)
-#include <Windows.h>
+#include <windows.h>
+#include <stdio.h>
 
 #include "Enums.h"
 #include "Constants.h"
@@ -63,4 +69,12 @@ void skipDay(Gladiator&, Gladiator*, int);
 bool outputStartMenu(Gladiator&, Gladiator*);
 void outputGameMenu(Gladiator&, Gladiator*);
 
-#endif //PCH_H
+LRESULT CALLBACK WFunc(HWND, UINT, WPARAM, LPARAM);
+
+// Αστεπ.
+TCHAR str[256] = "";
+
+//{{AFX_INSERT_LOCATION}}
+// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
+
+#endif // !defined(AFX_STDAFX_H__A9DB83DB_A9FD_11D0_BFD1_444553540000__INCLUDED_)

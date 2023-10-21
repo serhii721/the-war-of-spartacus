@@ -1,7 +1,8 @@
 #pragma once
 
-struct Armour
+class Armour
 {
+public:
 	int defense;
 
 	ArmourType type;

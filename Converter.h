@@ -1,7 +1,8 @@
 #pragma once
 
-struct Converter
+class Converter
 {
+public:
 	double toMetres(int);
 	double toKilograms(int);
 };
