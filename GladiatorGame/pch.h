@@ -13,67 +13,47 @@
 #include <fstream> // `ifstream`, `ofstream`
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
 #include <direct.h> // Library for creating folders (save games, etc.)
 #include <Windows.h>
 
+#include "Enums.h"
+#include "Constants.h"
 #include "LocalizationEnums.h"
 #include "Localization.h"
 #include "Weapon.h"
+#include "Armour.h"
 #include "Gladiator.h"
 #include "Converter.h"
-
-const int OPPONENTS_NUMBER = 3;
-const int BASIC_REGEN = 5;
-const int BASIC_PLAYER_ATTRIBUTES = 10;
-const string OUTPUT_DIVIDER = "\n______________________________________________\n\n\n";
-
-// Gladiator's statistics
-const unsigned MIN_AGE = 20, MAX_AGE = 30;
-const int BASIC_HEALTH = 100;
-const int BASIC_FAME = 0;
-const int BASIC_FATIGUE = 0;
-const int MIN_STRENGTH = 1, MAX_STRENGTH = 100;
-const int MIN_CONSTITUTION = 1, MAX_CONSTITUTION = 100;
-const int MIN_DEXTERITY = 1, MAX_DEXTERITY = 100;
-const int MIN_INTELLIGENCE = 1, MAX_INTELLIGENCE = 100;
-const int MIN_WISDOM = 1, MAX_WISDOM = 100;
-const int MIN_CHARISMA = 1, MAX_CHARISMA = 100;
-
-// Weapons' statistics
-const int WEAPON_NUMBER = 7; // Number of weapons implemented in game
-const int BASIC_DURABILITY = 1000;
-const int BASIC_DAMAGE = 1;
-const int BASIC_LENGTH = 50; // Centimetres
-const int BASIC_WEIGHT = 800; // Grams
-const int BASIC_SPEED = 100; // Attack speed
 
 const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 extern Localization localization;
 
 string toStringPrecision(double, int = 2);
-void output(string, int = 15);
+void output(const string&, int = 15);
+void outputError(const string&, int = 4);
 
 Gladiator* createRandomGladiator();
-void displayGladiator(Gladiator&);
-void displayBot(Gladiator&);
-void displayGladiatorBatch(Gladiator*, int);
+void displayGladiator(const Gladiator&);
+void displayMob(const Gladiator&);
+void displayMobBatch(const Gladiator*, int);
 void createGladiator(Gladiator&);
-bool gladiatorFight(Gladiator&, Gladiator&);
 
-Weapon* createRandomGladius();	// Sword
-Weapon* createRandomSpatha();	// Sword
-Weapon* createRandomHasta();	// Spear
-Weapon* createRandomFasces();	// Axe
-Weapon* createRandomMace();		// Mace
-Weapon* createRandomPugio();	// Dagger
-Weapon* createRandomPilum();	// Javelin
-Weapon* createRandomWeapon();
-void displayWeapon(Weapon&);
+FightStatus checkFightStatus(const Gladiator&, const Gladiator&);
+void outputFightResult(FightStatus, int, int);
+void outputOpponentAttackResult(AttackResult, int);
+FightStatus fightGladiator(Gladiator&, Gladiator&);
+
+int getWeaponScaleLimit(WeaponType, Attribute, Limit);
+int getArmourScaleLimit(ArmourType, ArmourStat, Limit);
+Weapon* createRandomGladiatorWeapon(WeaponType = WeaponType::NUMBER);
+Armour* createRandomGladiatorArmour(ArmourType = ArmourType::NUMBER);
+void displayWeapon(const Weapon&);
+void displayArmour(const Armour&);
 
 bool saveGame(Gladiator&, Gladiator*);
-// Function `loadGame()` calls other load functions
 bool loadGame(Gladiator&, Gladiator*);
 bool loadPlayer(Gladiator&);
 bool loadBots(Gladiator*);
@@ -81,6 +61,6 @@ bool loadBots(Gladiator*);
 void skipDay(Gladiator&, Gladiator*, int);
 
 bool outputStartMenu(Gladiator&, Gladiator*);
-bool outputGameMenu(Gladiator&, Gladiator*);
+void outputGameMenu(Gladiator&, Gladiator*);
 
 #endif //PCH_H

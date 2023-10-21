@@ -2,26 +2,73 @@
 #include "Weapon.h"
 
 Weapon::Weapon() :
-	name(""),
-	durability(BASIC_DURABILITY),
-	damage(BASIC_DAMAGE),
-	length(BASIC_LENGTH),
-	weigth(BASIC_WEIGHT),
-	speed(BASIC_SPEED)
+	damage(MIN_WEAPON_DAMAGE),
+	type(BASIC_WEAPON_TYPE),
+	damageAddition(0),
+	strAdditionPerc(0),
+	dexAdditionPerc(0),
+	shieldProbAddition(0),
+	shieldDefPercentAddition(0),
+	name("")
 { }
 
 Weapon::Weapon(
-	string nname,
-	int ddurability,
 	int ddamage,
-	int llength,
-	int wweigth,
-	int sspeed
+	WeaponType ttype,
+	int ddamageAddition,
+	int sstrAdditionPerc,
+	int ddexAdditionPerc,
+	int sshieldProbAddition,
+	int sshieldDefPercentAddition,
+	const string& nname
 ) :
-	name(nname),
-	durability(ddurability),
 	damage(ddamage),
-	length(llength),
-	weigth(wweigth),
-	speed(sspeed)
+	type(ttype),
+	damageAddition(ddamageAddition),
+	strAdditionPerc(sstrAdditionPerc),
+	dexAdditionPerc(ddexAdditionPerc),
+	shieldProbAddition(sshieldProbAddition),
+	shieldDefPercentAddition(sshieldDefPercentAddition),
+	name(nname)
 { }
+
+void Weapon::update(int sstrength, int ddexterity)
+{
+	damageAddition = sstrength * strAdditionPerc / 100 + ddexterity * dexAdditionPerc / 100;
+}
+
+int Weapon::getTotalDamage()
+{
+	return damage + damageAddition;
+}
+
+bool Weapon::isCompatibleWith(WeaponType ttype)
+{
+	switch (type)
+	{
+	case WeaponType::SWORD:
+		if (ttype == WeaponType::SPEAR || ttype == WeaponType::AXE)
+			return false;
+		break;
+	case WeaponType::SPEAR:
+		return false;
+	case WeaponType::DAGGER:
+		if (ttype == WeaponType::SPEAR || ttype == WeaponType::AXE)
+			return false;
+		break;
+	case WeaponType::AXE:
+		return false;
+	case WeaponType::MACE:
+		if (ttype == WeaponType::SPEAR || ttype == WeaponType::AXE)
+			return false;
+		break;
+	case WeaponType::SHIELD:
+		if (ttype == WeaponType::SPEAR || ttype == WeaponType::AXE || ttype == WeaponType::SHIELD)
+			return false;
+		break;
+	default:
+		outputError("Unknown weapon type!\n");
+		break;
+	}
+	return true;
+}
