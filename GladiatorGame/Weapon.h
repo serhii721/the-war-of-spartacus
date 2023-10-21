@@ -1,10 +1,22 @@
 #pragma once
 
-struct Weapon {
+struct Weapon
+{
+	int damage;
+
+	WeaponType type;
+	int damageAddition;
+	int strAdditionPerc, dexAdditionPerc;
+
+	int shieldProbAddition, shieldDefPercentAddition;
+
 	string name;
-	int durability;
-	int damage, length, weigth, speed;
 
 	Weapon();
-	Weapon(string, int, int, int, int, int);
+	Weapon(int, WeaponType, int, int, int, int, int, const string&);
+
+	void update(int, int);
+	int getTotalDamage();
+
+	bool isCompatibleWith(WeaponType);
 };

@@ -18,10 +18,16 @@ string toStringPrecision(double n, int precision)
 	return "";
 }
 
-void output(string s, int color)
+void output(const string& s, int color)
 {
 	SetConsoleTextAttribute(hConsole, color);
 	cout << s;
+}
+
+void outputError(const string& s, int color)
+{
+	SetConsoleTextAttribute(hConsole, color);
+	cerr << s;
 }
 
 // __________ Gladiator __________
@@ -75,9 +81,38 @@ Gladiator* createRandomGladiator()
 
 	name += ' ' + line; // Add last name
 
+	// Generating weapons
+	Weapon* rightHand = createRandomGladiatorWeapon();
+	Weapon* leftHand = createRandomGladiatorWeapon();
+	if (!rightHand->isCompatibleWith(leftHand->type))
+	{
+		if (rand() % 100 < 75)
+		{
+			if (leftHand)
+				delete leftHand;
+			leftHand = createRandomGladiatorWeapon(WeaponType::SHIELD);
+		}
+		else if (rand() % 100 < 75)
+			do
+			{
+				if (leftHand)
+					delete leftHand;
+				leftHand = createRandomGladiatorWeapon();
+			} while (!rightHand->isCompatibleWith(leftHand->type));
+		else if (leftHand)
+		{
+			delete leftHand;
+			leftHand = nullptr;
+		}
+	}
+
+	// Generating an armour
+	Armour* armour = createRandomGladiatorArmour();
+
 	return new Gladiator(
 		name,
 		MIN_AGE + rand() % (MAX_AGE - 1),
+		BASIC_HEALTH,
 		BASIC_HEALTH,
 		1 + rand() % 300, // Fame
 		BASIC_FATIGUE,
@@ -87,11 +122,13 @@ Gladiator* createRandomGladiator()
 		MIN_INTELLIGENCE + rand() / (RAND_MAX / (MAX_INTELLIGENCE - 10)),
 		MIN_WISDOM + rand() / (RAND_MAX / (MAX_WISDOM - 10)),
 		MIN_CHARISMA + rand() / (RAND_MAX / (MAX_CHARISMA - 10)),
-		createRandomWeapon()
+		rightHand,
+		leftHand,
+		armour
 	);
 }
 
-void displayGladiator(Gladiator& g)
+void displayGladiator(const Gladiator& g)
 {
 	output(localization.messages[Localized::STATUS_NAME] + ' ');
 	output(g.name + '\n', 14);
@@ -114,23 +151,48 @@ void displayGladiator(Gladiator& g)
 	output(localization.messages[Localized::STATUS_WISDOM] + ' ');
 	output(to_string(g.wisdom) + '\n', 13);
 	output(localization.messages[Localized::STATUS_CHARISMA] + ' ');
-	output(to_string(g.charisma) + "\n\n", 6);
+	output(to_string(g.charisma), 6);
 }
 
-void displayBot(Gladiator& g)
+void displayMob(const Gladiator& rMob)
 {
-	output("\n");
-	displayGladiator(g);
-	output(localization.messages[Localized::STATUS_WEAPON] + "\n\n", 14);
-	displayWeapon(*g.weapon);
+	displayGladiator(rMob);
+	output("\n\n");
+
+	// Weapons
+	if (rMob.isRightHandOccupied())
+	{
+		output(localization.messages[Localized::STATUS_WEAPON] + "\n\n", 14);
+		displayWeapon(*rMob.rightHand);
+		output("\n");
+
+		if (rMob.isLeftHandOccupied())
+		{
+			displayWeapon(*rMob.leftHand);
+			output("\n\n");
+		}
+	}
+	else if (rMob.isLeftHandOccupied())
+	{
+		output(localization.messages[Localized::STATUS_WEAPON] + "\n\n", 14);
+		displayWeapon(*rMob.leftHand);
+		output("\n\n");
+	}
+
+	if (rMob.isArmourEquipped())
+	{
+		output("Armour:" + string("\n\n"), 14);
+		displayArmour(*rMob.armour);
+		output("\n\n");
+	}
 }
 
-void displayGladiatorBatch(Gladiator* arr, int number)
+void displayMobBatch(const Gladiator* arr, int number)
 {
 	for (int i = 0; i < number; i++)
 	{
-		output(to_string(i + 1) + ' ' + localization.messages[Localized::STATUS_GLADIATOR] + '\n', 4);
-		displayBot(arr[i]);
+		output(to_string(i + 1) + ' ' + localization.messages[Localized::STATUS_GLADIATOR] + "\n\n", 4);
+		displayMob(arr[i]);
 	}
 }
 
@@ -397,272 +459,621 @@ void createGladiator(Gladiator& player)
 	player.health = BASIC_HEALTH;
 	player.fatigue = BASIC_FATIGUE;
 	player.fame = BASIC_FAME;
-	player.weapon = createRandomWeapon();
+
+	// Generating weapons
+	Weapon* rightHand = createRandomGladiatorWeapon();
+	Weapon* leftHand = createRandomGladiatorWeapon();
+	if (!rightHand->isCompatibleWith(leftHand->type))
+	{
+		if (rand() % 100 < 75)
+		{
+			if (leftHand)
+				delete leftHand;
+			leftHand = createRandomGladiatorWeapon(WeaponType::SHIELD);
+		}
+		else if (rand() % 100 < 75)
+			do
+			{
+				if (leftHand)
+					delete leftHand;
+				leftHand = createRandomGladiatorWeapon();
+			} while (!rightHand->isCompatibleWith(leftHand->type));
+		else if (leftHand)
+		{
+			delete leftHand;
+			leftHand = nullptr;
+		}
+	}
+
+	// Generating an armour
+	Armour* armour = createRandomGladiatorArmour();
+
+	player.rightHand = rightHand;
+	if (leftHand)
+		player.leftHand = leftHand;
+	player.armour = armour;
 
 	output("\n");
 	output(localization.messages[Localized::CREATION_INPUT_SUCCESS] + '\n', 10);
 }
 
-bool gladiatorFight(Gladiator& player, Gladiator& bot)
+//bool gladiatorFight(Gladiator& player, Gladiator& bot)
+//{
+//	// Calculating damage (weapon damage * (strength scale + dexterity scale)). Max scale from 100 attributes is 70% increase
+//	int playerDamage = player.weapon->damage * ((1 + player.strength / 140) + (1 + player.dexterity / 140) - 1);
+//	int botDamage = bot.weapon->damage * ((1 + bot.strength / 140) + (1 + bot.dexterity / 140) - 1);
+//
+//	// Calculating evasion chance from dexterity. Min 5% chance to max 35% chance from 100 attribute
+//	int playerEvasion = player.dexterity * 0.3030 + 5;
+//	int botEvasion = bot.dexterity * 0.3030 + 5;
+//
+//	// Calculating bash chance from strength. Min 3% chance to max 20% chance from 100 attribute
+//	int playerBash = player.strength * 0.17 + 3;
+//	int botBash = bot.strength * 0.17 + 3;
+//	bool playerStun = false, botStun = false;
+//
+//	output(localization.messages[Localized::FIGHT_START] + "\n\n", 4);
+//
+//	while (player.health > 0 && bot.health > 0) // Fight until both opponents have health
+//	{
+//		if (!playerStun) // If player is not bashed he attacks
+//		{
+//			output(localization.messages[Localized::FIGHT_PLAYER_ATTACKS] + '\n');
+//			Sleep(200);
+//			if (1 + rand() / (RAND_MAX / (100 - 1)) > botEvasion) // Check bot evasion chance
+//			{
+//				output(localization.messages[Localized::FIGHT_PLAYER_HITS] + '\n', 2);
+//				bot.health -= playerDamage;
+//				if (1 + rand() / (RAND_MAX / (100 - 1)) < playerBash) // Check player chance to bash
+//				{
+//					botStun = true;
+//					Sleep(100);
+//					output(localization.messages[Localized::FIGHT_ENEMY_STUNNED] + '\n', 2);
+//				}
+//			}
+//			else
+//				output(localization.messages[Localized::FIGHT_ENEMY_EVADES] + '\n', 12);
+//		}
+//		else
+//			playerStun = false;
+//
+//		Sleep(500);
+//
+//		if (bot.health < 1) // If bot is alive fight continues
+//			break;
+//
+//		output("\n\n");
+//
+//		if (!botStun) // If bot is not bashed he attacks
+//		{
+//			output(localization.messages[Localized::FIGHT_ENEMY_ATTACKS] + '\n');
+//			Sleep(200);
+//			if (1 + rand() / (RAND_MAX / (100 - 1)) > playerEvasion) // Check player evasion chance
+//			{
+//				output(localization.messages[Localized::FIGHT_ENEMY_HITS] + '\n', 12);
+//				player.health -= botDamage;
+//				if (1 + rand() / (RAND_MAX / (100 - 1)) < botBash) // Check bot chance to bash
+//				{
+//					playerStun = true;
+//					Sleep(100);
+//					output(localization.messages[Localized::FIGHT_PLAYER_STUNNED] + '\n', 12);
+//				}
+//			}
+//			else
+//				output(localization.messages[Localized::FIGHT_PLAYER_EVADES] + '\n', 2);
+//		}
+//		else
+//			botStun = false;
+//
+//		Sleep(500);
+//
+//		output("\n\n");
+//
+//		if (player.health < 1) // If player is alive fight continues
+//			break;
+//
+//		// Display player's health
+//		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
+//		output(to_string(player.health) + '\n', 10);
+//		// Display enemy's health
+//		output(localization.messages[Localized::FIGHT_ENEMY_HEALTH] + ' ');
+//		output(to_string(bot.health) + "\n\n", 4);
+//
+//		Sleep(500);
+//	}
+//
+//	if (player.health < 1) // Player lost
+//	{
+//		player.health = 1;
+//
+//		output(localization.messages[Localized::FIGHT_ENEMY_LAST_HIT] + "\n\n", 4);
+//		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
+//		output(to_string(player.health) + "\n", 10);
+//		output(localization.messages[Localized::FIGHT_ENEMY_HEALTH] + ' ');
+//		output(to_string(bot.health) + "\n\n", 4);
+//		return false;
+//	}
+//	else // Player won
+//	{
+//		bot.health = 1;
+//
+//		output(localization.messages[Localized::FIGHT_PLAYER_LAST_HIT] + "\n\n", 10);
+//		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
+//		output(to_string(player.health) + "\n\n", 10);
+//		return true;
+//	}
+//
+//}
+
+FightStatus checkFightStatus(const Gladiator& rPlayer, const Gladiator& rOpponent)
 {
-	// Calculating damage (weapon damage * (strength scale + dexterity scale)). Max scale from 100 attributes is 70% increase
-	int playerDamage = player.weapon->damage * ((1 + player.strength / 140) + (1 + player.dexterity / 140) - 1);
-	int botDamage = bot.weapon->damage * ((1 + bot.strength / 140) + (1 + bot.dexterity / 140) - 1);
-
-	// Calculating evasion chance from dexterity. Min 5% chance to max 35% chance from 100 attribute
-	int playerEvasion = player.dexterity * 0.3030 + 5;
-	int botEvasion = bot.dexterity * 0.3030 + 5;
-
-	// Calculating bash chance from strength. Min 3% chance to max 20% chance from 100 attribute
-	int playerBash = player.strength * 0.17 + 3;
-	int botBash = bot.strength * 0.17 + 3;
-	bool playerStun = false, botStun = false;
-
-	output(localization.messages[Localized::FIGHT_START] + "\n\n", 4);
-
-	while (player.health > 0 && bot.health > 0) // Fight until both opponents have health
+	if (rOpponent.health < 10)
 	{
-		if (!playerStun) // If player is not bashed he attacks
-		{
-			output(localization.messages[Localized::FIGHT_PLAYER_ATTACKS] + '\n');
-			Sleep(200);
-			if (1 + rand() / (RAND_MAX / (100 - 1)) > botEvasion) // Check bot evasion chance
-			{
-				output(localization.messages[Localized::FIGHT_PLAYER_HITS] + '\n', 2);
-				bot.health -= playerDamage;
-				player.weapon->durability -= 1;
-				if (1 + rand() / (RAND_MAX / (100 - 1)) < playerBash) // Check player chance to bash
-				{
-					botStun = true;
-					Sleep(100);
-					output(localization.messages[Localized::FIGHT_ENEMY_STUNNED] + '\n', 2);
-				}
-			}
-			else
-				output(localization.messages[Localized::FIGHT_ENEMY_EVADES] + '\n', 12);
-		}
-		else
-			playerStun = false;
+		if (!rOpponent.isAlive())
+			return FightStatus::OPPONENT_LOST;
 
-		Sleep(500);
-
-		if (bot.health < 1) // If bot is alive fight continues
-			break;
-
-		output("\n\n");
-
-		if (!botStun) // If bot is not bashed he attacks
-		{
-			output(localization.messages[Localized::FIGHT_ENEMY_ATTACKS] + '\n');
-			Sleep(200);
-			if (1 + rand() / (RAND_MAX / (100 - 1)) > playerEvasion) // Check player evasion chance
-			{
-				output(localization.messages[Localized::FIGHT_ENEMY_HITS] + '\n', 12);
-				player.health -= botDamage;
-				bot.weapon->durability -= 1;
-				if (1 + rand() / (RAND_MAX / (100 - 1)) < botBash) // Check bot chance to bash
-				{
-					playerStun = true;
-					Sleep(100);
-					output(localization.messages[Localized::FIGHT_PLAYER_STUNNED] + '\n', 12);
-				}
-			}
-			else
-				output(localization.messages[Localized::FIGHT_PLAYER_EVADES] + '\n', 2);
-		}
-		else
-			botStun = false;
-
-		Sleep(500);
-
-		output("\n\n");
-
-		if (player.health < 1) // If player is alive fight continues
-			break;
-
-		// Display player's health
-		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
-		output(to_string(player.health) + '\n', 10);
-		// Display enemy's health
-		output(localization.messages[Localized::FIGHT_ENEMY_HEALTH] + ' ');
-		output(to_string(bot.health) + "\n\n", 4);
-
-		Sleep(500);
+		// Offer to surrender to the opponent
+		// TODO: if (yes)
+		// return FightStatus::OPPONNENT_SURRENDERED;
 	}
 
-	if (player.health < 1) // Player lost
+	if (rPlayer.health < 10)
 	{
-		player.health = 1;
+		if (!rPlayer.isAlive())
+			return FightStatus::PLAYER_LOST;
 
-		output(localization.messages[Localized::FIGHT_ENEMY_LAST_HIT] + "\n\n", 4);
-		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
-		output(to_string(player.health) + "\n", 10);
-		output(localization.messages[Localized::FIGHT_ENEMY_HEALTH] + ' ');
-		output(to_string(bot.health) + "\n\n", 4);
-		return false;
-	}
-	else // Player won
-	{
-		bot.health = 1;
-
-		output(localization.messages[Localized::FIGHT_PLAYER_LAST_HIT] + "\n\n", 10);
-		output(localization.messages[Localized::FIGHT_PLAYER_HEALTH] + ' ');
-		output(to_string(player.health) + "\n\n", 10);
-		return true;
+		// Offer to surrender to the player
+		// TODO: if (yes)
+		// return FightStatus::PLAYER_SURRENDERED;
 	}
 
+	return FightStatus::CONTINUE;
 }
 
-// __________ Weapon __________
-
-Weapon* createRandomGladius()
+void outputFightResult(const FightStatus sstatus, const int playerHealth, const int opponentHealth)
 {
-	int length = 45 + rand() / (RAND_MAX / (68 - 45));
-	int weigth = length * 16;
-	int speed = (int)(weigth * 0.125);
-	return new Weapon(
-		"Gladius",
-		BASIC_DURABILITY,
-		10 + rand() / (RAND_MAX / (35 - 10)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomSpatha()
-{
-	int length = 70 + rand() / (RAND_MAX / (90 - 70));
-	int weigth = length * 18;
-	int speed = (int)(weigth * 0.125);
-	return new Weapon(
-		"Spatha",
-		BASIC_DURABILITY,
-		15 + rand() / (RAND_MAX / (40 - 15)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomHasta()
-{
-	int length = 190 + rand() / (RAND_MAX / (230 - 190));
-	int weigth = length * 5.5;
-	int speed = (int)(weigth * 0.125);
-	return new Weapon(
-		"Hasta",
-		BASIC_DURABILITY,
-		10 + rand() / (RAND_MAX / (45 - 10)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomFasces()
-{
-	int length = 30 + rand() / (RAND_MAX / (55 - 30));
-	int weigth = length * 25;
-	int speed = (int)(weigth * 0.150);
-	return new Weapon(
-		"Fasces",
-		BASIC_DURABILITY,
-		20 + rand() / (RAND_MAX / (50 - 20)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomMace()
-{
-	int length = 30 + rand() / (RAND_MAX / (55 - 30));
-	int weigth = length * 25;
-	int speed = (int)(weigth * 0.150);
-	return new Weapon(
-		"Mace",
-		BASIC_DURABILITY,
-		10 + rand() / (RAND_MAX / (25 - 10)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomPugio()
-{
-	int length = 18 + rand() / (RAND_MAX / (28 - 18));
-	int weigth = length * 14;
-	int speed = (int)(weigth * 0.140);
-	return new Weapon(
-		"Pugio",
-		BASIC_DURABILITY,
-		10 + rand() / (RAND_MAX / (25 - 10)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomPilum()
-{
-	int length = 190 + rand() / (RAND_MAX / (230 - 190));
-	int weigth = length * 10;
-	int speed = (int)(weigth * 0.085);
-	return new Weapon(
-		"Hasta",
-		BASIC_DURABILITY,
-		25 + rand() / (RAND_MAX / (55 - 25)),
-		length,
-		weigth,
-		speed
-	);
-}
-
-Weapon* createRandomWeapon()
-{
-	int randomIndex = rand() % WEAPON_NUMBER;
-	switch (randomIndex)
+	switch (sstatus)
 	{
-	case 0: // Gladius
-		return createRandomGladius();
-	case 1: // Spatha
-		return createRandomSpatha();
-	case 2: // Hasta
-		return createRandomHasta();
-	case 3: // Fasces
-		return createRandomFasces();
-	case 4: // Mace
-		return createRandomMace();
-	case 5: // Pugio
-		return createRandomPugio();
-	case 6: // Pilum
-		return createRandomPilum();
+	case FightStatus::OPPONENT_LOST:
+		output("The opponent has lost" + string(".\n"));
+		break;
+	case FightStatus::OPPONNENT_SURRENDERED:
+		output("The opponent has surrendered with health points of" + ' ' + to_string(opponentHealth) + ".\n");
+		break;
+	case FightStatus::PLAYER_SURRENDERED:
+		output("You have lost" + string(".\n"));
+		break;
+	case FightStatus::PLAYER_LOST:
+		output("You have surrendered with health points of" + ' ' + to_string(playerHealth) + ".\n");
+		break;
+	case FightStatus::CONTINUE:
+		break;
 	default:
-		output(localization.messages[Localized::ERROR_UNKNOWN_WEAPON_TYPE] + '\n');
-		return new Weapon();
+		outputError("ERROR_UNKNOWN_FIGHT_STATUS" + '\n');
+		break;
 	}
 }
 
-void displayWeapon(Weapon& weapon)
+void outputOpponentAttackResult(const AttackResult rresult, const int ddamage)
 {
-	Converter converter;
-	output(localization.messages[Localized::WEAPON_STATUS_TYPE] + ' ');
-	output(weapon.name + '\n', 14);
-	output(localization.messages[Localized::WEAPON_STATUS_DAMAGE] + ' ');
-	output(to_string(weapon.damage) + '\n', 4);
-	output(localization.messages[Localized::WEAPON_STATUS_LENGTH] + ' ');
-	output(toStringPrecision((converter.toMetres(weapon.length))), 2);
-	output(" (m)\n" + localization.messages[Localized::WEAPON_STATUS_WEIGTH] + ' ');
-	output(toStringPrecision((converter.toKilograms(weapon.weigth))), 12);
-	output(" (kg)\n" + localization.messages[Localized::WEAPON_STATUS_SPEED] + ' ');
-	output(to_string(weapon.speed) + '\n', 6);
-	output(localization.messages[Localized::WEAPON_STATUS_DURABILITY] + ' ');
-	output(to_string(weapon.durability / 10) + "%\n\n", 11);
+	Sleep(500);
+	switch (rresult)
+	{
+	case AttackResult::DEALT_DAMAGE:
+		output("You have been dealt" + ' ' + to_string(ddamage) + ' ' + "damage");
+		break;
+	case AttackResult::DEALT_CRIT_DAMAGE:
+		output("You have been dealt" + ' ' + to_string(ddamage) + ' ' + "critical damage");
+		break;
+	case AttackResult::STUNNED:
+		output("You have been stunned and been dealt" + ' ' + to_string(ddamage) + ' ' + "damage");
+		break;
+	case AttackResult::WERE_DODGED:
+		output("You have dodged");
+		break;
+	case AttackResult::WERE_BLOCKED:
+		output("You have blocked and taken" + ' ' + to_string(ddamage) + ' ' + "damage");
+		break;
+	case AttackResult::WERE_COUNTERATTAKED:
+		output("You have counterattacked and dealt" + ' ' + to_string(ddamage) + ' ' + "damage");
+		break;
+	default:
+		outputError("ERROR_UNKNOWN_ATTACK_RESULT" + '\n');
+		return;
+	}
+	output(".\n");
 }
 
-// __________ Save&Load __________
+FightStatus fightGladiator(Gladiator& rPlayer, Gladiator& rOpponent)
+{
+	// # 1. Determining whether the mob attacks first
+	AttackResult result;
+	int damage;
+
+	FightStatus status;
+
+	if (rOpponent.wisdom > rPlayer.wisdom)
+	{
+		output("Opponent has higher wisdom, so he attacks first.\n");
+
+		// Opponent's attack
+		rOpponent.attack(rPlayer, result, damage);
+
+		outputOpponentAttackResult(result, damage);
+
+		// Checking the status of the fighting
+		status = checkFightStatus(rPlayer, rOpponent);
+
+		if (status != FightStatus::CONTINUE)
+			outputFightResult(status, rPlayer.health, rOpponent.health);
+	}
+	else
+		output("You have higher wisdom, so you attack first.\n");
+
+	// # 2. Fighting
+	while (status == FightStatus::CONTINUE)
+	{
+		// Checking whether the player is not stunned
+		if (result != AttackResult::STUNNED)
+		{
+			// Player's attack
+			rPlayer.attack(rOpponent, result, damage);
+
+			// Output of the result of player's attack
+			Sleep(500);
+			switch (result)
+			{
+			case AttackResult::DEALT_DAMAGE:
+				output("You have dealt" + ' ' + to_string(damage) + ' ' + "damage");
+				break;
+			case AttackResult::DEALT_CRIT_DAMAGE:
+				output("You have dealt" + ' ' + to_string(damage) + ' ' + "critical damage");
+				break;
+			case AttackResult::STUNNED:
+				output("You have stunned the opponent and dealt" + ' ' + to_string(damage) + ' ' + "damage");
+				break;
+			case AttackResult::WERE_DODGED:
+				output("The opponent has dodged");
+				break;
+			case AttackResult::WERE_BLOCKED:
+				output("The opponent has blocked and taken" + ' ' + to_string(damage) + ' ' + "damage");
+				break;
+			case AttackResult::WERE_COUNTERATTAKED:
+				output("The opponent has counterattacked and dealt" + ' ' + to_string(damage) + ' ' + "damage");
+				break;
+			default:
+				// TODO Handle error
+				outputError("Unknown attack result" + '\n');
+				break;
+			}
+			output(".\n");
+
+			// Checking the status of the fighting
+			status = checkFightStatus(rPlayer, rOpponent);
+
+			if (status != FightStatus::CONTINUE)
+			{
+				outputFightResult(status, rPlayer.health, rOpponent.health);
+				break;
+			}
+		}
+
+		// Checking whether the opponent is stunned
+		if (result == AttackResult::STUNNED)
+			continue; // Skip opponent's attack
+
+		// Opponent's attack
+		rOpponent.attack(rPlayer, result, damage);
+
+		outputOpponentAttackResult(result, damage);
+
+		// Checking the status of the fighting
+		status = checkFightStatus(rPlayer, rOpponent);
+
+		if (status != FightStatus::CONTINUE)
+		{
+			outputFightResult(status, rPlayer.health, rOpponent.health);
+			break;
+		}
+	}
+	return status;
+}
+
+// __________ Weapon and Armour __________
+
+int getWeaponScaleLimit(WeaponType ttype, Attribute aattribute, Limit llimit)
+{
+	switch (ttype)
+	{
+	case WeaponType::AXE:
+		switch (aattribute)
+		{
+		case Attribute::STRENGTH:
+			switch (llimit)
+			{
+			case Limit::MIN: return 32;
+			case Limit::MAX: return 160;
+			}
+			break;
+		case Attribute::DEXTERITY:
+			switch (llimit)
+			{
+			case Limit::MIN: return 6;
+			case Limit::MAX: return 30;
+			}
+			break;
+		}
+		break;
+
+	case WeaponType::DAGGER:
+		switch (aattribute)
+		{
+		case Attribute::STRENGTH:
+			switch (llimit)
+			{
+			case Limit::MIN: return 3;
+			case Limit::MAX: return 15;
+			}
+			break;
+		case Attribute::DEXTERITY:
+			switch (llimit)
+			{
+			case Limit::MIN: return 17;
+			case Limit::MAX: return 85;
+			}
+			break;
+		}
+		break;
+
+	case WeaponType::MACE:
+		switch (aattribute)
+		{
+		case Attribute::STRENGTH:
+			switch (llimit)
+			{
+			case Limit::MIN: return 15;
+			case Limit::MAX: return 75;
+			}
+			break;
+		case Attribute::DEXTERITY:
+			switch (llimit)
+			{
+			case Limit::MIN: return 5;
+			case Limit::MAX: return 25;
+			}
+			break;
+		}
+		break;
+
+	case WeaponType::SPEAR:
+		switch (aattribute)
+		{
+		case Attribute::STRENGTH:
+			switch (llimit)
+			{
+			case Limit::MIN: return 10;
+			case Limit::MAX: return 50;
+			}
+			break;
+		case Attribute::DEXTERITY:
+			switch (llimit)
+			{
+			case Limit::MIN: return 30;
+			case Limit::MAX: return 150;
+			}
+			break;
+		}
+		break;
+
+	case WeaponType::SWORD:
+		switch (aattribute)
+		{
+		case Attribute::STRENGTH:
+			switch (llimit)
+			{
+			case Limit::MIN: return 10;
+			case Limit::MAX: return 50;
+			}
+			break;
+		case Attribute::DEXTERITY:
+			switch (llimit)
+			{
+			case Limit::MIN: return 10;
+			case Limit::MAX: return 50;
+			}
+			break;
+		}
+		break;
+
+	default: break;
+	}
+	outputError("Unknown weapon type when getting its scale limit!\n");
+	return -1;
+}
+
+int getArmourScaleLimit(ArmourType ttype, ArmourStat sstat, Limit llimit)
+{
+	switch (ttype)
+	{
+	case ArmourType::LIGHT:
+		switch (sstat)
+		{
+		case ArmourStat::STR_ADDITION_PERC:
+			switch (llimit)
+			{
+			case Limit::MIN: return 5;
+			case Limit::MAX: return 25;
+			}
+			break;
+		case ArmourStat::DEX_ADDITION_PERC:
+			switch (llimit)
+			{
+			case Limit::MIN: return 15;
+			case Limit::MAX: return 75;
+			}
+			break;
+		case ArmourStat::EVASION_PROB_ADDITION:
+			switch (llimit)
+			{
+			case Limit::MIN: return 1;
+			case Limit::MAX: return 10;
+			}
+			break;
+		case ArmourStat::STUN_PROB_SUBSTRACTION:
+			switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
+			break;
+		}
+
+		break;
+
+	case ArmourType::HEAVY:
+		switch (sstat)
+		{
+		case ArmourStat::STR_ADDITION_PERC:
+			switch (llimit)
+			{
+			case Limit::MIN: return 15;
+			case Limit::MAX: return 75;
+			}
+			break;
+		case ArmourStat::DEX_ADDITION_PERC:
+			switch (llimit)
+			{
+			case Limit::MIN: return 5;
+			case Limit::MAX: return 25;
+			}
+			break;
+		case ArmourStat::EVASION_PROB_ADDITION:
+			switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
+			break;
+		case ArmourStat::STUN_PROB_SUBSTRACTION:
+			switch (llimit)
+			{
+			case Limit::MIN: return 1;
+			case Limit::MAX: return 4;
+			}
+			break;
+		}
+		break;
+
+	default: break;
+	}
+
+	outputError("Unknown weapon type when getting its scale limit!\n");
+	return -1;
+}
+
+Weapon* createRandomGladiatorWeapon(WeaponType ttype)
+{
+	// A shield manually creates only
+	if (ttype != WeaponType::SHIELD)
+	{
+		int maxStrAdditionPerc = getWeaponScaleLimit(ttype, Attribute::STRENGTH, Limit::MAX),
+			maxDexAdditionPerc = getWeaponScaleLimit(ttype, Attribute::DEXTERITY, Limit::MAX);
+		return new Weapon(
+			MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DMG_ADDTN,
+			// `Weapon number - 1` is a shield
+			ttype != WeaponType::NUMBER ? ttype : WeaponType(rand() % WeaponType::NUMBER - 1),
+			0, // Damage addition
+			maxStrAdditionPerc * 3 / 5 + (rand() % (maxStrAdditionPerc / 10 + 1)), // Strength damage addition
+			maxDexAdditionPerc * 3 / 5 + (rand() % (maxDexAdditionPerc / 10 + 1)), // Dexterity damage addition
+			0, // Shield's probability addition
+			0, // Shield's defense percent addition
+			"" // Name
+		);
+	}
+	else
+		return new Weapon(
+			0, // Damage
+			WeaponType::SHIELD,
+			0, // Damage addition
+			0, // Strength percent addition
+			0, // Dexterity percent addition
+			MIN_SHIELD_PROB_ADDTN + rand() % SHIELD_RAND_PROB_ADDTN,
+			MIN_SHIELD_PROB_ADDTN + rand() % SHIELD_RAND_DEF_PERCENT_ADDTN,
+			"" // Name
+		);
+}
+
+Armour* createRandomGladiatorArmour(ArmourType ttype)
+{
+	// Determining the type
+	ArmourType type = ttype != ArmourType::NUMBER ? ttype : ArmourType(rand() % ArmourType::NUMBER);
+
+	// Calculating the armour statistics based on its type
+	int maxStrDefAddition = getArmourScaleLimit(type, ArmourStat::STR_ADDITION_PERC, Limit::MAX),
+		maxDexDefAddition = getArmourScaleLimit(type, ArmourStat::DEX_ADDITION_PERC, Limit::MAX);
+	int evasionProbAddition, stunProbSubstraction;
+	switch (type)
+	{
+	case ArmourType::LIGHT:
+		evasionProbAddition = getArmourScaleLimit(type, ArmourStat::EVASION_PROB_ADDITION, Limit::MAX) * 2 / 5 + rand() % 3;
+		stunProbSubstraction = 0;
+		break;
+	case ArmourType::HEAVY:
+		evasionProbAddition = 0;
+		stunProbSubstraction = getArmourScaleLimit(type, ArmourStat::STUN_PROB_SUBSTRACTION, Limit::MAX) / 2;
+		break;
+	}
+
+	return new Armour(
+		MIN_ARMOUR_DEFENSE + 5 + rand() % ARMOUR_RAND_DEF_ADDITION, // Defense
+		type,
+		0, // Defense addition
+		maxStrDefAddition * 3 / 5 + (rand() % maxStrDefAddition / 10 + 1), // Strength defense addition
+		maxDexDefAddition * 3 / 5 + (rand() % maxDexDefAddition / 10 + 1), // Dexterity defense addition
+		evasionProbAddition,
+		stunProbSubstraction
+	);
+}
+
+void displayWeapon(const Weapon& rWeapon)
+{
+	if (rWeapon.name != "")
+		output("Name: " + rWeapon.name + '\n');
+
+	output(localization.messages[Localized::WEAPON_STATUS_TYPE] + ' ');
+	string typeName;
+	switch (rWeapon.type)
+	{
+	case WeaponType::SWORD: typeName = "Sword";
+		break;
+	case WeaponType::SPEAR: typeName = "Spear";
+		break;
+	case WeaponType::DAGGER: typeName = "Dagger";
+		break;
+	case WeaponType::AXE: typeName = "Axe";
+		break;
+	case WeaponType::MACE: typeName = "Mace";
+		break;
+	default:
+		outputError("Unknown weapon type!\n");
+		break;
+	}
+	output(typeName + '\n', 14);
+
+	output(localization.messages[Localized::WEAPON_STATUS_DAMAGE] + ' ');
+	output(to_string(rWeapon.damage) + '\n', 4);
+}
+
+void displayArmour(const Armour& rArmour)
+{
+	string typeName;
+	switch (rArmour.type)
+	{
+	case ArmourType::LIGHT: typeName = "Light";
+		break;
+	case ArmourType::HEAVY: typeName = "Heavy";
+		break;
+	default:
+		outputError("Unknown armour type!\n");
+		break;
+	}
+	output("Type: " + typeName + '\n');
+	output("Defense: " + to_string(rArmour.getTotalDefense()));
+}
+
+// __________ Save and Load __________
 
 bool saveGame(Gladiator& player, Gladiator* bots)
 {
@@ -898,12 +1309,11 @@ bool outputStartMenu(Gladiator& player, Gladiator* bots)
 	}
 }
 
-bool outputGameMenu(Gladiator& player, Gladiator* bots)
+void outputGameMenu(Gladiator& rPlayer, Gladiator* mobs)
 {
-	int option, i;
-	bool fight;
 	while (true)
 	{
+		int option;
 		output(
 			"1. " + localization.messages[Localized::GAME_MENU_WAIT] + '\n' +
 			"2. " + localization.messages[Localized::GAME_MENU_START_FIGHT] + '\n' +
@@ -916,152 +1326,149 @@ bool outputGameMenu(Gladiator& player, Gladiator* bots)
 		cin >> option;
 		output(OUTPUT_DIVIDER);
 
+		int i;
+		bool incorrectOption = true;
 		switch (option)
 		{
 		case 1: // Wait a day
-			skipDay(player, bots, OPPONENTS_NUMBER);
+			skipDay(rPlayer, mobs, OPPONENTS_NUMBER);
 			break;
 
 		case 2: // Start fight
-			fight = true;
-			while (fight)
+			// The player can not fight if has less than 30% health
+			if (rPlayer.health > rPlayer.fullHealth * 3 / 10)
 			{
-				if (player.health < 30)
-				{
-					output(localization.messages[Localized::FIGHT_PLAYER_WOUNDED] + "\n", 4);
-					output(OUTPUT_DIVIDER);
-					fight = false;
-					break;
-				}
+				output(localization.messages[Localized::FIGHT_PLAYER_WOUNDED] + "\n", 4);
+				break;
+			}
+
+			while (incorrectOption)
+			{
+				// Output available opponents
 				output(localization.messages[Localized::FIGHT_CHOOSE_OPPONENT] + "\n\n");
+				Gladiator mob;
+				vector<int> availableMobIndexes;
+				int mobNumber = 1;
 				for (i = 0; i < OPPONENTS_NUMBER; i++)
 				{
-					output(to_string(i + 1) + ". ");
-					if (bots[i].health >= 30)
-						output(bots[i].name + '\n');
-					else
-						output(bots[i].name + '\n', 4);
+					mob = mobs[i];
+
+					// The mob can not fight if has less than 30% health
+					if (mob.health >= mob.fullHealth * 3 / 10)
+					{
+						availableMobIndexes.push_back(i);
+						output(to_string(mobNumber) + ". ");
+						output(mob.name + '\n');
+						++mobNumber;
+					}
 				}
 				output("\n");
-				output("4. " + localization.messages[Localized::EXIT] + "\n\n");
+				// Output the exit option
+				output(to_string(mobNumber + 1) + ". " + localization.messages[Localized::EXIT] + "\n\n");
+
 				output(localization.messages[Localized::CHOOSE_OPTION] + ' ');
 				cin >> option;
-				output(OUTPUT_DIVIDER);
-				switch (option)
+
+				// Check of the chosen option
+				if (option > 0 && option < mobNumber + 2)
 				{
-				case 1: // First opponent
-					if (bots[0].health < 30)
-					{
-						output(localization.messages[Localized::FIGHT_OPPONENT_WOUNDED] + "\n\n");
-						break;
-					}
-					if (gladiatorFight(player, bots[0]))
-					{
-						output(localization.messages[Localized::FIGHT_PLAYER_WON] + "\n\n", 10);
-						player.fame += bots[0].fame / 10;
-						output(localization.messages[Localized::FIGHT_GAINED_LOOT] + '\n');
-						output(localization.messages[Localized::FIGHT_GAINED_FAME] + ' '); output(to_string(bots[0].fame / 10) + "\n\n", 6);
-						output(OUTPUT_DIVIDER);
-					}
-					else
-					{
-						output(localization.messages[Localized::FIGHT_PLAYER_LOST] + '\n', 4);
-						bots[0].fame += player.fame / 10;
-						output(OUTPUT_DIVIDER);
-					}
-					fight = false;
-					break;
-
-				case 2: // Second opponent
-					if (bots[1].health < 30)
-					{
-						output(localization.messages[Localized::FIGHT_OPPONENT_WOUNDED] + "\n\n");
-						break;
-					}
-					if (gladiatorFight(player, bots[1]))
-					{
-						output(localization.messages[Localized::FIGHT_PLAYER_WON] + "\n\n", 10);
-						player.fame += bots[1].fame / 10;
-						output(localization.messages[Localized::FIGHT_GAINED_LOOT] + '\n');
-						output(localization.messages[Localized::FIGHT_GAINED_FAME] + ' ');
-						output(to_string(bots[0].fame / 10) + "\n\n", 6);
-						output(OUTPUT_DIVIDER);
-					}
-					else
-					{
-						output(localization.messages[Localized::FIGHT_PLAYER_LOST] + '\n', 4);
-						bots[1].fame += player.fame / 10;
-						output(OUTPUT_DIVIDER);
-					}
-					fight = false;
-					break;
-
-				case 3: // Third opponent
-					if (bots[2].health < 30)
-					{
-						output(localization.messages[Localized::FIGHT_OPPONENT_WOUNDED] + "\n\n");
-						break;
-					}
-					if (gladiatorFight(player, bots[2]))
-					{
-						output(localization.messages[Localized::FIGHT_PLAYER_WON] + "\n\n", 10);
-						player.fame += bots[2].fame / 10;
-						output(localization.messages[Localized::FIGHT_GAINED_LOOT] + '\n');
-						output(localization.messages[Localized::FIGHT_GAINED_FAME] + ' '); output(to_string(bots[0].fame / 10) + "\n\n", 6);
-						output(OUTPUT_DIVIDER);
-					}
-					else
-					{
-						output(localization.messages[Localized::FIGHT_PLAYER_LOST] + '\n', 4);
-						bots[2].fame += player.fame / 10;
-						output(OUTPUT_DIVIDER);
-					}
-					fight = false;
-					break;
-
-				case 4: // Exit
-					fight = false;
-					break;
-
-				default: // If choosen option is not in the menu
-					output(localization.messages[Localized::WRONG_INPUT] + "\n\n", 12);
 					output(OUTPUT_DIVIDER);
-					break;
+					incorrectOption = false;
+
+					if (option != mobNumber + 1) // Fight
+					{
+						FightStatus result = fightGladiator(rPlayer, mobs[availableMobIndexes[option]]);
+
+						// Concequence of the fight
+						// TODO
+						// How much does player's and opponent's fame changes after the fight
+						// How much experience and gold does the player get
+						switch (result)
+						{
+						case FightStatus::OPPONENT_LOST:
+							rPlayer.fame += mobs[availableMobIndexes[option]].fame / 10;
+							output(localization.messages[Localized::FIGHT_GAINED_FAME] + ' ');
+							output(to_string(mobs[availableMobIndexes[option]].fame / 10) + "\n\n", 6);
+							break;
+						case FightStatus::OPPONNENT_SURRENDERED:
+							rPlayer.fame += mobs[availableMobIndexes[option]].fame / 10;
+							output(localization.messages[Localized::FIGHT_GAINED_FAME] + ' ');
+							output(to_string(mobs[availableMobIndexes[option]].fame / 10) + "\n\n", 6);
+							break;
+						case FightStatus::PLAYER_SURRENDERED:
+							rPlayer.fame -= rPlayer.fame / 10;
+							mobs[availableMobIndexes[option]].fame += rPlayer.fame / 10;
+							break;
+						case FightStatus::PLAYER_LOST:
+							// TODO goto game menu
+							output("Game over! You lose!", 4);
+							break;
+						default: case FightStatus::CONTINUE:
+							outputError("Unknown fight result!\n");
+							break;
+						}
+					}
+					else // Exit
+						break;
 				}
+				else
+					output(localization.messages[Localized::WRONG_INPUT] + "\n\n", 12);
 			}
 			break;
 
 		case 3: // Show player
 			output(localization.messages[Localized::STATUS_YOUR_GLADIATOR] + "\n\n");
-			displayGladiator(player);
-			output(localization.messages[Localized::STATUS_YOUR_WEAPON] + "\n\n", 14);
-			displayWeapon(*player.weapon);
-			output(OUTPUT_DIVIDER);
+			displayGladiator(rPlayer);
+			output("\n\n");
+
+			// Weapons
+			if (rPlayer.isRightHandOccupied())
+			{
+				output(localization.messages[Localized::STATUS_YOUR_WEAPON] + "\n\n", 14);
+				displayWeapon(*rPlayer.rightHand);
+				output("\n");
+
+				if (rPlayer.isLeftHandOccupied())
+				{
+					displayWeapon(*rPlayer.leftHand);
+					output("\n\n");
+				}
+			}
+			else if (rPlayer.isLeftHandOccupied())
+			{
+				output(localization.messages[Localized::STATUS_YOUR_WEAPON] + "\n\n", 14);
+				displayWeapon(*rPlayer.leftHand);
+				output("\n\n");
+			}
+
+			if (rPlayer.isArmourEquipped())
+			{
+				output("Your armour:" + string("\n\n"), 14);
+				displayArmour(*rPlayer.armour);
+				output("\n\n");
+			}
 			break;
 
-		case 4: // Show enemies
+		case 4: // Show opponents
 			output(localization.messages[Localized::STATUS_OPPONENTS] + "\n\n");
-			displayGladiatorBatch(bots, OPPONENTS_NUMBER);
-			output(OUTPUT_DIVIDER);
+			displayMobBatch(mobs, OPPONENTS_NUMBER);
 			break;
 
 		case 5: // Save
-			if (saveGame(player, bots))
+			if (saveGame(rPlayer, mobs))
 				output(localization.messages[Localized::GAME_MENU_SAVE_GAME_SUCCESS] + '\n', 10);
 			else
 				output(localization.messages[Localized::GAME_MENU_SAVE_GAME_ERROR] + '\n', 12);
-			output(OUTPUT_DIVIDER);
 			break;
 
 		case 6: // Exit game
 			output(localization.messages[Localized::EXIT_MESSAGE] + '\n', 10);
-			output(OUTPUT_DIVIDER);
-			return false;
+			return;
 
 		default: // If choosen option is not in the menu
 			output(localization.messages[Localized::WRONG_INPUT] + "\n", 12);
-			output(OUTPUT_DIVIDER);
 			break;
 		}
+		output(OUTPUT_DIVIDER);
 	}
 }
