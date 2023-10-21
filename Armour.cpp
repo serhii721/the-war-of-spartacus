@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "stdafx.h"
 #include "Armour.h"
 
 Armour::Armour() :

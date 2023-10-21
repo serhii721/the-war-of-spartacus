@@ -1,8 +1,14 @@
-// pch.cpp: source file corresponding to the pre-compiled header
+// stdafx.cpp : source file that includes just the standard includes
+// GladiatorGame.pch will be the pre-compiled header
+// stdafx.obj will contain the pre-compiled type information
+/*
+ * It is the game about gladiators in the Rome.
+ * ...
+ */
 
-#include "pch.h"
+#include "stdafx.h"
 
-// When you are using pre-compiled headers, this source file is necessary for compilation to succeed.
+extern HINSTANCE hInst;
 
 Localization localization;
 
@@ -920,8 +926,8 @@ int getArmourScaleLimit(ArmourType ttype, ArmourStat sstat, Limit llimit)
 			}
 			break;
 		case ArmourStat::STUN_PROB_SUBSTRACTION:
-			switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
-			break;
+		switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
+		break;
 		}
 
 		break;
@@ -944,8 +950,8 @@ int getArmourScaleLimit(ArmourType ttype, ArmourStat sstat, Limit llimit)
 			}
 			break;
 		case ArmourStat::EVASION_PROB_ADDITION:
-			switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
-			break;
+		switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
+		break;
 		case ArmourStat::STUN_PROB_SUBSTRACTION:
 			switch (llimit)
 			{
@@ -1471,4 +1477,68 @@ void outputGameMenu(Gladiator& rPlayer, Gladiator* mobs)
 		}
 		output(OUTPUT_DIVIDER);
 	}
+}
+
+LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_CREATE:
+		//// Setting the random seed
+		//srand((unsigned)time(0));
+
+		//// Loading the user prefered language
+		//ifstream fin("Data/Settings.conf");
+		//// If user saved prefered language before it will be loaded
+		//if (fin)
+		//{
+		//	int langOption;
+		//	fin >> langOption;
+		//	switch (langOption)
+		//	{
+		//	default: case 0: localization.setLanguage(); // English
+		//		break;
+		//	case 1: localization.setLanguage(Language::UKRAINIAN);
+		//		break;
+		//	case 2: localization.setLanguage(Language::RUSSIAN);
+		//		break;
+		//	case 3: localization.setLanguage(Language::LATIN);
+		//	}
+		//}
+		//else // If used didn't change language before it will be set to English
+		//	localization.setLanguage();
+
+		//Gladiator* player = new Gladiator();
+
+		//// OPPONENTS = 3
+		//Gladiator* bots = new Gladiator[OPPONENTS_NUMBER];
+
+		//// 1. Start menu
+		//if (!outputStartMenu(*player, bots))
+		//{
+		//	if (player)
+		//		delete player;
+		//	if (bots)
+		//		delete[] bots;
+
+		//	return 0;
+		//}
+
+		//// 2. Menu in game
+		//outputGameMenu(*player, bots);
+
+		//if (player)
+		//	delete player;
+		//if (bots)
+		//	delete[] bots;
+		break;
+
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+
+	default:
+		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+	return 0L;
 }

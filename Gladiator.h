@@ -1,7 +1,8 @@
 #pragma once
 
-struct Gladiator
+class Gladiator
 {
+public:
 	string name;
 	unsigned age;
 	int health, fullHealth;
@@ -19,7 +20,7 @@ struct Gladiator
 
 	bool equipWeapon(Weapon*);
 	void attack(Gladiator&, AttackResult&, int&);
-	
+
 	bool isAlive() const;
 	bool isRightHandOccupied() const;
 	bool isLeftHandOccupied() const;

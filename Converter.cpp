@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "stdafx.h"
 #include "Converter.h"
 
 double Converter::toMetres(int centimetres)

@@ -1,7 +1,8 @@
 #pragma once
 
-struct Weapon
+class Weapon
 {
+public:
 	int damage;
 
 	WeaponType type;

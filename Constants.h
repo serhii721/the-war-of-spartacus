@@ -38,7 +38,7 @@ const ArmourType BASIC_ARMOUR_TYPE = ArmourType::LIGHT;
  * Weapon damage == Basic weapon damage + Strength scale (50~10) + Dexterity scale (50~10).
  * Damage == Strength + Dexterity + Weapon damage:
  * 450 == 100 + 100 + (25 + 50 + 50) * 2.
- * 
+ *
  * Armour defense compensates weapon damage.
  * Armour defense == Basic armour defense + Strength scale (25~5) + Dexterity scale (75~15).
  * 250 == 50 + 50 + 150.
