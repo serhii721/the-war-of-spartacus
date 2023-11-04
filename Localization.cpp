@@ -3,6 +3,18 @@
 
 Localization::Localization() : language(Language::ENGLISH), messages() { }
 
+Localization::Localization(const Localization& L) : language(L.language), messages(L.messages) { }
+
+Localization& Localization::operator=(const Localization& L)
+{
+	if (this == &L) return *this;
+	language = L.language;
+	messages = L.messages;
+	return *this;
+}
+
+Localization::~Localization() { }
+
 const string& Localization::operator[](int i) const { return messages[i]; }
 
 void Localization::setLanguage(Language llanguage)
@@ -57,3 +69,5 @@ void Localization::setLanguage(Language llanguage)
 	fin.close();
 	finEng.close();
 }
+
+Language Localization::getLanguage() const { return language; }

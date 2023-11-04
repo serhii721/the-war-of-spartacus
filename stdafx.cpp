@@ -43,12 +43,12 @@ Gladiator* createRandomGladiator()
 	const string PATH_BASE = "Data/Language/Names/", FORMAT = ".lang";
 	ifstream fin;
 	// Open file containing roman first names
-	if (localization.language == 0)
-		fin.open(PATH_BASE + "En_FirstNames" + FORMAT);
-	else if (localization.language == 1)
-		fin.open(PATH_BASE + "Uk_FirstNames" + FORMAT);
-	else
-		fin.open(PATH_BASE + "Ru_FirstNames" + FORMAT);
+	switch (localization.getLanguage())
+	{
+	default: case Language::ENGLISH: fin.open(PATH_BASE + "En_FirstNames" + FORMAT); break;
+	case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_FirstNames" + FORMAT); break;
+	case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_FirstNames" + FORMAT); break;
+	}
 
 	if (!fin)
 		output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
@@ -66,12 +66,12 @@ Gladiator* createRandomGladiator()
 	name = line; // Assign random name
 
 	// Open file containing roman last names
-	if (localization.language == 0)
-		fin.open(PATH_BASE + "En_LastNames" + FORMAT);
-	else if (localization.language == 1)
-		fin.open(PATH_BASE + "Uk_LastNames" + FORMAT);
-	else
-		fin.open(PATH_BASE + "Ru_LastNames" + FORMAT);
+	switch (localization.getLanguage())
+	{
+	default: case Language::ENGLISH: fin.open(PATH_BASE + "En_LastNames" + FORMAT); break;
+	case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_LastNames" + FORMAT); break;
+	case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_LastNames" + FORMAT); break;
+	}
 
 	if (!fin)
 		output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
@@ -90,7 +90,7 @@ Gladiator* createRandomGladiator()
 	// Generating weapons
 	Weapon* rightHand = createRandomGladiatorWeapon();
 	Weapon* leftHand = createRandomGladiatorWeapon();
-	if (!rightHand->isCompatibleWith(leftHand->type))
+	if (!rightHand->isCompatibleWith(leftHand->getType()))
 	{
 		if (rand() % 100 < 75)
 		{
@@ -104,7 +104,7 @@ Gladiator* createRandomGladiator()
 				if (leftHand)
 					delete leftHand;
 				leftHand = createRandomGladiatorWeapon();
-			} while (!rightHand->isCompatibleWith(leftHand->type));
+			} while (!rightHand->isCompatibleWith(leftHand->getType()));
 		else if (leftHand)
 		{
 			delete leftHand;
@@ -469,7 +469,7 @@ void createGladiator(Gladiator& player)
 	// Generating weapons
 	Weapon* rightHand = createRandomGladiatorWeapon();
 	Weapon* leftHand = createRandomGladiatorWeapon();
-	if (!rightHand->isCompatibleWith(leftHand->type))
+	if (!rightHand->isCompatibleWith(leftHand->getType()))
 	{
 		if (rand() % 100 < 75)
 		{
@@ -483,7 +483,7 @@ void createGladiator(Gladiator& player)
 				if (leftHand)
 					delete leftHand;
 				leftHand = createRandomGladiatorWeapon();
-			} while (!rightHand->isCompatibleWith(leftHand->type));
+			} while (!rightHand->isCompatibleWith(leftHand->getType()));
 		else if (leftHand)
 		{
 			delete leftHand;
@@ -1035,12 +1035,12 @@ Armour* createRandomGladiatorArmour(Armour::Type ttype)
 
 void displayWeapon(const Weapon& rWeapon)
 {
-	if (rWeapon.name != "")
-		output("Name: " + rWeapon.name + '\n');
+	if (rWeapon.getName() != "")
+		output("Name: " + rWeapon.getName() + '\n');
 
 	output(localization[Localized::WEAPON_STATUS_TYPE] + ' ');
 	string typeName;
-	switch (rWeapon.type)
+	switch (rWeapon.getType())
 	{
 	case Weapon::SWORD: typeName = "Sword";
 		break;
@@ -1059,7 +1059,7 @@ void displayWeapon(const Weapon& rWeapon)
 	output(typeName + '\n', 14);
 
 	output(localization[Localized::WEAPON_STATUS_DAMAGE] + ' ');
-	output(to_string(rWeapon.damage) + '\n', 4);
+	output(to_string(rWeapon.getDamage()) + '\n', 4);
 }
 
 void displayArmour(const Armour& rArmour)
