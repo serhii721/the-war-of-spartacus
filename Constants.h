@@ -20,14 +20,14 @@ const int MIN_CHARISMA = 1, MAX_CHARISMA = 100;
 // Weapon's statistics
 const int MIN_WEAPON_DAMAGE = 20;
 const int WEAPON_RAND_DMG_ADDTN = 6;
-const WeaponType BASIC_WEAPON_TYPE = WeaponType::SWORD;
+const Weapon::Type BASIC_WEAPON_TYPE = Weapon::SWORD;
 const int MIN_SHIELD_PROB_ADDTN = 10;
 const int SHIELD_RAND_PROB_ADDTN = 6;
 const int MIN_SHIELD_DEF_PERCENT_ADDTN = 20;
 const int SHIELD_RAND_DEF_PERCENT_ADDTN = 6;
 
 // Armour's statistics
-const ArmourType BASIC_ARMOUR_TYPE = ArmourType::LIGHT;
+const Armour::Type BASIC_ARMOUR_TYPE = Armour::LIGHT;
 /*
  * Maximum values of the parameters are assumed.
  *

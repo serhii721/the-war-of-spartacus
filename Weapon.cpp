@@ -14,7 +14,7 @@ Weapon::Weapon() :
 
 Weapon::Weapon(
 	int ddamage,
-	WeaponType ttype,
+	Type ttype,
 	int ddamageAddition,
 	int sstrAdditionPerc,
 	int ddexAdditionPerc,
@@ -42,28 +42,28 @@ int Weapon::getTotalDamage()
 	return damage + damageAddition;
 }
 
-bool Weapon::isCompatibleWith(WeaponType ttype)
+bool Weapon::isCompatibleWith(Type ttype)
 {
 	switch (type)
 	{
-	case WeaponType::SWORD:
-		if (ttype == WeaponType::SPEAR || ttype == WeaponType::AXE)
+	case Weapon::SWORD:
+		if (ttype == Weapon::SPEAR || ttype == Weapon::AXE)
 			return false;
 		break;
-	case WeaponType::SPEAR:
+	case Weapon::SPEAR:
 		return false;
-	case WeaponType::DAGGER:
-		if (ttype == WeaponType::SPEAR || ttype == WeaponType::AXE)
+	case Weapon::DAGGER:
+		if (ttype == Weapon::SPEAR || ttype == Weapon::AXE)
 			return false;
 		break;
-	case WeaponType::AXE:
+	case Weapon::AXE:
 		return false;
-	case WeaponType::MACE:
-		if (ttype == WeaponType::SPEAR || ttype == WeaponType::AXE)
+	case Weapon::MACE:
+		if (ttype == Weapon::SPEAR || ttype == Weapon::AXE)
 			return false;
 		break;
-	case WeaponType::SHIELD:
-		if (ttype == WeaponType::SPEAR || ttype == WeaponType::AXE || ttype == WeaponType::SHIELD)
+	case Weapon::SHIELD:
+		if (ttype == Weapon::SPEAR || ttype == Weapon::AXE || ttype == Weapon::SHIELD)
 			return false;
 		break;
 	default:

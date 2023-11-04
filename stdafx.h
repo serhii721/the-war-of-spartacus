@@ -26,13 +26,13 @@ using namespace std;
 #include <stdio.h>
 
 #include "Enums.h"
-#include "Constants.h"
 #include "LocalizationEnums.h"
 #include "Localization.h"
 #include "Weapon.h"
 #include "Armour.h"
 #include "Gladiator.h"
 #include "Converter.h"
+#include "Constants.h"
 
 const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 extern Localization localization;
@@ -52,10 +52,10 @@ void outputFightResult(FightStatus, int, int);
 void outputOpponentAttackResult(AttackResult, int);
 FightStatus fightGladiator(Gladiator&, Gladiator&);
 
-int getWeaponScaleLimit(WeaponType, Attribute, Limit);
-int getArmourScaleLimit(ArmourType, ArmourStat, Limit);
-Weapon* createRandomGladiatorWeapon(WeaponType = WeaponType::NUMBER);
-Armour* createRandomGladiatorArmour(ArmourType = ArmourType::NUMBER);
+int getWeaponScaleLimit(Weapon::Type, Attribute, Limit);
+int getArmourScaleLimit(Armour::Type, Armour::Stat, Limit);
+Weapon* createRandomGladiatorWeapon(Weapon::Type = Weapon::NUMBER);
+Armour* createRandomGladiatorArmour(Armour::Type = Armour::NUMBER);
 void displayWeapon(const Weapon&);
 void displayArmour(const Armour&);
 

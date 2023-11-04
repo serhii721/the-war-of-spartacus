@@ -13,7 +13,7 @@ Armour::Armour() :
 
 Armour::Armour(
 	int ddefense,
-	ArmourType ttype,
+	Type ttype,
 	int ddefAddition,
 	int sstrAdditionPerc,
 	int ddexAdditionPerc,

@@ -96,7 +96,7 @@ Gladiator* createRandomGladiator()
 		{
 			if (leftHand)
 				delete leftHand;
-			leftHand = createRandomGladiatorWeapon(WeaponType::SHIELD);
+			leftHand = createRandomGladiatorWeapon(Weapon::SHIELD);
 		}
 		else if (rand() % 100 < 75)
 			do
@@ -475,7 +475,7 @@ void createGladiator(Gladiator& player)
 		{
 			if (leftHand)
 				delete leftHand;
-			leftHand = createRandomGladiatorWeapon(WeaponType::SHIELD);
+			leftHand = createRandomGladiatorWeapon(Weapon::SHIELD);
 		}
 		else if (rand() % 100 < 75)
 			do
@@ -787,11 +787,11 @@ FightStatus fightGladiator(Gladiator& rPlayer, Gladiator& rOpponent)
 
 // __________ Weapon and Armour __________
 
-int getWeaponScaleLimit(WeaponType ttype, Attribute aattribute, Limit llimit)
+int getWeaponScaleLimit(Weapon::Type ttype, Attribute aattribute, Limit llimit)
 {
 	switch (ttype)
 	{
-	case WeaponType::AXE:
+	case Weapon::AXE:
 		switch (aattribute)
 		{
 		case Attribute::STRENGTH:
@@ -811,7 +811,7 @@ int getWeaponScaleLimit(WeaponType ttype, Attribute aattribute, Limit llimit)
 		}
 		break;
 
-	case WeaponType::DAGGER:
+	case Weapon::DAGGER:
 		switch (aattribute)
 		{
 		case Attribute::STRENGTH:
@@ -831,7 +831,7 @@ int getWeaponScaleLimit(WeaponType ttype, Attribute aattribute, Limit llimit)
 		}
 		break;
 
-	case WeaponType::MACE:
+	case Weapon::MACE:
 		switch (aattribute)
 		{
 		case Attribute::STRENGTH:
@@ -851,7 +851,7 @@ int getWeaponScaleLimit(WeaponType ttype, Attribute aattribute, Limit llimit)
 		}
 		break;
 
-	case WeaponType::SPEAR:
+	case Weapon::SPEAR:
 		switch (aattribute)
 		{
 		case Attribute::STRENGTH:
@@ -871,7 +871,7 @@ int getWeaponScaleLimit(WeaponType ttype, Attribute aattribute, Limit llimit)
 		}
 		break;
 
-	case WeaponType::SWORD:
+	case Weapon::SWORD:
 		switch (aattribute)
 		{
 		case Attribute::STRENGTH:
@@ -897,62 +897,62 @@ int getWeaponScaleLimit(WeaponType ttype, Attribute aattribute, Limit llimit)
 	return -1;
 }
 
-int getArmourScaleLimit(ArmourType ttype, ArmourStat sstat, Limit llimit)
+int getArmourScaleLimit(Armour::Type ttype, Armour::Stat sstat, Limit llimit)
 {
 	switch (ttype)
 	{
-	case ArmourType::LIGHT:
+	case Armour::LIGHT:
 		switch (sstat)
 		{
-		case ArmourStat::STR_ADDITION_PERC:
+		case Armour::STR_ADDITION_PERC:
 			switch (llimit)
 			{
 			case Limit::MIN: return 5;
 			case Limit::MAX: return 25;
 			}
 			break;
-		case ArmourStat::DEX_ADDITION_PERC:
+		case Armour::DEX_ADDITION_PERC:
 			switch (llimit)
 			{
 			case Limit::MIN: return 15;
 			case Limit::MAX: return 75;
 			}
 			break;
-		case ArmourStat::EVASION_PROB_ADDITION:
+		case Armour::EVASION_PROB_ADDITION:
 			switch (llimit)
 			{
 			case Limit::MIN: return 1;
 			case Limit::MAX: return 10;
 			}
 			break;
-		case ArmourStat::STUN_PROB_SUBSTRACTION:
+		case Armour::STUN_PROB_SUBSTRACTION:
 		switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
 		break;
 		}
 
 		break;
 
-	case ArmourType::HEAVY:
+	case Armour::HEAVY:
 		switch (sstat)
 		{
-		case ArmourStat::STR_ADDITION_PERC:
+		case Armour::STR_ADDITION_PERC:
 			switch (llimit)
 			{
 			case Limit::MIN: return 15;
 			case Limit::MAX: return 75;
 			}
 			break;
-		case ArmourStat::DEX_ADDITION_PERC:
+		case Armour::DEX_ADDITION_PERC:
 			switch (llimit)
 			{
 			case Limit::MIN: return 5;
 			case Limit::MAX: return 25;
 			}
 			break;
-		case ArmourStat::EVASION_PROB_ADDITION:
+		case Armour::EVASION_PROB_ADDITION:
 		switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
 		break;
-		case ArmourStat::STUN_PROB_SUBSTRACTION:
+		case Armour::STUN_PROB_SUBSTRACTION:
 			switch (llimit)
 			{
 			case Limit::MIN: return 1;
@@ -969,17 +969,17 @@ int getArmourScaleLimit(ArmourType ttype, ArmourStat sstat, Limit llimit)
 	return -1;
 }
 
-Weapon* createRandomGladiatorWeapon(WeaponType ttype)
+Weapon* createRandomGladiatorWeapon(Weapon::Type ttype)
 {
 	// A shield manually creates only
-	if (ttype != WeaponType::SHIELD)
+	if (ttype != Weapon::SHIELD)
 	{
 		int maxStrAdditionPerc = getWeaponScaleLimit(ttype, Attribute::STRENGTH, Limit::MAX),
 			maxDexAdditionPerc = getWeaponScaleLimit(ttype, Attribute::DEXTERITY, Limit::MAX);
 		return new Weapon(
 			MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DMG_ADDTN,
 			// `Weapon number - 1` is a shield
-			ttype != WeaponType::NUMBER ? ttype : WeaponType(rand() % WeaponType::NUMBER - 1),
+			ttype != Weapon::NUMBER ? ttype : Weapon::Type(rand() % Weapon::NUMBER - 1),
 			0, // Damage addition
 			maxStrAdditionPerc * 3 / 5 + (rand() % (maxStrAdditionPerc / 10 + 1)), // Strength damage addition
 			maxDexAdditionPerc * 3 / 5 + (rand() % (maxDexAdditionPerc / 10 + 1)), // Dexterity damage addition
@@ -991,7 +991,7 @@ Weapon* createRandomGladiatorWeapon(WeaponType ttype)
 	else
 		return new Weapon(
 			0, // Damage
-			WeaponType::SHIELD,
+			Weapon::SHIELD,
 			0, // Damage addition
 			0, // Strength percent addition
 			0, // Dexterity percent addition
@@ -1001,24 +1001,24 @@ Weapon* createRandomGladiatorWeapon(WeaponType ttype)
 		);
 }
 
-Armour* createRandomGladiatorArmour(ArmourType ttype)
+Armour* createRandomGladiatorArmour(Armour::Type ttype)
 {
 	// Determining the type
-	ArmourType type = ttype != ArmourType::NUMBER ? ttype : ArmourType(rand() % ArmourType::NUMBER);
+	Armour::Type type = ttype != Armour::NUMBER ? ttype : Armour::Type(rand() % Armour::NUMBER);
 
 	// Calculating the armour statistics based on its type
-	int maxStrDefAddition = getArmourScaleLimit(type, ArmourStat::STR_ADDITION_PERC, Limit::MAX),
-		maxDexDefAddition = getArmourScaleLimit(type, ArmourStat::DEX_ADDITION_PERC, Limit::MAX);
+	int maxStrDefAddition = getArmourScaleLimit(type, Armour::STR_ADDITION_PERC, Limit::MAX),
+		maxDexDefAddition = getArmourScaleLimit(type, Armour::DEX_ADDITION_PERC, Limit::MAX);
 	int evasionProbAddition, stunProbSubstraction;
 	switch (type)
 	{
-	case ArmourType::LIGHT:
-		evasionProbAddition = getArmourScaleLimit(type, ArmourStat::EVASION_PROB_ADDITION, Limit::MAX) * 2 / 5 + rand() % 3;
+	case Armour::LIGHT:
+		evasionProbAddition = getArmourScaleLimit(type, Armour::EVASION_PROB_ADDITION, Limit::MAX) * 2 / 5 + rand() % 3;
 		stunProbSubstraction = 0;
 		break;
-	case ArmourType::HEAVY:
+	case Armour::HEAVY:
 		evasionProbAddition = 0;
-		stunProbSubstraction = getArmourScaleLimit(type, ArmourStat::STUN_PROB_SUBSTRACTION, Limit::MAX) / 2;
+		stunProbSubstraction = getArmourScaleLimit(type, Armour::STUN_PROB_SUBSTRACTION, Limit::MAX) / 2;
 		break;
 	}
 
@@ -1042,15 +1042,15 @@ void displayWeapon(const Weapon& rWeapon)
 	string typeName;
 	switch (rWeapon.type)
 	{
-	case WeaponType::SWORD: typeName = "Sword";
+	case Weapon::SWORD: typeName = "Sword";
 		break;
-	case WeaponType::SPEAR: typeName = "Spear";
+	case Weapon::SPEAR: typeName = "Spear";
 		break;
-	case WeaponType::DAGGER: typeName = "Dagger";
+	case Weapon::DAGGER: typeName = "Dagger";
 		break;
-	case WeaponType::AXE: typeName = "Axe";
+	case Weapon::AXE: typeName = "Axe";
 		break;
-	case WeaponType::MACE: typeName = "Mace";
+	case Weapon::MACE: typeName = "Mace";
 		break;
 	default:
 		outputError("Unknown weapon type!\n");
@@ -1067,9 +1067,9 @@ void displayArmour(const Armour& rArmour)
 	string typeName;
 	switch (rArmour.type)
 	{
-	case ArmourType::LIGHT: typeName = "Light";
+	case Armour::LIGHT: typeName = "Light";
 		break;
-	case ArmourType::HEAVY: typeName = "Heavy";
+	case Armour::HEAVY: typeName = "Heavy";
 		break;
 	default:
 		outputError("Unknown armour type!\n");
