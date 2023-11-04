@@ -1065,7 +1065,7 @@ void displayWeapon(const Weapon& rWeapon)
 void displayArmour(const Armour& rArmour)
 {
 	string typeName;
-	switch (rArmour.type)
+	switch (rArmour.getType())
 	{
 	case Armour::LIGHT: typeName = "Light";
 		break;

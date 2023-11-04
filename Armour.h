@@ -13,16 +13,25 @@ public:
 		STUN_PROB_SUBSTRACTION
 	};
 
+	Armour();
+	Armour(int, Type, int, int, int, int, int);
+	Armour(const Armour&);
+	Armour& operator=(const Armour&);
+	~Armour();
+
+	void update(int, int);
+	int getTotalDefense() const;
+
+	int getDefense() const;
+	Type getType() const;
+	int getDefAddition() const;
+	int getEvasionProbAddition() const;
+	int getStunProbSubtraction() const;
+private:
 	int defense;
 
 	Type type;
 	int defAddition;
 	int strAdditionPerc, dexAdditionPerc;
 	int evasionProbAddition, stunProbSubtraction;
-
-	Armour();
-	Armour(int, Type, int, int, int, int, int);
-
-	void update(int, int);
-	int getTotalDefense() const;
 };

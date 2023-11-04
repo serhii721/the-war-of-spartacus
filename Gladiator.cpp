@@ -88,7 +88,7 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 	// Is the attack evaded?
 	if (
 		rand() % 100 < rOpponent.dexterity * 3 / 10 +
-		rOpponent.isArmourEquipped() ? rOpponent.armour->evasionProbAddition : 0
+		rOpponent.isArmourEquipped() ? rOpponent.armour->getEvasionProbAddition() : 0
 		)
 	{
 		// Does the opponent counterattack?
@@ -195,7 +195,7 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 	// Is the stun attack?
 	if (
 		rand() % 100 < strength * 15 / 100 -
-		(rOpponent.isArmourEquipped() ? rOpponent.armour->stunProbSubtraction : 0)
+		(rOpponent.isArmourEquipped() ? rOpponent.armour->getStunProbSubtraction() : 0)
 		)
 		rResult = AttackResult::STUNNED;
 

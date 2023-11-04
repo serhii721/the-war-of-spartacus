@@ -29,12 +29,41 @@ Armour::Armour(
 	stunProbSubtraction(sstunProbSubstraction)
 { }
 
+Armour::Armour(const Armour& A) :
+	defense(A.defense),
+	defAddition(A.defAddition),
+	strAdditionPerc(A.strAdditionPerc),
+	dexAdditionPerc(A.dexAdditionPerc),
+	evasionProbAddition(A.evasionProbAddition),
+	stunProbSubtraction(A.stunProbSubtraction)
+{ }
+
+Armour& Armour::operator=(const Armour& A)
+{
+	defense = A.defense;
+	defAddition = A.defAddition;
+	strAdditionPerc = A.strAdditionPerc;
+	dexAdditionPerc = A.dexAdditionPerc;
+	evasionProbAddition = A.evasionProbAddition;
+	stunProbSubtraction = A.stunProbSubtraction;
+	return *this;
+}
+
+Armour::~Armour() { }
+
 void Armour::update(int sstrength, int ddexterity)
 {
 	defAddition = ddexterity * dexAdditionPerc / 100 + sstrength * strAdditionPerc / 100;
 }
 
-int Armour::getTotalDefense() const
-{
-	return defense + defAddition;
-}
+int Armour::getTotalDefense() const { return defense + defAddition; }
+
+int Armour::getDefense() const { return defense; }
+
+Armour::Type Armour::getType() const { return type; }
+
+int Armour::getDefAddition() const { return defAddition; }
+
+int Armour::getEvasionProbAddition() const { return evasionProbAddition; }
+
+int Armour::getStunProbSubtraction() const { return stunProbSubtraction; }
