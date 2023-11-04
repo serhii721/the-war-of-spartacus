@@ -3,9 +3,20 @@
 class Weapon
 {
 public:
+	enum Type
+	{
+		SWORD,
+		SPEAR,
+		DAGGER,
+		AXE,
+		MACE,
+		SHIELD,
+		NUMBER
+	};
+
 	int damage;
 
-	WeaponType type;
+	Type type;
 	int damageAddition;
 	int strAdditionPerc, dexAdditionPerc;
 
@@ -14,10 +25,10 @@ public:
 	string name;
 
 	Weapon();
-	Weapon(int, WeaponType, int, int, int, int, int, const string&);
+	Weapon(int, Type, int, int, int, int, int, const string&);
 
 	void update(int, int);
 	int getTotalDamage();
 
-	bool isCompatibleWith(WeaponType);
+	bool isCompatibleWith(Type);
 };

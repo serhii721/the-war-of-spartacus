@@ -19,24 +19,6 @@ enum FightStatus
 	PLAYER_LOST
 };
 
-enum ArmourType
-{
-	LIGHT,
-	HEAVY,
-	NUMBER
-};
-
-enum WeaponType
-{
-	SWORD,
-	SPEAR,
-	DAGGER,
-	AXE,
-	MACE,
-	SHIELD,
-	NUMBER
-};
-
 enum Attribute
 {
 	STRENGTH,
@@ -47,17 +29,4 @@ enum Attribute
 	CHARISMA
 };
 
-enum Limit
-{
-	MIN,
-	MAX
-};
-
-enum ArmourStat
-{
-	DEFENSE,
-	STR_ADDITION_PERC,
-	DEX_ADDITION_PERC,
-	EVASION_PROB_ADDITION,
-	STUN_PROB_SUBSTRACTION
-};
+enum Limit { MIN, MAX };

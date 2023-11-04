@@ -79,9 +79,9 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 	 * 0 -- no shield, 1 -- a left hand, 2 -- a right hand.
 	 */
 	int whereShield = 0;
-	if (rOpponent.isLeftHandOccupied() && rOpponent.leftHand->type == WeaponType::SHIELD)
+	if (rOpponent.isLeftHandOccupied() && rOpponent.leftHand->type == Weapon::SHIELD)
 		whereShield = 1;
-	else if (rOpponent.isRightHandOccupied() && rOpponent.rightHand->type == WeaponType::SHIELD)
+	else if (rOpponent.isRightHandOccupied() && rOpponent.rightHand->type == Weapon::SHIELD)
 		whereShield = 2;
 
 	// TODO dodged => evaded
@@ -148,9 +148,9 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 
 	// Determining the weapon damage
 	int weaponDamage = 0;
-	if (isLeftHandOccupied() && leftHand->type != WeaponType::SHIELD)
+	if (isLeftHandOccupied() && leftHand->type != Weapon::SHIELD)
 		weaponDamage += leftHand->getTotalDamage();
-	if (isRightHandOccupied() && rightHand->type != WeaponType::SHIELD)
+	if (isRightHandOccupied() && rightHand->type != Weapon::SHIELD)
 		weaponDamage += rightHand->getTotalDamage();
 
 	/*
