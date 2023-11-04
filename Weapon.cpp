@@ -32,17 +32,42 @@ Weapon::Weapon(
 	name(nname)
 { }
 
+Weapon::Weapon(const Weapon& W) :
+	damage(W.damage),
+	type(W.type),
+	damageAddition(W.damageAddition),
+	strAdditionPerc(W.strAdditionPerc),
+	dexAdditionPerc(W.dexAdditionPerc),
+	shieldProbAddition(W.shieldProbAddition),
+	shieldDefPercentAddition(W.shieldDefPercentAddition),
+	name(W.name)
+{ }
+
+Weapon& Weapon::operator=(const Weapon& W)
+{
+	damage = W.damage;
+	type = W.type;
+	damageAddition = W.damageAddition;
+	strAdditionPerc = W.strAdditionPerc;
+	dexAdditionPerc = W.dexAdditionPerc;
+	shieldProbAddition = W.shieldProbAddition;
+	shieldDefPercentAddition = W.shieldDefPercentAddition;
+	name = W.name;
+	return *this;
+}
+
+Weapon::~Weapon() { }
+
 void Weapon::update(int sstrength, int ddexterity)
 {
 	damageAddition = sstrength * strAdditionPerc / 100 + ddexterity * dexAdditionPerc / 100;
 }
 
-int Weapon::getTotalDamage()
-{
-	return damage + damageAddition;
-}
+void Weapon::setName(const string& newName) { name = newName; }
 
-bool Weapon::isCompatibleWith(Type ttype)
+int Weapon::getTotalDamage() const { return damage + damageAddition; }
+
+bool Weapon::isCompatibleWith(Type ttype) const
 {
 	switch (type)
 	{
@@ -72,3 +97,15 @@ bool Weapon::isCompatibleWith(Type ttype)
 	}
 	return true;
 }
+
+int Weapon::getDamage() const { return damage; }
+
+Weapon::Type Weapon::getType() const { return type; }
+
+int Weapon::getDamageAddition() const { return damageAddition; }
+
+int Weapon::getShieldProbAddition() const { return shieldProbAddition; }
+
+int Weapon::getShieldDefPercentAddition() const { return shieldDefPercentAddition; }
+
+const string& Weapon::getName() const { return name; }
