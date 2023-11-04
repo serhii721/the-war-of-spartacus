@@ -8,5 +8,7 @@ public:
 
 	Localization();
 
+	const string& operator[](int) const;
+
 	void setLanguage(Language = ENGLISH);
 };

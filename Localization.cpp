@@ -3,6 +3,8 @@
 
 Localization::Localization() : language(Language::ENGLISH), messages() { }
 
+const string& Localization::operator[](int i) const { return messages[i]; }
+
 void Localization::setLanguage(Language llanguage)
 {
 	// Determinating the language file
