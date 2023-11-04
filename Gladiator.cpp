@@ -51,7 +51,7 @@ Gladiator::Gladiator(
 	rightHand(pRightHand),
 	armour(pArmour)
 {
-	if (leftHand->isCompatibleWith(pRightHand->type))
+	if (leftHand->isCompatibleWith(pRightHand->getType()))
 		leftHand = pLeftHand;
 	else if (pLeftHand)
 		delete pLeftHand;
@@ -64,7 +64,7 @@ bool Gladiator::equipWeapon(Weapon* pWeapon)
 		rightHand = pWeapon;
 		return true;
 	}
-	if (!isLeftHandOccupied() && rightHand->isCompatibleWith(pWeapon->type))
+	if (!isLeftHandOccupied() && rightHand->isCompatibleWith(pWeapon->getType()))
 	{
 		leftHand = pWeapon;
 		return true;
@@ -79,9 +79,9 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 	 * 0 -- no shield, 1 -- a left hand, 2 -- a right hand.
 	 */
 	int whereShield = 0;
-	if (rOpponent.isLeftHandOccupied() && rOpponent.leftHand->type == Weapon::SHIELD)
+	if (rOpponent.isLeftHandOccupied() && rOpponent.leftHand->getType() == Weapon::SHIELD)
 		whereShield = 1;
-	else if (rOpponent.isRightHandOccupied() && rOpponent.rightHand->type == Weapon::SHIELD)
+	else if (rOpponent.isRightHandOccupied() && rOpponent.rightHand->getType() == Weapon::SHIELD)
 		whereShield = 2;
 
 	// TODO dodged => evaded
@@ -137,20 +137,20 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 	case 0: // No shield
 		break;
 	case 1: // Left hand
-		blockProbAddition = rOpponent.leftHand->shieldProbAddition;
-		blockDefPercentAddition = rOpponent.leftHand->shieldDefPercentAddition;
+		blockProbAddition = rOpponent.leftHand->getShieldProbAddition();
+		blockDefPercentAddition = rOpponent.leftHand->getShieldDefPercentAddition();
 		break;
 	case 2: // Right hand
-		blockProbAddition = rOpponent.rightHand->shieldProbAddition;
-		blockDefPercentAddition = rOpponent.rightHand->shieldDefPercentAddition;
+		blockProbAddition = rOpponent.rightHand->getShieldProbAddition();
+		blockDefPercentAddition = rOpponent.rightHand->getShieldDefPercentAddition();
 		break;
 	}
 
 	// Determining the weapon damage
 	int weaponDamage = 0;
-	if (isLeftHandOccupied() && leftHand->type != Weapon::SHIELD)
+	if (isLeftHandOccupied() && leftHand->getType() != Weapon::SHIELD)
 		weaponDamage += leftHand->getTotalDamage();
-	if (isRightHandOccupied() && rightHand->type != Weapon::SHIELD)
+	if (isRightHandOccupied() && rightHand->getType() != Weapon::SHIELD)
 		weaponDamage += rightHand->getTotalDamage();
 
 	/*
