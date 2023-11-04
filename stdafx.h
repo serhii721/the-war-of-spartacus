@@ -19,9 +19,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <exception>
 using namespace std;
 
-#include <direct.h> // Library for creating folders (save games, etc.)
 #include <windows.h>
 #include <stdio.h>
 

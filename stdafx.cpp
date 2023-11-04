@@ -1084,20 +1084,14 @@ void displayArmour(const Armour& rArmour)
 bool saveGame(Gladiator& player, Gladiator* bots)
 {
 	const string DIR_NAME = "Saves/", FILE_PLAYER = "Player", FILE_OPPONENTS = "Opponents", FORMAT = ".save";
-	ofstream fout;
 
 	// Creating the folder of saved games if it doesn't exist
-	if (_mkdir(DIR_NAME.c_str()) == 0)
-	{
-		// Directories for save files with data
-		fout.open(DIR_NAME + FILE_PLAYER + FORMAT);
-		fout.close();
-		fout.open(DIR_NAME + FILE_OPPONENTS + FORMAT);
-		fout.close();
-	}
+	BOOL success = CreateDirectory(DIR_NAME.c_str(), NULL);
+	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+		return false;
 
 	// Open file for saving player's character and empty it
-	fout.open(DIR_NAME + FILE_PLAYER + FORMAT, ios::binary);
+	ofstream fout(DIR_NAME + FILE_PLAYER + FORMAT, ios::binary);
 	// Check if file is open
 	if (fout)
 	{
