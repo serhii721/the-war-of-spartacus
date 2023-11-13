@@ -21,29 +21,10 @@ Player::Player(const Player& P) : Fighter(P), Leveling(P), name(P.name) { }
 
 Player& Player::operator=(const Player& P)
 {
-	strength = P.strength;
-	constitution = P.constitution;
-	dexterity = P.dexterity;
-	intelligence = P.intelligence;
-	wisdom = P.wisdom;
-	charisma = P.charisma;
-	age = P.age;
-	fame = P.fame;
+	if (this == &P) return *this;
 
-	hp = P.hp;
-	fullHP = P.fullHP;
-
-	if (rightHand)
-		delete rightHand;
-	rightHand = new Weapon(P.getRightHand());
-	if (leftHand)
-		delete leftHand;
-	leftHand = new Weapon(P.getLeftHand());
-	if (armour)
-		delete armour;
-	armour = new Armour(P.getArmour());
-
-	level = P.level;
+	Fighter::operator=(P);
+	Leveling::operator=(P);
 
 	name = P.name;
 
