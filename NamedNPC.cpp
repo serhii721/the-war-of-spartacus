@@ -3,22 +3,26 @@
 
 NamedNPC::NamedNPC() : firstNameIndex(0), lastNameIndex(0) { }
 
-NamedNPC::NamedNPC(int first, int last) : firstNameIndex(first), lastNameIndex(last) { }
-
-NamedNPC::NamedNPC(const NamedNPC& N) :
-	firstNameIndex(N.firstNameIndex),
-	lastNameIndex(N.lastNameIndex)
+NamedNPC::NamedNPC(int fNameIndex, int lNameIndex) :
+	firstNameIndex(fNameIndex),
+	lastNameIndex(lNameIndex)
 { }
 
-NamedNPC& NamedNPC::operator=(const NamedNPC& N)
+NamedNPC::NamedNPC(const NamedNPC& C) :
+	firstNameIndex(C.firstNameIndex),
+	lastNameIndex(C.lastNameIndex)
+{ }
+
+NamedNPC& NamedNPC::operator=(const NamedNPC& C)
 {
-	firstNameIndex = N.firstNameIndex;
-	lastNameIndex = N.lastNameIndex;
+	if (this == &C) return *this;
+	firstNameIndex = C.firstNameIndex;
+	lastNameIndex = C.lastNameIndex;
 	return *this;
 }
 
 NamedNPC::~NamedNPC() { }
 
-void NamedNPC::rename(int first, int last)
+void NamedNPC::rename(int fNameIndex, int lNameIndex)
 {
 }

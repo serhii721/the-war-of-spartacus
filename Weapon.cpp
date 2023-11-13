@@ -45,6 +45,7 @@ Weapon::Weapon(const Weapon& W) :
 
 Weapon& Weapon::operator=(const Weapon& W)
 {
+	if (this == &W) return *this;
 	damage = W.damage;
 	type = W.type;
 	damageAddition = W.damageAddition;

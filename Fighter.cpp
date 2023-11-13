@@ -56,14 +56,9 @@ Fighter::Fighter(const Fighter& F) :
 
 Fighter& Fighter::operator=(const Fighter& F)
 {
-	strength = F.strength;
-	constitution = F.constitution;
-	dexterity = F.dexterity;
-	intelligence = F.intelligence;
-	wisdom = F.wisdom;
-	charisma = F.charisma;
-	age = F.age;
-	fame = F.fame;
+	if (this == &F) return *this;
+
+	Statistics::operator=(F);
 
 	hp = F.hp;
 	fullHP = F.fullHP;
