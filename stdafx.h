@@ -25,12 +25,18 @@ using namespace std;
 #include <windows.h>
 #include <stdio.h>
 
-#include "Enums.h"
 #include "LocalizationEnums.h"
 #include "Localization.h"
+#include "Enums.h"
+#include "Statistics.h"
 #include "Weapon.h"
 #include "Armour.h"
-#include "Gladiator.h"
+#include "Fighter.h"
+#include "Leveling.h"
+#include "Player.h"
+#include "NamedNPC.h"
+#include "HarmlessNPC.h"
+#include "NPC.h"
 #include "Converter.h"
 #include "Constants.h"
 
@@ -38,36 +44,36 @@ const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 extern Localization localization;
 
 string toStringPrecision(double, int = 2);
-void output(const string&, int = 15);
-void outputError(const string&, int = 4);
+//void output(const string&, int = 15);
+//void outputError(const string&, int = 4);
 
-Gladiator* createRandomGladiator();
-void displayGladiator(const Gladiator&);
-void displayMob(const Gladiator&);
-void displayMobBatch(const Gladiator*, int);
-void createGladiator(Gladiator&);
+NPC* generateNPC();
+//void displayPlayer(const Player&);
+//void displayNPC(const NPC&);
+//void displayNPCBatch(const NPC*, int);
+Player* createPlayer();
 
-FightStatus checkFightStatus(const Gladiator&, const Gladiator&);
+FightStatus checkFightStatus(const Player&, const NPC&);
 void outputFightResult(FightStatus, int, int);
 void outputOpponentAttackResult(AttackResult, int);
-FightStatus fightGladiator(Gladiator&, Gladiator&);
+FightStatus fight(Player&, NPC&);
 
 int getWeaponScaleLimit(Weapon::Type, Attribute, Limit);
 int getArmourScaleLimit(Armour::Type, Armour::Stat, Limit);
-Weapon* createRandomGladiatorWeapon(Weapon::Type = Weapon::NUMBER);
-Armour* createRandomGladiatorArmour(Armour::Type = Armour::NUMBER);
+Weapon* generateWeapon(Weapon::Type = Weapon::NUMBER);
+Armour* generateArmour(Armour::Type = Armour::NUMBER);
 void displayWeapon(const Weapon&);
 void displayArmour(const Armour&);
 
-bool saveGame(Gladiator&, Gladiator*);
-bool loadGame(Gladiator&, Gladiator*);
-bool loadPlayer(Gladiator&);
-bool loadBots(Gladiator*);
+bool saveGame(Player&, NPC*);
+bool loadPlayer(Player&);
+bool loadNPCs(NPC*);
+bool loadGame(Player&, NPC*);
 
-void skipDay(Gladiator&, Gladiator*, int);
+void skipDay(Player&, NPC*, int);
 
-bool outputStartMenu(Gladiator&, Gladiator*);
-void outputGameMenu(Gladiator&, Gladiator*);
+bool outputStartMenu(Player&, NPC*);
+void outputGameMenu(Player&, NPC*);
 
 LRESULT CALLBACK WFunc(HWND, UINT, WPARAM, LPARAM);
 

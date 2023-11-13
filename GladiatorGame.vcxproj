@@ -148,19 +148,33 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="Enums.h" />
-    <ClInclude Include="Gladiator.h" />
+    <ClInclude Include="Fighter.h" />
     <ClInclude Include="GladiatorGame.h" />
+    <ClInclude Include="HarmlessNPC.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="Leveling.h" />
     <ClInclude Include="Localization.h" />
     <ClInclude Include="LocalizationEnums.h" />
+    <ClInclude Include="NamedNPC.h" />
+    <ClInclude Include="NPC.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Statistics.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Armour.cpp" />
     <ClCompile Include="Converter.cpp" />
-    <ClCompile Include="Gladiator.cpp" />
+    <ClCompile Include="Fighter.cpp" />
     <ClCompile Include="GladiatorGame.cpp" />
+    <ClCompile Include="HarmlessNPC.cpp" />
+    <ClCompile Include="Item.cpp" />
+    <ClCompile Include="Leveling.cpp" />
     <ClCompile Include="Localization.cpp" />
+    <ClCompile Include="NamedNPC.cpp" />
+    <ClCompile Include="NPC.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Statistics.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -17,7 +17,7 @@ public:
 	Armour(int, Type, int, int, int, int, int);
 	Armour(const Armour&);
 	Armour& operator=(const Armour&);
-	~Armour();
+	virtual ~Armour();
 
 	void update(int, int);
 	int getTotalDefense() const;
