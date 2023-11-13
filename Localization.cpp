@@ -1,15 +1,30 @@
 #include "stdafx.h"
 #include "Localization.h"
 
-Localization::Localization() : language(Language::ENGLISH), messages() { }
+Localization::Localization() :
+	language(Language::ENGLISH),
+	messages(),
+	npcFirstNames(),
+	npcLastNames(),
+	gladiatorNicknames()
+{ }
 
-Localization::Localization(const Localization& L) : language(L.language), messages(L.messages) { }
+Localization::Localization(const Localization& L) :
+	language(L.language),
+	messages(L.messages),
+	npcFirstNames(L.npcFirstNames),
+	npcLastNames(L.npcLastNames),
+	gladiatorNicknames(L.gladiatorNicknames)
+{ }
 
 Localization& Localization::operator=(const Localization& L)
 {
 	if (this == &L) return *this;
 	language = L.language;
 	messages = L.messages;
+	npcFirstNames = L.npcFirstNames;
+	npcLastNames = L.npcLastNames;
+	gladiatorNicknames = L.gladiatorNicknames;
 	return *this;
 }
 
@@ -20,31 +35,36 @@ const string& Localization::operator[](int i) const { return messages[i]; }
 void Localization::setLanguage(Language llanguage)
 {
 	// Determinating the language file
-	string fileName = "";
+	string fileName = "", langPrefix = "";
 	switch (llanguage)
 	{
 	default: case Language::ENGLISH:
 		fileName = "English";
+		langPrefix = "En_";
 		break;
 	case Language::UKRAINIAN:
 		fileName = "Ukrainian";
+		langPrefix = "Uk_";
 		break;
 	case Language::RUSSIAN:
 		fileName = "Russian";
+		langPrefix = "Ru_";
 		break;
 	case Language::LATIN:
 		fileName = "Latin";
+		langPrefix = "En_";
 		break;
 	}
 	// Opening files
-	const string PATH = "Data/Language/", FORMAT = ".lang";
-	ifstream fin(PATH + fileName + FORMAT);
-	ifstream finEng(PATH + "English" + FORMAT);
+	string path = "Data/Language/";
+	const string FORMAT = ".lang";
+	ifstream fin(path + fileName + FORMAT);
+	ifstream finEng(path + "English" + FORMAT);
 
 	// Reading the file and filling the localization array
 	string line;
-	int lineIndex;
-	for (int i = 0; i < Localized::MESSAGE_NUMBER; i++)
+	int lineIndex, i = 0;
+	for (; i < Localized::MESSAGE_NUMBER; i++)
 	{
 		getline(fin, line);
 		if (!line.empty())
@@ -65,6 +85,30 @@ void Localization::setLanguage(Language llanguage)
 			}
 		}
 	}
+
+	fin.close();
+	finEng.close();
+
+	// Reading the file of NPCs` first names
+	path += "Names/";
+	fileName = "FirstNames";
+	fin.open(path + langPrefix + fileName + FORMAT);
+	finEng.open(path + "En_" + fileName + FORMAT);
+
+	// TODO: complete it
+	while (getline(fin, line))
+		npcFirstNames.push_back(line);
+
+	fin.close();
+	finEng.close();
+
+	// Reading the file of NPCs` last names
+	fileName = "LastNames";
+	fin.open(path + langPrefix + fileName + FORMAT);
+	finEng.open(path + "En_" + fileName + FORMAT);
+
+	while (getline(fin, line))
+		npcLastNames.push_back(line);
 
 	fin.close();
 	finEng.close();

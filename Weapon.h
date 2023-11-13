@@ -13,12 +13,13 @@ public:
 		SHIELD,
 		NUMBER
 	};
+	// TODO: move Attribute and Limit over here?
 
 	Weapon();
 	Weapon(int, Type, int, int, int, int, int, const string&);
 	Weapon(const Weapon&);
 	Weapon& operator=(const Weapon&);
-	~Weapon();
+	virtual ~Weapon();
 
 	void update(int, int);
 	void setName(const string&);

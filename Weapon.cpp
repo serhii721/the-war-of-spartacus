@@ -92,7 +92,7 @@ bool Weapon::isCompatibleWith(Type ttype) const
 			return false;
 		break;
 	default:
-		outputError("Unknown weapon type!\n");
+		//outputError("Unknown weapon type!\n");
 		break;
 	}
 	return true;

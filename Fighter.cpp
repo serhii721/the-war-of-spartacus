@@ -1,78 +1,115 @@
 #include "stdafx.h"
-#include "Gladiator.h"
+#include "Fighter.h"
 
-Gladiator::Gladiator() :
-	name(""),
-	age(MIN_AGE),
-	health(BASIC_HEALTH),
-	fullHealth(BASIC_HEALTH),
-	fame(BASIC_FAME),
-	fatigue(BASIC_FATIGUE),
-	strength(MIN_STRENGTH),
-	constitution(MIN_CONSTITUTION),
-	dexterity(MIN_DEXTERITY),
-	intelligence(MIN_INTELLIGENCE),
-	wisdom(MIN_WISDOM),
-	charisma(MIN_CHARISMA),
+int Fighter::getDefense() const
+{
+	return isArmourEquipped() ? armour->getTotalDefense() : 0;
+}
+
+Fighter::Fighter() :
+	Statistics(),
+	hp(BASIC_HP),
+	fullHP(BASIC_HP),
 	rightHand(nullptr),
 	leftHand(nullptr),
 	armour(nullptr)
 { }
 
-Gladiator::Gladiator(
-	string nname,
-	unsigned aage,
-	int hhealth,
-	int ffullHealth,
-	int ffame,
-	int ffatigue,
-	int sstrength,
-	int cconstitution,
-	int ddexterity,
-	int iintelligence,
-	int wwisdom,
-	int ccharisma,
-	Weapon* pRightHand,
-	Weapon* pLeftHand,
-	Armour* pArmour
+Fighter::Fighter(
+	const Statistics& rStats,
+	int hhp,
+	int ffullHP,
+	const Weapon* pRightHand,
+	const Weapon* pLeftHand,
+	const Armour* pArmour
 ) :
-	name(nname),
-	age(aage),
-	health(hhealth),
-	fullHealth(ffullHealth),
-	fame(ffame),
-	fatigue(ffatigue),
-	strength(sstrength),
-	constitution(cconstitution),
-	dexterity(ddexterity),
-	intelligence(iintelligence),
-	wisdom(wwisdom),
-	charisma(ccharisma),
-	rightHand(pRightHand),
-	armour(pArmour)
-{
-	if (leftHand->isCompatibleWith(pRightHand->getType()))
-		leftHand = pLeftHand;
-	else if (pLeftHand)
-		delete pLeftHand;
+	Statistics(rStats),
+	hp(hhp),
+	fullHP(ffullHP)
+{		
+	if (pRightHand && pRightHand != nullptr)
+		rightHand = new Weapon(*pRightHand);
+	else
+		rightHand = nullptr;
+
+	if (pLeftHand && pLeftHand != nullptr)
+		leftHand = new Weapon(*pLeftHand);
+	else
+		leftHand = nullptr;
+
+	if (pArmour && pArmour != nullptr)
+		armour = new Armour(*pArmour);
+	else
+		armour = nullptr;
+
+	// TODO: think about processing exceptions
 }
 
-bool Gladiator::equipWeapon(Weapon* pWeapon)
+Fighter::Fighter(const Fighter& F) :
+	Statistics(F),
+	hp(F.hp),
+	fullHP(F.fullHP),
+	rightHand(new Weapon(F.getRightHand())),
+	leftHand(new Weapon(F.getLeftHand())),
+	armour(new Armour(F.getArmour()))
+{ }
+
+Fighter& Fighter::operator=(const Fighter& F)
+{
+	strength = F.strength;
+	constitution = F.constitution;
+	dexterity = F.dexterity;
+	intelligence = F.intelligence;
+	wisdom = F.wisdom;
+	charisma = F.charisma;
+	age = F.age;
+	fame = F.fame;
+
+	hp = F.hp;
+	fullHP = F.fullHP;
+
+	if (rightHand)
+		delete rightHand;
+	rightHand = new Weapon(F.getRightHand());
+	if (leftHand)
+		delete leftHand;
+	leftHand = new Weapon(F.getLeftHand());
+	if (armour)
+		delete armour;
+	armour = new Armour(F.getArmour());
+
+	return *this;
+}
+
+Fighter::~Fighter()
+{
+	if (rightHand)
+		delete rightHand;
+	if (leftHand)
+		delete leftHand;
+	if (armour)
+		delete armour;
+}
+
+void Fighter::setHP(int hhp) { hp = hhp; }
+
+bool Fighter::equipWeapon(const Weapon& rWeapon)
 {
 	if (!isRightHandOccupied())
 	{
-		rightHand = pWeapon;
+		rightHand = new Weapon(rWeapon);
 		return true;
 	}
-	if (!isLeftHandOccupied() && rightHand->isCompatibleWith(pWeapon->getType()))
+	if (!isLeftHandOccupied() && rightHand->isCompatibleWith(rWeapon.getType()))
 	{
-		leftHand = pWeapon;
+		leftHand = new Weapon(rWeapon);
 		return true;
 	}
 	return false;
+	// TODO: process using the inventory; move a shield to the left hand
 }
 
-void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage)
+void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 {
 	/*
 	 * Determining whether the opponent has a shield:
@@ -84,7 +121,7 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 	else if (rOpponent.isRightHandOccupied() && rOpponent.rightHand->getType() == Weapon::SHIELD)
 		whereShield = 2;
 
-	// TODO dodged => evaded
+	// TODO: dodged => evaded
 	// Is the attack evaded?
 	if (
 		rand() % 100 < rOpponent.dexterity * 3 / 10 +
@@ -118,10 +155,10 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 
 			// (Opponent damage - Player defense) is reduced to prolong a fight
 			rDamage = (opponentWeaponDamage + rOpponent.strength + rOpponent.dexterity - getDefense()) *
-				(1000 - PERCENT_DAMAGE_REDUCTION) / 1000;
+				(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
 
 			// Attack
-			health -= rDamage;
+			hp -= rDamage;
 			return;
 		}
 
@@ -165,10 +202,10 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 		// (Damage - Defense) is reduced by the block defense and by the percent to prolong fight
 		rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
 			(100 - rOpponent.constitution * 3 / 10 + blockDefPercentAddition) / 100 *
-			(1000 - PERCENT_DAMAGE_REDUCTION) / 1000;
+			(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
 
 		// Attack
-		rOpponent.health -= rDamage;
+		rOpponent.hp -= rDamage;
 		return;
 	}
 
@@ -182,10 +219,10 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 		 */
 		rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
 			(130 + dexterity * 4 / 10) / 100 *
-			(1000 - PERCENT_DAMAGE_REDUCTION) / 1000;
+			(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
 
 		// Attack
-		rOpponent.health -= rDamage;
+		rOpponent.hp -= rDamage;
 		return;
 	}
 
@@ -201,43 +238,26 @@ void Gladiator::attack(Gladiator& rOpponent, AttackResult& rResult, int& rDamage
 
 	// (Player damage - Opponent defense) is reduced to prolong a fight
 	rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
-		(1000 - PERCENT_DAMAGE_REDUCTION) / 1000;
+		(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
 
 	// Attack
-	rOpponent.health -= rDamage;
+	rOpponent.hp -= rDamage;
 }
 
-bool Gladiator::isAlive() const
-{
-	return health > 0;
-}
+bool Fighter::isAlive() const { return hp > 0; }
 
-bool Gladiator::isRightHandOccupied() const
-{
-	return rightHand ? true : false;
-}
+bool Fighter::isRightHandOccupied() const { return rightHand != nullptr; }
 
-bool Gladiator::isLeftHandOccupied() const
-{
-	return leftHand ? true : false;
-}
+bool Fighter::isLeftHandOccupied() const { return leftHand != nullptr; }
 
-bool Gladiator::isArmourEquipped() const
-{
-	return armour ? true : false;
-}
+bool Fighter::isArmourEquipped() const { return armour != nullptr; }
 
-int Gladiator::getDefense() const
-{
-	return isArmourEquipped() ? armour->getTotalDefense() : 0;
-}
+int Fighter::getHP() const { return hp; }
 
-Gladiator::~Gladiator()
-{
-	if (rightHand)
-		delete rightHand;
-	if (leftHand)
-		delete leftHand;
-	if (armour)
-		delete armour;
-}
+int Fighter::getFullHP() const { return fullHP; }
+
+const Weapon& Fighter::getRightHand() const { return *rightHand; }
+
+const Weapon& Fighter::getLeftHand() const { return *leftHand; }
+
+const Armour& Fighter::getArmour() const { return *armour; }
