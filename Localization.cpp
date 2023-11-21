@@ -62,7 +62,7 @@ void Localization::setLanguage(Language llanguage)
 	ifstream finEng(path + "English" + FORMAT);
 
 	// Reading the file and filling the localization array
-	string line;
+	string line, lineEng;
 	int lineIndex, i = 0;
 	for (; i < Localized::MESSAGE_NUMBER; i++)
 	{
@@ -95,9 +95,14 @@ void Localization::setLanguage(Language llanguage)
 	fin.open(path + langPrefix + fileName + FORMAT);
 	finEng.open(path + "En_" + fileName + FORMAT);
 
-	// TODO: complete it
 	while (getline(fin, line))
-		npcFirstNames.push_back(line);
+	{
+		getline(finEng, lineEng);
+		if (line != "")
+			npcFirstNames.push_back(line);
+		else
+			npcFirstNames.push_back(lineEng);
+	}
 
 	fin.close();
 	finEng.close();
@@ -108,7 +113,13 @@ void Localization::setLanguage(Language llanguage)
 	finEng.open(path + "En_" + fileName + FORMAT);
 
 	while (getline(fin, line))
-		npcLastNames.push_back(line);
+	{
+		getline(finEng, lineEng);
+		if (line != "")
+			npcLastNames.push_back(line);
+		else
+			npcLastNames.push_back(lineEng);
+	}
 
 	fin.close();
 	finEng.close();
