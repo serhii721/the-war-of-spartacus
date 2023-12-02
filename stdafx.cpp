@@ -17,11 +17,11 @@ Localization localization;
 // TODO: think about move to Converter
 string toStringPrecision(double n, int precision)
 {
-	string str = to_string(n);
+	string s = to_string(n);
 	if (precision > 0)
-		return str.substr(0, str.find(".") + 1 + precision);
+		return s.substr(0, s.find(".") + 1 + precision);
 	else if (precision == 0)
-		return str.substr(0, str.find("."));
+		return s.substr(0, s.find("."));
 	return "";
 }
 
@@ -1480,11 +1480,18 @@ void outputGameMenu(Player& rPlayer, NPC* npcs)
 
 LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static MenuManager menuManager;
+	HDC hdc;
+	PAINTSTRUCT ps;
+	static int sx, sy;
+
 	switch (message)
 	{
 	case WM_CREATE:
 		// Setting the random seed
 		srand((unsigned)time(0));
+
+		menuManager.setMenu(new MainMenu(hwnd));
 
 		//// Loading the user prefered language
 		//ifstream fin("Data/Settings.conf");
@@ -1502,6 +1509,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//	case 2: localization.setLanguage(Language::RUSSIAN);
 		//		break;
 		//	case 3: localization.setLanguage(Language::LATIN);
+		//		break;
 		//	}
 		//}
 		//else // If used didn't change language before it will be set to English
@@ -1530,6 +1538,23 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//	delete player;
 		//if (npcs)
 		//	delete[] npcs;
+		break;
+
+	case WM_COMMAND:
+		menuManager.handleInput(hwnd, message, wParam, lParam);
+		break;
+
+	case WM_SIZE:
+		sx = LOWORD(lParam);
+		sy = HIWORD(lParam);
+
+		menuManager.resizeMenu(sx / 2, sy / 2);
+		break;
+
+	case WM_PAINT:
+		//hdc = BeginPaint(hwnd, &ps);
+		//menuManager.drawMenu(hdc, sx / 2, sy / 2);
+		//EndPaint(hwnd, &ps);
 		break;
 
 	case WM_DESTROY:

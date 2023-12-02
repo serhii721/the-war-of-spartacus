@@ -22,11 +22,13 @@
 #include <exception>
 using namespace std;
 
-#include <windows.h>
-#include <stdio.h>
+#include <Windows.h>
 
 #include "LocalizationEnums.h"
 #include "Localization.h"
+#include "IMenu.h"
+#include "MainMenu.h"
+#include "MenuManager.h"
 #include "Enums.h"
 #include "Statistics.h"
 #include "Weapon.h"
