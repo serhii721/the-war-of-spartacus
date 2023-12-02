@@ -31,8 +31,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdS
 
 	// 3. Создание окна.
 	HWND hwnd;
-	hwnd = CreateWindow(name, "Первое окно", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 50, 50,
-						500, 500, HWND_DESKTOP, NULL, hInstance, NULL);
+	hwnd = CreateWindow(name, "Gladiator Game",
+						WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX | WS_VISIBLE,
+						50, 50, 1600, 800, HWND_DESKTOP, NULL, hInstance, NULL);
 
 	// 4. Создание насоса сообщений.
 	MSG msg;
