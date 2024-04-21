@@ -144,11 +144,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Arena.h" />
     <ClInclude Include="Armour.h" />
+    <ClInclude Include="City.h" />
+    <ClInclude Include="CityMenu.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Fighter.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GladiatorGame.h" />
     <ClInclude Include="HarmlessNPC.h" />
     <ClInclude Include="IMenu.h" />
@@ -159,6 +164,7 @@
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="MenuManager.h" />
     <ClInclude Include="NamedNPC.h" />
+    <ClInclude Include="NewMenuStorage.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Statistics.h" />
@@ -166,9 +172,14 @@
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Arena.cpp" />
     <ClCompile Include="Armour.cpp" />
+    <ClCompile Include="City.cpp" />
+    <ClCompile Include="CityMenu.cpp" />
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="Fighter.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GladiatorGame.cpp" />
     <ClCompile Include="HarmlessNPC.cpp" />
     <ClCompile Include="IMenu.cpp" />
@@ -178,6 +189,7 @@
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="MenuManager.cpp" />
     <ClCompile Include="NamedNPC.cpp" />
+    <ClCompile Include="NewMenuStorage.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Statistics.cpp" />

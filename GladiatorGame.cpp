@@ -18,7 +18,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdS
 	win.hInstance = hInstance;
 	win.hIcon = LoadIcon(NULL, IDI_ASTERISK);
 	win.hCursor = LoadCursor(NULL, IDC_ARROW);
-	win.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	win.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	win.lpszMenuName = NULL;
 	win.lpszClassName = name;
 
@@ -33,7 +33,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdS
 	HWND hwnd;
 	hwnd = CreateWindow(name, "Gladiator Game",
 						WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX | WS_VISIBLE,
-						50, 50, 1600, 800, HWND_DESKTOP, NULL, hInstance, NULL);
+						50, 50, 1366, 768, HWND_DESKTOP, NULL, hInstance, NULL);
 
 	// 4. Создание насоса сообщений.
 	MSG msg;

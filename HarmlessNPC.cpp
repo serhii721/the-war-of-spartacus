@@ -9,7 +9,7 @@ HarmlessNPC::HarmlessNPC(const HarmlessNPC& C) : Statistics(C), NamedNPC(C) { }
 
 HarmlessNPC& HarmlessNPC::operator=(const HarmlessNPC& C)
 {
-	if (this == &C) return *this;
+	if (&C == this) return *this;
 	Statistics::operator=(C);
 	NamedNPC::operator=(C);
 	return *this;

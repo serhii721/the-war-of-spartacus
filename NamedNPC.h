@@ -6,7 +6,7 @@ protected:
 	int firstNameIndex, lastNameIndex;
 public:
 	NamedNPC();
-	NamedNPC(int, int);
+	NamedNPC(int firstNameIndex_, int lastNameIndex_);
 	NamedNPC(const NamedNPC&);
 	NamedNPC& operator=(const NamedNPC&);
 	virtual ~NamedNPC();

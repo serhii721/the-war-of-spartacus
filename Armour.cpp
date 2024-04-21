@@ -40,7 +40,7 @@ Armour::Armour(const Armour& A) :
 
 Armour& Armour::operator=(const Armour& A)
 {
-	if (this == &A) return *this;
+	if (&A == this) return *this;
 	defense = A.defense;
 	defAddition = A.defAddition;
 	strAdditionPerc = A.strAdditionPerc;

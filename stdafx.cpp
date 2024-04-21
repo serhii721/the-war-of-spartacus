@@ -11,6 +11,7 @@
 extern HINSTANCE hInst;
 
 Localization localization;
+Game game;
 
 // __________ Other __________
 
@@ -39,7 +40,7 @@ string toStringPrecision(double n, int precision)
 
 // __________ NPC __________
 
-NPC* generateNPC()
+unique_ptr<NPC> generateNPC()
 {
 	const string PATH_BASE = "Data/Language/Names/", FORMAT = ".lang";
 	ifstream fin;
@@ -89,31 +90,31 @@ NPC* generateNPC()
 	name += ' ' + line; // Add last name
 
 	// Generating weapons
-	Weapon* rightHand = generateWeapon();
-	Weapon* leftHand = generateWeapon();
+	unique_ptr<Weapon> rightHand = generateWeapon();
+	unique_ptr<Weapon> leftHand = generateWeapon();
 	if (!rightHand->isCompatibleWith(leftHand->getType()))
 	{
 		if (rand() % 100 < 75)
 		{
 			if (leftHand)
-				delete leftHand;
+				leftHand.release();
 			leftHand = generateWeapon(Weapon::SHIELD);
 		}
 		else if (rand() % 100 < 75)
 			do
 			{
 				if (leftHand)
-					delete leftHand;
+					leftHand.release();
 				leftHand = generateWeapon();
 			} while (!rightHand->isCompatibleWith(leftHand->getType()));
 		else if (leftHand)
 		{
-			delete leftHand;
+			leftHand.release();
 			leftHand = nullptr;
 		}
 	}
 
-	return new NPC(
+	return make_unique<NPC>(
 		Fighter(
 			Statistics(
 				MIN_STRENGTH + rand() / (RAND_MAX / (MAX_STRENGTH - 10)),
@@ -127,8 +128,8 @@ NPC* generateNPC()
 			),
 			BASIC_HP,
 			BASIC_HP,
-			rightHand,
-			leftHand,
+			move(rightHand),
+			move(leftHand),
 			generateArmour()
 		),
 		NamedNPC(
@@ -205,321 +206,321 @@ NPC* generateNPC()
 //	}
 //}
 
-Player* createPlayer()
-{
-	int strength = BASIC_PLAYER_ATTRIBUTES,
-		constitution = BASIC_PLAYER_ATTRIBUTES,
-		dexterity = BASIC_PLAYER_ATTRIBUTES,
-		intelligence = BASIC_PLAYER_ATTRIBUTES,
-		wisdom = BASIC_PLAYER_ATTRIBUTES,
-		charisma = BASIC_PLAYER_ATTRIBUTES;
-
-	bool characterCreation = true;
-	string name;
-	int age;
-	int option;
-	while (characterCreation)
-	{
-		int attributes = 30;
-
-		//output(localization[Localized::CREATION_CREATE_CHARACTER] + "\n\n");
-
-		// Name
-		// TODO: think about regex
-		//output(localization[Localized::CREATION_INPUT_NAME] + ' ', 15);
-		//SetConsoleTextAttribute(hConsole, 14);
-		//getline(cin, player.name);
-
-		// Age
-		// TODO: if min max
-		//output(localization[Localized::CREATION_INPUT_AGE] + ' ');
-		//SetConsoleTextAttribute(hConsole, 14);
-		//cin >> player.age;
-
-		// Input of player's attributes
-		//bool setAttributes = true,
-		//	setStrength = true,
-		//	setConstitution = true,
-		//	setDexterity = true,
-		//	setIntelligence = true,
-		//	setWisdom = true,
-		//	setCharisma = true;
-		//while (
-		//	setAttributes &&
-		//		(setStrength || setConstitution || setDexterity || setIntelligence || setWisdom || setCharisma)
-		//	) {
-		//	// Attribute points' instruction
-		//	output("\n");
-		//	output(localization[Localized::CREATION_INPUT_POINTS_INSTRUCTION] + "\n");
-		//	output(localization[Localized::STRENGTH] + ' ', 4);
-		//	output(localization[Localized::CONSTITUTION] + ' ', 12);
-		//	output(localization[Localized::DEXTERITY] + ' ', 2);
-		//	output(localization[Localized::INTELLIGENCE] + ' ', 1);
-		//	output(localization[Localized::WISDOM] + ' ', 13);
-		//	output(localization[Localized::CHARISMA] + '\n', 6);
-		//	output(localization[Localized::CREATION_INPUT_POINTS_INSTRUCTION2] + "\n\n");
-
-		//	// Strength
-		//	while (setAttributes && setStrength)
-		//	{
-		//		output("\n");
-		//		output(localization[Localized::CREATION_INPUT_POINTS]);
-		//		output(" " + to_string(attributes) + "\n", 10);
-		//		output(localization[Localized::CREATION_INPUT_STRENGTH] + ' ');
-		//		SetConsoleTextAttribute(hConsole, 4);
-		//		cin >> player.strength;
-		//		if (player.strength + 1 < MIN_STRENGTH || player.strength > MAX_STRENGTH)
-		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
-		//		else
-		//		{
-		//			player.strength += BASIC_PLAYER_ATTRIBUTES;
-		//			if (attributes - (player.strength - 10) < 0)
-		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-		//			else
-		//			{
-		//				attributes -= player.strength - 10;
-		//				setStrength = false;
-		//			}
-		//		}
-		//	}
-		//	if (!attributes)
-		//		setAttributes = false;
-
-		//	// Constitution
-		//	while (setAttributes && setConstitution)
-		//	{
-		//		output("\n");
-		//		output(localization[Localized::CREATION_INPUT_POINTS]);
-		//		output(" " + to_string(attributes) + "\n", 10);
-		//		output(localization[Localized::CREATION_INPUT_CONSTITUTION] + ' ');
-		//		SetConsoleTextAttribute(hConsole, 12);
-		//		cin >> player.constitution;
-		//		if (player.constitution + 1 < MIN_CONSTITUTION || player.constitution > MAX_CONSTITUTION)
-		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
-		//		else
-		//		{
-		//			player.constitution += BASIC_PLAYER_ATTRIBUTES;
-		//			if (attributes - (player.constitution - 10) < 0)
-		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-		//			else
-		//			{
-		//				attributes -= player.constitution - 10;
-		//				setConstitution = false;
-		//			}
-		//		}
-		//	}
-		//	if (!attributes)
-		//		setAttributes = false;
-
-		//	// Dexterity
-		//	while (setAttributes && setDexterity)
-		//	{
-		//		output("\n");
-		//		output(localization[Localized::CREATION_INPUT_POINTS]);
-		//		output(" " + to_string(attributes) + "\n", 10);
-		//		output(localization[Localized::CREATION_INPUT_DEXTERITY] + ' ');
-		//		SetConsoleTextAttribute(hConsole, 2);
-		//		cin >> player.dexterity;
-		//		if (player.dexterity + 1 < MIN_DEXTERITY || player.dexterity > MAX_DEXTERITY)
-		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
-		//		else
-		//		{
-		//			player.dexterity += BASIC_PLAYER_ATTRIBUTES;
-		//			if (attributes - (player.dexterity - 10) < 0)
-		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-		//			else
-		//			{
-		//				attributes -= player.dexterity - 10;
-		//				setDexterity = false;
-		//			}
-		//		}
-		//	}
-		//	if (!attributes)
-		//		setAttributes = false;
-
-		//	// Intelligence
-		//	while (setAttributes && setIntelligence)
-		//	{
-		//		output("\n");
-		//		output(localization[Localized::CREATION_INPUT_POINTS]);
-		//		output(" " + to_string(attributes) + "\n", 10);
-		//		output(localization[Localized::CREATION_INPUT_INTELLIGENCE] + ' ');
-		//		SetConsoleTextAttribute(hConsole, 1);
-		//		cin >> player.intelligence;
-		//		if (player.intelligence + 1 < MIN_INTELLIGENCE || player.intelligence > MAX_INTELLIGENCE)
-		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
-		//		else
-		//		{
-		//			player.intelligence += BASIC_PLAYER_ATTRIBUTES;
-		//			if (attributes - (player.intelligence - 10) < 0)
-		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-		//			else
-		//			{
-		//				attributes -= player.intelligence - 10;
-		//				setIntelligence = false;
-		//			}
-		//		}
-		//	}
-		//	if (!attributes)
-		//		setAttributes = false;
-
-		//	// Wisdom
-		//	while (setAttributes && setWisdom)
-		//	{
-		//		output("\n");
-		//		output(localization[Localized::CREATION_INPUT_POINTS]);
-		//		output(" " + to_string(attributes) + "\n", 10);
-		//		output(localization[Localized::CREATION_INPUT_WISDOM] + ' ');
-		//		SetConsoleTextAttribute(hConsole, 13);
-		//		cin >> player.wisdom;
-		//		if (player.wisdom + 1 < MIN_WISDOM || player.wisdom > MAX_WISDOM)
-		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
-		//		else
-		//		{
-		//			player.wisdom += BASIC_PLAYER_ATTRIBUTES;
-		//			if (attributes - (player.wisdom - 10) < 0)
-		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-		//			else
-		//			{
-		//				attributes -= player.wisdom - 10;
-		//				setWisdom = false;
-		//			}
-		//		}
-		//	}
-		//	if (!attributes)
-		//		setAttributes = false;
-
-		//	// Charisma
-		//	while (setAttributes && setCharisma)
-		//	{
-		//		output("\n");
-		//		output(localization[Localized::CREATION_INPUT_POINTS]);
-		//		output(" " + to_string(attributes) + "\n", 10);
-		//		output(localization[Localized::CREATION_INPUT_CHARISMA] + ' ');
-		//		SetConsoleTextAttribute(hConsole, 13);
-		//		cin >> player.charisma;
-		//		if (player.charisma + 1 < MIN_CHARISMA || player.charisma > MAX_CHARISMA)
-		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
-		//		else
-		//		{
-		//			player.charisma += BASIC_PLAYER_ATTRIBUTES;
-		//			if (attributes - (player.charisma - 10) < 0)
-		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
-		//			else
-		//			{
-		//				attributes -= player.charisma - 10;
-		//				setCharisma = false;
-		//			}
-		//		}
-		//	}
-		//	if (!attributes)
-		//		setAttributes = false;
-		//}
-
-		// Confirming player's parameters
-	//	bool notConfirmed = true;
-	//	while (notConfirmed)
-	//	{
-	//		// Show created character
-	//		output(OUTPUT_DIVIDER + '\n' + localization[Localized::STATUS_NPC] + "\n\n");
-	//		output(localization[Localized::Message::STATUS_NAME] + ' ');
-	//		output(player.name + '\n', 14);
-	//		output(localization[Localized::STATUS_AGE] + ' ');
-	//		output(to_string(player.age) + '\n', 14);
-	//		output(localization[Localized::STATUS_STRENGTH] + ' ');
-	//		output(to_string(player.strength) + '\n', 4);
-	//		output(localization[Localized::STATUS_CONSTITUTION] + ' ');
-	//		output(to_string(player.constitution) + '\n', 12);
-	//		output(localization[Localized::STATUS_DEXTERITY] + ' ');
-	//		output(to_string(player.dexterity) + '\n', 2);
-	//		output(localization[Localized::STATUS_INTELLIGENCE] + ' ');
-	//		output(to_string(player.intelligence) + '\n', 1);
-	//		output(localization[Localized::STATUS_WISDOM] + ' ');
-	//		output(to_string(player.wisdom) + '\n', 13);
-	//		output(localization[Localized::STATUS_CHARISMA] + ' ');
-	//		output(to_string(player.charisma) + "\n\n", 6);
-
-	//		if (attributes > 0)
-	//		{
-	//			output(localization[Localized::CREATION_INPUT_POINTS] + ' ');
-	//			output(to_string(attributes) + "\n\n", 10);
-	//		}
-	//		output(localization[Localized::CREATION_INPUT_CORRECT] + '\n');
-	//		output("1. " + localization[Localized::YES] + '\n');
-	//		output("2. " + localization[Localized::NO] + "\n\n");
-	//		output(localization[Localized::CHOOSE_OPTION] + ' ');
-	//		cin >> option;
-	//		cin.get();
-	//		switch (option)
-	//		{
-	//		case 1:
-	//			characterCreation = false;
-	//			notConfirmed = false;
-	//			break;
-	//		case 2:
-	//			characterCreation = true;
-	//			notConfirmed = false;
-	//			output(OUTPUT_DIVIDER);
-	//			break;
-	//		default:
-	//			output("\n");
-	//			output(localization[Localized::WRONG_INPUT] + "\n", 4);
-	//			notConfirmed = true;
-	//			break;
-	//		}
-	//	}
-	}
-
-	// Generating weapons
-	Weapon* rightHand = generateWeapon();
-	Weapon* leftHand = generateWeapon();
-	if (!rightHand->isCompatibleWith(leftHand->getType()))
-	{
-		if (rand() % 100 < 75)
-		{
-			if (leftHand)
-				delete leftHand;
-			leftHand = generateWeapon(Weapon::SHIELD);
-		}
-		else if (rand() % 100 < 75)
-			do
-			{
-				if (leftHand)
-					delete leftHand;
-				leftHand = generateWeapon();
-			} while (!rightHand->isCompatibleWith(leftHand->getType()));
-		else if (leftHand)
-		{
-			delete leftHand;
-			leftHand = nullptr;
-		}
-	}
-
-	//output("\n");
-	//output(localization[Localized::CREATION_INPUT_SUCCESS] + '\n', 10);
-
-	return new Player(
-		Fighter(
-			Statistics(
-				strength,
-				constitution,
-				dexterity,
-				intelligence,
-				wisdom,
-				charisma,
-				age,
-				BASIC_FAME
-			),
-			BASIC_HP, // HP
-			BASIC_HP, // Full HP
-			rightHand,
-			leftHand,
-			generateArmour()
-		),
-		MIN_LEVEL,
-		name
-	);
-}
+//Player* createPlayer()
+//{
+//	int strength = BASIC_PLAYER_ATTRIBUTES,
+//		constitution = BASIC_PLAYER_ATTRIBUTES,
+//		dexterity = BASIC_PLAYER_ATTRIBUTES,
+//		intelligence = BASIC_PLAYER_ATTRIBUTES,
+//		wisdom = BASIC_PLAYER_ATTRIBUTES,
+//		charisma = BASIC_PLAYER_ATTRIBUTES;
+//
+//	bool characterCreation = true;
+//	string name;
+//	int age;
+//	int option;
+//	while (characterCreation)
+//	{
+//		int attributes = 30;
+//
+//		//output(localization[Localized::CREATION_CREATE_CHARACTER] + "\n\n");
+//
+//		// Name
+//		// TODO: think about regex
+//		//output(localization[Localized::CREATION_INPUT_NAME] + ' ', 15);
+//		//SetConsoleTextAttribute(hConsole, 14);
+//		//getline(cin, player.name);
+//
+//		// Age
+//		// TODO: if min max
+//		//output(localization[Localized::CREATION_INPUT_AGE] + ' ');
+//		//SetConsoleTextAttribute(hConsole, 14);
+//		//cin >> player.age;
+//
+//		// Input of player's attributes
+//		//bool setAttributes = true,
+//		//	setStrength = true,
+//		//	setConstitution = true,
+//		//	setDexterity = true,
+//		//	setIntelligence = true,
+//		//	setWisdom = true,
+//		//	setCharisma = true;
+//		//while (
+//		//	setAttributes &&
+//		//		(setStrength || setConstitution || setDexterity || setIntelligence || setWisdom || setCharisma)
+//		//	) {
+//		//	// Attribute points' instruction
+//		//	output("\n");
+//		//	output(localization[Localized::CREATION_INPUT_POINTS_INSTRUCTION] + "\n");
+//		//	output(localization[Localized::STRENGTH] + ' ', 4);
+//		//	output(localization[Localized::CONSTITUTION] + ' ', 12);
+//		//	output(localization[Localized::DEXTERITY] + ' ', 2);
+//		//	output(localization[Localized::INTELLIGENCE] + ' ', 1);
+//		//	output(localization[Localized::WISDOM] + ' ', 13);
+//		//	output(localization[Localized::CHARISMA] + '\n', 6);
+//		//	output(localization[Localized::CREATION_INPUT_POINTS_INSTRUCTION2] + "\n\n");
+//
+//		//	// Strength
+//		//	while (setAttributes && setStrength)
+//		//	{
+//		//		output("\n");
+//		//		output(localization[Localized::CREATION_INPUT_POINTS]);
+//		//		output(" " + to_string(attributes) + "\n", 10);
+//		//		output(localization[Localized::CREATION_INPUT_STRENGTH] + ' ');
+//		//		SetConsoleTextAttribute(hConsole, 4);
+//		//		cin >> player.strength;
+//		//		if (player.strength + 1 < MIN_STRENGTH || player.strength > MAX_STRENGTH)
+//		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
+//		//		else
+//		//		{
+//		//			player.strength += BASIC_PLAYER_ATTRIBUTES;
+//		//			if (attributes - (player.strength - 10) < 0)
+//		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
+//		//			else
+//		//			{
+//		//				attributes -= player.strength - 10;
+//		//				setStrength = false;
+//		//			}
+//		//		}
+//		//	}
+//		//	if (!attributes)
+//		//		setAttributes = false;
+//
+//		//	// Constitution
+//		//	while (setAttributes && setConstitution)
+//		//	{
+//		//		output("\n");
+//		//		output(localization[Localized::CREATION_INPUT_POINTS]);
+//		//		output(" " + to_string(attributes) + "\n", 10);
+//		//		output(localization[Localized::CREATION_INPUT_CONSTITUTION] + ' ');
+//		//		SetConsoleTextAttribute(hConsole, 12);
+//		//		cin >> player.constitution;
+//		//		if (player.constitution + 1 < MIN_CONSTITUTION || player.constitution > MAX_CONSTITUTION)
+//		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
+//		//		else
+//		//		{
+//		//			player.constitution += BASIC_PLAYER_ATTRIBUTES;
+//		//			if (attributes - (player.constitution - 10) < 0)
+//		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
+//		//			else
+//		//			{
+//		//				attributes -= player.constitution - 10;
+//		//				setConstitution = false;
+//		//			}
+//		//		}
+//		//	}
+//		//	if (!attributes)
+//		//		setAttributes = false;
+//
+//		//	// Dexterity
+//		//	while (setAttributes && setDexterity)
+//		//	{
+//		//		output("\n");
+//		//		output(localization[Localized::CREATION_INPUT_POINTS]);
+//		//		output(" " + to_string(attributes) + "\n", 10);
+//		//		output(localization[Localized::CREATION_INPUT_DEXTERITY] + ' ');
+//		//		SetConsoleTextAttribute(hConsole, 2);
+//		//		cin >> player.dexterity;
+//		//		if (player.dexterity + 1 < MIN_DEXTERITY || player.dexterity > MAX_DEXTERITY)
+//		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
+//		//		else
+//		//		{
+//		//			player.dexterity += BASIC_PLAYER_ATTRIBUTES;
+//		//			if (attributes - (player.dexterity - 10) < 0)
+//		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
+//		//			else
+//		//			{
+//		//				attributes -= player.dexterity - 10;
+//		//				setDexterity = false;
+//		//			}
+//		//		}
+//		//	}
+//		//	if (!attributes)
+//		//		setAttributes = false;
+//
+//		//	// Intelligence
+//		//	while (setAttributes && setIntelligence)
+//		//	{
+//		//		output("\n");
+//		//		output(localization[Localized::CREATION_INPUT_POINTS]);
+//		//		output(" " + to_string(attributes) + "\n", 10);
+//		//		output(localization[Localized::CREATION_INPUT_INTELLIGENCE] + ' ');
+//		//		SetConsoleTextAttribute(hConsole, 1);
+//		//		cin >> player.intelligence;
+//		//		if (player.intelligence + 1 < MIN_INTELLIGENCE || player.intelligence > MAX_INTELLIGENCE)
+//		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
+//		//		else
+//		//		{
+//		//			player.intelligence += BASIC_PLAYER_ATTRIBUTES;
+//		//			if (attributes - (player.intelligence - 10) < 0)
+//		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
+//		//			else
+//		//			{
+//		//				attributes -= player.intelligence - 10;
+//		//				setIntelligence = false;
+//		//			}
+//		//		}
+//		//	}
+//		//	if (!attributes)
+//		//		setAttributes = false;
+//
+//		//	// Wisdom
+//		//	while (setAttributes && setWisdom)
+//		//	{
+//		//		output("\n");
+//		//		output(localization[Localized::CREATION_INPUT_POINTS]);
+//		//		output(" " + to_string(attributes) + "\n", 10);
+//		//		output(localization[Localized::CREATION_INPUT_WISDOM] + ' ');
+//		//		SetConsoleTextAttribute(hConsole, 13);
+//		//		cin >> player.wisdom;
+//		//		if (player.wisdom + 1 < MIN_WISDOM || player.wisdom > MAX_WISDOM)
+//		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
+//		//		else
+//		//		{
+//		//			player.wisdom += BASIC_PLAYER_ATTRIBUTES;
+//		//			if (attributes - (player.wisdom - 10) < 0)
+//		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
+//		//			else
+//		//			{
+//		//				attributes -= player.wisdom - 10;
+//		//				setWisdom = false;
+//		//			}
+//		//		}
+//		//	}
+//		//	if (!attributes)
+//		//		setAttributes = false;
+//
+//		//	// Charisma
+//		//	while (setAttributes && setCharisma)
+//		//	{
+//		//		output("\n");
+//		//		output(localization[Localized::CREATION_INPUT_POINTS]);
+//		//		output(" " + to_string(attributes) + "\n", 10);
+//		//		output(localization[Localized::CREATION_INPUT_CHARISMA] + ' ');
+//		//		SetConsoleTextAttribute(hConsole, 13);
+//		//		cin >> player.charisma;
+//		//		if (player.charisma + 1 < MIN_CHARISMA || player.charisma > MAX_CHARISMA)
+//		//			output(localization[Localized::WRONG_INPUT] + '\n', 4);
+//		//		else
+//		//		{
+//		//			player.charisma += BASIC_PLAYER_ATTRIBUTES;
+//		//			if (attributes - (player.charisma - 10) < 0)
+//		//				output(localization[Localized::CREATION_INPUT_NO_POINTS] + '\n', 4);
+//		//			else
+//		//			{
+//		//				attributes -= player.charisma - 10;
+//		//				setCharisma = false;
+//		//			}
+//		//		}
+//		//	}
+//		//	if (!attributes)
+//		//		setAttributes = false;
+//		//}
+//
+//		// Confirming player's parameters
+//	//	bool notConfirmed = true;
+//	//	while (notConfirmed)
+//	//	{
+//	//		// Show created character
+//	//		output(OUTPUT_DIVIDER + '\n' + localization[Localized::STATUS_NPC] + "\n\n");
+//	//		output(localization[Localized::Message::STATUS_NAME] + ' ');
+//	//		output(player.name + '\n', 14);
+//	//		output(localization[Localized::STATUS_AGE] + ' ');
+//	//		output(to_string(player.age) + '\n', 14);
+//	//		output(localization[Localized::STATUS_STRENGTH] + ' ');
+//	//		output(to_string(player.strength) + '\n', 4);
+//	//		output(localization[Localized::STATUS_CONSTITUTION] + ' ');
+//	//		output(to_string(player.constitution) + '\n', 12);
+//	//		output(localization[Localized::STATUS_DEXTERITY] + ' ');
+//	//		output(to_string(player.dexterity) + '\n', 2);
+//	//		output(localization[Localized::STATUS_INTELLIGENCE] + ' ');
+//	//		output(to_string(player.intelligence) + '\n', 1);
+//	//		output(localization[Localized::STATUS_WISDOM] + ' ');
+//	//		output(to_string(player.wisdom) + '\n', 13);
+//	//		output(localization[Localized::STATUS_CHARISMA] + ' ');
+//	//		output(to_string(player.charisma) + "\n\n", 6);
+//
+//	//		if (attributes > 0)
+//	//		{
+//	//			output(localization[Localized::CREATION_INPUT_POINTS] + ' ');
+//	//			output(to_string(attributes) + "\n\n", 10);
+//	//		}
+//	//		output(localization[Localized::CREATION_INPUT_CORRECT] + '\n');
+//	//		output("1. " + localization[Localized::YES] + '\n');
+//	//		output("2. " + localization[Localized::NO] + "\n\n");
+//	//		output(localization[Localized::CHOOSE_OPTION] + ' ');
+//	//		cin >> option;
+//	//		cin.get();
+//	//		switch (option)
+//	//		{
+//	//		case 1:
+//	//			characterCreation = false;
+//	//			notConfirmed = false;
+//	//			break;
+//	//		case 2:
+//	//			characterCreation = true;
+//	//			notConfirmed = false;
+//	//			output(OUTPUT_DIVIDER);
+//	//			break;
+//	//		default:
+//	//			output("\n");
+//	//			output(localization[Localized::WRONG_INPUT] + "\n", 4);
+//	//			notConfirmed = true;
+//	//			break;
+//	//		}
+//	//	}
+//	}
+//
+//	// Generating weapons
+//	Weapon* rightHand = generateWeapon();
+//	Weapon* leftHand = generateWeapon();
+//	if (!rightHand->isCompatibleWith(leftHand->getType()))
+//	{
+//		if (rand() % 100 < 75)
+//		{
+//			if (leftHand)
+//				delete leftHand;
+//			leftHand = generateWeapon(Weapon::SHIELD);
+//		}
+//		else if (rand() % 100 < 75)
+//			do
+//			{
+//				if (leftHand)
+//					delete leftHand;
+//				leftHand = generateWeapon();
+//			} while (!rightHand->isCompatibleWith(leftHand->getType()));
+//		else if (leftHand)
+//		{
+//			delete leftHand;
+//			leftHand = nullptr;
+//		}
+//	}
+//
+//	//output("\n");
+//	//output(localization[Localized::CREATION_INPUT_SUCCESS] + '\n', 10);
+//
+//	return new Player(
+//		Fighter(
+//			Statistics(
+//				strength,
+//				constitution,
+//				dexterity,
+//				intelligence,
+//				wisdom,
+//				charisma,
+//				age,
+//				BASIC_FAME
+//			),
+//			BASIC_HP, // HP
+//			BASIC_HP, // Full HP
+//			rightHand,
+//			leftHand,
+//			generateArmour()
+//		),
+//		MIN_LEVEL,
+//		name
+//	);
+//}
 
 //bool gladiatorFight(Gladiator& player, Gladiator& bot)
 //{
@@ -987,13 +988,13 @@ int getArmourScaleLimit(Armour::Type ttype, Armour::Stat sstat, Limit llimit)
 	return -1;
 }
 
-Weapon* generateWeapon(Weapon::Type ttype)
+unique_ptr<Weapon> generateWeapon(Weapon::Type ttype)
 {
 	if (ttype != Weapon::SHIELD)
 	{
 		int maxStrAdditionPerc = getWeaponScaleLimit(ttype, Attribute::STRENGTH, Limit::MAX),
 			maxDexAdditionPerc = getWeaponScaleLimit(ttype, Attribute::DEXTERITY, Limit::MAX);
-		return new Weapon(
+		return make_unique<Weapon>(
 			MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DAM_ADDITION,
 			// `Weapon::NUMBER - 1` is a shield
 			ttype != Weapon::NUMBER ? ttype : Weapon::Type(rand() % Weapon::NUMBER - 1),
@@ -1006,7 +1007,7 @@ Weapon* generateWeapon(Weapon::Type ttype)
 		);
 	}
 	else // A shield manually creates only
-		return new Weapon(
+		return make_unique<Weapon>(
 			0, // Damage
 			Weapon::SHIELD,
 			0, // Damage addition
@@ -1018,7 +1019,7 @@ Weapon* generateWeapon(Weapon::Type ttype)
 		);
 }
 
-Armour* generateArmour(Armour::Type ttype)
+unique_ptr<Armour> generateArmour(Armour::Type ttype)
 {
 	// Determining the type
 	Armour::Type type = ttype != Armour::NUMBER ? ttype : Armour::Type(rand() % Armour::NUMBER);
@@ -1039,7 +1040,7 @@ Armour* generateArmour(Armour::Type ttype)
 		break;
 	}
 
-	return new Armour(
+	return make_unique<Armour>(
 		MIN_ARMOUR_DEFENSE + 5 + rand() % ARMOUR_RAND_DEF_ADDITION, // Defense
 		type,
 		0, // Defense addition
@@ -1050,437 +1051,436 @@ Armour* generateArmour(Armour::Type ttype)
 	);
 }
 
-void displayWeapon(const Weapon& rWeapon)
-{
-	//if (rWeapon.getName() != "")
-	//	output("Name: " + rWeapon.getName() + '\n');
-
-	//output(localization[Localized::WEAPON_STATUS_TYPE] + ' ');
-	string typeName;
-	switch (rWeapon.getType())
-	{
-	case Weapon::SWORD: typeName = "Sword"; break;
-	case Weapon::SPEAR: typeName = "Spear"; break;
-	case Weapon::DAGGER: typeName = "Dagger"; break;
-	case Weapon::AXE: typeName = "Axe"; break;
-	case Weapon::MACE: typeName = "Mace"; break;
-	default: /*outputError("Unknown weapon type!\n");*/ break;
-	}
-	//output(typeName + '\n', 14);
-
-	//output(localization[Localized::WEAPON_STATUS_DAMAGE] + ' ');
-	//output(to_string(rWeapon.getDamage()) + '\n', 4);
-}
-
-void displayArmour(const Armour& rArmour)
-{
-	string typeName;
-	switch (rArmour.getType())
-	{
-	case Armour::LIGHT: typeName = "Light"; break;
-	case Armour::HEAVY: typeName = "Heavy"; break;
-	default: /*outputError("Unknown armour type!\n");*/ break;
-	}
-	//output("Type: " + typeName + '\n');
-	//output("Defense: " + to_string(rArmour.getTotalDefense()));
-}
+//void displayWeapon(const Weapon& rWeapon)
+//{
+//	//if (rWeapon.getName() != "")
+//	//	output("Name: " + rWeapon.getName() + '\n');
+//
+//	//output(localization[Localized::WEAPON_STATUS_TYPE] + ' ');
+//	string typeName;
+//	switch (rWeapon.getType())
+//	{
+//	case Weapon::SWORD: typeName = "Sword"; break;
+//	case Weapon::SPEAR: typeName = "Spear"; break;
+//	case Weapon::DAGGER: typeName = "Dagger"; break;
+//	case Weapon::AXE: typeName = "Axe"; break;
+//	case Weapon::MACE: typeName = "Mace"; break;
+//	default: /*outputError("Unknown weapon type!\n");*/ break;
+//	}
+//	//output(typeName + '\n', 14);
+//
+//	//output(localization[Localized::WEAPON_STATUS_DAMAGE] + ' ');
+//	//output(to_string(rWeapon.getDamage()) + '\n', 4);
+//}
+//
+//void displayArmour(const Armour& rArmour)
+//{
+//	string typeName;
+//	switch (rArmour.getType())
+//	{
+//	case Armour::LIGHT: typeName = "Light"; break;
+//	case Armour::HEAVY: typeName = "Heavy"; break;
+//	default: /*outputError("Unknown armour type!\n");*/ break;
+//	}
+//	//output("Type: " + typeName + '\n');
+//	//output("Defense: " + to_string(rArmour.getTotalDefense()));
+//}
 
 // __________ Save and Load __________
 
-bool saveGame(Player& player, NPC* npcs)
-{
-	const string DIR_NAME = "Saves/", FILE_PLAYER = "Player", FILE_OPPONENTS = "Opponents", FORMAT = ".save";
+//bool saveGame(Player& player, NPC* npcs)
+//{
+//	const string DIR_NAME = "Saves/", FILE_PLAYER = "Player", FILE_OPPONENTS = "Opponents", FORMAT = ".save";
+//
+//	// Creating the folder of saved games if it doesn't exist
+//	BOOL success = CreateDirectory(DIR_NAME.c_str(), NULL);
+//	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+//		return false;
+//
+//	// Open file for saving player's character and empty it
+//	ofstream fout(DIR_NAME + FILE_PLAYER + FORMAT, ios::binary);
+//	// Check if file is open
+//	if (fout)
+//	{
+//		// TODO: serialization
+//		fout.close();
+//	}
+//	else // If save file couldn't be opened - save unsucessful
+//		return false;
+//
+//	// Open file for saving enemies and empty it
+//	fout.open(DIR_NAME + FILE_OPPONENTS + FORMAT, ios::binary);
+//	// Check if file is open
+//	if (fout)
+//	{
+//		// Save NPCs
+//		for (int i = 0; i < OPPONENTS_NUMBER; i++)
+//		{
+//			// TODO: serialization
+//		}
+//		// Close save files
+//		fout.close();
+//		return true;
+//	}
+//	// If save file couldn't be opened - save unsucessful
+//	return false;
+//}
 
-	// Creating the folder of saved games if it doesn't exist
-	BOOL success = CreateDirectory(DIR_NAME.c_str(), NULL);
-	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
-		return false;
+//bool loadPlayer(Player& player)
+//{
+//	// Open file with player's character
+//	const string DIR_NAME = "Saves/", FILE_NAME = "Player", FORMAT = ".save";
+//
+//	// Check if save file is open and not empty
+//	ifstream fin(DIR_NAME + FILE_NAME + FORMAT, ios::binary);
+//	if (fin)
+//	{
+//		// TODO: structurization
+//		fin.close();
+//
+//		// Load sucessful
+//		return true;
+//	}
+//
+//	fin.close();
+//	// Load unsucessful
+//	return false;
+//}
 
-	// Open file for saving player's character and empty it
-	ofstream fout(DIR_NAME + FILE_PLAYER + FORMAT, ios::binary);
-	// Check if file is open
-	if (fout)
-	{
-		// TODO: serialization
-		fout.close();
-	}
-	else // If save file couldn't be opened - save unsucessful
-		return false;
+//bool loadNPCs(NPC* npcs)
+//{
+//	// Open file for loading enemies
+//	const string DIR_NAME = "Saves/", FILE_NAME = "Opponents", FORMAT = ".save";
+//	ifstream fin(DIR_NAME + FILE_NAME + FORMAT, ios::binary);
+//
+//	// Check if save file is open and not empty
+//	if (fin)
+//	{
+//		for (int i = 0; i < OPPONENTS_NUMBER; i++)
+//		{
+//			// TODO: structurization
+//		}
+//		fin.close();
+//
+//		// Load sucessful
+//		return true;
+//	}
+//
+//	// Load unsucessful
+//	return false;
+//}
 
-	// Open file for saving enemies and empty it
-	fout.open(DIR_NAME + FILE_OPPONENTS + FORMAT, ios::binary);
-	// Check if file is open
-	if (fout)
-	{
-		// Save NPCs
-		for (int i = 0; i < OPPONENTS_NUMBER; i++)
-		{
-			// TODO: serialization
-		}
-		// Close save files
-		fout.close();
-		return true;
-	}
-	// If save file couldn't be opened - save unsucessful
-	return false;
-}
-
-bool loadPlayer(Player& player)
-{
-	// Open file with player's character
-	const string DIR_NAME = "Saves/", FILE_NAME = "Player", FORMAT = ".save";
-
-	// Check if save file is open and not empty
-	ifstream fin(DIR_NAME + FILE_NAME + FORMAT, ios::binary);
-	if (fin)
-	{
-		// TODO: structurization
-		fin.close();
-
-		// Load sucessful
-		return true;
-	}
-
-	fin.close();
-	// Load unsucessful
-	return false;
-}
-
-bool loadNPCs(NPC* npcs)
-{
-	// Open file for loading enemies
-	const string DIR_NAME = "Saves/", FILE_NAME = "Opponents", FORMAT = ".save";
-	ifstream fin(DIR_NAME + FILE_NAME + FORMAT, ios::binary);
-
-	// Check if save file is open and not empty
-	if (fin)
-	{
-		for (int i = 0; i < OPPONENTS_NUMBER; i++)
-		{
-			// TODO: structurization
-		}
-		fin.close();
-
-		// Load sucessful
-		return true;
-	}
-
-	// Load unsucessful
-	return false;
-}
-
-bool loadGame(Player& player, NPC* npcs)
-{
-	if (loadPlayer(player) && loadNPCs(npcs))
-		return true;
-	return false;
-}
+//bool loadGame(Player& player, NPC* npcs)
+//{
+//	if (loadPlayer(player) && loadNPCs(npcs))
+//		return true;
+//	return false;
+//}
 
 // __________ Game process __________
 
-void skipDay(Player& player, NPC* npcs, int n)
-{
-	//output(localization[Localized::TIME_WAITED] + "\n\n");
+//void skipDay(Player& player, NPC* npcs, int n)
+//{
+//	//output(localization[Localized::TIME_WAITED] + "\n\n");
+//
+//	// NPCs regen HP
+//	for (int i = 0; i < n; i++)
+//	{
+//		if (npcs[i].getHP() < npcs[i].getFullHP())
+//			npcs[i].setHP(npcs[i].getHP() + BASIC_REGEN);
+//		if (npcs[i].getHP() > npcs[i].getFullHP())
+//			npcs[i].setHP(npcs[i].getFullHP());
+//	}
+//
+//	// Player regen HP
+//	if (player.getHP() < player.getFullHP())
+//	{
+//		player.setHP(player.getHP() + BASIC_REGEN);
+//		if (player.getHP() > player.getFullHP())
+//		{
+//			player.setHP(player.getFullHP());
+//			//output(localization[Localized::TIME_FULL_HP] + '\n', 10);
+//		}
+//		else
+//		{
+//			//output(localization[Localized::TIME_REGEN] + ' ');
+//			//output(to_string(BASIC_REGEN) + '\n', 10);
+//			//output(localization[Localized::TIME_CURRENT_HP] + ' ');
+//			//output(to_string(player.getHP()) + '\n', 10);
+//		}
+//	}
+//	//else
+//		//output(localization[Localized::TIME_NOTHING] + '\n');
+//
+//	//output(OUTPUT_DIVIDER);
+//}
 
-	// NPCs regen HP
-	for (int i = 0; i < n; i++)
-	{
-		if (npcs[i].getHP() < npcs[i].getFullHP())
-			npcs[i].setHP(npcs[i].getHP() + BASIC_REGEN);
-		if (npcs[i].getHP() > npcs[i].getFullHP())
-			npcs[i].setHP(npcs[i].getFullHP());
-	}
+//bool outputStartMenu(Player& player, NPC* npcs)
+//{
+//	int option;
+//	Language langOption;
+//	ofstream fout;
+//	bool languageChanged = false;
+//	//output("\n\nGladiator Game\n", 4);
+//	//output(OUTPUT_DIVIDER);
+//	while (true)
+//	{
+//		//output(
+//		//	"1. " + localization[Localized::START_MENU_START_GAME] + '\n' +
+//		//	"2. " + localization[Localized::START_MENU_LOAD_GAME] + '\n' +
+//		//	"3. " + localization[Localized::START_MENU_CHANGE_LANGUAGE] + '\n' +
+//		//	"4. " + localization[Localized::EXIT] + "\n\n" +
+//		//	localization[Localized::CHOOSE_OPTION] + ' '
+//		//);
+//		//cin >> option;
+//		//cin.get();
+//		//output(OUTPUT_DIVIDER);
+//
+//		switch (option)
+//		{
+//		case 1: // New game
+//			player = *createPlayer();
+//			for (int i = 0; i < OPPONENTS_NUMBER; i++)
+//				npcs[i] = *generateNPC();
+//			//output(OUTPUT_DIVIDER);
+//			return true;
+//
+//		case 2: // Load game
+//			if (loadGame(player, npcs))
+//			{
+//				//output(localization[Localized::START_MENU_LOAD_GAME_SUCCESS] + "\n", 10);
+//				//output(OUTPUT_DIVIDER);
+//				return true;
+//			}
+//			else
+//			{
+//				//output(localization[Localized::START_MENU_LOAD_GAME_ERROR] + "\n", 12);
+//				//output(OUTPUT_DIVIDER);
+//				break;
+//			}
+//
+//		case 3: // Change language
+//			while (!languageChanged)
+//			{
+//				//output(
+//				//	"1. English\n" +
+//				//	string("2. Українська\n") +
+//				//	"3. Русский\n" +
+//				//	"4. Latin\n\n" +
+//				//	localization[Localized::CHOOSE_OPTION] + ' '
+//				//);
+//				//cin >> option;
+//				//output(OUTPUT_DIVIDER);
+//
+//				switch (option)
+//				{
+//				case 1:
+//					langOption = Language::ENGLISH;
+//					languageChanged = true;
+//					break;
+//				case 2:
+//					langOption = Language::UKRAINIAN;
+//					languageChanged = true;
+//					break;
+//				case 3:
+//					langOption = Language::RUSSIAN;
+//					languageChanged = true;
+//					break;
+//				case 4:
+//					langOption = Language::LATIN;
+//					languageChanged = true;
+//					break;
+//				default: // If choosen option is not in the menu
+//					//output(localization[Localized::WRONG_INPUT] + "\n\n", 12);
+//					break;
+//				}
+//			}
+//			localization.setLanguage(langOption);
+//			fout.open("Data/Settings.conf");
+//			fout << langOption;
+//			fout.close();
+//			languageChanged = false;
+//			break;
+//
+//		case 4: // Exit game
+//			//output(localization[Localized::EXIT_MESSAGE] + '\n', 10);
+//			//output(OUTPUT_DIVIDER);
+//			return false;
+//
+//		default: // If chosen option is not in the menu
+//			//output(localization[Localized::WRONG_INPUT] + "\n", 12);
+//			//output(OUTPUT_DIVIDER);
+//			break;
+//		}
+//	}
+//}
 
-	// Player regen HP
-	if (player.getHP() < player.getFullHP())
-	{
-		player.setHP(player.getHP() + BASIC_REGEN);
-		if (player.getHP() > player.getFullHP())
-		{
-			player.setHP(player.getFullHP());
-			//output(localization[Localized::TIME_FULL_HP] + '\n', 10);
-		}
-		else
-		{
-			//output(localization[Localized::TIME_REGEN] + ' ');
-			//output(to_string(BASIC_REGEN) + '\n', 10);
-			//output(localization[Localized::TIME_CURRENT_HP] + ' ');
-			//output(to_string(player.getHP()) + '\n', 10);
-		}
-	}
-	//else
-		//output(localization[Localized::TIME_NOTHING] + '\n');
-
-	//output(OUTPUT_DIVIDER);
-}
-
-bool outputStartMenu(Player& player, NPC* npcs)
-{
-	int option;
-	Language langOption;
-	ofstream fout;
-	bool languageChanged = false;
-	//output("\n\nGladiator Game\n", 4);
-	//output(OUTPUT_DIVIDER);
-	while (true)
-	{
-		//output(
-		//	"1. " + localization[Localized::START_MENU_START_GAME] + '\n' +
-		//	"2. " + localization[Localized::START_MENU_LOAD_GAME] + '\n' +
-		//	"3. " + localization[Localized::START_MENU_CHANGE_LANGUAGE] + '\n' +
-		//	"4. " + localization[Localized::EXIT] + "\n\n" +
-		//	localization[Localized::CHOOSE_OPTION] + ' '
-		//);
-		//cin >> option;
-		//cin.get();
-		//output(OUTPUT_DIVIDER);
-
-		switch (option)
-		{
-		case 1: // New game
-			player = *createPlayer();
-			for (int i = 0; i < OPPONENTS_NUMBER; i++)
-				npcs[i] = *generateNPC();
-			//output(OUTPUT_DIVIDER);
-			return true;
-
-		case 2: // Load game
-			if (loadGame(player, npcs))
-			{
-				//output(localization[Localized::START_MENU_LOAD_GAME_SUCCESS] + "\n", 10);
-				//output(OUTPUT_DIVIDER);
-				return true;
-			}
-			else
-			{
-				//output(localization[Localized::START_MENU_LOAD_GAME_ERROR] + "\n", 12);
-				//output(OUTPUT_DIVIDER);
-				break;
-			}
-
-		case 3: // Change language
-			while (!languageChanged)
-			{
-				//output(
-				//	"1. English\n" +
-				//	string("2. Українська\n") +
-				//	"3. Русский\n" +
-				//	"4. Latin\n\n" +
-				//	localization[Localized::CHOOSE_OPTION] + ' '
-				//);
-				//cin >> option;
-				//output(OUTPUT_DIVIDER);
-
-				switch (option)
-				{
-				case 1:
-					langOption = Language::ENGLISH;
-					languageChanged = true;
-					break;
-				case 2:
-					langOption = Language::UKRAINIAN;
-					languageChanged = true;
-					break;
-				case 3:
-					langOption = Language::RUSSIAN;
-					languageChanged = true;
-					break;
-				case 4:
-					langOption = Language::LATIN;
-					languageChanged = true;
-					break;
-				default: // If choosen option is not in the menu
-					//output(localization[Localized::WRONG_INPUT] + "\n\n", 12);
-					break;
-				}
-			}
-			localization.setLanguage(langOption);
-			fout.open("Data/Settings.conf");
-			fout << langOption;
-			fout.close();
-			languageChanged = false;
-			break;
-
-		case 4: // Exit game
-			//output(localization[Localized::EXIT_MESSAGE] + '\n', 10);
-			//output(OUTPUT_DIVIDER);
-			return false;
-
-		default: // If chosen option is not in the menu
-			//output(localization[Localized::WRONG_INPUT] + "\n", 12);
-			//output(OUTPUT_DIVIDER);
-			break;
-		}
-	}
-}
-
-void outputGameMenu(Player& rPlayer, NPC* npcs)
-{
-	while (true)
-	{
-		int option;
-		//output(
-		//	"1. " + localization[Localized::GAME_MENU_WAIT] + '\n' +
-		//	"2. " + localization[Localized::GAME_MENU_START_FIGHT] + '\n' +
-		//	"3. " + localization[Localized::GAME_MENU_VIEW_PLAYER] + '\n' +
-		//	"4. " + localization[Localized::GAME_MENU_VIEW_OPPONENTS] + '\n' +
-		//	"5. " + localization[Localized::GAME_MENU_SAVE_GAME] + '\n' +
-		//	"6. " + localization[Localized::EXIT] + "\n\n" +
-		//	localization[Localized::CHOOSE_OPTION] + ' '
-		//);
-		//cin >> option;
-		//output(OUTPUT_DIVIDER);
-
-		int i;
-		bool incorrectOption = true;
-		vector<int> availableNPCIndexes;
-		switch (option)
-		{
-		case 1: // Wait a day
-			skipDay(rPlayer, npcs, OPPONENTS_NUMBER);
-			break;
-
-		case 2: // Start fight
-			// The player can not fight if has less than 30% HP
-			if (rPlayer.getHP() > rPlayer.getFullHP() * 3 / 10)
-			{
-				//output(localization[Localized::FIGHT_PLAYER_WOUNDED] + "\n", 4);
-				break;
-			}
-
-			while (incorrectOption)
-			{
-				// Output available opponents
-				//output(localization[Localized::FIGHT_CHOOSE_OPPONENT] + "\n\n");
-
-				int npcNumber = 1;
-				for (i = 0; i < OPPONENTS_NUMBER; i++)
-				{
-					// The NPC can not fight if has less than 30% HP
-					if (npcs[i].getHP() >= npcs[i].getFullHP() * 3 / 10)
-					{
-						availableNPCIndexes.push_back(i);
-						//output(to_string(npcNumber) + ". ");
-						//output(npcs[i].getName() + '\n');
-						++npcNumber;
-					}
-				}
-				//output("\n");
-				// Output the exit option
-				//output(to_string(npcNumber + 1) + ". " + localization[Localized::EXIT] + "\n\n");
-
-				//output(localization[Localized::CHOOSE_OPTION] + ' ');
-				//cin >> option;
-
-				// Check of the chosen option
-				if (option > 0 && option < npcNumber + 2)
-				{
-					//output(OUTPUT_DIVIDER);
-					incorrectOption = false;
-
-					if (option != npcNumber + 1) // Fight
-					{
-						FightStatus result = fight(rPlayer, npcs[availableNPCIndexes[option]]);
-
-						// Concequence of the fight
-						// TODO:
-						// How much does player's and opponent's fame changes after the fight
-						// How much experience and gold does the player get
-						switch (result)
-						{
-						case FightStatus::OPPONENT_LOST:
-							rPlayer.setFame(rPlayer.getFame() + npcs[availableNPCIndexes[option]].getFame() / 10);
-							//output(localization[Localized::FIGHT_GAINED_FAME] + ' ');
-							//output(to_string(npcs[availableNPCIndexes[option]].fame / 10) + "\n\n", 6);
-							break;
-						case FightStatus::OPPONNENT_SURRENDERED:
-							rPlayer.setFame(rPlayer.getFame() + npcs[availableNPCIndexes[option]].getFame() / 10);
-							//output(localization[Localized::FIGHT_GAINED_FAME] + ' ');
-							//output(to_string(npcs[availableNPCIndexes[option]].fame / 10) + "\n\n", 6);
-							break;
-						case FightStatus::PLAYER_SURRENDERED:
-							rPlayer.setFame(rPlayer.getFame() - rPlayer.getFame() / 10);
-							npcs[availableNPCIndexes[option]].setFame(
-								npcs[availableNPCIndexes[option]].getFame() + rPlayer.getFame() / 10
-							);
-							break;
-						case FightStatus::PLAYER_LOST:
-							// TODO: goto game menu
-							//output("Game over! You lose!", 4);
-							break;
-						default: case FightStatus::CONTINUE:
-							//outputError("Unknown fight result!\n");
-							break;
-						}
-					}
-					else // Exit
-						break;
-				}
-				//else
-					//output(localization[Localized::WRONG_INPUT] + "\n\n", 12);
-			}
-			break;
-
-		case 3: // Show player
-			//output(localization[Localized::STATUS_PLAYER] + "\n\n");
-			//displayPlayer(rPlayer);
-			//output("\n\n");
-
-			// Weapons
-			if (rPlayer.isRightHandOccupied())
-			{
-				//output(localization[Localized::STATUS_PLAYER_WEAPON] + "\n\n", 14);
-				displayWeapon(rPlayer.getRightHand());
-				//output("\n");
-
-				if (rPlayer.isLeftHandOccupied())
-				{
-					displayWeapon(rPlayer.getLeftHand());
-					//output("\n\n");
-				}
-			}
-			else if (rPlayer.isLeftHandOccupied())
-			{
-				//output(localization[Localized::STATUS_PLAYER_WEAPON] + "\n\n", 14);
-				displayWeapon(rPlayer.getLeftHand());
-				//output("\n\n");
-			}
-
-			if (rPlayer.isArmourEquipped())
-			{
-				//output("Your armour:" + string("\n\n"), 14);
-				displayArmour(rPlayer.getArmour());
-				//output("\n\n");
-			}
-			break;
-
-		case 4: // Show opponents
-			//output(localization[Localized::STATUS_OPPONENTS] + "\n\n");
-			//displayNPCBatch(npcs, OPPONENTS_NUMBER);
-			break;
-
-		case 5: // Save
-			//if (saveGame(rPlayer, npcs))
-			//	output(localization[Localized::GAME_MENU_SAVE_GAME_SUCCESS] + '\n', 10);
-			//else
-			//	output(localization[Localized::GAME_MENU_SAVE_GAME_ERROR] + '\n', 12);
-			break;
-
-		case 6: // Exit game
-			//output(localization[Localized::EXIT_MESSAGE] + '\n', 10);
-			return;
-
-		default: // If choosen option is not in the menu
-			//output(localization[Localized::WRONG_INPUT] + "\n", 12);
-			break;
-		}
-		//output(OUTPUT_DIVIDER);
-	}
-}
+//void outputGameMenu(Player& rPlayer, NPC* npcs)
+//{
+//	while (true)
+//	{
+//		int option;
+//		//output(
+//		//	"1. " + localization[Localized::GAME_MENU_WAIT] + '\n' +
+//		//	"2. " + localization[Localized::GAME_MENU_START_FIGHT] + '\n' +
+//		//	"3. " + localization[Localized::GAME_MENU_VIEW_PLAYER] + '\n' +
+//		//	"4. " + localization[Localized::GAME_MENU_VIEW_OPPONENTS] + '\n' +
+//		//	"5. " + localization[Localized::GAME_MENU_SAVE_GAME] + '\n' +
+//		//	"6. " + localization[Localized::EXIT] + "\n\n" +
+//		//	localization[Localized::CHOOSE_OPTION] + ' '
+//		//);
+//		//cin >> option;
+//		//output(OUTPUT_DIVIDER);
+//
+//		int i;
+//		bool incorrectOption = true;
+//		vector<int> availableNPCIndexes;
+//		switch (option)
+//		{
+//		case 1: // Wait a day
+//			skipDay(rPlayer, npcs, OPPONENTS_NUMBER);
+//			break;
+//
+//		case 2: // Start fight
+//			// The player can not fight if has less than 30% HP
+//			if (rPlayer.getHP() > rPlayer.getFullHP() * 3 / 10)
+//			{
+//				//output(localization[Localized::FIGHT_PLAYER_WOUNDED] + "\n", 4);
+//				break;
+//			}
+//
+//			while (incorrectOption)
+//			{
+//				// Output available opponents
+//				//output(localization[Localized::FIGHT_CHOOSE_OPPONENT] + "\n\n");
+//
+//				int npcNumber = 1;
+//				for (i = 0; i < OPPONENTS_NUMBER; i++)
+//				{
+//					// The NPC can not fight if has less than 30% HP
+//					if (npcs[i].getHP() >= npcs[i].getFullHP() * 3 / 10)
+//					{
+//						availableNPCIndexes.push_back(i);
+//						//output(to_string(npcNumber) + ". ");
+//						//output(npcs[i].getName() + '\n');
+//						++npcNumber;
+//					}
+//				}
+//				//output("\n");
+//				// Output the exit option
+//				//output(to_string(npcNumber + 1) + ". " + localization[Localized::EXIT] + "\n\n");
+//
+//				//output(localization[Localized::CHOOSE_OPTION] + ' ');
+//				//cin >> option;
+//
+//				// Check of the chosen option
+//				if (option > 0 && option < npcNumber + 2)
+//				{
+//					//output(OUTPUT_DIVIDER);
+//					incorrectOption = false;
+//
+//					if (option != npcNumber + 1) // Fight
+//					{
+//						FightStatus result = fight(rPlayer, npcs[availableNPCIndexes[option]]);
+//
+//						// Concequence of the fight
+//						// TODO:
+//						// How much does player's and opponent's fame changes after the fight
+//						// How much experience and gold does the player get
+//						switch (result)
+//						{
+//						case FightStatus::OPPONENT_LOST:
+//							rPlayer.setFame(rPlayer.getFame() + npcs[availableNPCIndexes[option]].getFame() / 10);
+//							//output(localization[Localized::FIGHT_GAINED_FAME] + ' ');
+//							//output(to_string(npcs[availableNPCIndexes[option]].fame / 10) + "\n\n", 6);
+//							break;
+//						case FightStatus::OPPONNENT_SURRENDERED:
+//							rPlayer.setFame(rPlayer.getFame() + npcs[availableNPCIndexes[option]].getFame() / 10);
+//							//output(localization[Localized::FIGHT_GAINED_FAME] + ' ');
+//							//output(to_string(npcs[availableNPCIndexes[option]].fame / 10) + "\n\n", 6);
+//							break;
+//						case FightStatus::PLAYER_SURRENDERED:
+//							rPlayer.setFame(rPlayer.getFame() - rPlayer.getFame() / 10);
+//							npcs[availableNPCIndexes[option]].setFame(
+//								npcs[availableNPCIndexes[option]].getFame() + rPlayer.getFame() / 10
+//							);
+//							break;
+//						case FightStatus::PLAYER_LOST:
+//							// TODO: goto game menu
+//							//output("Game over! You lose!", 4);
+//							break;
+//						default: case FightStatus::CONTINUE:
+//							//outputError("Unknown fight result!\n");
+//							break;
+//						}
+//					}
+//					else // Exit
+//						break;
+//				}
+//				//else
+//					//output(localization[Localized::WRONG_INPUT] + "\n\n", 12);
+//			}
+//			break;
+//
+//		case 3: // Show player
+//			//output(localization[Localized::STATUS_PLAYER] + "\n\n");
+//			//displayPlayer(rPlayer);
+//			//output("\n\n");
+//
+//			// Weapons
+//			if (rPlayer.isRightHandOccupied())
+//			{
+//				//output(localization[Localized::STATUS_PLAYER_WEAPON] + "\n\n", 14);
+//				displayWeapon(rPlayer.getRightHand());
+//				//output("\n");
+//
+//				if (rPlayer.isLeftHandOccupied())
+//				{
+//					displayWeapon(rPlayer.getLeftHand());
+//					//output("\n\n");
+//				}
+//			}
+//			else if (rPlayer.isLeftHandOccupied())
+//			{
+//				//output(localization[Localized::STATUS_PLAYER_WEAPON] + "\n\n", 14);
+//				displayWeapon(rPlayer.getLeftHand());
+//				//output("\n\n");
+//			}
+//
+//			if (rPlayer.isArmourEquipped())
+//			{
+//				//output("Your armour:" + string("\n\n"), 14);
+//				displayArmour(rPlayer.getArmour());
+//				//output("\n\n");
+//			}
+//			break;
+//
+//		case 4: // Show opponents
+//			//output(localization[Localized::STATUS_OPPONENTS] + "\n\n");
+//			//displayNPCBatch(npcs, OPPONENTS_NUMBER);
+//			break;
+//
+//		case 5: // Save
+//			//if (saveGame(rPlayer, npcs))
+//			//	output(localization[Localized::GAME_MENU_SAVE_GAME_SUCCESS] + '\n', 10);
+//			//else
+//			//	output(localization[Localized::GAME_MENU_SAVE_GAME_ERROR] + '\n', 12);
+//			break;
+//
+//		case 6: // Exit game
+//			//output(localization[Localized::EXIT_MESSAGE] + '\n', 10);
+//			return;
+//
+//		default: // If choosen option is not in the menu
+//			//output(localization[Localized::WRONG_INPUT] + "\n", 12);
+//			break;
+//		}
+//		//output(OUTPUT_DIVIDER);
+//	}
+//}
 
 LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static MenuManager menuManager;
 	HDC hdc;
 	PAINTSTRUCT ps;
 	static int sx, sy;
@@ -1491,7 +1491,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Setting the random seed
 		srand((unsigned)time(0));
 
-		menuManager.setMenu(new MainMenu(hwnd));
+		game.getMenuManager().setMenu(new MainMenu(hwnd));
 
 		//// Loading the user prefered language
 		//ifstream fin("Data/Settings.conf");
@@ -1541,19 +1541,19 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_COMMAND:
-		menuManager.handleInput(hwnd, message, wParam, lParam);
+		game.getMenuManager().handleInput(hwnd, message, wParam, lParam);
 		break;
 
 	case WM_SIZE:
 		sx = LOWORD(lParam);
 		sy = HIWORD(lParam);
 
-		menuManager.resizeMenu(sx / 2, sy / 2);
+		game.getMenuManager().resizeMenu(sx / 2, sy / 2);
 		break;
 
 	case WM_PAINT:
 		//hdc = BeginPaint(hwnd, &ps);
-		//menuManager.drawMenu(hdc, sx / 2, sy / 2);
+		//game.getMenuManager().drawMenu(hdc, sx / 2, sy / 2);
 		//EndPaint(hwnd, &ps);
 		break;
 

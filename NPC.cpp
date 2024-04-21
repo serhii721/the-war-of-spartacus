@@ -9,7 +9,7 @@ NPC::NPC(const NPC& C) : Fighter(C), NamedNPC(C), Leveling(C) { }
 
 NPC& NPC::operator=(const NPC& C)
 {
-	if (this == &C) return *this;
+	if (&C == this) return *this;
 	Fighter::operator=(C);
 	NamedNPC::operator=(C);
 	Leveling::operator=(C);
