@@ -10,7 +10,7 @@ private:
 	string name;
 public:
 	Player();
-	Player(const Fighter&, int, const string&);
+	Player(const Fighter&, int level_, const string&);
 	Player(const Player&);
 	Player& operator=(const Player&);
 	virtual ~Player();

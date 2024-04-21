@@ -16,7 +16,16 @@ public:
 	// TODO: move Attribute and Limit over here?
 
 	Weapon();
-	Weapon(int, Type, int, int, int, int, int, const string&);
+	Weapon(
+		int damage_,
+		Type type_,
+		int damageAddition_,
+		int strAdditionPerc_,
+		int dexAdditionPerc_,
+		int shieldProbAddition_,
+		int shieldDefPercentAddition_,
+		const string& name_
+	);
 	Weapon(const Weapon&);
 	Weapon& operator=(const Weapon&);
 	virtual ~Weapon();

@@ -21,7 +21,7 @@ Player::Player(const Player& P) : Fighter(P), Leveling(P), name(P.name) { }
 
 Player& Player::operator=(const Player& P)
 {
-	if (this == &P) return *this;
+	if (&P == this) return *this;
 
 	Fighter::operator=(P);
 	Leveling::operator=(P);

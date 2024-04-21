@@ -45,7 +45,7 @@ Statistics::Statistics(const Statistics& S) :
 
 Statistics& Statistics::operator=(const Statistics& S)
 {
-	if (this == &S) return *this;
+	if (&S == this) return *this;
 	strength = S.strength;
 	constitution = S.constitution;
 	dexterity = S.dexterity;

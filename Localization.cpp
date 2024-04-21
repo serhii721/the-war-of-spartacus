@@ -19,7 +19,7 @@ Localization::Localization(const Localization& L) :
 
 Localization& Localization::operator=(const Localization& L)
 {
-	if (this == &L) return *this;
+	if (&L == this) return *this;
 	language = L.language;
 	messages = L.messages;
 	npcFirstNames = L.npcFirstNames;

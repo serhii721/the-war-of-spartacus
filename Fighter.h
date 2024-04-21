@@ -7,16 +7,16 @@ class Fighter :
 protected:
 	int hp, fullHP;
 
-	Weapon* rightHand;
-	Weapon* leftHand;
-	Armour* armour;
+	unique_ptr<Weapon> rightHand;
+	unique_ptr<Weapon> leftHand;
+	unique_ptr<Armour> armour;
 
 	int getDefense() const;
 public:
 	// TODO: move AttackResult over here
 
 	Fighter();
-	Fighter(const Statistics&, int, int, const Weapon*, const Weapon*, const Armour*);
+	Fighter(const Statistics&, int, int, const unique_ptr<Weapon> rightHand_, const unique_ptr<Weapon> leftHand_, const unique_ptr<Armour> armour_);
 	Fighter(const Fighter&);
 	Fighter& operator=(const Fighter&);
 	virtual ~Fighter();
@@ -33,7 +33,7 @@ public:
 
 	int getHP() const;
 	int getFullHP() const;
-	const Weapon& getRightHand() const;
-	const Weapon& getLeftHand() const;
-	const Armour& getArmour() const;
+	const unique_ptr<Weapon>& getRightHand() const;
+	const unique_ptr<Weapon>& getLeftHand() const;
+	const unique_ptr<Armour>& getArmour() const;
 };

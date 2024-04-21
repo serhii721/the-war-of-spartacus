@@ -10,81 +10,93 @@ Fighter::Fighter() :
 	Statistics(),
 	hp(BASIC_HP),
 	fullHP(BASIC_HP),
-	rightHand(nullptr),
-	leftHand(nullptr),
-	armour(nullptr)
+	rightHand(),
+	leftHand(),
+	armour()
 { }
 
 Fighter::Fighter(
 	const Statistics& rStats,
 	int hhp,
 	int ffullHP,
-	const Weapon* pRightHand,
-	const Weapon* pLeftHand,
-	const Armour* pArmour
+	unique_ptr<Weapon> pRightHand,
+	unique_ptr<Weapon> pLeftHand,
+	unique_ptr<Armour> pArmour
 ) :
 	Statistics(rStats),
 	hp(hhp),
-	fullHP(ffullHP)
+	fullHP(ffullHP),
+	rightHand(move(pRightHand)),
+	leftHand(move(pLeftHand)),
+	armour(move(pArmour))
 {		
-	if (pRightHand && pRightHand != nullptr)
-		rightHand = new Weapon(*pRightHand);
-	else
-		rightHand = nullptr;
-
-	if (pLeftHand && pLeftHand != nullptr)
-		leftHand = new Weapon(*pLeftHand);
-	else
-		leftHand = nullptr;
-
-	if (pArmour && pArmour != nullptr)
-		armour = new Armour(*pArmour);
-	else
-		armour = nullptr;
-
 	// TODO: think about processing exceptions
 }
 
 Fighter::Fighter(const Fighter& F) :
 	Statistics(F),
 	hp(F.hp),
-	fullHP(F.fullHP),
-	rightHand(new Weapon(F.getRightHand())),
-	leftHand(new Weapon(F.getLeftHand())),
-	armour(new Armour(F.getArmour()))
-{ }
+	fullHP(F.fullHP)
+{
+	if (F.rightHand)
+		rightHand = make_unique<Weapon>(*F.rightHand);
+	else
+		rightHand = nullptr;
+
+	if (F.leftHand)
+		leftHand = make_unique<Weapon>(*F.leftHand);
+	else
+		leftHand = nullptr;
+
+	if (F.armour)
+		armour = make_unique<Armour>(*F.armour);
+	else
+		armour = nullptr;
+}
 
 Fighter& Fighter::operator=(const Fighter& F)
 {
-	if (this == &F) return *this;
+	if (&F == this) return *this;
 
 	Statistics::operator=(F);
 
 	hp = F.hp;
 	fullHP = F.fullHP;
 
-	if (rightHand)
-		delete rightHand;
-	rightHand = new Weapon(F.getRightHand());
-	if (leftHand)
-		delete leftHand;
-	leftHand = new Weapon(F.getLeftHand());
-	if (armour)
-		delete armour;
-	armour = new Armour(F.getArmour());
+	if (F.rightHand)
+	{
+		if (!rightHand)
+			rightHand = std::make_unique<Weapon>(*F.rightHand);
+		else
+			*rightHand = *F.rightHand;
+	}
+	else
+		rightHand = nullptr;
+
+	if (F.leftHand)
+	{
+		if (!leftHand)
+			leftHand = std::make_unique<Weapon>(*F.leftHand);
+		else
+			*leftHand = *F.leftHand;
+	}
+	else
+		leftHand = nullptr;
+
+	if (F.armour)
+	{
+		if (!armour)
+			armour = std::make_unique<Armour>(*F.armour);
+		else
+			*armour = *F.armour;
+	}
+	else
+		armour = nullptr;
 
 	return *this;
 }
 
-Fighter::~Fighter()
-{
-	if (rightHand)
-		delete rightHand;
-	if (leftHand)
-		delete leftHand;
-	if (armour)
-		delete armour;
-}
+Fighter::~Fighter() { }
 
 void Fighter::setHP(int hhp) { hp = hhp; }
 
@@ -92,12 +104,12 @@ bool Fighter::equipWeapon(const Weapon& rWeapon)
 {
 	if (!isRightHandOccupied())
 	{
-		rightHand = new Weapon(rWeapon);
+		rightHand = make_unique<Weapon>(rWeapon);;
 		return true;
 	}
 	if (!isLeftHandOccupied() && rightHand->isCompatibleWith(rWeapon.getType()))
 	{
-		leftHand = new Weapon(rWeapon);
+		leftHand = make_unique<Weapon>(rWeapon);
 		return true;
 	}
 	return false;
@@ -251,8 +263,8 @@ int Fighter::getHP() const { return hp; }
 
 int Fighter::getFullHP() const { return fullHP; }
 
-const Weapon& Fighter::getRightHand() const { return *rightHand; }
+const unique_ptr<Weapon>& Fighter::getRightHand() const { return rightHand; }
 
-const Weapon& Fighter::getLeftHand() const { return *leftHand; }
+const unique_ptr<Weapon>& Fighter::getLeftHand() const { return leftHand; }
 
-const Armour& Fighter::getArmour() const { return *armour; }
+const unique_ptr<Armour>& Fighter::getArmour() const { return armour; }

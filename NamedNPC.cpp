@@ -15,7 +15,7 @@ NamedNPC::NamedNPC(const NamedNPC& C) :
 
 NamedNPC& NamedNPC::operator=(const NamedNPC& C)
 {
-	if (this == &C) return *this;
+	if (&C == this) return *this;
 	firstNameIndex = C.firstNameIndex;
 	lastNameIndex = C.lastNameIndex;
 	return *this;

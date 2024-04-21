@@ -8,7 +8,16 @@ protected:
 	int fame;
 public:
 	Statistics();
-	Statistics(int, int, int, int, int, int, int, int);
+	Statistics(
+		int strength_,
+		int constitution_,
+		int dexterity_,
+		int intelligence_,
+		int wisdom_,
+		int charisma_,
+		int age_,
+		int fame_
+	);
 	Statistics(const Statistics&);
 	Statistics& operator=(const Statistics&);
 	virtual ~Statistics();
