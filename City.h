@@ -3,17 +3,17 @@
 class City
 {
 private:
-	string name;
+	int nameIndex;
 	Arena arena;
 	//HarmlessNPC trader;
 
 public:
 	City();
-	City(string name_, const Arena&);
+	City(int name_, const Arena&);
 	City(const City&);
 	City& operator=(const City&);
 	~City();
 
-	void setName(string);
-	const string& getName() const;
+	void setName(int);
+	int getName() const;
 };

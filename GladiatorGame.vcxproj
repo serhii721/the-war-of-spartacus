@@ -170,6 +170,7 @@
     <ClInclude Include="Statistics.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Weapon.h" />
+    <ClInclude Include="WorldMap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Arena.cpp" />
@@ -200,6 +201,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Weapon.cpp" />
+    <ClCompile Include="WorldMap.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -92,7 +92,9 @@ unique_ptr<NPC> generateNPC()
 	// Generating weapons
 	unique_ptr<Weapon> rightHand = generateWeapon();
 	unique_ptr<Weapon> leftHand = generateWeapon();
-	if (!rightHand->isCompatibleWith(leftHand->getType()))
+	if (!rightHand->isCompatibleWith(leftHand->getType()) &&
+		rightHand->getType() != Weapon::Type::AXE &&
+		rightHand->getType() != Weapon::Type::SPEAR)
 	{
 		if (rand() % 100 < 75)
 		{
@@ -113,6 +115,8 @@ unique_ptr<NPC> generateNPC()
 			leftHand = nullptr;
 		}
 	}
+	else
+		leftHand = nullptr;
 
 	return make_unique<NPC>(
 		Fighter(
@@ -997,7 +1001,7 @@ unique_ptr<Weapon> generateWeapon(Weapon::Type ttype)
 		return make_unique<Weapon>(
 			MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DAM_ADDITION,
 			// `Weapon::NUMBER - 1` is a shield
-			ttype != Weapon::NUMBER ? ttype : Weapon::Type(rand() % Weapon::NUMBER - 1),
+			ttype != Weapon::NUMBER ? ttype : Weapon::Type(rand() % (Weapon::NUMBER - 1)),
 			0, // Damage addition
 			maxStrAdditionPerc * 3 / 5 + (rand() % (maxStrAdditionPerc / 10 + 1)), // Strength damage addition
 			maxDexAdditionPerc * 3 / 5 + (rand() % (maxDexAdditionPerc / 10 + 1)), // Dexterity damage addition
@@ -1006,7 +1010,7 @@ unique_ptr<Weapon> generateWeapon(Weapon::Type ttype)
 			"" // Name
 		);
 	}
-	else // A shield manually creates only
+	else // A shield only created manually
 		return make_unique<Weapon>(
 			0, // Damage
 			Weapon::SHIELD,

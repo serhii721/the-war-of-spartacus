@@ -30,3 +30,19 @@ enum Attribute
 };
 
 enum Limit { MIN, MAX };
+
+enum Cities
+{
+	ROMA,
+	CANUSIUM,
+	METAPONTUM,
+	BOVIANUM,
+	ANCONA,
+	PERUSINUS,
+	FLORENCE,
+	BONINA,
+	GENUA,
+	VENETIAE,
+	MEDIOLANUM,
+	CITIES_NUMBER
+};

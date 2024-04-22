@@ -1,6 +1,8 @@
 #pragma once
 
-const int OPPONENTS_NUMBER = 3;
+// World's statistics
+const int MAX_CITIES = 11;
+const int OPPONENTS_NUMBER = 15;
 const int BASIC_REGEN = 5;
 const int BASIC_PLAYER_ATTRIBUTES = 10;
 //const string OUTPUT_DIVIDER = "\n______________________________________________\n\n\n";

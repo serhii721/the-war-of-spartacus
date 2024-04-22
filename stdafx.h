@@ -47,6 +47,7 @@ using namespace std;
 #include "Constants.h"
 #include "Arena.h"
 #include "City.h"
+#include "WorldMap.h"
 #include "Game.h"
 
 const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);

@@ -5,9 +5,19 @@ extern HINSTANCE hInst;
 extern Localization localization;
 extern Game game;
 
-CityMenu::CityMenu() : hItems(), hSubItems(), currentSubMenu(Item::ITEM_NUMBER) { }
+CityMenu::CityMenu() :
+	hItems(),
+	currentSubMenu(Item::ITEM_NUMBER),
+	hSubItems(),
+	currentSubMenuItem(ArenaItem::ARENA_ITEM_NUMBER),
+	hSubMenuItems()
+{ }
 
-CityMenu::CityMenu(HWND hWnd) : hItems(Item::ITEM_NUMBER), currentSubMenu(Item::ITEM_NUMBER), hSubItems()
+CityMenu::CityMenu(HWND hWnd) :
+	hItems(Item::ITEM_NUMBER),
+	currentSubMenu(Item::ITEM_NUMBER),
+	currentSubMenuItem(ArenaItem::ARENA_ITEM_NUMBER),
+	hSubItems()
 {
 	char className[256] = "BUTTON";
 	hItems[BUT_ARENA] = CreateWindow(className, "Arena", // TODO: Apply localization
@@ -36,7 +46,11 @@ CityMenu::CityMenu(HWND hWnd) : hItems(Item::ITEM_NUMBER), currentSubMenu(Item::
 	);
 }
 
-CityMenu::CityMenu(const CityMenu& CM) : currentSubMenu(Item::ITEM_NUMBER), hSubItems()
+CityMenu::CityMenu(const CityMenu& CM) :
+	currentSubMenu(Item::ITEM_NUMBER),
+	hSubItems(),
+	currentSubMenuItem(ArenaItem::ARENA_ITEM_NUMBER),
+	hSubMenuItems()
 {
 	// Resizing items' vector
 	int sz = CM.hItems.size();
@@ -110,8 +124,11 @@ CityMenu& CityMenu::operator=(const CityMenu& CM)
 		);
 	}
 
-	hSubItems = vector<HWND>();
 	currentSubMenu = CM.currentSubMenu;
+	hSubItems = vector<HWND>();
+
+	currentSubMenuItem = CM.currentSubMenuItem;
+	hSubMenuItems = vector<HWND>();
 
 	return *this;
 }
@@ -123,6 +140,10 @@ CityMenu::~CityMenu()
 			DestroyWindow(hItem);
 
 	for (HWND hItem : hSubItems)
+		if (hItem != NULL)
+			DestroyWindow(hItem);
+
+	for (HWND hItem : hSubMenuItems)
 		if (hItem != NULL)
 			DestroyWindow(hItem);
 }
@@ -155,16 +176,52 @@ void CityMenu::resizeMenu(int cx, int cy)
 	// Arena
 	case Item::BUT_ARENA:
 	{
-		const int STAT_WIDTH = 125, EDIT_WIDTH = 40, BUT_WIDTH = 300, ITEM_HEIGHT = 60, DISTANCE = 15;
-		cy -= 3 * (ITEM_HEIGHT + DISTANCE);
-		y = cy;
-		sz = hItems.size();
-		x = cx - BUT_WIDTH * 2;
-		for (i = ARENA_BUT_FIGHT; i < 4; i++)
+		switch (currentSubMenuItem)
 		{
-			y += ITEM_HEIGHT + DISTANCE;
-			MoveWindow(hSubItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubItems[i]);
+		default:case ArenaItem::ARENA_ITEM_NUMBER:
+		{
+			const int STAT_WIDTH = 125, EDIT_WIDTH = 40, BUT_WIDTH = 300, ITEM_HEIGHT = 60, DISTANCE = 15;
+			cy -= 3 * (ITEM_HEIGHT + DISTANCE);
+			y = cy;
+			x = cx - BUT_WIDTH * 2;
+
+			for (i = ARENA_BUT_FIGHT; i < 4; i++)
+			{
+				y += ITEM_HEIGHT + DISTANCE;
+				MoveWindow(hSubItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
+				UpdateWindow(hSubItems[i]);
+			}
+		}
+			break;
+
+		case ArenaItem::ARENA_BUT_FIGHT:
+		{
+			const int STAT_WIDTH = 125, EDIT_WIDTH = 40, BUT_WIDTH = 300, ITEM_HEIGHT = 30, DISTANCE = 9;
+			//cy -= 3 * (ITEM_HEIGHT + DISTANCE);
+			y = DISTANCE * 2 + ITEM_HEIGHT * 2;
+			x = cx - BUT_WIDTH * 2 - DISTANCE * 2;
+
+			for (i = ARENA_FIGHT_BUT_OPPONENT1; i < ARENA_FIGHT_BUT_FIGHT; i++)
+			{
+				MoveWindow(hSubMenuItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
+				UpdateWindow(hSubMenuItems[i]);
+				y += ITEM_HEIGHT + DISTANCE;
+			}
+
+			x = cx - DISTANCE - BUT_WIDTH;
+			y -= ITEM_HEIGHT;
+
+			MoveWindow(hSubMenuItems[ARENA_FIGHT_BUT_BACK], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
+			UpdateWindow(hSubMenuItems[ARENA_FIGHT_BUT_BACK]);
+
+			MoveWindow(hSubMenuItems[ARENA_FIGHT_BUT_FIGHT], x + BUT_WIDTH + DISTANCE, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
+			UpdateWindow(hSubMenuItems[ARENA_FIGHT_BUT_FIGHT]);
+		}
+			break;
+
+		case ArenaItem::ARENA_BUT_BET:
+			// TODO
+			break;
 		}
 	}
 	break;
@@ -252,34 +309,87 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			break;
 
 		case BUT_ARENA:
-			if ((HWND)lp == hSubItems[ARENA_BUT_FIGHT])
+			switch (currentSubMenuItem)
 			{
-				// TODO
-			}
-			if ((HWND)lp == hSubItems[ARENA_BUT_BET])
-			{
-				// TODO
-			}
-			if ((HWND)lp == hSubItems[ARENA_BUT_TRAIN])
-			{
-				// TODO
-			}
-			if ((HWND)lp == hSubItems[ARENA_BUT_BACK] || LOWORD(wp) == IDCANCEL)
-			{
-				// Destroying all buttons
-				for (HWND hItem : hSubItems)
-					if (hItem != NULL)
-						DestroyWindow(hItem);
-				hSubItems.clear();
+			default:case ArenaItem::ARENA_ITEM_NUMBER:
+				if ((HWND)lp == hSubItems[ARENA_BUT_FIGHT])
+				{
+					// Hiding all buttons
+					for (HWND hItem : hSubItems)
+						ShowWindow(hItem, SW_HIDE);
 
-				// Showing main menu buttons
-				for (HWND hItem : hItems)
-					ShowWindow(hItem, SW_SHOW);
+					// Erasing previous sub menu items
+					for (HWND hItem : hSubMenuItems)
+						if (hItem != NULL)
+							DestroyWindow(hItem);
+					hSubMenuItems.clear();
 
-				currentSubMenu = ITEM_NUMBER;
+					// Creating new sub menu items
+					hSubMenuItems.resize(ARENA_FIGHT_ITEM_NUMBER);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+					for (int i = 0; i < ArenaFightItem::ARENA_FIGHT_BUT_FIGHT; i++)
+						hSubMenuItems[i] = (CreateWindow("BUTTON", "Opponent", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTOCHECKBOX, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+					hSubMenuItems[ARENA_FIGHT_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+					hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = (CreateWindow("BUTTON", "Fight", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+
+					currentSubMenuItem = ArenaItem::ARENA_BUT_FIGHT;
+
+					// Updating window to show new buttons
+					SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				}
+				if ((HWND)lp == hSubItems[ARENA_BUT_BET])
+				{
+					// TODO
+				}
+				if ((HWND)lp == hSubItems[ARENA_BUT_TRAIN])
+				{
+					// TODO
+				}
+				if ((HWND)lp == hSubItems[ARENA_BUT_BACK] || LOWORD(wp) == IDCANCEL)
+				{
+					// Destroying all buttons
+					for (HWND hItem : hSubItems)
+						if (hItem != NULL)
+							DestroyWindow(hItem);
+					hSubItems.clear();
+
+					// Showing main menu buttons
+					for (HWND hItem : hItems)
+						ShowWindow(hItem, SW_SHOW);
+
+					currentSubMenu = ITEM_NUMBER;
+
+					// Updating window to show new buttons
+					SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+					break;
+				}
+				break;
+
+			case ArenaItem::ARENA_BUT_FIGHT:
+			{
+				if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_BACK] || LOWORD(wp) == IDCANCEL)
+				{
+					// Destroying all buttons
+					for (HWND hItem : hSubMenuItems)
+						if (hItem != NULL)
+							DestroyWindow(hItem);
+					hSubMenuItems.clear();
+
+					// Showing main menu buttons
+					for (HWND hItem : hSubItems)
+						ShowWindow(hItem, SW_SHOW);
+
+					currentSubMenuItem = ARENA_ITEM_NUMBER;
+
+					// Updating window to show new buttons
+					SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+					break;
+				}
+			}
+				break;
+
+			case ArenaItem::ARENA_BUT_BET:
+				// TODO
 				break;
 			}
 			break;
