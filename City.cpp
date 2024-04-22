@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "City.h"
 
-City::City() : name("Nameless City"), arena() { }
+City::City() : nameIndex(Cities::ROMA), arena() { }
 
-City::City(string nname, const Arena& A) : name(nname), arena(A) { }
+City::City(int nname, const Arena& A) : nameIndex(nname), arena(A) { }
 
-City::City(const City& C) : name(C.name), arena(C.arena) { }
+City::City(const City& C) : nameIndex(C.nameIndex), arena(C.arena) { }
 
 City& City::operator=(const City& C)
 {
 	if (&C == this) return *this;
 
-	name = C.name;
+	nameIndex = C.nameIndex;
 	arena = C.arena;
 
 	return *this;
@@ -19,12 +19,12 @@ City& City::operator=(const City& C)
 
 City::~City() { }
 
-void City::setName(string s)
+void City::setName(int s)
 {
-	name = s;
+	nameIndex = s;
 }
 
-const string& City::getName() const
+int City::getName() const
 {
-	return name;
+	return nameIndex;
 }

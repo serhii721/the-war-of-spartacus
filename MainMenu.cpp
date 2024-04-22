@@ -284,7 +284,6 @@ void MainMenu::updateLanguage()
 
 void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
-	
 	RECT windowRect;
 	GetWindowRect(hWnd, &windowRect);
 
@@ -622,7 +621,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Player creation
 				unique_ptr<Weapon> rightHand = generateWeapon();
 				unique_ptr<Weapon> leftHand = generateWeapon();
-				if (!rightHand->isCompatibleWith(leftHand->getType()))
+				if (!rightHand->isCompatibleWith(leftHand->getType()) &&
+					rightHand->getType() != Weapon::Type::AXE &&
+					rightHand->getType() != Weapon::Type::SPEAR)
 				{
 					if (rand() % 100 < 75)
 					{
@@ -643,6 +644,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						leftHand = nullptr;
 					}
 				}
+				else
+					leftHand = nullptr;
 
 				unique_ptr<Armour> armour = generateArmour();
 				TCHAR buffer[256];
@@ -674,15 +677,29 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				nms.reset();
 
-				// City creation
+				// World creation
+
+				unique_ptr<City> pCity;
+				vector<City> cities;
+
 				unique_ptr<NPC> pGladiator;
 				vector<NPC> gladiators;
-				for (int i = 0; i < 5; i++)
+
+				for (int i = 0; i < MAX_CITIES; i++)
 				{
-					pGladiator = generateNPC();
-					gladiators.push_back(*pGladiator);
+					// Creating opponents for arenas
+					for (int j = 0; j < OPPONENTS_NUMBER; j++)
+					{
+						pGladiator = generateNPC();
+						gladiators.push_back(*pGladiator);
+					}
+					// Creating cities based of arenas
+					pCity = make_unique<City>(Cities::ROMA + i, Arena(gladiators));
+					cities.push_back(*pCity);
+					gladiators.clear();
 				}
-				game.city = City("Rome", Arena(gladiators));
+
+				game.setWorldMap(WorldMap(cities));
 
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
 

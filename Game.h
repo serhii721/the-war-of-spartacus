@@ -3,6 +3,7 @@ class Game
 {
 private:
 	unique_ptr<Player> pPlayer;
+	unique_ptr<WorldMap> pWorldMap;
 	MenuManager menuManager;
 
 public:
@@ -12,9 +13,9 @@ public:
 	~Game();
 
 	void setPlayer(const Player&);
+	void setWorldMap(const WorldMap&);
 
 	Player& getPlayer() const;
+	WorldMap& getWorldMap() const;
 	MenuManager& getMenuManager();
-
-	City city;
 };
