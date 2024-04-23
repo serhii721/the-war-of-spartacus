@@ -10,6 +10,9 @@ private:
 	int currentSubMenu;
 	vector<HWND> hSubItems;
 
+	HBITMAP hBackgroundImage;
+	HBRUSH hBackgroundBrush;
+
 	unique_ptr<NewMenuStorage> nms;
 public:
 	enum Item
@@ -83,7 +86,7 @@ public:
 	MainMenu& operator=(const MainMenu&);
 	virtual ~MainMenu();
 
-	void drawMenu(HDC, int, int) override;
+	void drawMenu(HWND, HDC, int, int) override;
 	void resizeMenu(int, int) override;
 	void updateLanguage() override;
 	void handleInput(HWND, UINT, WPARAM, LPARAM) override;

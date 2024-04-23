@@ -28,7 +28,7 @@ CityMenu::CityMenu(HWND hWnd) :
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_TRADER] = CreateWindow(className, "Trader", // TODO: Apply localization
+	hItems[BUT_MARKET] = CreateWindow(className, "Trader", // TODO: Apply localization
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
@@ -148,7 +148,36 @@ CityMenu::~CityMenu()
 			DestroyWindow(hItem);
 }
 
-void CityMenu::drawMenu(HDC, int, int) { }
+void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
+{
+	const string DIRECTORY = "Data/Image/Background/";
+	const string FORMAT = ".bmp";
+	string path("");
+
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+
+	// Composing path based on current menu
+	switch (currentSubMenu)
+	{
+	default:case ITEM_NUMBER: path = DIRECTORY + "" + FORMAT; break;
+	case BUT_ARENA:
+		switch (currentSubMenuItem)
+		{
+		default:case ARENA_ITEM_NUMBER: path = DIRECTORY + "arenaBackground768" + FORMAT; break;
+		case ARENA_BUT_FIGHT: path = DIRECTORY + "arenaFightBackground768" + FORMAT; break;
+		}
+		break;
+	case BUT_QUEST: path = DIRECTORY + "questBackground768" + FORMAT; break;
+	case BUT_MARKET: path = DIRECTORY + "marketBackground768" + FORMAT; break;
+	}
+
+	// Loading image
+	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	// Filling background with selected image
+	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+	FillRect(hdc, &rect, hBackgroundBrush);
+}
 
 void CityMenu::resizeMenu(int cx, int cy)
 {
@@ -234,7 +263,7 @@ void CityMenu::resizeMenu(int cx, int cy)
 	break;
 
 	// Trader
-	case Item::BUT_TRADER:
+	case Item::BUT_MARKET:
 	{
 		// TODO
 	}
@@ -280,6 +309,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[ARENA_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = BUT_ARENA;
+				InvalidateRect(hWnd, 0, 1);
 
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
@@ -288,7 +318,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				// TODO
 			}
-			if ((HWND)lp == hItems[BUT_TRADER])
+			if ((HWND)lp == hItems[BUT_MARKET])
 			{
 				// TODO
 			}
@@ -304,6 +334,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				game.getMenuManager().setMenu(new GameMenu(hWnd));
 				// Updating window to show new buttons
+				InvalidateRect(hWnd, 0, 1);
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
 			}
 			break;
@@ -333,6 +364,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = (CreateWindow("BUTTON", "Fight", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 					currentSubMenuItem = ArenaItem::ARENA_BUT_FIGHT;
+					InvalidateRect(hWnd, 0, 1);
 
 					// Updating window to show new buttons
 					SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
@@ -358,6 +390,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						ShowWindow(hItem, SW_SHOW);
 
 					currentSubMenu = ITEM_NUMBER;
+					InvalidateRect(hWnd, 0, 1);
 
 					// Updating window to show new buttons
 					SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
@@ -380,6 +413,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						ShowWindow(hItem, SW_SHOW);
 
 					currentSubMenuItem = ARENA_ITEM_NUMBER;
+					InvalidateRect(hWnd, 0, 1);
 
 					// Updating window to show new buttons
 					SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));

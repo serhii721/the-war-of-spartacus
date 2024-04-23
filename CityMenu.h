@@ -13,12 +13,15 @@ private:
 	int currentSubMenuItem;
 	vector<HWND> hSubMenuItems;
 
+	HBITMAP hBackgroundImage;
+	HBRUSH hBackgroundBrush;
+
 public:
 	enum Item
 	{
 		BUT_ARENA,
 		BUT_QUEST,
-		BUT_TRADER,
+		BUT_MARKET,
 		BUT_REST,
 		BUT_MAP,
 		BUT_MENU,
@@ -60,7 +63,7 @@ public:
 	CityMenu& operator=(const CityMenu&);
 	virtual ~CityMenu();
 
-	void drawMenu(HDC, int, int) override;
+	void drawMenu(HWND, HDC, int, int) override;
 	void resizeMenu(int, int) override;
 	void updateLanguage() override;
 	void handleInput(HWND, UINT, WPARAM, LPARAM) override;

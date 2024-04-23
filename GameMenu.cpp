@@ -127,7 +127,27 @@ GameMenu::~GameMenu()
 			DestroyWindow(hItem);
 }
 
-void GameMenu::drawMenu(HDC, int, int) { }
+void GameMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
+{
+	const string DIRECTORY = "Data/Image/Background/";
+	const string FORMAT = ".bmp";
+	string path("");
+
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+
+	// Composing path based on current menu
+	switch (currentSubMenu)
+	{
+	default:case ITEM_NUMBER: path = DIRECTORY + "menuBackground768" + FORMAT; break;
+	}
+
+	// Loading image
+	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	// Filling background with selected image
+	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+	FillRect(hdc, &rect, hBackgroundBrush);
+}
 
 void GameMenu::resizeMenu(int cx, int cy)
 {
@@ -246,6 +266,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SETTINGS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_SETTINGS;
+				InvalidateRect(hWnd, 0, 1);
 
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
@@ -253,6 +274,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hItems[BUT_EXIT_MENU])
 			{
 				game.getMenuManager().setMenu(new MainMenu(hWnd));
+				InvalidateRect(hWnd, 0, 1);
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
 				break;
@@ -280,6 +302,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
+				InvalidateRect(hWnd, 0, 1);
 
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));

@@ -75,20 +75,20 @@ MenuManager& Game::getMenuManager()
 	return menuManager;
 }
 
-void Game::drawWindow(HDC hdc, int cx, int cy)
+void Game::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 {
 	switch (displayState)
 	{
 	default:case MENU:
-		menuManager.drawMenu(hdc, cx, cy);
+		menuManager.drawMenu(hWnd, hdc, cx, cy);
 		break;
 
 	case WORLD_MAP:
-		pWorldMap->drawWindow(hdc, cx, cy);
+		pWorldMap->drawWindow(hWnd, hdc, cx, cy);
 		break;
 
 	case FIGHTING:
-		pFighting->drawWindow(hdc, cx, cy);
+		pFighting->drawWindow(hWnd, hdc, cx, cy);
 		break;
 	}
 }

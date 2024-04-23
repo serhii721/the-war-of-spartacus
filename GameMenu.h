@@ -10,6 +10,9 @@ private:
 	int currentSubMenu;
 	vector<HWND> hSubItems;
 
+	HBITMAP hBackgroundImage;
+	HBRUSH hBackgroundBrush;
+
 public:
 	enum Item
 	{
@@ -36,7 +39,7 @@ public:
 	GameMenu& operator=(const GameMenu&);
 	virtual ~GameMenu();
 
-	void drawMenu(HDC, int, int) override;
+	void drawMenu(HWND, HDC, int, int) override;
 	void resizeMenu(int, int) override;
 	void updateLanguage() override;
 	void handleInput(HWND, UINT, WPARAM, LPARAM) override;

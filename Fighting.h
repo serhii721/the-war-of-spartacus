@@ -3,8 +3,15 @@
 class Fighting
 {
 private:
+	int currentScreen;
 
+	HBITMAP hBackgroundImage;
+	HBRUSH hBackgroundBrush;
 public:
+	enum Screen
+	{
+		ITEM_NUMBER
+	};
 	Fighting();
 	~Fighting();
 
@@ -13,7 +20,7 @@ public:
 	FightStatus checkFightStatus(const Player&, const NPC&);
 	void outputFightResult(const FightStatus, const int playerHP_, const int opponentHP_);
 
-	void drawWindow(HDC, int, int);
+	void drawWindow(HWND, HDC, int, int);
 	void resizeWindow(int, int);
 	void handleInput(HWND, UINT, WPARAM, LPARAM);
 };
