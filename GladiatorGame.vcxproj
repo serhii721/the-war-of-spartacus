@@ -152,6 +152,7 @@
     <ClInclude Include="Converter.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Fighter.h" />
+    <ClInclude Include="Fighting.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GladiatorGame.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="CityMenu.cpp" />
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="Fighter.cpp" />
+    <ClCompile Include="Fighting.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GladiatorGame.cpp" />

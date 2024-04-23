@@ -14,4 +14,8 @@ public:
 	~WorldMap();
 
 	City& getCurrentCity();
+
+	void drawWindow(HDC, int, int);
+	void resizeWindow(int, int);
+	void handleInput(HWND, UINT, WPARAM, LPARAM);
 };

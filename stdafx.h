@@ -45,6 +45,7 @@ using namespace std;
 #include "NPC.h"
 #include "Converter.h"
 #include "Constants.h"
+#include "Fighting.h"
 #include "Arena.h"
 #include "City.h"
 #include "WorldMap.h"
@@ -63,11 +64,6 @@ unique_ptr<NPC> generateNPC();
 //void displayNPC(const NPC&);
 //void displayNPCBatch(const NPC*, int);
 //Player* createPlayer();
-
-FightStatus checkFightStatus(const Player&, const NPC&);
-void outputFightResult(FightStatus, int, int);
-void outputOpponentAttackResult(AttackResult, int);
-FightStatus fight(Player&, NPC&);
 
 int getWeaponScaleLimit(Weapon::Type, Attribute, Limit);
 int getArmourScaleLimit(Armour::Type, Armour::Stat, Limit);

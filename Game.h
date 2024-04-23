@@ -2,9 +2,13 @@
 class Game
 {
 private:
-	unique_ptr<Player> pPlayer;
-	unique_ptr<WorldMap> pWorldMap;
 	MenuManager menuManager;
+	unique_ptr<WorldMap> pWorldMap;
+	unique_ptr<Fighting> pFighting;
+	unique_ptr<Player> pPlayer;
+
+	enum DisplayState { MENU, WORLD_MAP, FIGHTING };
+	DisplayState displayState;
 
 public:
 	Game();
@@ -18,4 +22,8 @@ public:
 	Player& getPlayer() const;
 	WorldMap& getWorldMap() const;
 	MenuManager& getMenuManager();
+
+	void drawWindow(HDC, int, int);
+	void resizeWindow(int, int);
+	void handleInput(HWND, UINT, WPARAM, LPARAM);
 };

@@ -1,26 +1,25 @@
 #include "stdafx.h"
 #include "Game.h"
 
-Game::Game() : pPlayer(make_unique<Player>()), pWorldMap(make_unique<WorldMap>()), menuManager() { }
+Game::Game() :
+	menuManager(),
+	pWorldMap(make_unique<WorldMap>()),
+	pFighting(make_unique<Fighting>()),
+	pPlayer(make_unique<Player>()),
+	displayState(DisplayState::MENU)
+{ }
 
 Game::Game(const Game& GAME) :
-	pPlayer(make_unique<Player>(*GAME.pPlayer)),
+	menuManager(GAME.menuManager),
 	pWorldMap(make_unique<WorldMap>(*GAME.pWorldMap)),
-	menuManager(GAME.menuManager)
+	pFighting(make_unique<Fighting>()),
+	pPlayer(make_unique<Player>(*GAME.pPlayer)),
+	displayState(GAME.displayState)
 { }
 
 Game& Game::operator=(const Game& GAME)
 {
 	if (&GAME == this) return *this;
-
-	if (GAME.pPlayer)
-	{
-		if (!pPlayer)
-			pPlayer = make_unique<Player>(*GAME.pPlayer);
-		else
-			*pPlayer = *GAME.pPlayer;
-	}
-	else pPlayer = nullptr;
 
 	if (GAME.pWorldMap)
 	{
@@ -32,7 +31,19 @@ Game& Game::operator=(const Game& GAME)
 	else
 		pWorldMap = nullptr;
 
+	if (GAME.pPlayer)
+	{
+		if (!pPlayer)
+			pPlayer = make_unique<Player>(*GAME.pPlayer);
+		else
+			*pPlayer = *GAME.pPlayer;
+	}
+	else pPlayer = nullptr;
+
+	pFighting = make_unique<Fighting>();
+
 	menuManager = GAME.menuManager;
+	displayState = GAME.displayState;
 
 	return *this;
 }
@@ -62,4 +73,58 @@ WorldMap& Game::getWorldMap() const
 MenuManager& Game::getMenuManager()
 {
 	return menuManager;
+}
+
+void Game::drawWindow(HDC hdc, int cx, int cy)
+{
+	switch (displayState)
+	{
+	default:case MENU:
+		menuManager.drawMenu(hdc, cx, cy);
+		break;
+
+	case WORLD_MAP:
+		pWorldMap->drawWindow(hdc, cx, cy);
+		break;
+
+	case FIGHTING:
+		pFighting->drawWindow(hdc, cx, cy);
+		break;
+	}
+}
+
+void Game::resizeWindow(int cx, int cy)
+{
+	switch (displayState)
+	{
+	default:case MENU:
+		menuManager.resizeMenu(cx, cy);
+		break;
+
+	case WORLD_MAP:
+		pWorldMap->resizeWindow(cx, cy);
+		break;
+
+	case FIGHTING:
+		pFighting->resizeWindow(cx, cy);
+		break;
+	}
+}
+
+void Game::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+{
+	switch (displayState)
+	{
+	default:case MENU:
+		menuManager.handleInput(hWnd, m, wp, lp);
+		break;
+
+	case WORLD_MAP:
+		pWorldMap->handleInput(hWnd, m, wp, lp);
+		break;
+
+	case FIGHTING:
+		pFighting->handleInput(hWnd, m, wp, lp);
+		break;
+	}
 }
