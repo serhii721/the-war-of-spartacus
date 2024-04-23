@@ -23,7 +23,7 @@ public:
 	WorldMap& getWorldMap() const;
 	MenuManager& getMenuManager();
 
-	void drawWindow(HDC, int, int);
+	void drawWindow(HWND, HDC, int, int);
 	void resizeWindow(int, int);
 	void handleInput(HWND, UINT, WPARAM, LPARAM);
 };

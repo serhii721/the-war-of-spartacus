@@ -178,8 +178,26 @@ void Fighting::outputFightResult(const FightStatus sstatus, const int playerHP, 
 	}
 }
 
-void Fighting::drawWindow(HDC hdc, int cx, int cy)
+void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 {
+	const string DIRECTORY = "Data/Image/Background/";
+	const string FORMAT = ".bmp";
+	string path("");
+
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+
+	// Composing path based on current menu
+	switch (currentScreen)
+	{
+	default:case ITEM_NUMBER: path = DIRECTORY + "" + FORMAT; break;
+	}
+
+	// Loading image
+	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	// Filling background with selected image
+	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+	FillRect(hdc, &rect, hBackgroundBrush);
 }
 
 void Fighting::resizeWindow(int cx, int cy)

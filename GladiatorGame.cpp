@@ -25,7 +25,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdS
 	// 2. Регистрация окна в операционной системе.
 	if (!RegisterClass(&win))
 	{
-		MessageBox(NULL, "Окно не зарегистрировано", "Ошибка", MB_OK);
+		MessageBox(NULL, "Window is not registered", "Error", MB_OK);
 		return -1;
 	}
 

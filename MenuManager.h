@@ -13,7 +13,7 @@ public:
 
 	void setMenu(IMenu*);
 
-	void drawMenu(HDC, int, int);
+	void drawMenu(HWND, HDC, int, int);
 	void resizeMenu(int, int);
 	void handleInput(HWND, UINT, WPARAM, LPARAM);
 };

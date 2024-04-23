@@ -30,9 +30,9 @@ void MenuManager::setMenu(IMenu* pMenu)
 	currentMenu = pMenu;
 }
 
-void MenuManager::drawMenu(HDC hDC, int cx, int cy)
+void MenuManager::drawMenu(HWND hWnd, HDC hDC, int cx, int cy)
 {
-	currentMenu->drawMenu(hDC, cx, cy);
+	currentMenu->drawMenu(hWnd, hDC, cx, cy);
 }
 
 void MenuManager::resizeMenu(int cx, int cy)

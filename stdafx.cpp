@@ -1381,9 +1381,9 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_PAINT:
-		//hdc = BeginPaint(hwnd, &ps);
-		//game.drawWindow(hdc, sx / 2, sy / 2);
-		//EndPaint(hwnd, &ps);
+		hdc = BeginPaint(hwnd, &ps);
+		game.drawWindow(hwnd, hdc, sx / 2, sy / 2);
+		EndPaint(hwnd, &ps);
 		break;
 
 	case WM_DESTROY:

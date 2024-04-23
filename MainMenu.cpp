@@ -139,7 +139,37 @@ MainMenu::~MainMenu()
 			DestroyWindow(hItem);
 }
 
-void MainMenu::drawMenu(HDC, int, int) { }
+void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
+{
+	const string DIRECTORY = "Data/Image/Background/";
+	const string FORMAT = ".bmp";
+	string path("");
+
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+
+	// Composing path based on current menu
+	switch (currentSubMenu)
+	{
+	default:case ITEM_NUMBER: path = DIRECTORY + "menuBackground768" + FORMAT; break;
+	case BUT_LOAD_GAME:
+		// TODO
+		break;
+	case BUT_NEW_GAME: path = DIRECTORY + "characterCreationBackground768" + FORMAT; break;
+	case BUT_SETTINGS:
+		// TODO
+		break;
+	case BUT_SPECIALS:
+		// TODO
+		break;
+	}
+
+	// Loading image
+	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	// Filling background with selected image
+	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+	FillRect(hdc, &rect, hBackgroundBrush);
+}
 
 void MainMenu::resizeMenu(int cx, int cy)
 {
@@ -361,6 +391,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[NEW_GAME_BUT_NEXT] = (CreateWindow("BUTTON", "Next", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_NEW_GAME;
+				InvalidateRect(hWnd, 0, 1);
 
 				SetFocus(hSubItems[EDIT_NAME]);
 
@@ -388,6 +419,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SETTINGS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_SETTINGS;
+				InvalidateRect(hWnd, 0, 1);
 
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
@@ -412,6 +444,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SPECIALS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_SPECIALS;
+				InvalidateRect(hWnd, 0, 1);
 
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
@@ -609,6 +642,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
+				InvalidateRect(hWnd, 0, 1);
 
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
@@ -703,6 +737,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
 
+				InvalidateRect(hWnd, 0, 1);
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
 			}
@@ -728,6 +763,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
+				InvalidateRect(hWnd, 0, 1);
 
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
@@ -750,6 +786,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
+				InvalidateRect(hWnd, 0, 1);
 
 				// Updating window to show new buttons
 				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
