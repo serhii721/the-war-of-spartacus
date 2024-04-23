@@ -23,3 +23,15 @@ City& WorldMap::getCurrentCity()
 {
 	return cities[currentCity];
 }
+
+void WorldMap::drawWindow(HDC hdc, int cx, int cy)
+{
+}
+
+void WorldMap::resizeWindow(int cx, int cy)
+{
+}
+
+void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+{
+}
