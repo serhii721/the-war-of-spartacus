@@ -7,7 +7,25 @@ Game::Game() :
 	pFighting(make_unique<Fighting>()),
 	pPlayer(make_unique<Player>()),
 	displayState(DisplayState::MENU)
-{ }
+{
+	customFont = CreateFont(
+		40,						// Size
+		15,						// Width
+		0,						// Lean angle
+		0,						// Rotation angle
+		FW_NORMAL,				// Thickness
+		FALSE,					// Cursive
+		FALSE,					// Underline
+		FALSE,					// Crossed
+		DEFAULT_CHARSET,		// Symbol set
+		OUT_DEFAULT_PRECIS,		// Output preccision
+		CLIP_DEFAULT_PRECIS,	// Clip precission
+		DEFAULT_QUALITY,		// Output quality
+		DEFAULT_PITCH |			// Pitch
+		FF_ROMAN,				// Font family
+		"MyFont"				// Name
+	);
+}
 
 Game::Game(const Game& GAME) :
 	menuManager(GAME.menuManager),
@@ -48,7 +66,14 @@ Game& Game::operator=(const Game& GAME)
 	return *this;
 }
 
-Game::~Game() { }
+Game::~Game()
+{
+	if (customFont != NULL)
+	{
+		DeleteObject(customFont);
+		customFont = NULL;
+	}
+}
 
 void Game::setPlayer(const Player& rPlayer)
 {
