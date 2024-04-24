@@ -160,12 +160,13 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	// Composing path based on current menu
 	switch (currentSubMenu)
 	{
-	default:case ITEM_NUMBER: path = DIRECTORY + "" + FORMAT; break;
+	default:case ITEM_NUMBER: path = DIRECTORY + "cityBackground768" + FORMAT; break;
 	case BUT_ARENA:
 		switch (currentSubMenuItem)
 		{
 		default:case ARENA_ITEM_NUMBER: path = DIRECTORY + "arenaBackground768" + FORMAT; break;
 		case ARENA_BUT_FIGHT: path = DIRECTORY + "arenaFightBackground768" + FORMAT; break;
+		case ARENA_BUT_BET: path = DIRECTORY + "arenaBetBackground768" + FORMAT; break;
 		}
 		break;
 	case BUT_QUEST: path = DIRECTORY + "questBackground768" + FORMAT; break;

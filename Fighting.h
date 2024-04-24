@@ -10,6 +10,7 @@ private:
 public:
 	enum Screen
 	{
+		FIGHT_ARENA,
 		ITEM_NUMBER
 	};
 	Fighting();
