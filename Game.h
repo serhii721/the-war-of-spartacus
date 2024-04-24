@@ -1,4 +1,5 @@
 #pragma once
+
 class Game
 {
 private:
@@ -6,6 +7,8 @@ private:
 	unique_ptr<WorldMap> pWorldMap;
 	unique_ptr<Fighting> pFighting;
 	unique_ptr<Player> pPlayer;
+
+	HFONT customFont;
 
 	enum DisplayState { MENU, WORLD_MAP, FIGHTING };
 	DisplayState displayState;
