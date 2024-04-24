@@ -191,6 +191,7 @@ void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 	switch (currentScreen)
 	{
 	default:case ITEM_NUMBER: path = DIRECTORY + "" + FORMAT; break;
+	case FIGHT_ARENA: path = DIRECTORY + "fightArenaBackground768" + FORMAT; break;
 	}
 
 	// Loading image
