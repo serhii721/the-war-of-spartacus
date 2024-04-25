@@ -3,14 +3,15 @@
 class Arena
 {
 private:
-	vector<NPC> gladiators;
+	vector<shared_ptr<NPC>> gladiators;
 
 public:
 	Arena();
-	Arena(const vector<NPC>& gladiators_);
+	Arena(const vector<shared_ptr<NPC>>& gladiators_);
 	Arena(const Arena&);
 	Arena& operator=(const Arena&);
 	~Arena();
 
 	// TODO: void update();
+	shared_ptr<NPC> getGladiator(int);
 };

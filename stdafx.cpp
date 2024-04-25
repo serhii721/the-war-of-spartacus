@@ -15,6 +15,16 @@ Game game;
 
 // __________ Other __________
 
+void updateWindow(HWND hWnd)
+{
+	RECT windowRect;
+	GetWindowRect(hWnd, &windowRect);
+	SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+	InvalidateRect(hWnd, 0, 1);
+	UpdateWindow(hWnd);
+	//RedrawWindow(hWnd, 0, 0, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN);
+}
+
 // TODO: think about move to Converter
 string toStringPrecision(double n, int precision)
 {

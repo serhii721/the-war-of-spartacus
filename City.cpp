@@ -28,3 +28,8 @@ int City::getName() const
 {
 	return nameIndex;
 }
+
+Arena& City::getArena()
+{
+	return arena;
+}

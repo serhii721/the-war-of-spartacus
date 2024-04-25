@@ -10,7 +10,6 @@ private:
 
 	HFONT customFont;
 
-	enum DisplayState { MENU, WORLD_MAP, FIGHTING };
 	DisplayState displayState;
 
 public:
@@ -21,9 +20,12 @@ public:
 
 	void setPlayer(const Player&);
 	void setWorldMap(const WorldMap&);
+	void setFighting(const Fighting&);
+	void setDisplayState(DisplayState);
 
 	Player& getPlayer() const;
 	WorldMap& getWorldMap() const;
+	Fighting& getFighting() const;
 	MenuManager& getMenuManager();
 
 	void drawWindow(HWND, HDC, int, int);

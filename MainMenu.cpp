@@ -391,12 +391,10 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[NEW_GAME_BUT_NEXT] = (CreateWindow("BUTTON", "Next", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_NEW_GAME;
-				InvalidateRect(hWnd, 0, 1);
 
 				SetFocus(hSubItems[EDIT_NAME]);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_SETTINGS])
 			{
@@ -419,10 +417,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SETTINGS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_SETTINGS;
-				InvalidateRect(hWnd, 0, 1);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_SPECIALS])
 			{
@@ -444,10 +440,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SPECIALS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_SPECIALS;
-				InvalidateRect(hWnd, 0, 1);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_EXIT])
 				DestroyWindow(hWnd);
@@ -642,10 +636,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
-				InvalidateRect(hWnd, 0, 1);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 				break;
 			}
 
@@ -716,8 +708,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				unique_ptr<City> pCity;
 				vector<City> cities;
 
-				unique_ptr<NPC> pGladiator;
-				vector<NPC> gladiators;
+				shared_ptr<NPC> pGladiator;
+				vector<shared_ptr<NPC>> gladiators;
 
 				for (int i = 0; i < MAX_CITIES; i++)
 				{
@@ -725,7 +717,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					for (int j = 0; j < OPPONENTS_NUMBER; j++)
 					{
 						pGladiator = generateNPC();
-						gladiators.push_back(*pGladiator);
+						gladiators.push_back(pGladiator);
 					}
 					// Creating cities based of arenas
 					pCity = make_unique<City>(Cities::ROMA + i, Arena(gladiators));
@@ -737,9 +729,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
 
-				InvalidateRect(hWnd, 0, 1);
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 			}
 		}
 			break;
@@ -763,10 +753,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
-				InvalidateRect(hWnd, 0, 1);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 				break;
 			}
 		}
@@ -786,10 +774,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
-				InvalidateRect(hWnd, 0, 1);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 				break;
 			}
 		}

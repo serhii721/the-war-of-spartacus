@@ -248,6 +248,8 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 		(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
 
 	// Attack
+	if (rDamage < 1)
+		rDamage = 1;
 	rOpponent.hp -= rDamage;
 }
 

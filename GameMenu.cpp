@@ -30,10 +30,6 @@ GameMenu::GameMenu(HWND hWnd) : hItems(Item::ITEM_NUMBER), currentSubMenu(Item::
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_EXIT_DESKTOP] = CreateWindow(className, "Exit to desktop", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		0, 0, 0, 0, hWnd, 0, hInst, 0
-	);
 }
 
 GameMenu::GameMenu(const GameMenu& GM) : currentSubMenu(Item::ITEM_NUMBER), hSubItems()
@@ -233,8 +229,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hItems[BUT_RESUME] || LOWORD(wp) == IDCANCEL)
 			{
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 				break;
 			}
 			if ((HWND)lp == hItems[BUT_SAVE])
@@ -266,21 +261,15 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SETTINGS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_SETTINGS;
-				InvalidateRect(hWnd, 0, 1);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_EXIT_MENU])
 			{
 				game.getMenuManager().setMenu(new MainMenu(hWnd));
-				InvalidateRect(hWnd, 0, 1);
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 				break;
 			}
-			if ((HWND)lp == hItems[BUT_EXIT_DESKTOP])
-				DestroyWindow(hWnd);
 			break;
 		case BUT_SETTINGS:
 		{
@@ -302,10 +291,8 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
-				InvalidateRect(hWnd, 0, 1);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 				break;
 			}
 		}

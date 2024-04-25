@@ -46,3 +46,10 @@ enum Cities
 	MEDIOLANUM,
 	CITIES_NUMBER
 };
+
+enum DisplayState
+{
+	MENU,
+	WORLD_MAP,
+	FIGHTING
+};
