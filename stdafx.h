@@ -55,6 +55,7 @@ const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 extern Localization localization;
 extern Game game;
 
+void updateWindow(HWND);
 string toStringPrecision(double, int = 2);
 //void output(const string&, int = 15);
 //void outputError(const string&, int = 4);

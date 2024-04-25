@@ -6,18 +6,20 @@ extern Localization localization;
 extern Game game;
 
 CityMenu::CityMenu() :
-	hItems(),
+	hItems(Item::ITEM_NUMBER),
 	currentSubMenu(Item::ITEM_NUMBER),
 	hSubItems(),
 	currentSubMenuItem(ArenaItem::ARENA_ITEM_NUMBER),
-	hSubMenuItems()
+	hSubMenuItems(),
+	selectedOpponent(-1)
 { }
 
 CityMenu::CityMenu(HWND hWnd) :
 	hItems(Item::ITEM_NUMBER),
 	currentSubMenu(Item::ITEM_NUMBER),
+	hSubItems(),
 	currentSubMenuItem(ArenaItem::ARENA_ITEM_NUMBER),
-	hSubItems()
+	selectedOpponent(-1)
 {
 	char className[256] = "BUTTON";
 	hItems[BUT_ARENA] = CreateWindow(className, "Arena", // TODO: Apply localization
@@ -50,7 +52,8 @@ CityMenu::CityMenu(const CityMenu& CM) :
 	currentSubMenu(Item::ITEM_NUMBER),
 	hSubItems(),
 	currentSubMenuItem(ArenaItem::ARENA_ITEM_NUMBER),
-	hSubMenuItems()
+	hSubMenuItems(),
+	selectedOpponent(-1)
 {
 	// Resizing items' vector
 	int sz = CM.hItems.size();
@@ -130,6 +133,8 @@ CityMenu& CityMenu::operator=(const CityMenu& CM)
 	currentSubMenuItem = CM.currentSubMenuItem;
 	hSubMenuItems = vector<HWND>();
 
+	selectedOpponent = CM.selectedOpponent;
+
 	return *this;
 }
 
@@ -157,6 +162,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	RECT rect;
 	GetClientRect(hWnd, &rect);
 
+	// 1. Background
 	// Composing path based on current menu
 	switch (currentSubMenu)
 	{
@@ -178,6 +184,87 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	// Filling background with selected image
 	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
 	FillRect(hdc, &rect, hBackgroundBrush);
+
+	// 2. Text
+	switch (currentSubMenu)
+	{
+	default:case ITEM_NUMBER: break;
+	case BUT_ARENA:
+		switch (currentSubMenuItem)
+		{
+		default:case ARENA_ITEM_NUMBER: break;
+		case ARENA_BUT_FIGHT:
+			if (selectedOpponent != -1)
+			{
+				string buffer;
+				NPC tmp(*game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent));
+
+				// TODO: Name, weapon type, armour type
+
+				//buffer = tmp.getName();
+				buffer = "Name: ";
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				buffer = "Level: " + to_string(tmp.getLevel());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEVEL], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				if (tmp.getLeftHand())
+				{
+					//buffer = "Left hand type: " + to_string(tmp.getLeftHand()->getType());
+					//SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+					buffer = "Left hand damage: " + to_string(tmp.getLeftHand()->getTotalDamage());
+					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+				}
+				if (tmp.getRightHand())
+				{
+					//buffer = "Right hand type: " + to_string(tmp.getRightHand()->getType());
+					//SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+					buffer = "Right hand damage: " + to_string(tmp.getRightHand()->getTotalDamage());
+					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+				}
+
+				buffer = "Health: " + to_string(tmp.getHP());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				if (tmp.getArmour())
+				{
+					//buffer = "Armour type: " + to_string(tmp.getArmour()->getType());
+					//SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+					buffer = "Armour defense: " + to_string(tmp.getArmour()->getTotalDefense());
+					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+				}
+
+				buffer = "Strength: " + to_string(tmp.getStrength());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				buffer = "Constitution: " + to_string(tmp.getConstitution());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				buffer = "Dexterity: " + to_string(tmp.getDexterity());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_DEXTERITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				buffer = "Inteliigence: " + to_string(tmp.getIntelligence());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				buffer = "Wisdom: " + to_string(tmp.getWisdom());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_WISDOM], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				buffer = "Charisma: " + to_string(tmp.getCharisma());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_CHARISMA], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				buffer = "Age: " + to_string(tmp.getAge());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_AGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+				buffer = "Fame: " + to_string(tmp.getFame());
+				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_FAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+			}
+			break;
+		}
+		break;
+	}
 }
 
 void CityMenu::resizeMenu(int cx, int cy)
@@ -226,20 +313,62 @@ void CityMenu::resizeMenu(int cx, int cy)
 
 		case ArenaItem::ARENA_BUT_FIGHT:
 		{
-			const int STAT_WIDTH = 125, EDIT_WIDTH = 40, BUT_WIDTH = 300, ITEM_HEIGHT = 30, DISTANCE = 9;
+			const int STAT_WIDTH = 170, EDIT_WIDTH = 40, BUT_WIDTH = 300, ITEM_HEIGHT = 30, DISTANCE = 9;
 			//cy -= 3 * (ITEM_HEIGHT + DISTANCE);
 			y = DISTANCE * 2 + ITEM_HEIGHT * 2;
 			x = cx - BUT_WIDTH * 2 - DISTANCE * 2;
 
-			for (i = ARENA_FIGHT_BUT_OPPONENT1; i < ARENA_FIGHT_BUT_FIGHT; i++)
+			// Opponents list
+			for (i = ARENA_FIGHT_BUT_OPPONENT1; i <= ARENA_FIGHT_BUT_OPPONENT15; i++)
 			{
 				MoveWindow(hSubMenuItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
 				UpdateWindow(hSubMenuItems[i]);
 				y += ITEM_HEIGHT + DISTANCE;
 			}
 
-			x = cx - DISTANCE - BUT_WIDTH;
-			y -= ITEM_HEIGHT;
+			y = DISTANCE * 2 + ITEM_HEIGHT * 2;
+			x = cx + BUT_WIDTH * 0.5 + DISTANCE;
+
+			// Opponent's stats
+			if (selectedOpponent != -1)
+			{
+				MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_NAME], x, y - ITEM_HEIGHT - DISTANCE, STAT_WIDTH, ITEM_HEIGHT, TRUE);
+				UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_NAME]);
+
+				MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEVEL], x, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
+				UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEVEL]);
+
+				// LeftHand stats
+				y = cy - (ITEM_HEIGHT + DISTANCE) * 3;
+				x -= 200;
+				MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], x, y, 200, ITEM_HEIGHT, TRUE);
+				UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE]);
+
+				MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_DAMAGE], x, y + ITEM_HEIGHT + DISTANCE, 200, ITEM_HEIGHT, TRUE);
+				UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE]);
+
+				// RightHand stats
+				x += 200 + STAT_WIDTH;
+				MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], x, y, 200, ITEM_HEIGHT, TRUE);
+				UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE]);
+
+				MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], x, y + ITEM_HEIGHT + DISTANCE, 200, ITEM_HEIGHT, TRUE);
+				UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE]);
+
+				// Other stats
+				x -= STAT_WIDTH;
+				y = cy;
+				for (i = ARENA_FIGHT_STATIC_HEALTH; i <= ARENA_FIGHT_STATIC_FAME; i++)
+				{
+					MoveWindow(hSubMenuItems[i], x, y, STAT_WIDTH, ITEM_HEIGHT - 10, TRUE);
+					UpdateWindow(hSubMenuItems[i]);
+					y += ITEM_HEIGHT - 10 + DISTANCE / 2;
+					if (i == ARENA_FIGHT_STATIC_ARMOUR_DEFENSE || i == ARENA_FIGHT_STATIC_CHARISMA)
+						y += DISTANCE;
+				}
+			}
+			x = 374;
+			y = 672;
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_BUT_BACK], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
 			UpdateWindow(hSubMenuItems[ARENA_FIGHT_BUT_BACK]);
@@ -310,10 +439,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[ARENA_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = BUT_ARENA;
-				InvalidateRect(hWnd, 0, 1);
 
-				// Updating window to show new buttons
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_QUEST])
 			{
@@ -334,9 +461,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hItems[BUT_MENU] || LOWORD(wp) == IDCANCEL)
 			{
 				game.getMenuManager().setMenu(new GameMenu(hWnd));
-				// Updating window to show new buttons
-				InvalidateRect(hWnd, 0, 1);
-				SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+				updateWindow(hWnd);
 			}
 			break;
 
@@ -359,16 +484,16 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Creating new sub menu items
 					hSubMenuItems.resize(ARENA_FIGHT_ITEM_NUMBER);
 
-					for (int i = 0; i < ArenaFightItem::ARENA_FIGHT_BUT_FIGHT; i++)
-						hSubMenuItems[i] = (CreateWindow("BUTTON", "Opponent", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTOCHECKBOX, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-					hSubMenuItems[ARENA_FIGHT_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-					hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = (CreateWindow("BUTTON", "Fight", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+					for (int i = ArenaFightItem::ARENA_FIGHT_STATIC_NAME; i <= ArenaFightItem::ARENA_FIGHT_STATIC_FAME; i++)
+						hSubMenuItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+					for (int i = ArenaFightItem::ARENA_FIGHT_BUT_OPPONENT1; i <= ArenaFightItem::ARENA_FIGHT_BUT_OPPONENT15; i++)
+						hSubMenuItems[i] = CreateWindow("BUTTON", "Opponent", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTOCHECKBOX | BS_LEFTTEXT, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+					hSubMenuItems[ARENA_FIGHT_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+					hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = CreateWindow("BUTTON", "Fight", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 					currentSubMenuItem = ArenaItem::ARENA_BUT_FIGHT;
-					InvalidateRect(hWnd, 0, 1);
 
-					// Updating window to show new buttons
-					SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+					updateWindow(hWnd);
 				}
 				if ((HWND)lp == hSubItems[ARENA_BUT_BET])
 				{
@@ -391,16 +516,180 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						ShowWindow(hItem, SW_SHOW);
 
 					currentSubMenu = ITEM_NUMBER;
-					InvalidateRect(hWnd, 0, 1);
 
-					// Updating window to show new buttons
-					SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+					updateWindow(hWnd);
 					break;
 				}
 				break;
 
 			case ArenaItem::ARENA_BUT_FIGHT:
 			{
+				// Selecting opponent
+				{
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT1])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT1], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT1;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT2])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT2], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT2;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT3])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT3], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT3;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT4])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT4], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT4;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT5])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT5], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT5;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT6])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT6], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT6;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT7])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT7], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT7;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT8])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT8], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT8;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT9])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT9], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT9;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT10])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT10], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT10;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT11])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT11], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT11;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT12])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT12], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT12;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT13])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT13], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT13;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT14])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT14], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT14;
+						updateWindow(hWnd);
+					}
+
+					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT15])
+					{
+						for (HWND hSubMenuItem : hSubMenuItems)
+							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
+						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT15], BM_SETCHECK, 1, 0);
+						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT15;
+						updateWindow(hWnd);
+					}
+				}
+
+				// Starting fight
+				if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] &&
+					selectedOpponent != -1 &&
+					game.getPlayer().getHP() > 30)
+				{
+					// Destroying all buttons
+					for (HWND hItem : hSubMenuItems)
+						if (hItem != NULL)
+							DestroyWindow(hItem);
+					hSubMenuItems.clear();
+
+					game.setFighting(Fighting(hWnd));
+					game.getFighting().setScreen(Fighting::Screen::FIGHT_ARENA);
+					game.setDisplayState(DisplayState::FIGHTING);
+					updateWindow(hWnd);
+					game.getFighting().fight(
+						hWnd,
+						game.getPlayer(),
+						game.getWorldMap().getCurrentCity().getArena()
+							.getGladiator(selectedOpponent)
+					);
+
+					currentSubMenuItem = ArenaItem::ARENA_ITEM_NUMBER;
+					currentSubMenu = Item::ITEM_NUMBER;
+					break;
+				}
+
+				// Return
 				if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 				{
 					// Destroying all buttons
@@ -414,10 +703,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						ShowWindow(hItem, SW_SHOW);
 
 					currentSubMenuItem = ARENA_ITEM_NUMBER;
-					InvalidateRect(hWnd, 0, 1);
+					selectedOpponent = -1;
 
-					// Updating window to show new buttons
-					SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
+					updateWindow(hWnd);
 					break;
 				}
 			}

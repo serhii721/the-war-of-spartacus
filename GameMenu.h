@@ -21,7 +21,6 @@ public:
 		BUT_LOAD,
 		BUT_SETTINGS,
 		BUT_EXIT_MENU,
-		BUT_EXIT_DESKTOP,
 		ITEM_NUMBER
 	};
 	enum SettingsItem

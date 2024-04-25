@@ -77,12 +77,22 @@ Game::~Game()
 
 void Game::setPlayer(const Player& rPlayer)
 {
-	*pPlayer = rPlayer;
+	pPlayer.reset(new Player(rPlayer));
 }
 
 void Game::setWorldMap(const WorldMap& rWorldMap)
 {
-	*pWorldMap = rWorldMap;
+	pWorldMap.reset(new WorldMap(rWorldMap));
+}
+
+void Game::setFighting(const Fighting& rFighting)
+{
+	pFighting.reset(new Fighting(rFighting));
+}
+
+void Game::setDisplayState(DisplayState ds)
+{
+	displayState = ds;
 }
 
 Player& Game::getPlayer() const
@@ -93,6 +103,11 @@ Player& Game::getPlayer() const
 WorldMap& Game::getWorldMap() const
 {
 	return *pWorldMap;
+}
+
+Fighting & Game::getFighting() const
+{
+	return *pFighting;
 }
 
 MenuManager& Game::getMenuManager()

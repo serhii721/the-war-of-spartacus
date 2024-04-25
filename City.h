@@ -15,5 +15,7 @@ public:
 	~City();
 
 	void setName(int);
+
 	int getName() const;
+	Arena& getArena();
 };
