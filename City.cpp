@@ -29,6 +29,11 @@ int City::getName() const
 	return nameIndex;
 }
 
+string City::getNameString()
+{
+	return localization.getCityName(nameIndex);
+}
+
 Arena& City::getArena()
 {
 	return arena;

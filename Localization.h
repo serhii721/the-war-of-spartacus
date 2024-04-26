@@ -8,6 +8,9 @@ private:
 	vector<string> npcFirstNames;
 	vector<string> npcLastNames;
 	vector<string> gladiatorNicknames;
+	vector<string> weaponTypes;
+	vector<string> armourTypes;
+	vector<string> cityNames;
 
 	// TODO: errorMessages
 public:
@@ -20,5 +23,11 @@ public:
 
 	const string& operator[](int) const;
 	Language getLanguage() const;
+	string getFirstName(int);
+	string getLastName(int);
+	string getNickname(int);
+	string getWeaponType(int);
+	string getArmourType(int);
+	string getCityName(int);
 	// TODO: getErrorMessage()
 };

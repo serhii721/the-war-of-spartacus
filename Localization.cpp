@@ -6,7 +6,10 @@ Localization::Localization() :
 	messages(),
 	npcFirstNames(),
 	npcLastNames(),
-	gladiatorNicknames()
+	gladiatorNicknames(),
+	weaponTypes(),
+	armourTypes(),
+	cityNames()
 { }
 
 Localization::Localization(const Localization& L) :
@@ -14,7 +17,10 @@ Localization::Localization(const Localization& L) :
 	messages(L.messages),
 	npcFirstNames(L.npcFirstNames),
 	npcLastNames(L.npcLastNames),
-	gladiatorNicknames(L.gladiatorNicknames)
+	gladiatorNicknames(L.gladiatorNicknames),
+	weaponTypes(L.weaponTypes),
+	armourTypes(L.armourTypes),
+	cityNames(L.cityNames)
 { }
 
 Localization& Localization::operator=(const Localization& L)
@@ -25,6 +31,9 @@ Localization& Localization::operator=(const Localization& L)
 	npcFirstNames = L.npcFirstNames;
 	npcLastNames = L.npcLastNames;
 	gladiatorNicknames = L.gladiatorNicknames;
+	weaponTypes = L.weaponTypes;
+	armourTypes = L.armourTypes;
+	cityNames = L.cityNames;
 	return *this;
 }
 
@@ -123,6 +132,88 @@ void Localization::setLanguage(Language llanguage)
 
 	fin.close();
 	finEng.close();
+
+	// Reading the file of weapon types
+	path = "Data/Language/World/";
+	fileName = "WeaponTypes";
+	fin.open(path + langPrefix + fileName + FORMAT);
+	finEng.open(path + "En_" + fileName + FORMAT);
+
+	while (getline(fin, line))
+	{
+		getline(finEng, lineEng);
+		if (line != "")
+			weaponTypes.push_back(line);
+		else
+			weaponTypes.push_back(lineEng);
+	}
+
+	fin.close();
+	finEng.close();
+
+	// Reading the file of armour types
+	fileName = "ArmourTypes";
+	fin.open(path + langPrefix + fileName + FORMAT);
+	finEng.open(path + "En_" + fileName + FORMAT);
+
+	while (getline(fin, line))
+	{
+		getline(finEng, lineEng);
+		if (line != "")
+			armourTypes.push_back(line);
+		else
+			armourTypes.push_back(lineEng);
+	}
+
+	fin.close();
+	finEng.close();
+
+	// Reading the file of City names
+	fileName = "CityNames";
+	fin.open(path + langPrefix + fileName + FORMAT);
+	finEng.open(path + "En_" + fileName + FORMAT);
+
+	while (getline(fin, line))
+	{
+		getline(finEng, lineEng);
+		if (line != "")
+			cityNames.push_back(line);
+		else
+			cityNames.push_back(lineEng);
+	}
+
+	fin.close();
+	finEng.close();
 }
 
 Language Localization::getLanguage() const { return language; }
+
+string Localization::getFirstName(int n)
+{
+	return npcFirstNames[n];
+}
+
+string Localization::getLastName(int n)
+{
+	return npcLastNames[n];
+}
+
+string Localization::getNickname(int n)
+{
+	return gladiatorNicknames[n];
+}
+
+string Localization::getWeaponType(int n)
+{
+	return weaponTypes[n];
+}
+
+string Localization::getArmourType(int n)
+{
+	return armourTypes[n];
+}
+
+string Localization::getCityName(int n)
+{
+	return cityNames[n];
+}

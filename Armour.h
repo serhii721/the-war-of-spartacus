@@ -24,6 +24,7 @@ public:
 
 	int getDefense() const;
 	Type getType() const;
+	string getTypeString();
 	int getDefAddition() const;
 	int getEvasionProbAddition() const;
 	int getStunProbSubtraction() const;

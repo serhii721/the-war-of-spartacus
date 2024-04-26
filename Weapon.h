@@ -38,6 +38,7 @@ public:
 
 	int getDamage() const;
 	Type getType() const;
+	string getTypeString();
 	int getDamageAddition() const;
 	int getShieldProbAddition() const;
 	int getShieldDefPercentAddition() const;
