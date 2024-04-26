@@ -21,6 +21,12 @@ CityMenu::CityMenu(HWND hWnd) :
 	currentSubMenuItem(ArenaItem::ARENA_ITEM_NUMBER),
 	selectedOpponent(-1)
 {
+	string buffer = "City of " + game.getWorldMap().getCurrentCity().getNameString();
+	hItems[STAT_CITY_NAME] = CreateWindow("STATIC", buffer.c_str(), // TODO: Apply localization
+		WS_CHILD | WS_VISIBLE | SS_CENTER,
+		0, 0, 0, 0, hWnd, 0, hInst, 0
+	);
+
 	char className[256] = "BUTTON";
 	hItems[BUT_ARENA] = CreateWindow(className, "Arena", // TODO: Apply localization
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
@@ -199,44 +205,66 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				string buffer;
 				NPC tmp(*game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent));
 
-				// TODO: Name, weapon type, armour type
+				// TODO: Weapon type, armour type
 
-				//buffer = tmp.getName();
-				buffer = "Name: ";
+				// Name
+				buffer = tmp.getName();
 				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
 
+				// Level
 				buffer = "Level: " + to_string(tmp.getLevel());
 				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEVEL], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
 
-				if (tmp.getLeftHand())
-				{
-					//buffer = "Left hand type: " + to_string(tmp.getLeftHand()->getType());
-					//SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
-
-					buffer = "Left hand damage: " + to_string(tmp.getLeftHand()->getTotalDamage());
-					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
-				}
+				// Right hand
 				if (tmp.getRightHand())
 				{
-					//buffer = "Right hand type: " + to_string(tmp.getRightHand()->getType());
-					//SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+					buffer = tmp.getRightHand()->getTypeString();
+					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
 
-					buffer = "Right hand damage: " + to_string(tmp.getRightHand()->getTotalDamage());
+					buffer = "Damage: " + to_string(tmp.getRightHand()->getTotalDamage());
 					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
 				}
 
+				// Left hand
+				if (tmp.getLeftHand())
+				{
+					buffer = tmp.getLeftHand()->getTypeString();
+					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+					if (tmp.getLeftHand()->getType() != Weapon::Type::SHIELD)
+					{
+						buffer = "Damage: " + to_string(tmp.getLeftHand()->getTotalDamage());
+						SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+					}
+					else
+					{
+						buffer = "Block defense: " + to_string(tmp.getLeftHand()->getShieldDefPercentAddition());
+						SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+					}
+				}
+				else
+				{
+					buffer = "Empty hand";
+					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+
+					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"");
+				}
+
+				// Health
 				buffer = "Health: " + to_string(tmp.getHP());
 				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
 
+				// Armour
 				if (tmp.getArmour())
 				{
-					//buffer = "Armour type: " + to_string(tmp.getArmour()->getType());
-					//SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+					buffer = tmp.getArmour()->getTypeString();
+					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
 
 					buffer = "Armour defense: " + to_string(tmp.getArmour()->getTotalDefense());
 					SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
 				}
 
+				// Stats
 				buffer = "Strength: " + to_string(tmp.getStrength());
 				SendMessage(hSubMenuItems[ArenaFightItem::ARENA_FIGHT_STATIC_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
 
@@ -486,8 +514,13 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					for (int i = ArenaFightItem::ARENA_FIGHT_STATIC_NAME; i <= ArenaFightItem::ARENA_FIGHT_STATIC_FAME; i++)
 						hSubMenuItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
 					for (int i = ArenaFightItem::ARENA_FIGHT_BUT_OPPONENT1; i <= ArenaFightItem::ARENA_FIGHT_BUT_OPPONENT15; i++)
-						hSubMenuItems[i] = CreateWindow("BUTTON", "Opponent", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTOCHECKBOX | BS_LEFTTEXT, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+						hSubMenuItems[i] = CreateWindow("BUTTON",
+							game.getWorldMap().getCurrentCity().getArena().getGladiator(i)->getName().c_str(),
+							WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTOCHECKBOX | BS_LEFTTEXT,
+							0, 0, 0, 0, hWnd, 0, hInst, 0);
+
 					hSubMenuItems[ARENA_FIGHT_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 					hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = CreateWindow("BUTTON", "Fight", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 

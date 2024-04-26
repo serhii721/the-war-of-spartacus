@@ -21,6 +21,7 @@ private:
 public:
 	enum Item
 	{
+		STAT_CITY_NAME,
 		BUT_ARENA,
 		BUT_QUEST,
 		BUT_MARKET,

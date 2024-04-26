@@ -31,6 +31,7 @@ Armour::Armour(
 
 Armour::Armour(const Armour& A) :
 	defense(A.defense),
+	type(A.type),
 	defAddition(A.defAddition),
 	strAdditionPerc(A.strAdditionPerc),
 	dexAdditionPerc(A.dexAdditionPerc),
@@ -42,6 +43,7 @@ Armour& Armour::operator=(const Armour& A)
 {
 	if (&A == this) return *this;
 	defense = A.defense;
+	type = A.type;
 	defAddition = A.defAddition;
 	strAdditionPerc = A.strAdditionPerc;
 	dexAdditionPerc = A.dexAdditionPerc;
@@ -62,6 +64,11 @@ int Armour::getTotalDefense() const { return defense + defAddition; }
 int Armour::getDefense() const { return defense; }
 
 Armour::Type Armour::getType() const { return type; }
+
+string Armour::getTypeString()
+{
+	return localization.getArmourType(type);
+}
 
 int Armour::getDefAddition() const { return defAddition; }
 

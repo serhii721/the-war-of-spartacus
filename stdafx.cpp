@@ -1330,6 +1330,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Setting the random seed
 		srand((unsigned)time(0));
 
+		localization.setLanguage();
 		game.getMenuManager().setMenu(new MainMenu(hwnd));
 
 		//// Loading the user prefered language

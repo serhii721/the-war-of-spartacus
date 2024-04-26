@@ -103,6 +103,11 @@ int Weapon::getDamage() const { return damage; }
 
 Weapon::Type Weapon::getType() const { return type; }
 
+string Weapon::getTypeString()
+{
+	return localization.getWeaponType(type);
+}
+
 int Weapon::getDamageAddition() const { return damageAddition; }
 
 int Weapon::getShieldProbAddition() const { return shieldProbAddition; }

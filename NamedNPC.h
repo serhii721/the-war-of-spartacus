@@ -12,5 +12,5 @@ public:
 	virtual ~NamedNPC();
 
 	void rename(int, int);
-	// TODO: const string& getName() const;
+	string getName();
 };

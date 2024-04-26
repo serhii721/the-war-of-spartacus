@@ -17,5 +17,6 @@ public:
 	void setName(int);
 
 	int getName() const;
+	string getNameString();
 	Arena& getArena();
 };
