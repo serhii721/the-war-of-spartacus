@@ -8,8 +8,8 @@ private:
 	unique_ptr<Fighting> pFighting;
 	unique_ptr<Player> pPlayer;
 
-	HFONT customFont;
-
+	HFONT smallFont, mediumFont, largeFont;
+	
 	DisplayState displayState;
 
 public:

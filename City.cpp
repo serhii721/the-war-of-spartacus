@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "City.h"
 
-City::City() : nameIndex(Cities::ROMA), arena() { }
+City::City() : nameIndex(Cities::ROME), arena() { }
 
 City::City(int nname, const Arena& A) : nameIndex(nname), arena(A) { }
 
