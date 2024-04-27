@@ -8,7 +8,43 @@ Game::Game() :
 	pPlayer(make_unique<Player>()),
 	displayState(DisplayState::MENU)
 {
-	customFont = CreateFont(
+	smallFont = CreateFont(
+		16,						// Size
+		15,						// Width
+		0,						// Lean angle
+		0,						// Rotation angle
+		FW_NORMAL,				// Thickness
+		FALSE,					// Cursive
+		FALSE,					// Underline
+		FALSE,					// Crossed
+		DEFAULT_CHARSET,		// Symbol set
+		OUT_DEFAULT_PRECIS,		// Output preccision
+		CLIP_DEFAULT_PRECIS,	// Clip precission
+		DEFAULT_QUALITY,		// Output quality
+		DEFAULT_PITCH |			// Pitch
+		FF_ROMAN,				// Font family
+		"MyFont"				// Name
+	);
+
+	mediumFont = CreateFont(
+		24,						// Size
+		15,						// Width
+		0,						// Lean angle
+		0,						// Rotation angle
+		FW_NORMAL,				// Thickness
+		FALSE,					// Cursive
+		FALSE,					// Underline
+		FALSE,					// Crossed
+		DEFAULT_CHARSET,		// Symbol set
+		OUT_DEFAULT_PRECIS,		// Output preccision
+		CLIP_DEFAULT_PRECIS,	// Clip precission
+		DEFAULT_QUALITY,		// Output quality
+		DEFAULT_PITCH |			// Pitch
+		FF_ROMAN,				// Font family
+		"MyFont"				// Name
+	);
+
+	largeFont = CreateFont(
 		40,						// Size
 		15,						// Width
 		0,						// Lean angle
@@ -32,7 +68,10 @@ Game::Game(const Game& GAME) :
 	pWorldMap(make_unique<WorldMap>(*GAME.pWorldMap)),
 	pFighting(make_unique<Fighting>()),
 	pPlayer(make_unique<Player>(*GAME.pPlayer)),
-	displayState(GAME.displayState)
+	displayState(GAME.displayState),
+	smallFont(GAME.smallFont),
+	mediumFont(GAME.mediumFont),
+	largeFont(GAME.largeFont)
 { }
 
 Game& Game::operator=(const Game& GAME)
@@ -63,15 +102,29 @@ Game& Game::operator=(const Game& GAME)
 	menuManager = GAME.menuManager;
 	displayState = GAME.displayState;
 
+	smallFont = GAME.smallFont;
+	mediumFont = GAME.mediumFont;
+	largeFont = GAME.largeFont;
+
 	return *this;
 }
 
 Game::~Game()
 {
-	if (customFont != NULL)
+	if (smallFont != NULL)
 	{
-		DeleteObject(customFont);
-		customFont = NULL;
+		DeleteObject(smallFont);
+		smallFont = NULL;
+	}
+	if (mediumFont != NULL)
+	{
+		DeleteObject(mediumFont);
+		mediumFont = NULL;
+	}
+	if (largeFont != NULL)
+	{
+		DeleteObject(largeFont);
+		largeFont = NULL;
 	}
 }
 

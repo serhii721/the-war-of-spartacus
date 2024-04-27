@@ -163,7 +163,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 {
 	const string DIRECTORY = "Data/Image/Background/";
 	const string FORMAT = ".bmp";
-	string path("");
+	string path(""), buffer("");
 
 	RECT rect;
 	GetClientRect(hWnd, &rect);
@@ -172,7 +172,11 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	// Composing path based on current menu
 	switch (currentSubMenu)
 	{
-	default:case ITEM_NUMBER: path = DIRECTORY + "cityBackground768" + FORMAT; break;
+	default:case ITEM_NUMBER:
+		path = DIRECTORY + "cityBackground768" + FORMAT;
+		buffer = "City of " + game.getWorldMap().getCurrentCity().getNameString();
+		SendMessage(hItems[STAT_CITY_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+		break;
 	case BUT_ARENA:
 		switch (currentSubMenuItem)
 		{
@@ -194,7 +198,10 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	// 2. Text
 	switch (currentSubMenu)
 	{
-	default:case ITEM_NUMBER: break;
+	default:case ITEM_NUMBER:
+		for (HWND hItem : hItems)
+			ShowWindow(hItem, SW_SHOW);
+		break;
 	case BUT_ARENA:
 		switch (currentSubMenuItem)
 		{
@@ -205,7 +212,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				string buffer;
 				NPC tmp(*game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent));
 
-				// TODO: Weapon type, armour type
+				// TODO: Localization
 
 				// Name
 				buffer = tmp.getName();
@@ -484,7 +491,21 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_MAP])
 			{
-				// TODO
+				// Destroying all buttons
+				for (HWND hItem : hSubMenuItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubMenuItems.clear();
+
+				for (HWND hItem : hItems)
+					ShowWindow(hItem, SW_HIDE);
+
+				game.setDisplayState(DisplayState::WORLD_MAP);
+				updateWindow(hWnd);
+
+				currentSubMenuItem = ArenaItem::ARENA_ITEM_NUMBER;
+				currentSubMenu = Item::ITEM_NUMBER;
+				break;
 			}
 			if ((HWND)lp == hItems[BUT_MENU] || LOWORD(wp) == IDCANCEL)
 			{
@@ -706,7 +727,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 							DestroyWindow(hItem);
 					hSubMenuItems.clear();
 
-					game.setFighting(Fighting(hWnd));
 					game.getFighting().setScreen(Fighting::Screen::FIGHT_ARENA);
 					game.setDisplayState(DisplayState::FIGHTING);
 					updateWindow(hWnd);

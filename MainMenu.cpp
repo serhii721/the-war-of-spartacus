@@ -10,7 +10,7 @@ MainMenu::MainMenu() : hItems(), hSubItems(), currentSubMenu(Item::ITEM_NUMBER),
 MainMenu::MainMenu(HWND hWnd) : hItems(Item::ITEM_NUMBER), currentSubMenu(Item::ITEM_NUMBER), hSubItems(), nms()
 {
 	char className[256] = "BUTTON";
-	hItems[CONTINUE] = CreateWindow(className, "Continue", // TODO: Apply localization
+	hItems[BUT_CONTINUE] = CreateWindow(className, "Continue", // TODO: Apply localization
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
@@ -151,7 +151,11 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	// Composing path based on current menu
 	switch (currentSubMenu)
 	{
-	default:case ITEM_NUMBER: path = DIRECTORY + "menuBackground768" + FORMAT; break;
+	default:case ITEM_NUMBER:
+		path = DIRECTORY + "menuBackground768" + FORMAT;
+		for (HWND hItem : hItems)
+			ShowWindow(hItem, SW_SHOW);
+		break;
 	case BUT_LOAD_GAME:
 		// TODO
 		break;
@@ -720,12 +724,13 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						gladiators.push_back(pGladiator);
 					}
 					// Creating cities based of arenas
-					pCity = make_unique<City>(Cities::ROMA + i, Arena(gladiators));
+					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators));
 					cities.push_back(*pCity);
 					gladiators.clear();
 				}
 
-				game.setWorldMap(WorldMap(cities));
+				game.setWorldMap(WorldMap(hWnd, cities, Cities::PERUGIA));
+				game.setFighting(Fighting(hWnd));
 
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
 
