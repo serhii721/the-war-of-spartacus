@@ -4,10 +4,11 @@
 const int MAX_CITIES = 11;
 const int OPPONENTS_NUMBER = 15;
 const int BASIC_REGEN = 5;
-const int BASIC_PLAYER_ATTRIBUTES = 10;
+const int BASIC_ATTRIBUTES = 10;
 //const string OUTPUT_DIVIDER = "\n______________________________________________\n\n\n";
 
 // Player's and NPC's statistics
+const int MIN_ATTRIBUTE = 1, MAX_ATTRIBUTE = 100;
 const int MIN_STRENGTH = 1, MAX_STRENGTH = 100;
 const int MIN_CONSTITUTION = 1, MAX_CONSTITUTION = 100;
 const int MIN_DEXTERITY = 1, MAX_DEXTERITY = 100;
@@ -20,6 +21,9 @@ const int MIN_FAME = 0, BASIC_FAME = MIN_FAME;
 const int BASIC_HP = 100;
 // Leveling statistics
 const int MIN_LEVEL = 1;
+const int MAX_LEVEL = 100;
+const int EXPERIENCE_PER_LEVEL = 200;
+const int ATTRIBUTES_PER_LEVEL = 5;
 
 // Weapon's statistics
 const int MIN_WEAPON_DAMAGE = 20;
@@ -69,3 +73,7 @@ const int ARMOUR_RAND_DEF_ADDITION = 6;
 // Fight's statistics
 const int ONE_HUNDRED_PERCENT = 1000; // 100.0%.
 const int DAMAGE_REDUCTION_PERCENT = 375; // 37.5%.
+
+// Settings
+const int SLEEP_TIME = 100;
+const int STARTING_ADDITIONAL_ATTRIBUTES = 30;

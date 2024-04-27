@@ -298,7 +298,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 	{
 		const int DISTANCE = 100, ITEM_WIDTH = 300, ITEM_HEIGHT = 45;
 
-		MoveWindow(hSubItems[SPECIALS_STAT_SPECIALS], cx - ITEM_WIDTH / 2, DISTANCE - (ITEM_HEIGHT * 1.5), ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hSubItems[SPECIALS_STAT_SPECIALS], cx - ITEM_WIDTH / 2, DISTANCE - (int)(ITEM_HEIGHT * 1.5), ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		UpdateWindow(hSubItems[SPECIALS_STAT_SPECIALS]);
 
 		MoveWindow(hSubItems[SPECIALS_STAT_TEXT], DISTANCE, DISTANCE, cx * 2 - DISTANCE * 2, cy * 2 - DISTANCE * 3, TRUE);
@@ -680,7 +680,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				unique_ptr<Armour> armour = generateArmour();
 				TCHAR buffer[256];
 				SendMessage(hSubItems[EDIT_NAME], WM_GETTEXT, 256, (LPARAM)buffer);
-
+				
 				game.setPlayer(
 					Player(
 						Fighter(
@@ -700,7 +700,11 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 							move(leftHand),
 							move(armour)
 						),
-						MIN_LEVEL,
+						Leveling(
+							MIN_LEVEL,
+							0,
+							nms->unnassignedAttributes
+						),
 						string(buffer)
 					)
 				);
@@ -720,7 +724,21 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Creating opponents for arenas
 					for (int j = 0; j < OPPONENTS_NUMBER; j++)
 					{
-						pGladiator = generateNPC();
+						// Generating opponents of different levels for different cities
+						switch (i)
+						{
+						case Cities::ROME: pGladiator = generateNPC(80); break;
+						case Cities::NAPLES: pGladiator = generateNPC(70); break;
+						case Cities::METAPONTO: pGladiator = generateNPC(20); break;
+						case Cities::BOJANO: pGladiator = generateNPC(30); break;
+						case Cities::ANCONA: pGladiator = generateNPC(20); break;
+						case Cities::PERUGIA: pGladiator = generateNPC(10); break;
+						case Cities::FLORENCE: pGladiator = generateNPC(40); break;
+						case Cities::BOLOGNA: pGladiator = generateNPC(30); break;
+						case Cities::GENOA: pGladiator = generateNPC(40); break;
+						case Cities::VENICE: pGladiator = generateNPC(50); break;
+						case Cities::MILAN: pGladiator = generateNPC(60); break;
+						}
 						gladiators.push_back(pGladiator);
 					}
 					// Creating cities based of arenas

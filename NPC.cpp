@@ -3,7 +3,7 @@
 
 NPC::NPC() : Fighter(), NamedNPC(), Leveling() { }
 
-NPC::NPC(const Fighter& F, const NamedNPC& C, int l) : Fighter(F), NamedNPC(C), Leveling(l) { }
+NPC::NPC(const Fighter& F, const NamedNPC& C, const Leveling& L) : Fighter(F), NamedNPC(C), Leveling(L) { }
 
 NPC::NPC(const NPC& C) : Fighter(C), NamedNPC(C), Leveling(C) { }
 

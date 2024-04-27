@@ -147,7 +147,7 @@ void GameMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 void GameMenu::resizeMenu(int cx, int cy)
 {
-	int sz, x, y, i;
+	int sz, x, y;
 	switch (currentSubMenu)
 	{
 	// Game menu

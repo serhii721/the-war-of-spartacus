@@ -61,7 +61,7 @@ string toStringPrecision(double, int = 2);
 //void output(const string&, int = 15);
 //void outputError(const string&, int = 4);
 
-unique_ptr<NPC> generateNPC();
+unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);
 //void displayPlayer(const Player&);
 //void displayNPC(const NPC&);
 //void displayNPCBatch(const NPC*, int);

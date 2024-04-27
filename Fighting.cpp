@@ -225,14 +225,14 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 
 		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Opponent has higher wisdom, so he attacks first\r\n");
 		updateWindow(hWnd);
-		Sleep(1000);
+		Sleep(SLEEP_TIME);
 
 		// Opponent's attack
 		pOpponent->attack(rPlayer, result, damage);
 
 		getAttackResult(Attacker::OPPONENT, result, damage);
 		updateWindow(hWnd);
-		Sleep(1000);
+		Sleep(SLEEP_TIME);
 
 		// Checking the status of the fighting
 		status = checkFightStatus(rPlayer, *pOpponent);
@@ -249,7 +249,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	{
 		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"You have higher wisdom, so you attack first\r\n");
 		updateWindow(hWnd);
-		Sleep(1000);
+		Sleep(SLEEP_TIME);
 	}
 
 	// # 2. Fighting
@@ -264,7 +264,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 			// Output of the result of player's attack
 			getAttackResult(Attacker::PLAYER, result, damage);
 			updateWindow(hWnd);
-			Sleep(1000);
+			Sleep(SLEEP_TIME);
 
 			// Checking the status of the fighting
 			status = checkFightStatus(rPlayer, *pOpponent);
@@ -290,7 +290,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 
 		getAttackResult(Attacker::OPPONENT, result, damage);
 		updateWindow(hWnd);
-		Sleep(1000);
+		Sleep(SLEEP_TIME);
 
 		// Checking the status of the fighting
 		status = checkFightStatus(rPlayer, *pOpponent);
@@ -477,7 +477,7 @@ void Fighting::resizeWindow(int cx, int cy)
 		y = cy;
 
 	// Start
-	MoveWindow(hItems[STATIC_START], x - (ITEM_WIDTH + DISTANCE) * 0.5, y - (ITEM_HEIGHT + DISTANCE) * 4, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+	MoveWindow(hItems[STATIC_START], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y - (ITEM_HEIGHT + DISTANCE) * 4, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 	UpdateWindow(hItems[STATIC_START]);
 
 	// HP
@@ -502,7 +502,7 @@ void Fighting::resizeWindow(int cx, int cy)
 	UpdateWindow(hItems[STATIC_OPPONENT_DEFENSE]);
 
 	// Log
-	MoveWindow(hItems[EDIT_LOG_MESSAGES], x - (ITEM_WIDTH + DISTANCE) * 0.5, y, ITEM_WIDTH, ITEM_HEIGHT * 5, TRUE);
+	MoveWindow(hItems[EDIT_LOG_MESSAGES], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y, ITEM_WIDTH, ITEM_HEIGHT * 5, TRUE);
 	UpdateWindow(hItems[EDIT_LOG_MESSAGES]);
 
 	// Buttons
@@ -519,10 +519,10 @@ void Fighting::resizeWindow(int cx, int cy)
 	UpdateWindow(hItems[BUT_CONTINUE]);
 
 	// End of the fight
-	MoveWindow(hItems[STATIC_FIGHT_RESULT], x - (ITEM_WIDTH + DISTANCE) * 0.5, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+	MoveWindow(hItems[STATIC_FIGHT_RESULT], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 	UpdateWindow(hItems[BUT_END_FIGHT]);
 
-	MoveWindow(hItems[BUT_END_FIGHT], x - (ITEM_WIDTH + DISTANCE) * 0.5, y + ITEM_HEIGHT * 6 + DISTANCE + 2, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+	MoveWindow(hItems[BUT_END_FIGHT], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y + ITEM_HEIGHT * 6 + DISTANCE + 2, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 	UpdateWindow(hItems[BUT_END_FIGHT]);
 }
 
