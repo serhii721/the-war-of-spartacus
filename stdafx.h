@@ -25,6 +25,7 @@ using namespace std;
 
 #include <Windows.h>
 
+#include "resource.h"
 #include "LocalizationEnums.h"
 #include "Localization.h"
 #include "NewMenuStorage.h"

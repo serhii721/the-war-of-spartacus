@@ -16,7 +16,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdS
 	win.lpfnWndProc = WFunc;
 	win.cbClsExtra = win.cbWndExtra = 0;
 	win.hInstance = hInstance;
-	win.hIcon = LoadIcon(NULL, IDI_ASTERISK);
+	win.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 	win.hCursor = LoadCursor(NULL, IDC_ARROW);
 	win.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	win.lpszMenuName = NULL;
