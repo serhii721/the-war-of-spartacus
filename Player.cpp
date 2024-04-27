@@ -9,11 +9,11 @@ Player::Player() :
 
 Player::Player(
 	const Fighter& F,
-	int l,
+	const Leveling& L,
 	const string& rName
 ) :
 	Fighter(F),
-	Leveling(l),
+	Leveling(L),
 	name(rName)
 { }
 

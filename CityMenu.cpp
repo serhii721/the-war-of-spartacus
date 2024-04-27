@@ -313,7 +313,7 @@ void CityMenu::resizeMenu(int cx, int cy)
 		const int ITEM_HEIGHT = 60, DISTANCE = 15, ITEM_WIDTH = 300;
 		sz = hItems.size();
 		x = cx - ITEM_WIDTH * 2;
-		y = cy - sz / 1.5 * (ITEM_HEIGHT + DISTANCE);
+		y = cy - (int)(sz / 1.5 * (ITEM_HEIGHT + DISTANCE));
 		for (HWND hItem : hItems)
 		{
 			y += ITEM_HEIGHT + DISTANCE;
@@ -362,7 +362,7 @@ void CityMenu::resizeMenu(int cx, int cy)
 			}
 
 			y = DISTANCE * 2 + ITEM_HEIGHT * 2;
-			x = cx + BUT_WIDTH * 0.5 + DISTANCE;
+			x = cx + (int)(BUT_WIDTH * 0.5) + DISTANCE;
 
 			// Opponent's stats
 			if (selectedOpponent != -1)
@@ -536,11 +536,17 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					for (int i = ArenaFightItem::ARENA_FIGHT_STATIC_NAME; i <= ArenaFightItem::ARENA_FIGHT_STATIC_FAME; i++)
 						hSubMenuItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
+					string buffer;
 					for (int i = ArenaFightItem::ARENA_FIGHT_BUT_OPPONENT1; i <= ArenaFightItem::ARENA_FIGHT_BUT_OPPONENT15; i++)
+					{
+						buffer = game.getWorldMap().getCurrentCity().getArena().getGladiator(i)->getName();
+						buffer += " (lvl: " + to_string(game.getWorldMap().getCurrentCity().getArena().getGladiator(i)->getLevel());
+						buffer += ")";
 						hSubMenuItems[i] = CreateWindow("BUTTON",
-							game.getWorldMap().getCurrentCity().getArena().getGladiator(i)->getName().c_str(),
+							buffer.c_str(),
 							WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTOCHECKBOX | BS_LEFTTEXT,
 							0, 0, 0, 0, hWnd, 0, hInst, 0);
+					}
 
 					hSubMenuItems[ARENA_FIGHT_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 					hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = CreateWindow("BUTTON", "Fight", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);

@@ -188,7 +188,7 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 
 void WorldMap::resizeWindow(int cx, int cy)
 {
-	int sz, x, y, i;
+	int x, y, i;
 	const int ITEM_HEIGHT = 40, ITEM_WIDTH = 300, BUT_WIDTH = 336, DISTANCE = 3;
 	const int FRAME_HEIGHT = 28, FRAME_WIDTH = 110;
 

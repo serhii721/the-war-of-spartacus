@@ -10,7 +10,7 @@ class NPC :
 {
 public:
 	NPC();
-	NPC(const Fighter&, const NamedNPC&, int);
+	NPC(const Fighter&, const NamedNPC&, const Leveling&);
 	NPC(const NPC&);
 	NPC& operator=(const NPC&);
 	virtual ~NPC();

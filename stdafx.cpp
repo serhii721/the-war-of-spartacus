@@ -50,8 +50,9 @@ string toStringPrecision(double n, int precision)
 
 // __________ NPC __________
 
-unique_ptr<NPC> generateNPC()
+unique_ptr<NPC> generateNPC(int aproximateLevel)
 {
+	// 1. Generating name
 	const string PATH_BASE = "Data/Language/Names/", FORMAT = ".lang";
 	ifstream fin;
 	// Open file containing roman first names
@@ -61,21 +62,15 @@ unique_ptr<NPC> generateNPC()
 	case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_FirstNames" + FORMAT); break;
 	case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_FirstNames" + FORMAT); break;
 	}
-
 	//if (!fin)
 	//	output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
+
 	int count = 0;
-	string line, name;
+	string line;
 	while (getline(fin, line)) // Count lines in file
 		count++;
 	int randomFirstName = rand() % count; // Choose random line
-	fin.clear();
-	fin.seekg(0);
-	int i = 0;
-	for (; i < randomFirstName; i++)
-		getline(fin, line);
 	fin.close();
-	name = line; // Assign random name
 
 	// Open file containing roman last names
 	switch (localization.getLanguage())
@@ -84,22 +79,16 @@ unique_ptr<NPC> generateNPC()
 	case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_LastNames" + FORMAT); break;
 	case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_LastNames" + FORMAT); break;
 	}
-
 	//if (!fin)
 		//output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
+
 	count = 0;
 	while (getline(fin, line)) // Count lines in file
 		count++;
 	int randomLastName = rand() % count; // Choose random line
-	fin.clear();
-	fin.seekg(0);
-	for (i = 0; i < randomLastName; i++)
-		getline(fin, line);
 	fin.close();
 
-	name += ' ' + line; // Add last name
-
-	// Generating weapons
+	// 2. Generating weapons
 	unique_ptr<Weapon> rightHand = generateWeapon();
 	unique_ptr<Weapon> leftHand = generateWeapon();
 	if (!rightHand->isCompatibleWith(leftHand->getType()) &&
@@ -128,16 +117,56 @@ unique_ptr<NPC> generateNPC()
 	else
 		leftHand = nullptr;
 
+	// 3. Generating stats
+	// Generating level in range (aproximate level - 5) to (aproximate level + 5)
+	int level = rand() % 11 + aproximateLevel - 5;
+
+	if (level < MIN_LEVEL)
+		level = MIN_LEVEL;
+	else if (level > MAX_LEVEL)
+		level = MAX_LEVEL;
+
+	// Calculating unnassigned attributes for current level
+	int unnassignedAttributes = level * ATTRIBUTES_PER_LEVEL;
+	if (level > 9)
+		unnassignedAttributes += 10;
+	else
+		unnassignedAttributes += level;
+
+	// Randomly distributing attribute points
+	vector<int> attributes(6, BASIC_ATTRIBUTES);
+	int points;
+	while (unnassignedAttributes > 0)
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			if (unnassignedAttributes > MAX_ATTRIBUTE - BASIC_ATTRIBUTES)
+				points = rand() % (MAX_ATTRIBUTE - BASIC_ATTRIBUTES + 1);
+			else
+				points = rand() % (unnassignedAttributes + 1);
+			attributes[i] += points;
+			unnassignedAttributes -= points;
+		}
+		if (unnassignedAttributes > MAX_ATTRIBUTE - BASIC_ATTRIBUTES)
+		{
+			attributes[5] += rand() % (MAX_ATTRIBUTE - BASIC_ATTRIBUTES + 1);
+			unnassignedAttributes -= attributes[5] - BASIC_ATTRIBUTES;
+		}
+		else
+			attributes[5] += unnassignedAttributes;
+	}
+
+
 	return make_unique<NPC>(
 		Fighter(
 			Statistics(
-				MIN_STRENGTH + rand() / (RAND_MAX / (MAX_STRENGTH - 10)),
-				MIN_CONSTITUTION + rand() / (RAND_MAX / (MAX_CONSTITUTION - 10)),
-				MIN_DEXTERITY + rand() / (RAND_MAX / (MAX_DEXTERITY - 10)),
-				MIN_INTELLIGENCE + rand() / (RAND_MAX / (MAX_INTELLIGENCE - 10)),
-				MIN_WISDOM + rand() / (RAND_MAX / (MAX_WISDOM - 10)),
-				MIN_CHARISMA + rand() / (RAND_MAX / (MAX_CHARISMA - 10)),
-				MIN_AGE, // TODO: Calculate age
+				attributes[0], // Strength
+				attributes[1], // Constitution
+				attributes[2], // Dexterity
+				attributes[3], // Intelligence
+				attributes[4], // Wisdom
+				attributes[5], // Charisma
+				rand() % (MAX_AGE - MIN_AGE) + MIN_AGE,
 				BASIC_FAME
 			),
 			BASIC_HP,
@@ -150,7 +179,7 @@ unique_ptr<NPC> generateNPC()
 			randomFirstName,
 			randomLastName
 		),
-		MIN_LEVEL // TODO: Specify level
+		level
 	);
 }
 

@@ -2,13 +2,13 @@
 
 NewMenuStorage::NewMenuStorage() :
 	age(MIN_AGE),
-	unnassignedAttributes(30),
-	strength(BASIC_PLAYER_ATTRIBUTES),
-	constitution(BASIC_PLAYER_ATTRIBUTES),
-	dexterity(BASIC_PLAYER_ATTRIBUTES),
-	intelligence(BASIC_PLAYER_ATTRIBUTES),
-	wisdom(BASIC_PLAYER_ATTRIBUTES),
-	charisma(BASIC_PLAYER_ATTRIBUTES)
+	unnassignedAttributes(STARTING_ADDITIONAL_ATTRIBUTES),
+	strength(BASIC_ATTRIBUTES),
+	constitution(BASIC_ATTRIBUTES),
+	dexterity(BASIC_ATTRIBUTES),
+	intelligence(BASIC_ATTRIBUTES),
+	wisdom(BASIC_ATTRIBUTES),
+	charisma(BASIC_ATTRIBUTES)
 { }
 
 NewMenuStorage::NewMenuStorage(const NewMenuStorage& NMS) :
