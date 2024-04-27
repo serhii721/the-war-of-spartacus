@@ -168,6 +168,7 @@
     <ClInclude Include="NewMenuStorage.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Statistics.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Weapon.h" />
@@ -204,6 +205,12 @@
     </ClCompile>
     <ClCompile Include="Weapon.cpp" />
     <ClCompile Include="WorldMap.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GladiatorGame.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\Image\Icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
