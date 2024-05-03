@@ -98,3 +98,15 @@ int Statistics::getCharisma() const { return charisma; }
 int Statistics::getAge() const { return age; }
 
 int Statistics::getFame() const { return fame; }
+
+void Statistics::setStrength(int n) { strength = n; }
+
+void Statistics::setConstitution(int n) { constitution = n; }
+
+void Statistics::setDexterity(int n) { dexterity = n; }
+
+void Statistics::setIntelligence(int n) { intelligence = n; }
+
+void Statistics::setWisdom(int n) { wisdom = n; }
+
+void Statistics::setCharisma(int n) { charisma = n; }

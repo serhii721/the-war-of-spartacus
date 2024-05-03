@@ -23,11 +23,12 @@ public:
 
 	const string& operator[](int) const;
 	Language getLanguage() const;
-	string getFirstName(int);
-	string getLastName(int);
-	string getNickname(int);
-	string getWeaponType(int);
-	string getArmourType(int);
-	string getCityName(int);
+	string getNPCName(const NamedNPC&) const;
+	const string& getNPCFirstName(const NamedNPC&) const;
+	const string& getNPCLastName(const NamedNPC&) const;
+	const string& getNPCNickname(const NamedNPC&) const;
+	const string& getWeaponTypeName(const Weapon&) const;
+	const string& getArmourTypeName(const Armour&) const;
+	const string& getCityName(const City&) const;
 	// TODO: getErrorMessage()
 };

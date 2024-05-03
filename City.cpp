@@ -3,7 +3,7 @@
 
 City::City() : nameIndex(Cities::ROME), arena() { }
 
-City::City(int nname, const Arena& A) : nameIndex(nname), arena(A) { }
+City::City(int nnameIndex, const Arena& A) : nameIndex(nnameIndex), arena(A) { }
 
 City::City(const City& C) : nameIndex(C.nameIndex), arena(C.arena) { }
 
@@ -24,14 +24,9 @@ void City::setName(int s)
 	nameIndex = s;
 }
 
-int City::getName() const
+int City::getNameIndex() const
 {
 	return nameIndex;
-}
-
-string City::getNameString()
-{
-	return localization.getCityName(nameIndex);
 }
 
 Arena& City::getArena()

@@ -8,6 +8,11 @@
 
 #include "stdafx.h"
 
+// Buffers
+TCHAR str[256] = "";
+string buf = "";
+string logStr = "";
+
 extern HINSTANCE hInst;
 
 Localization localization;
@@ -167,7 +172,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 				attributes[4], // Wisdom
 				attributes[5], // Charisma
 				rand() % (MAX_AGE - MIN_AGE) + MIN_AGE,
-				BASIC_FAME
+				BASIC_FAME * level
 			),
 			BASIC_HP,
 			BASIC_HP,

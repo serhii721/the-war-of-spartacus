@@ -13,6 +13,7 @@ private:
 	DisplayState displayState;
 
 public:
+	// TODO: enum Background
 	Game();
 	Game(const Game&);
 	Game& operator=(const Game&);
@@ -23,7 +24,7 @@ public:
 	void setFighting(const Fighting&);
 	void setDisplayState(DisplayState);
 
-	Player& getPlayer() const;
+	Player& getPlayer();
 	WorldMap& getWorldMap() const;
 	Fighting& getFighting() const;
 	MenuManager& getMenuManager();

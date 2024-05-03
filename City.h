@@ -9,14 +9,13 @@ private:
 
 public:
 	City();
-	City(int name_, const Arena&);
+	City(int nameIndex_, const Arena&);
 	City(const City&);
 	City& operator=(const City&);
 	~City();
 
 	void setName(int);
 
-	int getName() const;
-	string getNameString();
+	int getNameIndex() const;
 	Arena& getArena();
 };

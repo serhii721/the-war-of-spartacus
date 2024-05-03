@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Fighting.h"
 
+extern TCHAR str[256];
+extern string buf;
+extern string logStr;
+
 extern HINSTANCE hInst;
 extern Localization localization;
 extern Game game;
@@ -49,7 +53,6 @@ Fighting::Fighting(HWND hWnd) :
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-
 	ShowWindow(hItems[Item::BUT_SPARE_OPPONENT], SW_HIDE);
 	ShowWindow(hItems[Item::BUT_EXECUTE_OPPONENT], SW_HIDE);
 	ShowWindow(hItems[Item::BUT_SURRENDER], SW_HIDE);
@@ -59,9 +62,7 @@ Fighting::Fighting(HWND hWnd) :
 
 Fighting::Fighting(const Fighting& F) :
 	hItems(),
-	currentScreen(F.currentScreen),
-	hBackgroundImage(F.hBackgroundImage),
-	hBackgroundBrush(F.hBackgroundBrush)
+	currentScreen(F.currentScreen)
 {
 	// Resizing items' vector
 	int sz = F.hItems.size();
@@ -103,6 +104,24 @@ Fighting::Fighting(const Fighting& F) :
 	}
 	else
 		pOpponentCopy = nullptr;
+
+	if (F.hBackgroundImage != NULL)
+	{
+		BITMAP bm;
+		GetObject(F.hBackgroundImage, sizeof(BITMAP), &bm);
+		hBackgroundImage = CreateBitmapIndirect(&bm);
+	}
+	else
+		hBackgroundImage = NULL;
+
+	if (F.hBackgroundBrush != NULL)
+	{
+		LOGBRUSH lb;
+		GetObject(F.hBackgroundBrush, sizeof(LOGBRUSH), &lb);
+		hBackgroundBrush = CreateBrushIndirect(&lb);
+	}
+	else
+		hBackgroundBrush = NULL;
 }
 
 Fighting& Fighting::operator=(const Fighting& F)
@@ -156,8 +175,30 @@ Fighting& Fighting::operator=(const Fighting& F)
 		pOpponentCopy = nullptr;
 
 	currentScreen = F.currentScreen;
-	hBackgroundImage = F.hBackgroundImage;
-	hBackgroundBrush = F.hBackgroundBrush;
+
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
+
+	if (F.hBackgroundImage != NULL)
+	{
+		BITMAP bm;
+		GetObject(F.hBackgroundImage, sizeof(BITMAP), &bm);
+		hBackgroundImage = CreateBitmapIndirect(&bm);
+	}
+	else
+		hBackgroundImage = NULL;
+
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
+
+	if (F.hBackgroundBrush != NULL)
+	{
+		LOGBRUSH lb;
+		GetObject(F.hBackgroundBrush, sizeof(LOGBRUSH), &lb);
+		hBackgroundBrush = CreateBrushIndirect(&lb);
+	}
+	else
+		hBackgroundBrush = NULL;
 
 	return *this;
 }
@@ -167,6 +208,12 @@ Fighting::~Fighting() { }
 void Fighting::setScreen(Screen s)
 {
 	currentScreen = s;
+
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
+
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
 }
 
 FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponent)
@@ -176,7 +223,6 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	FightStatus status = FightStatus::CONTINUE;
 
 	int damage = 0, defense = 0;
-	string buf;
 
 	updateWindow(hWnd);
 
@@ -195,29 +241,29 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 		damage += rPlayer.getRightHand()->getTotalDamage();
 	if (rPlayer.getLeftHand())
 		damage += rPlayer.getLeftHand()->getTotalDamage();
-	buf = "Damage: " + to_string(damage);
-	SendMessage(hItems[Item::STATIC_PLAYER_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+	sprintf_s(str, "Damage: %d", damage);
+	SendMessage(hItems[Item::STATIC_PLAYER_DAMAGE], WM_SETTEXT, 0, (LPARAM)str);
 	damage = 0;
 
 	if (pOpponent->getRightHand())
 		damage += pOpponent->getRightHand()->getTotalDamage();
 	if (pOpponent->getLeftHand())
 		damage += pOpponent->getLeftHand()->getTotalDamage();
-	buf = "Damage: " + to_string(damage);
-	SendMessage(hItems[Item::STATIC_OPPONENT_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+	sprintf_s(str, "Damage: %d", damage);
+	SendMessage(hItems[Item::STATIC_OPPONENT_DAMAGE], WM_SETTEXT, 0, (LPARAM)str);
 	damage = 0;
 
 	// Show Player and Opponent defense
 	if (rPlayer.getArmour())
 		defense = rPlayer.getArmour()->getTotalDefense();
-	buf = "Defense: " + to_string(defense);
-	SendMessage(hItems[Item::STATIC_PLAYER_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+	sprintf_s(str, "Defense: %d", defense);
+	SendMessage(hItems[Item::STATIC_PLAYER_DEFENSE], WM_SETTEXT, 0, (LPARAM)str);
 
 	defense = 0;
 	if (pOpponent->getArmour())
 		defense = pOpponent->getArmour()->getTotalDefense();
-	buf = "Defense: " + to_string(defense);
-	SendMessage(hItems[Item::STATIC_OPPONENT_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+	sprintf_s(str, "Defense: %d", defense);
+	SendMessage(hItems[Item::STATIC_OPPONENT_DEFENSE], WM_SETTEXT, 0, (LPARAM)str);
 
 	// # 1. Determining whether the opponent attacks first
 	if (pOpponent->getWisdom() > rPlayer.getWisdom())
@@ -239,6 +285,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 
 		if (status != FightStatus::CONTINUE)
 		{
+			if (status == FightStatus::PLAYER_LOST)
+				rPlayer.setHP(1);
 			getFightResult(status, rPlayer.getHP(), pOpponent->getHP());
 			ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
 			ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
@@ -297,6 +345,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 
 		if (status != FightStatus::CONTINUE)
 		{
+			if (status == FightStatus::PLAYER_LOST)
+				rPlayer.setHP(1);
 			getFightResult(status, rPlayer.getHP(), pOpponent->getHP());
 			ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
 			ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
@@ -304,6 +354,107 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 			break;
 		}
 	}
+	// # 3. Fight rewards
+	// Gaining experience
+	int experience = EXPERIENCE_PER_LEVEL;
+
+	// Calculating experience based on opponent's power compared to player
+	double experienceMultiplier = 1.0;
+	// Level multiplier
+	// If player's level greater that opponent's level - player gains 10% more experience
+	// If difference is more than 5 levels - player gains another 40% more experience and vice versa
+	if (rPlayer.getLevel() > pOpponent->getLevel())
+	{
+		experienceMultiplier -= 0.3;
+		if (rPlayer.getLevel() - 5 > pOpponent->getLevel())
+			experienceMultiplier -= 0.6;
+	}
+	else
+	{
+		experienceMultiplier += 0.1;
+		if (rPlayer.getLevel() + 5 < pOpponent->getLevel())
+			experienceMultiplier += 0.4;
+
+	}
+	// Stats multiplier
+	int playerLevel = rPlayer.getLevel();
+	int playerPhysStats = rPlayer.getStrength() + rPlayer.getConstitution() + rPlayer.getDexterity();
+	int opponentPhysStats = pOpponent->getStrength() + pOpponent->getConstitution() + pOpponent->getDexterity();
+	int statsDifference;
+	// Player gains 10% more or less experience for every 10 physical stats difference from opponent
+	if (playerPhysStats > opponentPhysStats)
+	{
+		statsDifference = playerPhysStats - opponentPhysStats;
+		do
+		{
+			statsDifference -= 10;
+			experienceMultiplier -= 0.1;
+		} while (statsDifference > 0);
+	}
+	else
+	{
+		statsDifference = opponentPhysStats - playerPhysStats;
+		do
+		{
+			statsDifference -= 10;
+			experienceMultiplier += 0.1;
+		} while (statsDifference > 0);
+	}
+
+	if (experienceMultiplier < MIN_EXPERIENCE_MULTIPLIER)
+		experienceMultiplier = MIN_EXPERIENCE_MULTIPLIER;
+
+	if (experienceMultiplier > MAX_EXPERIENCE_MULTIPLIER)
+		experienceMultiplier = MAX_EXPERIENCE_MULTIPLIER;
+
+	experience *= experienceMultiplier;
+	rPlayer.gainExperience(experience);
+
+	// Gaining fame
+	// Fame number calculates based on experience multiplied by difference from opponent's fame
+	int fame = (experience + pOpponent->getFame()) / 10;
+	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
+	{
+		double fameMultiplier = 1.0;
+		int playerFame = rPlayer.getFame();
+		int opponentFame = pOpponent->getFame();
+		int fameDifference;
+		if (playerFame > opponentFame)
+		{
+			fameDifference = playerFame - opponentFame;
+			do
+			{
+				fameMultiplier -= 0.1;
+				fameDifference -= 100;
+			} while (fameDifference > 0);
+		}
+		else
+		{
+			fameDifference = opponentFame - playerFame;
+			do
+			{
+				fameMultiplier += 0.1;
+				fameDifference -= 100;
+			} while (fameDifference > 0);
+		}
+		fame *= fameMultiplier;
+	}
+	else
+		fame /= 10;
+
+	rPlayer.setFame(rPlayer.getFame() + fame);
+
+	// Information for messages log
+	logStr += "You have fought with " + localization.getNPCName(*pOpponent);
+	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
+		logStr += " and won\r\n";
+	else
+		logStr += " and lost\r\n";
+	logStr += "You have gained " + to_string(fame) + " fame\r\n"
+		+ "You have gained " + to_string(experience) + " experience\r\n";
+	if (rPlayer.getLevel() > playerLevel)
+		logStr += "You have leveled up to level " + to_string(rPlayer.getLevel()) + "\r\n";
+
 	pOpponentCopy = nullptr;
 	return status;
 }
@@ -545,7 +696,6 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					hItems.clear();
 				}
 
-				game.getMenuManager().setMenu(new CityMenu(hWnd));
 				updateWindow(hWnd);
 			}
 			break;

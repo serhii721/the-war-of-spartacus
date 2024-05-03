@@ -26,9 +26,9 @@ using namespace std;
 #include <Windows.h>
 
 #include "resource.h"
-#include "LocalizationEnums.h"
-#include "Localization.h"
+
 #include "NewMenuStorage.h"
+#include "PlayerAttributeStorage.h"
 #include "IMenu.h"
 #include "MainMenu.h"
 #include "GameMenu.h"
@@ -51,6 +51,9 @@ using namespace std;
 #include "City.h"
 #include "WorldMap.h"
 #include "Game.h"
+
+#include "LocalizationEnums.h"
+#include "Localization.h"
 
 const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 extern Localization localization;
@@ -85,9 +88,6 @@ unique_ptr<Armour> generateArmour(Armour::Type = Armour::NUMBER);
 //void outputGameMenu(Player&, NPC*);
 
 LRESULT CALLBACK WFunc(HWND, UINT, WPARAM, LPARAM);
-
-// Αστεπ.
-TCHAR str[256] = "";
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

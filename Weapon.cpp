@@ -103,12 +103,17 @@ int Weapon::getDamage() const { return damage; }
 
 Weapon::Type Weapon::getType() const { return type; }
 
-string Weapon::getTypeString()
+int Weapon::getDamageAddition() const { return damageAddition; }
+
+int Weapon::getStrengthAdditionPercentage() const
 {
-	return localization.getWeaponType(type);
+	return strAdditionPerc;
 }
 
-int Weapon::getDamageAddition() const { return damageAddition; }
+int Weapon::getDexterityAdditionPercentage() const
+{
+	return dexAdditionPerc;
+}
 
 int Weapon::getShieldProbAddition() const { return shieldProbAddition; }
 

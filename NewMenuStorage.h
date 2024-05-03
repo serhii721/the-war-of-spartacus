@@ -1,6 +1,6 @@
 #pragma once
 
-struct NewMenuStorage
+class NewMenuStorage
 {
 public:
 	int age,

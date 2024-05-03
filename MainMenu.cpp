@@ -1,13 +1,28 @@
 #include "stdafx.h"
 #include "MainMenu.h"
 
+extern TCHAR str[256];
+
 extern HINSTANCE hInst;
 extern Localization localization;
 extern Game game;
 
-MainMenu::MainMenu() : hItems(), hSubItems(), currentSubMenu(Item::ITEM_NUMBER), nms() { }
+MainMenu::MainMenu() :
+	hItems(),
+	hSubItems(),
+	currentSubMenu(Item::ITEM_NUMBER),
+	nms(),
+	hBackgroundImage(NULL),
+	hBackgroundBrush(NULL)
+{ }
 
-MainMenu::MainMenu(HWND hWnd) : hItems(Item::ITEM_NUMBER), currentSubMenu(Item::ITEM_NUMBER), hSubItems(), nms()
+MainMenu::MainMenu(HWND hWnd) :
+	hItems(Item::ITEM_NUMBER),
+	currentSubMenu(Item::ITEM_NUMBER),
+	hSubItems(),
+	nms(),
+	hBackgroundImage(NULL),
+	hBackgroundBrush(NULL)
 {
 	char className[256] = "BUTTON";
 	hItems[BUT_CONTINUE] = CreateWindow(className, "Continue", // TODO: Apply localization
@@ -69,6 +84,24 @@ MainMenu::MainMenu(const MainMenu& MM) : currentSubMenu(Item::ITEM_NUMBER), hSub
 		);
 	}
 
+	if (MM.hBackgroundImage != NULL)
+	{
+		BITMAP bm;
+		GetObject(MM.hBackgroundImage, sizeof(BITMAP), &bm);
+		hBackgroundImage = CreateBitmapIndirect(&bm);
+	}
+	else
+		hBackgroundImage = NULL;
+
+	if (MM.hBackgroundBrush != NULL)
+	{
+		LOGBRUSH lb;
+		GetObject(MM.hBackgroundBrush, sizeof(LOGBRUSH), &lb);
+		hBackgroundBrush = CreateBrushIndirect(&lb);
+	}
+	else
+		hBackgroundBrush = NULL;
+
 	nms = make_unique<NewMenuStorage>();
 }
 
@@ -125,6 +158,30 @@ MainMenu& MainMenu::operator=(const MainMenu& MM)
 	else
 		nms = nullptr;
 
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
+
+	if (MM.hBackgroundImage != NULL)
+	{
+		BITMAP bm;
+		GetObject(MM.hBackgroundImage, sizeof(BITMAP), &bm);
+		hBackgroundImage = CreateBitmapIndirect(&bm);
+	}
+	else
+		hBackgroundImage = NULL;
+
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
+
+	if (MM.hBackgroundBrush != NULL)
+	{
+		LOGBRUSH lb;
+		GetObject(MM.hBackgroundBrush, sizeof(LOGBRUSH), &lb);
+		hBackgroundBrush = CreateBrushIndirect(&lb);
+	}
+	else
+		hBackgroundBrush = NULL;
+
 	return *this;
 }
 
@@ -137,6 +194,12 @@ MainMenu::~MainMenu()
 	for (HWND hItem : hSubItems)
 		if (hItem != NULL)
 			DestroyWindow(hItem);
+
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
+
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
 }
 
 void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
@@ -169,8 +232,12 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	}
 
 	// Loading image
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
 	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	// Filling background with selected image
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
 	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
 	FillRect(hdc, &rect, hBackgroundBrush);
 }
@@ -678,8 +745,11 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					leftHand = nullptr;
 
 				unique_ptr<Armour> armour = generateArmour();
-				TCHAR buffer[256];
-				SendMessage(hSubItems[EDIT_NAME], WM_GETTEXT, 256, (LPARAM)buffer);
+
+				if (SendMessage(hSubItems[EDIT_NAME], WM_GETTEXTLENGTH, 0, 0) > 0)
+					SendMessage(hSubItems[EDIT_NAME], WM_GETTEXT, 256, (LPARAM)str);
+				else
+					strcpy_s(str, "Gladiator");
 				
 				game.setPlayer(
 					Player(
@@ -692,7 +762,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 								nms->wisdom,
 								nms->charisma,
 								nms->age,
-								BASIC_FAME
+								MIN_FAME
 							),
 							BASIC_HP,
 							BASIC_HP,
@@ -705,7 +775,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 							0,
 							nms->unnassignedAttributes
 						),
-						string(buffer)
+						string(str)
 					)
 				);
 
