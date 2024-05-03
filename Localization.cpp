@@ -188,32 +188,37 @@ void Localization::setLanguage(Language llanguage)
 
 Language Localization::getLanguage() const { return language; }
 
-string Localization::getFirstName(int n)
+string Localization::getNPCName(const NamedNPC& NPC) const
 {
-	return npcFirstNames[n];
+	return npcFirstNames[NPC.getFirstNameIndex()] + ' ' + npcLastNames[NPC.getLastNameIndex()];
 }
 
-string Localization::getLastName(int n)
+const string& Localization::getNPCFirstName(const NamedNPC& NPC) const
 {
-	return npcLastNames[n];
+	return npcFirstNames[NPC.getFirstNameIndex()];
 }
 
-string Localization::getNickname(int n)
+const string& Localization::getNPCLastName(const NamedNPC& NPC) const
 {
-	return gladiatorNicknames[n];
+	return npcLastNames[NPC.getLastNameIndex()];
 }
 
-string Localization::getWeaponType(int n)
+const string& Localization::getNPCNickname(const NamedNPC& NPC) const
 {
-	return weaponTypes[n];
+	return npcLastNames[NPC.getLastNameIndex()]; // TODO: return gladiatorNicknames[NPC.getNicknameIndex()];
 }
 
-string Localization::getArmourType(int n)
+const string& Localization::getWeaponTypeName(const Weapon& W) const
 {
-	return armourTypes[n];
+	return weaponTypes[W.getType()];
 }
 
-string Localization::getCityName(int n)
+const string& Localization::getArmourTypeName(const Armour& A) const
 {
-	return cityNames[n];
+	return armourTypes[A.getType()];
+}
+
+const string& Localization::getCityName(const City& C) const
+{
+	return cityNames[C.getNameIndex()];
 }

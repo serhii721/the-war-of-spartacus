@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "WorldMap.h"
 
+extern TCHAR str[256];
+extern string buf;
+extern string logStr;
+
 extern HINSTANCE hInst;
 extern Localization localization;
 extern Game game;
@@ -28,13 +32,14 @@ WorldMap::WorldMap(HWND hWnd, const vector<City>& C, int ccurrentCity) :
 		WS_CHILD | WS_VISIBLE | SS_CENTER,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	for (int i = BUT_ROME_MAP; i <= BUT_MILAN_MAP; i++)
-		hItems[i] = CreateWindow("BUTTON", localization.getCityName(i).c_str(),
+	int i = BUT_ROME_MAP;
+	for (; i <= BUT_MILAN_MAP; i++)
+		hItems[i] = CreateWindow("BUTTON", localization.getCityName(C[i]).c_str(),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	for (int i = BUT_ROME_LIST; i <= BUT_MILAN_LIST; i++)
-		hItems[i] = CreateWindow("BUTTON", localization.getCityName(i - BUT_ROME_LIST).c_str(),
+	for (i = BUT_ROME_LIST; i <= BUT_MILAN_LIST; i++)
+		hItems[i] = CreateWindow("BUTTON", localization.getCityName(C[i - BUT_ROME_LIST]).c_str(),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTOCHECKBOX | BS_LEFTTEXT,
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 
@@ -51,9 +56,7 @@ WorldMap::WorldMap(const WorldMap& WM) :
 	cities(WM.cities),
 	currentCity(WM.currentCity),
 	selectedCity(WM.selectedCity),
-	currentScreen(WM.currentScreen),
-	hBackgroundImage(WM.hBackgroundImage),
-	hBackgroundBrush(WM.hBackgroundBrush)
+	currentScreen(WM.currentScreen)
 {
 	// Resizing items' vector
 	int sz = WM.hItems.size();
@@ -85,6 +88,24 @@ WorldMap::WorldMap(const WorldMap& WM) :
 			0
 		);
 	}
+
+	if (WM.hBackgroundImage != NULL)
+	{
+		BITMAP bm;
+		GetObject(WM.hBackgroundImage, sizeof(BITMAP), &bm);
+		hBackgroundImage = CreateBitmapIndirect(&bm);
+	}
+	else
+		hBackgroundImage = NULL;
+
+	if (WM.hBackgroundBrush != NULL)
+	{
+		LOGBRUSH lb;
+		GetObject(WM.hBackgroundBrush, sizeof(LOGBRUSH), &lb);
+		hBackgroundBrush = CreateBrushIndirect(&lb);
+	}
+	else
+		hBackgroundBrush = NULL;
 }
 
 WorldMap& WorldMap::operator=(const WorldMap& WM)
@@ -128,6 +149,31 @@ WorldMap& WorldMap::operator=(const WorldMap& WM)
 			0
 		);
 	}
+
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
+
+	if (WM.hBackgroundImage != NULL)
+	{
+		BITMAP bm;
+		GetObject(WM.hBackgroundImage, sizeof(BITMAP), &bm);
+		hBackgroundImage = CreateBitmapIndirect(&bm);
+	}
+	else
+		hBackgroundImage = NULL;
+
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
+
+	if (WM.hBackgroundBrush != NULL)
+	{
+		LOGBRUSH lb;
+		GetObject(WM.hBackgroundBrush, sizeof(LOGBRUSH), &lb);
+		hBackgroundBrush = CreateBrushIndirect(&lb);
+	}
+	else
+		hBackgroundBrush = NULL;
+
 	return *this;
 }
 
@@ -136,6 +182,12 @@ WorldMap::~WorldMap()
 	for (HWND hItem : hItems)
 		if (hItem != NULL)
 			DestroyWindow(hItem);
+
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
+
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
 }
 
 City& WorldMap::getCurrentCity()
@@ -147,7 +199,7 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 {
 	const string DIRECTORY = "Data/Image/Background/";
 	const string FORMAT = ".bmp";
-	string path(""), buffer("");
+	string path("");
 
 	RECT rect;
 	GetClientRect(hWnd, &rect);
@@ -173,8 +225,8 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 
 		for (int i = Cities::ROME; i <= Cities::MILAN; i++)
 		{
-			buffer = localization.getCityName(i);
-			SendMessage(hItems[i], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buffer.c_str());
+			buf = localization.getCityName(cities[i]);
+			SendMessage(hItems[i], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 		}
 		break;
 	}
@@ -321,6 +373,7 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		if ((HWND)lp == hItems[BUT_TRAVEL_LIST])
 		{
 			currentCity = selectedCity;
+			logStr += "You have traveled to " + localization.getCityName(getCurrentCity()) + "\r\n";
 			updateWindow(hWnd);
 		}
 		if ((HWND)lp == hItems[BUT_ENTER_LIST])

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "NewMenuStorage.h"
 
 NewMenuStorage::NewMenuStorage() :
 	age(MIN_AGE),

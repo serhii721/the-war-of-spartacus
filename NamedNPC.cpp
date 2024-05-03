@@ -29,10 +29,12 @@ void NamedNPC::rename(int fNameIndex, int lNameIndex)
 	lastNameIndex = lNameIndex;
 }
 
-string NamedNPC::getName()
+int NamedNPC::getFirstNameIndex() const
 {
-	string name = "";
-	name += localization.getFirstName(firstNameIndex);
-	name += ' ' + localization.getLastName(lastNameIndex);
-	return name;
+	return firstNameIndex;
+}
+
+int NamedNPC::getLastNameIndex() const
+{
+	return lastNameIndex;
 }

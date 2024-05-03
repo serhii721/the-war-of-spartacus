@@ -65,12 +65,17 @@ int Armour::getDefense() const { return defense; }
 
 Armour::Type Armour::getType() const { return type; }
 
-string Armour::getTypeString()
+int Armour::getDefAddition() const { return defAddition; }
+
+int Armour::getStrengthAdditionPercentage() const
 {
-	return localization.getArmourType(type);
+	return strAdditionPerc;
 }
 
-int Armour::getDefAddition() const { return defAddition; }
+int Armour::getDexterityAdditionPercentage() const
+{
+	return dexAdditionPerc;
+}
 
 int Armour::getEvasionProbAddition() const { return evasionProbAddition; }
 

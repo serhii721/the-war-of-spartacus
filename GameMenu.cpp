@@ -5,9 +5,20 @@ extern HINSTANCE hInst;
 extern Localization localization;
 extern Game game;
 
-GameMenu::GameMenu() : hItems(), hSubItems(), currentSubMenu(Item::ITEM_NUMBER) { }
+GameMenu::GameMenu() :
+	hItems(),
+	hSubItems(),
+	currentSubMenu(Item::ITEM_NUMBER),
+	hBackgroundImage(NULL),
+	hBackgroundBrush(NULL)
+{ }
 
-GameMenu::GameMenu(HWND hWnd) : hItems(Item::ITEM_NUMBER), currentSubMenu(Item::ITEM_NUMBER), hSubItems()
+GameMenu::GameMenu(HWND hWnd) :
+	hItems(Item::ITEM_NUMBER),
+	currentSubMenu(Item::ITEM_NUMBER),
+	hSubItems(),
+	hBackgroundImage(NULL),
+	hBackgroundBrush(NULL)
 {
 	char className[256] = "BUTTON";
 	hItems[BUT_RESUME] = CreateWindow(className, "Resume", // TODO: Apply localization
@@ -64,6 +75,24 @@ GameMenu::GameMenu(const GameMenu& GM) : currentSubMenu(Item::ITEM_NUMBER), hSub
 			0
 		);
 	}
+
+	if (GM.hBackgroundImage != NULL)
+	{
+		BITMAP bm;
+		GetObject(GM.hBackgroundImage, sizeof(BITMAP), &bm);
+		hBackgroundImage = CreateBitmapIndirect(&bm);
+	}
+	else
+		hBackgroundImage = NULL;
+
+	if (GM.hBackgroundBrush != NULL)
+	{
+		LOGBRUSH lb;
+		GetObject(GM.hBackgroundBrush, sizeof(LOGBRUSH), &lb);
+		hBackgroundBrush = CreateBrushIndirect(&lb);
+	}
+	else
+		hBackgroundBrush = NULL;
 }
 
 GameMenu& GameMenu::operator=(const GameMenu& GM)
@@ -109,6 +138,30 @@ GameMenu& GameMenu::operator=(const GameMenu& GM)
 	hSubItems = vector<HWND>();
 	currentSubMenu = GM.currentSubMenu;
 
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
+
+	if (GM.hBackgroundImage != NULL)
+	{
+		BITMAP bm;
+		GetObject(GM.hBackgroundImage, sizeof(BITMAP), &bm);
+		hBackgroundImage = CreateBitmapIndirect(&bm);
+	}
+	else
+		hBackgroundImage = NULL;
+
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
+
+	if (GM.hBackgroundBrush != NULL)
+	{
+		LOGBRUSH lb;
+		GetObject(GM.hBackgroundBrush, sizeof(LOGBRUSH), &lb);
+		hBackgroundBrush = CreateBrushIndirect(&lb);
+	}
+	else
+		hBackgroundBrush = NULL;
+
 	return *this;
 }
 
@@ -121,6 +174,12 @@ GameMenu::~GameMenu()
 	for (HWND hItem : hSubItems)
 		if (hItem != NULL)
 			DestroyWindow(hItem);
+
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
+
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
 }
 
 void GameMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)

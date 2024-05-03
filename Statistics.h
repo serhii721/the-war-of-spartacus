@@ -33,4 +33,11 @@ public:
 	int getCharisma() const;
 	int getAge() const;
 	int getFame() const;
+
+	void setStrength(int);
+	void setConstitution(int);
+	void setDexterity(int);
+	void setIntelligence(int);
+	void setWisdom(int);
+	void setCharisma(int);
 };

@@ -3,7 +3,7 @@
 // World's statistics
 const int MAX_CITIES = 11;
 const int OPPONENTS_NUMBER = 15;
-const int BASIC_REGEN = 5;
+const int BASIC_REGEN = 30;
 const int BASIC_ATTRIBUTES = 10;
 //const string OUTPUT_DIVIDER = "\n______________________________________________\n\n\n";
 
@@ -16,7 +16,7 @@ const int MIN_INTELLIGENCE = 1, MAX_INTELLIGENCE = 100;
 const int MIN_WISDOM = 1, MAX_WISDOM = 100;
 const int MIN_CHARISMA = 1, MAX_CHARISMA = 100;
 const int MIN_AGE = 20, MAX_AGE = 80;
-const int MIN_FAME = 0, BASIC_FAME = MIN_FAME;
+const int MIN_FAME = 0, BASIC_FAME = 100;
 // Fighter's statistics
 const int BASIC_HP = 100;
 // Leveling statistics
@@ -24,6 +24,8 @@ const int MIN_LEVEL = 1;
 const int MAX_LEVEL = 100;
 const int EXPERIENCE_PER_LEVEL = 200;
 const int ATTRIBUTES_PER_LEVEL = 5;
+const double MIN_EXPERIENCE_MULTIPLIER = 0.1;
+const double MAX_EXPERIENCE_MULTIPLIER = 2.5;
 
 // Weapon's statistics
 const int MIN_WEAPON_DAMAGE = 20;
@@ -75,5 +77,5 @@ const int ONE_HUNDRED_PERCENT = 1000; // 100.0%.
 const int DAMAGE_REDUCTION_PERCENT = 375; // 37.5%.
 
 // Settings
-const int SLEEP_TIME = 100;
+const int SLEEP_TIME = 1000;
 const int STARTING_ADDITIONAL_ATTRIBUTES = 30;

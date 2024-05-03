@@ -12,5 +12,7 @@ public:
 	virtual ~NamedNPC();
 
 	void rename(int, int);
-	string getName();
+
+	int getFirstNameIndex() const;
+	int getLastNameIndex() const;
 };

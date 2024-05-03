@@ -148,7 +148,7 @@ void Game::setDisplayState(DisplayState ds)
 	displayState = ds;
 }
 
-Player& Game::getPlayer() const
+Player& Game::getPlayer()
 {
 	return *pPlayer;
 }
