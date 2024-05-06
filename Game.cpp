@@ -172,15 +172,15 @@ void Game::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 {
 	switch (displayState)
 	{
-	default:case MENU:
+	default:case DisplayState::MENU:
 		menuManager.drawMenu(hWnd, hdc, cx, cy);
 		break;
 
-	case WORLD_MAP:
+	case DisplayState::WORLD_MAP:
 		pWorldMap->drawWindow(hWnd, hdc, cx, cy);
 		break;
 
-	case FIGHTING:
+	case DisplayState::FIGHTING:
 		pFighting->drawWindow(hWnd, hdc, cx, cy);
 		break;
 	}
@@ -190,15 +190,15 @@ void Game::resizeWindow(int cx, int cy)
 {
 	switch (displayState)
 	{
-	default:case MENU:
+	default:case DisplayState::MENU:
 		menuManager.resizeMenu(cx, cy);
 		break;
 
-	case WORLD_MAP:
+	case DisplayState::WORLD_MAP:
 		pWorldMap->resizeWindow(cx, cy);
 		break;
 
-	case FIGHTING:
+	case DisplayState::FIGHTING:
 		pFighting->resizeWindow(cx, cy);
 		break;
 	}
@@ -208,15 +208,15 @@ void Game::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (displayState)
 	{
-	default:case MENU:
+	default:case DisplayState::MENU:
 		menuManager.handleInput(hWnd, m, wp, lp);
 		break;
 
-	case WORLD_MAP:
+	case DisplayState::WORLD_MAP:
 		pWorldMap->handleInput(hWnd, m, wp, lp);
 		break;
 
-	case FIGHTING:
+	case DisplayState::FIGHTING:
 		pFighting->handleInput(hWnd, m, wp, lp);
 		break;
 	}
