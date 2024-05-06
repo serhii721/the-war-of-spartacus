@@ -462,6 +462,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		}
 		break;
 		}
+		break;
 	case BUT_CHARACTER:
 	{
 		Player& rPlayer = game.getPlayer();
