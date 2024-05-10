@@ -197,21 +197,41 @@ City& WorldMap::getCurrentCity()
 
 void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 {
-	const string DIRECTORY = "Data/Image/Background/";
-	const string FORMAT = ".bmp";
-	string path("");
-
-	RECT rect;
-	GetClientRect(hWnd, &rect);
-
-	// Composing path based on current menu
-	switch (currentScreen)
+	// 1. Background
+	if (game.isBackgroundChanged())
 	{
-	default:case ITEM_NUMBER:
-		path = DIRECTORY + "mapBackground768" + FORMAT;
-		for (HWND hItem : hItems)
-			ShowWindow(hItem, SW_SHOW);
+		const string DIRECTORY = "Data/Image/Background/";
+		const string FORMAT = ".bmp";
+		string path("");
+		RECT rect;
 
+		GetClientRect(hWnd, &rect);
+
+		// Composing path based on current menu
+		switch (game.getBackground())
+		{
+		default:case Game::Background::WORLD_MAP:
+			path = DIRECTORY + "mapBackground768" + FORMAT;
+			for (HWND hItem : hItems)
+				ShowWindow(hItem, SW_SHOW);
+			break;
+		}
+		// Loading image
+		if (hBackgroundImage != NULL)
+			DeleteObject(hBackgroundImage);
+		hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		// Filling background with selected image
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+		FillRect(hdc, &rect, hBackgroundBrush);
+		game.backgroundChangeCompleted();
+	}
+
+	// 2. Text
+	switch (game.getBackground())
+	{
+	default:case Game::Background::WORLD_MAP:
 		if (currentCity == selectedCity)
 		{
 			ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
@@ -230,17 +250,16 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		}
 		break;
 	}
-
-	// Loading image
-	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	// Filling background with selected image
-	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
-	FillRect(hdc, &rect, hBackgroundBrush);
 }
 
 void WorldMap::resizeWindow(int cx, int cy)
 {
+	// If background is the same - no change needed
+	if (!game.isBackgroundChanged())
+		return;
+
 	int x, y, i;
+
 	const int ITEM_HEIGHT = 40, ITEM_WIDTH = 300, BUT_WIDTH = 336, DISTANCE = 3;
 	const int FRAME_HEIGHT = 28, FRAME_WIDTH = 110;
 
@@ -382,6 +401,7 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				ShowWindow(hItem, SW_HIDE);
 
 			game.setDisplayState(DisplayState::MENU);
+			game.setBackground(Game::Background::CITY_MENU);
 			updateWindow(hWnd);
 		}
 		break;
