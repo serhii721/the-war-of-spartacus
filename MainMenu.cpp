@@ -204,47 +204,59 @@ MainMenu::~MainMenu()
 
 void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 {
-	const string DIRECTORY = "Data/Image/Background/";
-	const string FORMAT = ".bmp";
-	string path("");
-
-	RECT rect;
-	GetClientRect(hWnd, &rect);
-
-	// Composing path based on current menu
-	switch (currentSubMenu)
+	// 1. Background
+	if (game.isBackgroundChanged())
 	{
-	default:case ITEM_NUMBER:
-		path = DIRECTORY + "menuBackground768" + FORMAT;
-		for (HWND hItem : hItems)
-			ShowWindow(hItem, SW_SHOW);
-		break;
-	case BUT_LOAD_GAME:
-		// TODO
-		break;
-	case BUT_NEW_GAME: path = DIRECTORY + "characterCreationBackground768" + FORMAT; break;
-	case BUT_SETTINGS:
-		// TODO
-		break;
-	case BUT_SPECIALS:
-		// TODO
-		break;
+		const string DIRECTORY = "Data/Image/Background/";
+		const string FORMAT = ".bmp";
+		string path("");
+		RECT rect;
+
+		GetClientRect(hWnd, &rect);
+
+		// Composing path based on current menu
+		switch (game.getBackground())
+		{
+		default:case Game::Background::MAIN_MENU:
+			path = DIRECTORY + "menuBackground768" + FORMAT;
+			for (HWND hItem : hItems)
+				ShowWindow(hItem, SW_SHOW);
+			break;
+		case Game::Background::MAIN_MENU_LOAD:
+			// TODO
+			break;
+		case Game::Background::MAIN_MENU_NEW_GAME: path = DIRECTORY + "characterCreationBackground768" + FORMAT; break;
+		case Game::Background::MAIN_MENU_SETTINGS:
+			// TODO
+			break;
+		case Game::Background::MAIN_MENU_SPECIALS:
+			// TODO
+			break;
+		}
+		// Loading image
+		if (hBackgroundImage != NULL)
+			DeleteObject(hBackgroundImage);
+		hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		// Filling background with selected image
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+		FillRect(hdc, &rect, hBackgroundBrush);
+		game.backgroundChangeCompleted();
 	}
 
-	// Loading image
-	if (hBackgroundImage != NULL)
-		DeleteObject(hBackgroundImage);
-	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	// Filling background with selected image
-	if (hBackgroundBrush != NULL)
-		DeleteObject(hBackgroundBrush);
-	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
-	FillRect(hdc, &rect, hBackgroundBrush);
+	// 2. Text
+	// TODO: Relocate changing text code from handleInput() to here
 }
 
 void MainMenu::resizeMenu(int cx, int cy)
 {
+	// If background is the same - no change needed
+	if (!game.isBackgroundChanged())
+		return;
+
 	int sz, x, y, i;
+
 	switch (currentSubMenu)
 	{
 	// Main menu
@@ -462,6 +474,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[NEW_GAME_BUT_NEXT] = (CreateWindow("BUTTON", "Next", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_NEW_GAME;
+				game.setBackground(Game::Background::MAIN_MENU_NEW_GAME);
 
 				SetFocus(hSubItems[EDIT_NAME]);
 
@@ -488,6 +501,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SETTINGS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_SETTINGS;
+				game.setBackground(Game::Background::MAIN_MENU_SETTINGS);
 
 				updateWindow(hWnd);
 			}
@@ -511,6 +525,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SPECIALS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_SPECIALS;
+				game.setBackground(Game::Background::MAIN_MENU_SPECIALS);
 
 				updateWindow(hWnd);
 			}
@@ -528,7 +543,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				{
 					nms->age--;
 					SetWindowText(hSubItems[EDIT_AGE], to_string(nms->age).c_str());
-					UpdateWindow(hSubItems[EDIT_AGE]);
 				}
 			}
 			if ((HWND)lp == hSubItems[BUT_AGE_PLUS])
@@ -537,7 +551,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				{
 					nms->age++;
 					SetWindowText(hSubItems[EDIT_AGE], to_string(nms->age).c_str());
-					UpdateWindow(hSubItems[EDIT_AGE]);
 				}
 			}
 			// Strength
@@ -549,8 +562,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_STRENGTH], to_string(nms->strength).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_STRENGTH]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			if ((HWND)lp == hSubItems[BUT_STRENGTH_PLUS])
@@ -561,8 +572,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_STRENGTH], to_string(nms->strength).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_STRENGTH]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			// Constitution
@@ -574,8 +583,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_CONSTITUTION], to_string(nms->constitution).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_CONSTITUTION]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			if ((HWND)lp == hSubItems[BUT_CONSTITUTION_PLUS])
@@ -586,8 +593,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_CONSTITUTION], to_string(nms->constitution).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_CONSTITUTION]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			// Dexterity
@@ -599,8 +604,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_DEXTERITY], to_string(nms->dexterity).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_DEXTERITY]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			if ((HWND)lp == hSubItems[BUT_DEXTERITY_PLUS])
@@ -611,8 +614,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_DEXTERITY], to_string(nms->dexterity).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_DEXTERITY]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			// Intelligence
@@ -624,8 +625,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_INTELLIGENCE], to_string(nms->intelligence).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_INTELLIGENCE]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			if ((HWND)lp == hSubItems[BUT_INTELLIGENCE_PLUS])
@@ -636,8 +635,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_INTELLIGENCE], to_string(nms->intelligence).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_INTELLIGENCE]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			// Wisdom
@@ -649,8 +646,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_WISDOM], to_string(nms->wisdom).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_WISDOM]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			if ((HWND)lp == hSubItems[BUT_WISDOM_PLUS])
@@ -661,8 +656,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_WISDOM], to_string(nms->wisdom).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_WISDOM]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			// Charisma
@@ -674,8 +667,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_CHARISMA], to_string(nms->charisma).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_CHARISMA]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 			if ((HWND)lp == hSubItems[BUT_CHARISMA_PLUS])
@@ -686,8 +677,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_CHARISMA], to_string(nms->charisma).c_str());
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
-					UpdateWindow(hSubItems[EDIT_CHARISMA]);
-					UpdateWindow(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES]);
 				}
 			}
 
@@ -707,6 +696,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
+				game.setBackground(Game::Background::MAIN_MENU);
 
 				updateWindow(hWnd);
 				break;
@@ -821,6 +811,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setFighting(Fighting(hWnd));
 
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
+				game.setBackground(Game::Background::CITY_MENU);
 
 				updateWindow(hWnd);
 			}
@@ -846,6 +837,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
+				game.setBackground(Game::Background::MAIN_MENU);
 
 				updateWindow(hWnd);
 				break;
@@ -867,6 +859,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
+				game.setBackground(Game::Background::MAIN_MENU);
 
 				updateWindow(hWnd);
 				break;

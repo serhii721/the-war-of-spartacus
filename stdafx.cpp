@@ -22,6 +22,8 @@ Game game;
 
 void updateWindow(HWND hWnd)
 {
+	//if (!game.isBackgroundChanged())
+	//	return;
 	RECT windowRect;
 	GetWindowRect(hWnd, &windowRect);
 	SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));

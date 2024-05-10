@@ -224,8 +224,6 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 
 	int damage = 0, defense = 0;
 
-	updateWindow(hWnd);
-
 	// Show Player and Opponent health
 	int playerHP = game.getPlayer().getHP(),
 		opponentHP = pOpponentCopy->getHP();
@@ -270,14 +268,12 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	{
 
 		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Opponent has higher wisdom, so he attacks first\r\n");
-		updateWindow(hWnd);
 		Sleep(SLEEP_TIME);
 
 		// Opponent's attack
 		pOpponent->attack(rPlayer, result, damage);
 
 		getAttackResult(Attacker::OPPONENT, result, damage);
-		updateWindow(hWnd);
 		Sleep(SLEEP_TIME);
 
 		// Checking the status of the fighting
@@ -290,13 +286,11 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 			getFightResult(status, rPlayer.getHP(), pOpponent->getHP());
 			ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
 			ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
-			updateWindow(hWnd);
 		}
 	}
 	else
 	{
 		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"You have higher wisdom, so you attack first\r\n");
-		updateWindow(hWnd);
 		Sleep(SLEEP_TIME);
 	}
 
@@ -311,7 +305,6 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 
 			// Output of the result of player's attack
 			getAttackResult(Attacker::PLAYER, result, damage);
-			updateWindow(hWnd);
 			Sleep(SLEEP_TIME);
 
 			// Checking the status of the fighting
@@ -322,7 +315,6 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 				getFightResult(status, rPlayer.getHP(), pOpponent->getHP());
 				ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
 				ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
-				updateWindow(hWnd);
 				break;
 			}
 		}
@@ -337,7 +329,6 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 		pOpponent->attack(rPlayer, result, damage);
 
 		getAttackResult(Attacker::OPPONENT, result, damage);
-		updateWindow(hWnd);
 		Sleep(SLEEP_TIME);
 
 		// Checking the status of the fighting
@@ -350,7 +341,6 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 			getFightResult(status, rPlayer.getHP(), pOpponent->getHP());
 			ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
 			ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
-			updateWindow(hWnd);
 			break;
 		}
 	}
@@ -595,33 +585,45 @@ void Fighting::getFightResult(const FightStatus sstatus, const int playerHP, con
 
 void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 {
-	const string DIRECTORY = "Data/Image/Background/";
-	const string FORMAT = ".bmp";
-	string path("");
-
-	RECT rect;
-	GetClientRect(hWnd, &rect);
-
-	// 1. Background
-	// Composing path based on current menu
-	switch (currentScreen)
+	if (game.isBackgroundChanged())
 	{
-	default:case Screen::SCREEN_ITEM_NUMBER: path = DIRECTORY + "" + FORMAT; break;
-	case Screen::FIGHT_ARENA: path = DIRECTORY + "fightArenaBackground768" + FORMAT; break;
+		// 1. Background
+		const string DIRECTORY = "Data/Image/Background/";
+		const string FORMAT = ".bmp";
+		string path("");
+		RECT rect;
+
+		GetClientRect(hWnd, &rect);
+
+		// Composing path based on current menu
+		switch (currentScreen)
+		{
+		default:case Screen::SCREEN_ITEM_NUMBER: path = DIRECTORY + "" + FORMAT; break;
+		case Screen::FIGHT_ARENA: path = DIRECTORY + "fightArenaBackground768" + FORMAT; break;
+		}
+
+		// Loading image
+		if (hBackgroundImage != NULL)
+			DeleteObject(hBackgroundImage);
+		hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		// Filling background with selected image
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+		FillRect(hdc, &rect, hBackgroundBrush);
+		game.backgroundChangeCompleted();
 	}
 
-	// Loading image
-	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	// Filling background with selected image
-	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
-	FillRect(hdc, &rect, hBackgroundBrush);
-
 	// 2. Text
-
+	// TODO
 }
 
 void Fighting::resizeWindow(int cx, int cy)
 {
+	// If background is the same - no change needed
+	if (!game.isBackgroundChanged())
+		return;
+
 	const int ITEM_HEIGHT = 30, ITEM_WIDTH = 300, DISTANCE = 15;
 
 	int x = cx,
@@ -688,6 +690,7 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hItems[BUT_END_FIGHT])
 			{
 				game.setDisplayState(DisplayState::MENU);
+				game.setBackground(Game::Background::CITY_MENU);
 
 				for (HWND hItem : hItems)
 				{

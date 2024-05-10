@@ -6,7 +6,9 @@ Game::Game() :
 	pWorldMap(make_unique<WorldMap>()),
 	pFighting(make_unique<Fighting>()),
 	pPlayer(make_unique<Player>()),
-	displayState(DisplayState::MENU)
+	displayState(DisplayState::MENU),
+	currentBackground(Background::MAIN_MENU),
+	backgroundChanged(true)
 {
 	smallFont = CreateFont(
 		16,						// Size
@@ -71,7 +73,9 @@ Game::Game(const Game& GAME) :
 	displayState(GAME.displayState),
 	smallFont(GAME.smallFont),
 	mediumFont(GAME.mediumFont),
-	largeFont(GAME.largeFont)
+	largeFont(GAME.largeFont),
+	currentBackground(GAME.currentBackground),
+	backgroundChanged(GAME.backgroundChanged)
 { }
 
 Game& Game::operator=(const Game& GAME)
@@ -100,11 +104,15 @@ Game& Game::operator=(const Game& GAME)
 	pFighting = make_unique<Fighting>();
 
 	menuManager = GAME.menuManager;
-	displayState = GAME.displayState;
 
 	smallFont = GAME.smallFont;
 	mediumFont = GAME.mediumFont;
 	largeFont = GAME.largeFont;
+
+	displayState = GAME.displayState;
+
+	currentBackground = GAME.currentBackground;
+	backgroundChanged = GAME.backgroundChanged;
 
 	return *this;
 }
@@ -220,4 +228,25 @@ void Game::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		pFighting->handleInput(hWnd, m, wp, lp);
 		break;
 	}
+}
+
+void Game::setBackground(Background b)
+{
+	currentBackground = b;
+	backgroundChanged = true;
+}
+
+void Game::backgroundChangeCompleted()
+{
+	backgroundChanged = false;
+}
+
+Game::Background Game::getBackground() const
+{
+	return currentBackground;
+}
+
+bool Game::isBackgroundChanged() const
+{
+	return backgroundChanged;
 }

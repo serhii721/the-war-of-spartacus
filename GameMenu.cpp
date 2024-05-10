@@ -184,29 +184,48 @@ GameMenu::~GameMenu()
 
 void GameMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 {
-	const string DIRECTORY = "Data/Image/Background/";
-	const string FORMAT = ".bmp";
-	string path("");
-
-	RECT rect;
-	GetClientRect(hWnd, &rect);
-
-	// Composing path based on current menu
-	switch (currentSubMenu)
+	// 1. Background
+	if (game.isBackgroundChanged())
 	{
-	default:case ITEM_NUMBER: path = DIRECTORY + "menuBackground768" + FORMAT; break;
-	}
+		const string DIRECTORY = "Data/Image/Background/";
+		const string FORMAT = ".bmp";
+		string path("");
+		RECT rect;
 
-	// Loading image
-	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-	// Filling background with selected image
-	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
-	FillRect(hdc, &rect, hBackgroundBrush);
+		GetClientRect(hWnd, &rect);
+
+		// Composing path based on current menu
+		switch (game.getBackground())
+		{
+		default:case Game::Background::GAME_MENU: path = DIRECTORY + "menuBackground768" + FORMAT; break;
+		case Game::Background::GAME_MENU_SAVE: // TODO
+			break;
+		case Game::Background::GAME_MENU_LOAD: // TODO
+			break;
+		case Game::Background::GAME_MENU_SETTINGS: // TODO
+			break;
+		}
+		// Loading image
+		if (hBackgroundImage != NULL)
+			DeleteObject(hBackgroundImage);
+		hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		// Filling background with selected image
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+		FillRect(hdc, &rect, hBackgroundBrush);
+		game.backgroundChangeCompleted();
+	}
 }
 
 void GameMenu::resizeMenu(int cx, int cy)
 {
+	// If background is the same - no change needed
+	if (!game.isBackgroundChanged())
+		return;
+
 	int sz, x, y;
+
 	switch (currentSubMenu)
 	{
 	// Game menu
@@ -288,6 +307,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hItems[BUT_RESUME] || LOWORD(wp) == IDCANCEL)
 			{
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
+				game.setBackground(Game::Background::CITY_MENU);
 				updateWindow(hWnd);
 				break;
 			}
@@ -320,12 +340,14 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SETTINGS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
 
 				currentSubMenu = Item::BUT_SETTINGS;
+				game.setBackground(Game::Background::GAME_MENU_SETTINGS);
 
 				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_EXIT_MENU])
 			{
 				game.getMenuManager().setMenu(new MainMenu(hWnd));
+				game.setBackground(Game::Background::MAIN_MENU);
 				updateWindow(hWnd);
 				break;
 			}
@@ -350,6 +372,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				currentSubMenu = Item::ITEM_NUMBER;
+				game.setBackground(Game::Background::GAME_MENU_SETTINGS);
 
 				updateWindow(hWnd);
 				break;
