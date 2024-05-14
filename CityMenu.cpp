@@ -727,11 +727,9 @@ void CityMenu::resizeMenu(int cx, int cy)
 			if (hItem == hItems[BUT_MAP])
 				y += (ITEM_HEIGHT + DISTANCE) / 2;
 			MoveWindow(hItem, x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hItem);
 			y += ITEM_HEIGHT + DISTANCE;
 		}
 		MoveWindow(hItems[EDIT_MESSAGES_LOG], 830, 510, 500, 200, TRUE);
-		UpdateWindow(hItems[EDIT_MESSAGES_LOG]);
 	}
 	break;
 
@@ -751,7 +749,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 			{
 				y += ITEM_HEIGHT + DISTANCE;
 				MoveWindow(hSubItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
-				UpdateWindow(hSubItems[i]);
 			}
 		}
 		break;
@@ -767,7 +764,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 			for (i = ARENA_FIGHT_BUT_OPPONENT1; i <= ARENA_FIGHT_BUT_OPPONENT15; i++)
 			{
 				MoveWindow(hSubMenuItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
-				UpdateWindow(hSubMenuItems[i]);
 				y += ITEM_HEIGHT + DISTANCE;
 			}
 
@@ -776,27 +772,21 @@ void CityMenu::resizeMenu(int cx, int cy)
 			x = cx + (int)(BUT_WIDTH * 0.5) + DISTANCE * 12;
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_NAME], x, y - ITEM_HEIGHT - DISTANCE, STAT_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_NAME]);
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEVEL], x, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEVEL]);
 
 			// RightHand stats
 			y = cy - (ITEM_HEIGHT + DISTANCE) * 3;
 			x -= 120;
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], x, y, 200, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE]);
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], x, y + ITEM_HEIGHT + DISTANCE, 200, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE]);
 
 			// LeftHand stats
 			x += 40 + STAT_WIDTH;
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], x, y, 200, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE]);
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], x, y + ITEM_HEIGHT + DISTANCE, 200, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE]);
 
 			// Other stats
 			x -= STAT_WIDTH - 80;
@@ -804,7 +794,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 			for (i = ARENA_FIGHT_STATIC_PLAYER_HEALTH; i <= ARENA_FIGHT_STATIC_PLAYER_FAME; i++)
 			{
 				MoveWindow(hSubMenuItems[i], x, y, STAT_WIDTH, ITEM_HEIGHT - 10, TRUE);
-				UpdateWindow(hSubMenuItems[i]);
 				y += ITEM_HEIGHT - 10 + DISTANCE / 2;
 				if (i == ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE || i == ARENA_FIGHT_STATIC_PLAYER_CHARISMA)
 					y += DISTANCE;
@@ -814,27 +803,21 @@ void CityMenu::resizeMenu(int cx, int cy)
 			y = DISTANCE * 2 + ITEM_HEIGHT * 2;
 			x = cx + (int)(BUT_WIDTH * 0.5) + DISTANCE - 340;
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_NAME], x, y - ITEM_HEIGHT - DISTANCE, STAT_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_NAME]);
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEVEL], x, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEVEL]);
 
 			// LeftHand stats
 			y = cy - (ITEM_HEIGHT + DISTANCE) * 3;
 			x -= 120;
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], x, y, 200, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE]);
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_DAMAGE], x, y + ITEM_HEIGHT + DISTANCE, 200, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE]);
 
 			// RightHand stats
 			x += 40 + STAT_WIDTH;
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], x, y, 200, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE]);
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], x, y + ITEM_HEIGHT + DISTANCE, 200, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE]);
 
 			// Other stats
 			x -= STAT_WIDTH - 80;
@@ -842,7 +825,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 			for (i = ARENA_FIGHT_STATIC_HEALTH; i <= ARENA_FIGHT_STATIC_FAME; i++)
 			{
 				MoveWindow(hSubMenuItems[i], x, y, STAT_WIDTH, ITEM_HEIGHT - 10, TRUE);
-				UpdateWindow(hSubMenuItems[i]);
 				y += ITEM_HEIGHT - 10 + DISTANCE / 2;
 				if (i == ARENA_FIGHT_STATIC_ARMOUR_DEFENSE || i == ARENA_FIGHT_STATIC_CHARISMA)
 					y += DISTANCE;
@@ -853,10 +835,8 @@ void CityMenu::resizeMenu(int cx, int cy)
 			y = 672;
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_BUT_BACK], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_BUT_BACK]);
 
 			MoveWindow(hSubMenuItems[ARENA_FIGHT_BUT_FIGHT], x + BUT_WIDTH + DISTANCE, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubMenuItems[ARENA_FIGHT_BUT_FIGHT]);
 		}
 		break;
 
@@ -894,7 +874,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 		for (i = CHARACTER_STAT_NAME; i <= CHARACTER_STAT_EXPERIENCE; i++)
 		{
 			MoveWindow(hSubItems[i], x, y, SMALL_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
-			UpdateWindow(hSubItems[i]);
 			y += BIG_STAT_HEIGHT + BIG_DISTANCE;
 		}
 
@@ -903,7 +882,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 		for (i = CHARACTER_STAT_AGE; i <= CHARACTER_STAT_HEALTH; i++)
 		{
 			MoveWindow(hSubItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
-			UpdateWindow(hSubItems[i]);
 			y += SMALL_STAT_HEIGHT + SMALL_DISTANCE;
 		}
 
@@ -912,13 +890,11 @@ void CityMenu::resizeMenu(int cx, int cy)
 		int y2 = y + SMALL_STAT_HEIGHT + SMALL_DISTANCE;
 
 		MoveWindow(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], x, y, SMALL_STAT_WIDTH + (SMALL_DISTANCE + BUT_SIZE) * 2, SMALL_STAT_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES]);
 		y += SMALL_STAT_HEIGHT + SMALL_DISTANCE;
 
 		for (i = CHARACTER_STAT_STRENGTH; i <= CHARACTER_STAT_CHARISMA; i++)
 		{
 			MoveWindow(hSubItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
-			UpdateWindow(hSubItems[i]);
 			y += SMALL_STAT_HEIGHT + SMALL_DISTANCE;
 		}
 
@@ -928,10 +904,8 @@ void CityMenu::resizeMenu(int cx, int cy)
 		{
 			// Minus button
 			MoveWindow(hSubItems[i], x, y2, BUT_SIZE, BUT_SIZE, TRUE);
-			UpdateWindow(hSubItems[i]);
 			// Plus button
 			MoveWindow(hSubItems[i - 6], x + BUT_SIZE + SMALL_DISTANCE, y2, BUT_SIZE, BUT_SIZE, TRUE);
-			UpdateWindow(hSubItems[i - 6]);
 			y2 += SMALL_STAT_HEIGHT + SMALL_DISTANCE;
 		}
 
@@ -939,14 +913,12 @@ void CityMenu::resizeMenu(int cx, int cy)
 		x -= SMALL_STAT_WIDTH + SMALL_DISTANCE;
 		y += SMALL_DISTANCE * 3;
 		MoveWindow(hSubItems[CHARACTER_BUT_RESET_CHANGES], x, 672, SMALL_STAT_WIDTH + (SMALL_DISTANCE + BUT_SIZE) * 2, BIG_STAT_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[CHARACTER_BUT_RESET_CHANGES]);
 
 		// Left hand
 		x = 364, y = 195;
 		for (i = CHARACTER_STAT_LEFT_HAND_TYPE; i <= CHARACTER_STAT_LEFT_HAND_DEXTERITY_SCALE; i++)
 		{
 			MoveWindow(hSubItems[i], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
-			UpdateWindow(hSubItems[i]);
 			y += BIG_STAT_HEIGHT + BIG_DISTANCE;
 		}
 
@@ -956,7 +928,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 		for (i = CHARACTER_STAT_RIGHT_HAND_TYPE; i <= CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE; i++)
 		{
 			MoveWindow(hSubItems[i], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
-			UpdateWindow(hSubItems[i]);
 			y += BIG_STAT_HEIGHT + BIG_DISTANCE;
 		}
 
@@ -966,17 +937,14 @@ void CityMenu::resizeMenu(int cx, int cy)
 		for (i = CHARACTER_STAT_ARMOUR_TYPE; i <= CHARACTER_STAT_ARMOUR_ABILITY; i++)
 		{
 			MoveWindow(hSubItems[i], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
-			UpdateWindow(hSubItems[i]);
 			y += BIG_STAT_HEIGHT + BIG_DISTANCE;
 		}
 
 		// Apply changes
 		MoveWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], 682, 672, 300, BIG_STAT_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES]);
 
 		// Back button
 		MoveWindow(hSubItems[CHARACTER_BUT_BACK], 364, 672, 300, BIG_STAT_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[CHARACTER_BUT_BACK]);
 	}
 	break;
 	}

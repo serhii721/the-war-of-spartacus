@@ -270,7 +270,6 @@ void MainMenu::resizeMenu(int cx, int cy)
 		{
 			y += ITEM_HEIGHT + DISTANCE;
 			MoveWindow(hItem, x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hItem);
 		}
 	}
 	break;
@@ -281,43 +280,34 @@ void MainMenu::resizeMenu(int cx, int cy)
 		const int STAT_WIDTH = 125, EDIT_WIDTH = 40, BUT_WIDTH = 35, ITEM_HEIGHT = 25, DISTANCE = 5;
 		cy -= 2 * (ITEM_HEIGHT + DISTANCE);
 		y = cy;
-		HWND hSubItem;
 
 		// Resizing static windows
-		hSubItem = hSubItems[STAT_CHARACTER_CREATION];
-		MoveWindow(hSubItem, 400, 40, 566, 55, TRUE);
-		UpdateWindow(hSubItem);
+		MoveWindow(hSubItems[STAT_CHARACTER_CREATION], 400, 40, 566, 55, TRUE);
 		for (i = NewGameItem::STAT_NAME; i <= NewGameItem::STAT_CHARISMA; i++)
 		{
-			hSubItem = hSubItems[i];
 			if (i != NewGameItem::STAT_UNNASSIGNED_ATTRIBUTES)
-				MoveWindow(hSubItem, 557, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
+				MoveWindow(hSubItems[i], 557, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
 			else
 			{
-				MoveWindow(hSubItem, 557, y + ITEM_HEIGHT + DISTANCE, STAT_WIDTH + 40, ITEM_HEIGHT * 2, TRUE);
+				MoveWindow(hSubItems[i], 557, y + ITEM_HEIGHT + DISTANCE, STAT_WIDTH + 40, ITEM_HEIGHT * 2, TRUE);
 				y += ITEM_HEIGHT * 2 + DISTANCE;
 			}
-			UpdateWindow(hSubItem);
 			y += ITEM_HEIGHT + DISTANCE;
 		}
 
 		// Resizing edit windows
-		hSubItem = hSubItems[EDIT_NAME];
-		MoveWindow(hSubItem, 687, cy, 116, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItem);
+		MoveWindow(hSubItems[EDIT_NAME], 687, cy, 116, ITEM_HEIGHT, TRUE);
 		y = cy;
 		for (i = NewGameItem::EDIT_AGE; i <= NewGameItem::EDIT_CHARISMA; i++)
 		{
 			y += ITEM_HEIGHT + DISTANCE;
-			hSubItem = hSubItems[i];
 			if (i != NewGameItem::EDIT_UNNASSIGNED_ATTRIBUTES)
-				MoveWindow(hSubItem, 725, y, EDIT_WIDTH, ITEM_HEIGHT, TRUE);
+				MoveWindow(hSubItems[i], 725, y, EDIT_WIDTH, ITEM_HEIGHT, TRUE);
 			else
 			{
-				MoveWindow(hSubItem, 722, y + ITEM_HEIGHT + DISTANCE, EDIT_WIDTH * 2, ITEM_HEIGHT * 2, TRUE);
+				MoveWindow(hSubItems[i], 722, y + ITEM_HEIGHT + DISTANCE, EDIT_WIDTH * 2, ITEM_HEIGHT * 2, TRUE);
 				y += ITEM_HEIGHT * 2 + DISTANCE;
 			}
-			UpdateWindow(hSubItem);
 		}
 
 		// Resizing button windows
@@ -326,24 +316,16 @@ void MainMenu::resizeMenu(int cx, int cy)
 		{
 			if (i == NewGameItem::BUT_STRENGTH_MINUS)
 				y += ITEM_HEIGHT * 3 + DISTANCE * 2;
-			hSubItem = hSubItems[i];
-			MoveWindow(hSubItem, 687, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubItem);
-			hSubItem = hSubItems[i+7];
-			MoveWindow(hSubItem, 768, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hSubItem);
+			MoveWindow(hSubItems[i], 687, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
+			MoveWindow(hSubItems[i + 7], 768, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
 			y += ITEM_HEIGHT + DISTANCE;
 		}
 
 		// Resizing menu navigation button windows
 		y += ITEM_HEIGHT + DISTANCE;
-		hSubItem = hSubItems[NEW_GAME_BUT_BACK];
-		MoveWindow(hSubItem, 557, y, 120, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItem);
+		MoveWindow(hSubItems[NEW_GAME_BUT_BACK], 557, y, 120, ITEM_HEIGHT, TRUE);
 
-		hSubItem = hSubItems[NEW_GAME_BUT_NEXT];
-		MoveWindow(hSubItem, 687, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItem);
+		MoveWindow(hSubItems[NEW_GAME_BUT_NEXT], 687, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
 	}
 	break;
 	// Settings
@@ -356,21 +338,17 @@ void MainMenu::resizeMenu(int cx, int cy)
 
 		// Video settings (in progress)
 		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH / 3, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[SETTINGS_STAT_VIDEO]);
 		y += ITEM_HEIGHT + DISTANCE;
 
 		// Sound settings
 		MoveWindow(hSubItems[SETTINGS_STAT_SOUND], x, y, ITEM_WIDTH - BUT_SIZE - DISTANCE, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[SETTINGS_STAT_SOUND]);
 
 		// Sound checkbox
 		MoveWindow(hSubItems[SETTINGS_BUT_SOUND], x + ITEM_WIDTH - BUT_SIZE, y, BUT_SIZE, BUT_SIZE, TRUE);
-		UpdateWindow(hSubItems[SETTINGS_BUT_SOUND]);
 		y += ITEM_HEIGHT + DISTANCE;
 
 		// Back
 		MoveWindow(hSubItems[SETTINGS_BUT_BACK], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[SETTINGS_BUT_BACK]);
 	}
 	break;
 	case Item::BUT_SPECIALS:
@@ -378,13 +356,10 @@ void MainMenu::resizeMenu(int cx, int cy)
 		const int DISTANCE = 100, ITEM_WIDTH = 300, ITEM_HEIGHT = 45;
 
 		MoveWindow(hSubItems[SPECIALS_STAT_SPECIALS], cx - ITEM_WIDTH / 2, DISTANCE - (int)(ITEM_HEIGHT * 1.5), ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[SPECIALS_STAT_SPECIALS]);
 
 		MoveWindow(hSubItems[SPECIALS_STAT_TEXT], DISTANCE, DISTANCE, cx * 2 - DISTANCE * 2, cy * 2 - DISTANCE * 3, TRUE);
-		UpdateWindow(hSubItems[SPECIALS_STAT_TEXT]);
 
 		MoveWindow(hSubItems[SPECIALS_BUT_BACK], cx - ITEM_WIDTH / 2, cy * 2 - DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[SPECIALS_BUT_BACK]);
 	}
 	break;
 	}

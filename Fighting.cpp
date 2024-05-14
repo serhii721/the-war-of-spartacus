@@ -653,52 +653,38 @@ void Fighting::resizeWindow(int cx, int cy)
 
 	// Start
 	MoveWindow(hItems[STATIC_START], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y - (ITEM_HEIGHT + DISTANCE) * 4, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[STATIC_START]);
 
 	// HP
 	MoveWindow(hItems[STATIC_PLAYER_HP], x - ITEM_WIDTH - DISTANCE, y, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[STATIC_PLAYER_HP]);
 
 	MoveWindow(hItems[STATIC_OPPONENT_HP], x + DISTANCE + ITEM_WIDTH / 2, y, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[STATIC_OPPONENT_HP]);
 
 	// Damage
 	MoveWindow(hItems[STATIC_PLAYER_DAMAGE], x - ITEM_WIDTH - DISTANCE, y + ITEM_HEIGHT + DISTANCE, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[STATIC_PLAYER_DAMAGE]);
 
 	MoveWindow(hItems[STATIC_OPPONENT_DAMAGE], x + DISTANCE + ITEM_WIDTH / 2, y + ITEM_HEIGHT + DISTANCE, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[STATIC_OPPONENT_DAMAGE]);
 
 	// Defense
 	MoveWindow(hItems[STATIC_PLAYER_DEFENSE], x - ITEM_WIDTH - DISTANCE, y + (ITEM_HEIGHT + DISTANCE) * 2, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[STATIC_PLAYER_DEFENSE]);
 
 	MoveWindow(hItems[STATIC_OPPONENT_DEFENSE], x + DISTANCE + ITEM_WIDTH / 2, y + (ITEM_HEIGHT + DISTANCE) * 2, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[STATIC_OPPONENT_DEFENSE]);
 
 	// Log
 	MoveWindow(hItems[EDIT_LOG_MESSAGES], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y, ITEM_WIDTH, ITEM_HEIGHT * 5, TRUE);
-	UpdateWindow(hItems[EDIT_LOG_MESSAGES]);
 
 	// Buttons
 	MoveWindow(hItems[BUT_SPARE_OPPONENT], x - ITEM_WIDTH - DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[BUT_SPARE_OPPONENT]);
 
 	MoveWindow(hItems[BUT_EXECUTE_OPPONENT], x + DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[BUT_EXECUTE_OPPONENT]);
 
 	MoveWindow(hItems[BUT_SURRENDER], x - ITEM_WIDTH - DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[BUT_SURRENDER]);
 
 	MoveWindow(hItems[BUT_CONTINUE], x + DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[BUT_CONTINUE]);
 
 	// End of the fight
 	MoveWindow(hItems[STATIC_FIGHT_RESULT], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[BUT_END_FIGHT]);
 
 	MoveWindow(hItems[BUT_END_FIGHT], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y + ITEM_HEIGHT * 6 + DISTANCE + 2, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-	UpdateWindow(hItems[BUT_END_FIGHT]);
 }
 
 void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
