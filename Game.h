@@ -60,6 +60,7 @@ private:
 public:
 	void setBackground(Background);
 	void backgroundChangeCompleted();
+	void updateBackground();
 	Background getBackground() const;
 	bool isBackgroundChanged() const;
 };

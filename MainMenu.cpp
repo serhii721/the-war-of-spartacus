@@ -707,28 +707,30 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				// Player creation
 				unique_ptr<Weapon> rightHand = generateWeapon();
-				unique_ptr<Weapon> leftHand = generateWeapon();
-				if (!rightHand->isCompatibleWith(leftHand->getType()) &&
-					rightHand->getType() != Weapon::Type::AXE &&
-					rightHand->getType() != Weapon::Type::SPEAR)
+				unique_ptr<Weapon> leftHand;
+				if (rightHand->getType() != Weapon::Type::AXE && rightHand->getType() != Weapon::Type::SPEAR)
 				{
-					if (rand() % 100 < 75)
+					leftHand = generateWeapon();
+					if (!rightHand->isCompatibleWith(leftHand->getType()))
 					{
-						if (leftHand)
-							leftHand.release();
-						leftHand = generateWeapon(Weapon::SHIELD);
-					}
-					else if (rand() % 100 < 75)
-						do
+						if (rand() % 100 < 75)
 						{
 							if (leftHand)
 								leftHand.release();
-							leftHand = generateWeapon();
-						} while (!rightHand->isCompatibleWith(leftHand->getType()));
-					else if (leftHand)
-					{
-						leftHand.release();
-						leftHand = nullptr;
+							leftHand = generateWeapon(Weapon::SHIELD);
+						}
+						else if (rand() % 100 < 75)
+							do
+							{
+								if (leftHand)
+									leftHand.release();
+								leftHand = generateWeapon();
+							} while (!rightHand->isCompatibleWith(leftHand->getType()));
+						else if (leftHand)
+						{
+							leftHand.release();
+							leftHand = nullptr;
+						}
 					}
 				}
 				else
@@ -768,6 +770,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						string(str)
 					)
 				);
+				game.getPlayer().updateMaxHP();
 
 				nms.reset();
 

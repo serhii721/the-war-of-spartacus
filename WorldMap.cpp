@@ -306,7 +306,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_ROME_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_ROME_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_NAPLES_LIST] || (HWND)lp == hItems[BUT_NAPLES_MAP])
 		{
@@ -314,7 +323,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_NAPLES_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_NAPLES_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_METAPONTO_LIST] || (HWND)lp == hItems[BUT_METAPONTO_MAP])
 		{
@@ -322,7 +340,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_METAPONTO_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_METAPONTO_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_BOJANO_LIST] || (HWND)lp == hItems[BUT_BOJANO_MAP])
 		{
@@ -330,7 +357,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_BOJANO_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_BOJANO_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_ANCONA_LIST] || (HWND)lp == hItems[BUT_ANCONA_MAP])
 		{
@@ -338,7 +374,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_ANCONA_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_ANCONA_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_PERUGIA_LIST] || (HWND)lp == hItems[BUT_PERUGIA_MAP])
 		{
@@ -346,7 +391,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_PERUGIA_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_PERUGIA_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_FLORENCE_LIST] || (HWND)lp == hItems[BUT_FLORENCE_MAP])
 		{
@@ -354,7 +408,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_FLORENCE_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_FLORENCE_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_BOLOGNA_LIST] || (HWND)lp == hItems[BUT_BOLOGNA_MAP])
 		{
@@ -362,7 +425,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_BOLOGNA_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_BOLOGNA_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_GENOA_LIST] || (HWND)lp == hItems[BUT_GENOA_MAP])
 		{
@@ -370,7 +442,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_GENOA_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_GENOA_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_VENICE_LIST] || (HWND)lp == hItems[BUT_VENICE_MAP])
 		{
@@ -378,7 +459,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_VENICE_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_VENICE_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		if ((HWND)lp == hItems[BUT_MILAN_LIST] || (HWND)lp == hItems[BUT_MILAN_MAP])
 		{
@@ -386,14 +476,24 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItem, BM_SETCHECK, 0, 0);
 			SendMessage(hItems[BUT_MILAN_LIST], BM_SETCHECK, 1, 0);
 			selectedCity = BUT_MILAN_MAP;
-			updateWindow(hWnd);
+			if (currentCity == selectedCity)
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
+				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
+			}
 		}
 		}
 		if ((HWND)lp == hItems[BUT_TRAVEL_LIST])
 		{
 			currentCity = selectedCity;
-			logStr += "You have traveled to " + localization.getCityName(getCurrentCity()) + "\r\n";
-			updateWindow(hWnd);
+			ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
+			ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
+			logStr += "You have traveled to " + localization.getCityName(getCurrentCity()) + "\r\n\r\n";
 		}
 		if ((HWND)lp == hItems[BUT_ENTER_LIST])
 		{

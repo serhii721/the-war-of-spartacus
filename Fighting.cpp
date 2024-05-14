@@ -26,7 +26,7 @@ Fighting::Fighting(HWND hWnd) :
 {
 	for (int i = Item::STATIC_START; i <= Item::STATIC_FIGHT_RESULT; i++)
 		hItems[i] = CreateWindow("STATIC", "", // TODO: apply localization
-			WS_CHILD | WS_VISIBLE,
+			WS_CHILD | WS_VISIBLE | SS_CENTER,
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	hItems[Item::EDIT_LOG_MESSAGES] = CreateWindow("EDIT", "", // TODO: apply localization
@@ -224,6 +224,25 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 
 	int damage = 0, defense = 0;
 
+	// Windows appearances
+	for (HWND hItem : hItems)
+		ShowWindow(hItem, SW_SHOW);
+
+	ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_HIDE);
+	ShowWindow(hItems[Item::BUT_SPARE_OPPONENT], SW_HIDE);
+	ShowWindow(hItems[Item::BUT_EXECUTE_OPPONENT], SW_HIDE);
+	ShowWindow(hItems[Item::BUT_SURRENDER], SW_HIDE);
+	ShowWindow(hItems[Item::BUT_CONTINUE], SW_HIDE);
+	ShowWindow(hItems[Item::BUT_END_FIGHT], SW_HIDE);
+
+	game.updateBackground();
+
+	UpdateWindow(hWnd);
+
+	// Fight name
+	sprintf_s(str, "%s vs %s", rPlayer.getName().c_str(), localization.getNPCName(*pOpponent).c_str());
+	SendMessage(hItems[Item::STATIC_START], WM_SETTEXT, 0, (LPARAM)str);
+
 	// Show Player and Opponent health
 	int playerHP = game.getPlayer().getHP(),
 		opponentHP = pOpponentCopy->getHP();
@@ -233,6 +252,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 
 	SendMessage(hItems[Item::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)pHP.c_str());
 	SendMessage(hItems[Item::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)oHP.c_str());
+	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"");
 
 	// Show Player and Opponent damage
 	if (rPlayer.getRightHand())
@@ -267,7 +287,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	if (pOpponent->getWisdom() > rPlayer.getWisdom())
 	{
 
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Opponent has higher wisdom, so he attacks first\r\n");
+		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Opponent has higher wisdom, so he attacks first\r\n\r\n");
+		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 		Sleep(SLEEP_TIME);
 
 		// Opponent's attack
@@ -290,7 +311,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	}
 	else
 	{
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"You have higher wisdom, so you attack first\r\n");
+		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"You have higher wisdom, so you attack first\r\n\r\n");
+		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 		Sleep(SLEEP_TIME);
 	}
 
@@ -437,13 +459,14 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	// Information for messages log
 	logStr += "You have fought with " + localization.getNPCName(*pOpponent);
 	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
-		logStr += " and won\r\n";
+		logStr += " and won\r\n\r\n";
 	else
-		logStr += " and lost\r\n";
-	logStr += "You have gained " + to_string(fame) + " fame\r\n"
-		+ "You have gained " + to_string(experience) + " experience\r\n";
+		logStr += " and lost\r\n\r\n";
+	logStr += "You have gained " + to_string(fame) + " fame\r\n\r\n"
+		+ "You have gained " + to_string(experience) + " experience\r\n\r\n";
 	if (rPlayer.getLevel() > playerLevel)
-		logStr += "You have leveled up to level " + to_string(rPlayer.getLevel()) + "\r\n";
+		logStr += "You have leveled up to level " + to_string(rPlayer.getLevel()) +
+		" (" + to_string(rPlayer.getUnnassignedAttributes()) + " unnassigned attributes)\r\n\r\n";
 
 	pOpponentCopy = nullptr;
 	return status;
@@ -513,7 +536,7 @@ void Fighting::getAttackResult(const Attacker attacker, const AttackResult rresu
 		}
 		break;
 	}
-	result += "\r\n";
+	result += "\r\n\r\n";
 	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)result.c_str());
 	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 
@@ -613,7 +636,6 @@ void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		FillRect(hdc, &rect, hBackgroundBrush);
 		game.backgroundChangeCompleted();
 	}
-
 	// 2. Text
 	// TODO
 }
@@ -693,11 +715,7 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::CITY_MENU);
 
 				for (HWND hItem : hItems)
-				{
-					if (hItem != NULL)
-						DestroyWindow(hItem);
-					hItems.clear();
-				}
+					ShowWindow(hItem, SW_HIDE);
 
 				updateWindow(hWnd);
 			}
