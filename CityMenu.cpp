@@ -3120,3 +3120,57 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		break;
 	}	
 }
+
+void CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+{
+	switch (m)
+	{
+	case WM_DRAWITEM:
+	{
+		LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
+		HDC hdc = item->hDC;
+
+		GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+		// Set text font and background
+		SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+		SetBkMode(hdc, TRANSPARENT);
+
+		// Assing background and text color
+		SetTextColor(hdc, COLOR_WHITE);
+		FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+		// Draw text
+		int len = GetWindowTextLength(item->hwndItem);
+		buf.resize(len + 1); // Resize buffer to contain button text
+		GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+		DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
+
+		// Checking window type to draw it using correct styles
+
+		if (item->CtlType == ODT_STATIC) // Static windows
+		{
+			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
+		}
+		else if (strcmp(str, ("Edit")) == 0) // Edit windows
+		{
+			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
+		}
+		else if (item->CtlType == ODT_BUTTON) // Button windows
+		{
+			if (item->itemState & ODS_HOTLIGHT)
+			{
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(RGB(0, 0, 0)));
+			}
+			if (item->itemState & ODS_SELECTED)
+			{
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+			}
+			else
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+		}
+	}
+	}
+}

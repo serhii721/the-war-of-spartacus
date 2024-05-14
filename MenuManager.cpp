@@ -44,3 +44,8 @@ void MenuManager::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	currentMenu->handleInput(hWnd, m, wp, lp);
 }
+
+void MenuManager::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+{
+	currentMenu->stylizeWindow(hWnd, m, wp, lp);
+}

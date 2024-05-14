@@ -155,4 +155,5 @@ public:
 	void resizeMenu(int, int) override;
 	void updateLanguage() override;
 	void handleInput(HWND, UINT, WPARAM, LPARAM) override;
+	void stylizeWindow(HWND, UINT, WPARAM, LPARAM) override;
 };
