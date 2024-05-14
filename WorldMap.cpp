@@ -288,9 +288,6 @@ void WorldMap::resizeWindow(int cx, int cy)
 	MoveWindow(hItems[BUT_TRAVEL_LIST], x, 644, BUT_WIDTH, 67, TRUE);
 
 	MoveWindow(hItems[BUT_ENTER_LIST], x, 644, BUT_WIDTH, 67, TRUE);
-
-	for (HWND hItem : hItems)
-		UpdateWindow(hItem);
 }
 
 void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)

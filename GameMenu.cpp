@@ -239,7 +239,6 @@ void GameMenu::resizeMenu(int cx, int cy)
 		{
 			y += ITEM_HEIGHT + DISTANCE;
 			MoveWindow(hItem, x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-			UpdateWindow(hItem);
 		}
 	}
 	break;
@@ -268,21 +267,17 @@ void GameMenu::resizeMenu(int cx, int cy)
 
 		// Video settings (in progress)
 		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH / 3, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[SETTINGS_STAT_VIDEO]);
 		y += ITEM_HEIGHT + DISTANCE;
 
 		// Sound settings
 		MoveWindow(hSubItems[SETTINGS_STAT_SOUND], x, y, ITEM_WIDTH - BUT_SIZE - DISTANCE, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[SETTINGS_STAT_SOUND]);
 
 		// Sound checkbox
 		MoveWindow(hSubItems[SETTINGS_BUT_SOUND], x + ITEM_WIDTH - BUT_SIZE, y, BUT_SIZE, BUT_SIZE, TRUE);
-		UpdateWindow(hSubItems[SETTINGS_BUT_SOUND]);
 		y += ITEM_HEIGHT + DISTANCE;
 
 		// Back
 		MoveWindow(hSubItems[SETTINGS_BUT_BACK], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		UpdateWindow(hSubItems[SETTINGS_BUT_BACK]);
 	}
 	break;
 	}
