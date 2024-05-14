@@ -26,7 +26,7 @@ Fighting::Fighting(HWND hWnd) :
 {
 	for (int i = Item::STATIC_START; i <= Item::STATIC_FIGHT_RESULT; i++)
 		hItems[i] = CreateWindow("STATIC", "", // TODO: apply localization
-			WS_CHILD | WS_VISIBLE | SS_CENTER,
+			WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW,
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	hItems[Item::EDIT_LOG_MESSAGES] = CreateWindow("EDIT", "", // TODO: apply localization
@@ -34,23 +34,23 @@ Fighting::Fighting(HWND hWnd) :
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	hItems[Item::BUT_SPARE_OPPONENT] = CreateWindow("BUTTON", "Spare opponent", // TODO: apply localization
-		WS_CHILD | WS_VISIBLE,
+		WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	hItems[Item::BUT_EXECUTE_OPPONENT] = CreateWindow("BUTTON", "Execute opponent", // TODO: apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	hItems[Item::BUT_SURRENDER] = CreateWindow("BUTTON", "Surrender", // TODO: apply localization
-		WS_CHILD | WS_VISIBLE,
+		WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	hItems[Item::BUT_CONTINUE] = CreateWindow("BUTTON", "Continue fight", // TODO: apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	hItems[Item::BUT_END_FIGHT] = CreateWindow("BUTTON", "End fight", // TODO: apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	ShowWindow(hItems[Item::BUT_SPARE_OPPONENT], SW_HIDE);
@@ -203,7 +203,18 @@ Fighting& Fighting::operator=(const Fighting& F)
 	return *this;
 }
 
-Fighting::~Fighting() { }
+Fighting::~Fighting()
+{
+	for (HWND hItem : hItems)
+		if (hItem != NULL)
+			DestroyWindow(hItem);
+
+	if (hBackgroundImage != NULL)
+		DeleteObject(hBackgroundImage);
+
+	if (hBackgroundBrush != NULL)
+		DeleteObject(hBackgroundBrush);
+}
 
 void Fighting::setScreen(Screen s)
 {

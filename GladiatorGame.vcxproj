@@ -213,6 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Data\Image\Icon.ico" />
+    <Image Include="Data\Image\ItemColor.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

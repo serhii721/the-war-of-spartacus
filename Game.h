@@ -13,6 +13,12 @@ private:
 	DisplayState displayState;
 
 public:
+	enum FontSize
+	{
+		SMALL,
+		MEDIUM,
+		LARGE
+	};
 	enum Background
 	{
 		MAIN_MENU,
@@ -48,6 +54,7 @@ public:
 	WorldMap& getWorldMap() const;
 	Fighting& getFighting() const;
 	MenuManager& getMenuManager();
+	HFONT& getFont(FontSize);
 
 	void drawWindow(HWND, HDC, int, int);
 	void resizeWindow(int, int);
