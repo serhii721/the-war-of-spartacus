@@ -26,27 +26,28 @@ MainMenu::MainMenu(HWND hWnd) :
 {
 	char className[256] = "BUTTON";
 	hItems[BUT_CONTINUE] = CreateWindow(className, "Continue", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
+
 	hItems[BUT_LOAD_GAME] = CreateWindow(className, "Load game", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_NEW_GAME] = CreateWindow(className, "New game", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_SETTINGS] = CreateWindow(className, "Settings", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_SPECIALS] = CreateWindow(className, "Specials", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_EXIT] = CreateWindow(className, "Exit", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 }
@@ -305,7 +306,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 				MoveWindow(hSubItems[i], 725, y, EDIT_WIDTH, ITEM_HEIGHT, TRUE);
 			else
 			{
-				MoveWindow(hSubItems[i], 722, y + ITEM_HEIGHT + DISTANCE, EDIT_WIDTH * 2, ITEM_HEIGHT * 2, TRUE);
+				MoveWindow(hSubItems[i], 725, y + ITEM_HEIGHT + DISTANCE * 4, EDIT_WIDTH, ITEM_HEIGHT, TRUE);
 				y += ITEM_HEIGHT * 2 + DISTANCE;
 			}
 		}
@@ -408,45 +409,45 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems.resize(NewGameItem::NEW_GAME_ITEM_NUMBER);
 
 				// TODO: Apply localization
-				hSubItems[STAT_CHARACTER_CREATION] = (CreateWindow("STATIC", "Character creation", WS_CHILD | WS_VISIBLE | SS_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[STAT_NAME] = (CreateWindow("STATIC", "Name:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[STAT_AGE] = (CreateWindow("STATIC", "Age:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[STAT_UNNASSIGNED_ATTRIBUTES] = (CreateWindow("STATIC", "Unnassigned attributes:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[STAT_STRENGTH] = (CreateWindow("STATIC", "Strength:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[STAT_CONSTITUTION] = (CreateWindow("STATIC", "Constitution:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[STAT_DEXTERITY] = (CreateWindow("STATIC", "Dexterity:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[STAT_INTELLIGENCE] = (CreateWindow("STATIC", "Intelligence:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[STAT_WISDOM] = (CreateWindow("STATIC", "Wisdom:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[STAT_CHARISMA] = (CreateWindow("STATIC", "Charisma:", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+				hSubItems[STAT_CHARACTER_CREATION] = CreateWindow("STATIC", "Character creation", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_NAME] = CreateWindow("STATIC", "Name:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_AGE] = CreateWindow("STATIC", "Age:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_UNNASSIGNED_ATTRIBUTES] = CreateWindow("STATIC", "Unnassigned attributes:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_STRENGTH] = CreateWindow("STATIC", "Strength:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_CONSTITUTION] = CreateWindow("STATIC", "Constitution:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_DEXTERITY] = CreateWindow("STATIC", "Dexterity:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_INTELLIGENCE] = CreateWindow("STATIC", "Intelligence:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_WISDOM] = CreateWindow("STATIC", "Wisdom:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_CHARISMA] = CreateWindow("STATIC", "Charisma:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				
-				hSubItems[EDIT_NAME] = (CreateWindow("EDIT", "", WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[EDIT_AGE] = (CreateWindow("EDIT", to_string(nms->age).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES] = (CreateWindow("EDIT", to_string(nms->unnassignedAttributes).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[EDIT_STRENGTH] = (CreateWindow("EDIT", to_string(nms->strength).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[EDIT_CONSTITUTION] = (CreateWindow("EDIT", to_string(nms->constitution).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[EDIT_DEXTERITY] = (CreateWindow("EDIT", to_string(nms->dexterity).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[EDIT_INTELLIGENCE] = (CreateWindow("EDIT", to_string(nms->intelligence).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[EDIT_WISDOM] = (CreateWindow("EDIT", to_string(nms->wisdom).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[EDIT_CHARISMA] = (CreateWindow("EDIT", to_string(nms->charisma).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+				hSubItems[EDIT_NAME] = CreateWindow("EDIT", "", WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_AGE] = CreateWindow("EDIT", to_string(nms->age).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES] = CreateWindow("EDIT", to_string(nms->unnassignedAttributes).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_STRENGTH] = CreateWindow("EDIT", to_string(nms->strength).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_CONSTITUTION] = CreateWindow("EDIT", to_string(nms->constitution).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_DEXTERITY] = CreateWindow("EDIT", to_string(nms->dexterity).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_INTELLIGENCE] = CreateWindow("EDIT", to_string(nms->intelligence).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_WISDOM] = CreateWindow("EDIT", to_string(nms->wisdom).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_CHARISMA] = CreateWindow("EDIT", to_string(nms->charisma).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				
-				hSubItems[BUT_AGE_MINUS] = (CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_STRENGTH_MINUS] = (CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_CONSTITUTION_MINUS] = (CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_DEXTERITY_MINUS] = (CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_INTELLIGENCE_MINUS] = (CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_WISDOM_MINUS] = (CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_CHARISMA_MINUS] = (CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+				hSubItems[BUT_AGE_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_STRENGTH_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_CONSTITUTION_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_DEXTERITY_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_INTELLIGENCE_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_WISDOM_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_CHARISMA_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-				hSubItems[BUT_AGE_PLUS] = (CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_STRENGTH_PLUS] = (CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_CONSTITUTION_PLUS] = (CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_DEXTERITY_PLUS] = (CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_INTELLIGENCE_PLUS] = (CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_WISDOM_PLUS] = (CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[BUT_CHARISMA_PLUS] = (CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+				hSubItems[BUT_AGE_PLUS] = CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_STRENGTH_PLUS] = CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_CONSTITUTION_PLUS] = CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_DEXTERITY_PLUS] = CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_INTELLIGENCE_PLUS] = CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_WISDOM_PLUS] = CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[BUT_CHARISMA_PLUS] = CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-				hSubItems[NEW_GAME_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[NEW_GAME_BUT_NEXT] = (CreateWindow("BUTTON", "Next", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+				hSubItems[NEW_GAME_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[NEW_GAME_BUT_NEXT] = CreateWindow("BUTTON", "Next", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				currentSubMenu = Item::BUT_NEW_GAME;
 				game.setBackground(Game::Background::MAIN_MENU_NEW_GAME);
@@ -470,10 +471,10 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(SettingsItem::SETTINGS_ITEM_NUMBER);
 
-				hSubItems[SETTINGS_STAT_VIDEO] = (CreateWindow("STATIC", "Video settings (in progress)", WS_CHILD | WS_VISIBLE | SS_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[SETTINGS_STAT_SOUND] = (CreateWindow("STATIC", "Sound: ", WS_CHILD | WS_VISIBLE | SS_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[SETTINGS_BUT_SOUND] = (CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[SETTINGS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", "Video settings (in progress)", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", "Sound: ", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_BUT_SOUND] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				currentSubMenu = Item::BUT_SETTINGS;
 				game.setBackground(Game::Background::MAIN_MENU_SETTINGS);
@@ -495,9 +496,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(SettingsItem::SETTINGS_ITEM_NUMBER);
 
-				hSubItems[SPECIALS_STAT_SPECIALS] = (CreateWindow("STATIC", "Specials", WS_CHILD | WS_VISIBLE | SS_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[SPECIALS_STAT_TEXT] = (CreateWindow("STATIC", "Text", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[SPECIALS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+				hSubItems[SPECIALS_STAT_SPECIALS] = CreateWindow("STATIC", "Specials", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SPECIALS_STAT_TEXT] = CreateWindow("STATIC", "Text", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SPECIALS_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				currentSubMenu = Item::BUT_SPECIALS;
 				game.setBackground(Game::Background::MAIN_MENU_SPECIALS);

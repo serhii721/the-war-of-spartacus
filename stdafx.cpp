@@ -1380,52 +1380,6 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		localization.setLanguage();
 		game.getMenuManager().setMenu(new MainMenu(hwnd));
-
-		//// Loading the user prefered language
-		//ifstream fin("Data/Settings.conf");
-		//// If user saved prefered language before it will be loaded
-		//if (fin)
-		//{
-		//	int langOption;
-		//	fin >> langOption;
-		//	switch (langOption)
-		//	{
-		//	default: case 0: localization.setLanguage(); // English
-		//		break;
-		//	case 1: localization.setLanguage(Language::UKRAINIAN);
-		//		break;
-		//	case 2: localization.setLanguage(Language::RUSSIAN);
-		//		break;
-		//	case 3: localization.setLanguage(Language::LATIN);
-		//		break;
-		//	}
-		//}
-		//else // If used didn't change language before it will be set to English
-		//	localization.setLanguage();
-
-		//Player* player = new Player(); // TODO: remove
-
-		//// OPPONENTS = 3
-		//NPC* npcs = new NPC[OPPONENTS_NUMBER]; // TODO: array<>
-
-		//// 1. Start menu
-		//if (!outputStartMenu(*player, npcs))
-		//{
-		//	if (player)
-		//		delete player;
-		//	if (npcs)
-		//		delete[] npcs;
-
-		//	return 0;
-		//}
-
-		//// 2. Menu in game
-		//outputGameMenu(*player, npcs);
-
-		//if (player)
-		//	delete player;
-		//if (npcs)
-		//	delete[] npcs;
 		break;
 
 	case WM_COMMAND:
@@ -1435,7 +1389,6 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 		sx = LOWORD(lParam);
 		sy = HIWORD(lParam);
-
 		game.resizeWindow(sx / 2, sy / 2);
 		break;
 
@@ -1444,6 +1397,56 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		game.drawWindow(hwnd, hdc, sx / 2, sy / 2);
 		EndPaint(hwnd, &ps);
 		break;
+
+	case WM_DRAWITEM:
+	{
+		LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lParam;
+		HDC hdc = item->hDC;
+
+		GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+		// Set text font and background
+		SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+		SetBkMode(hdc, TRANSPARENT);
+
+		// Assing background and text color
+		SetTextColor(hdc, COLOR_WHITE);
+		FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+		// Draw text
+		int len = GetWindowTextLength(item->hwndItem);
+		buf.resize(len + 1); // Resize buffer to contain button text
+		GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+		DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
+
+		// Checking window type to draw it using correct styles
+
+		if (item->CtlType == ODT_STATIC) // Static windows
+		{
+			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
+		}
+		else if (strcmp(str, ("Edit")) == 0) // Edit windows
+		{
+			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
+		}
+		else if (item->CtlType == ODT_BUTTON) // Button windows
+		{
+			if (item->itemState & ODS_HOTLIGHT)
+			{
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(RGB(0,0,0)));
+			}
+			if (item->itemState & ODS_SELECTED)
+			{
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+			}
+			else
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+		}
+		return true;
+	}
+	break;
 
 	case WM_DESTROY:
 		PostQuitMessage(0);

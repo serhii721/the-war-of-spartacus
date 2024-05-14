@@ -12,7 +12,7 @@ Game::Game() :
 {
 	smallFont = CreateFont(
 		16,						// Size
-		15,						// Width
+		7,						// Width
 		0,						// Lean angle
 		0,						// Rotation angle
 		FW_NORMAL,				// Thickness
@@ -25,7 +25,7 @@ Game::Game() :
 		DEFAULT_QUALITY,		// Output quality
 		DEFAULT_PITCH |			// Pitch
 		FF_ROMAN,				// Font family
-		"MyFont"				// Name
+		"SmallFont"				// Name
 	);
 
 	mediumFont = CreateFont(
@@ -43,7 +43,7 @@ Game::Game() :
 		DEFAULT_QUALITY,		// Output quality
 		DEFAULT_PITCH |			// Pitch
 		FF_ROMAN,				// Font family
-		"MyFont"				// Name
+		"MediumFont"			// Name
 	);
 
 	largeFont = CreateFont(
@@ -61,7 +61,7 @@ Game::Game() :
 		DEFAULT_QUALITY,		// Output quality
 		DEFAULT_PITCH |			// Pitch
 		FF_ROMAN,				// Font family
-		"MyFont"				// Name
+		"LargeFont"				// Name
 	);
 }
 
@@ -71,17 +71,45 @@ Game::Game(const Game& GAME) :
 	pFighting(make_unique<Fighting>()),
 	pPlayer(make_unique<Player>(*GAME.pPlayer)),
 	displayState(GAME.displayState),
-	smallFont(GAME.smallFont),
-	mediumFont(GAME.mediumFont),
-	largeFont(GAME.largeFont),
 	currentBackground(GAME.currentBackground),
 	backgroundChanged(GAME.backgroundChanged)
-{ }
+{
+	// Small font
+	if (GAME.smallFont != NULL)
+	{
+		LOGFONT lf;
+		if (GetObject(GAME.smallFont, sizeof(LOGFONT), &lf))
+			smallFont = CreateFontIndirect(&lf);
+	}
+	else
+		smallFont = NULL;
+
+	// Medium font
+	if (GAME.mediumFont != NULL)
+	{
+		LOGFONT lf;
+		if (GetObject(GAME.mediumFont, sizeof(LOGFONT), &lf))
+			mediumFont = CreateFontIndirect(&lf);
+	}
+	else
+		mediumFont = NULL;
+
+	// Large font
+	if (GAME.largeFont != NULL)
+	{
+		LOGFONT lf;
+		if (GetObject(GAME.largeFont, sizeof(LOGFONT), &lf))
+			largeFont = CreateFontIndirect(&lf);
+	}
+	else
+		largeFont = NULL;
+}
 
 Game& Game::operator=(const Game& GAME)
 {
 	if (&GAME == this) return *this;
 
+	// World map
 	if (GAME.pWorldMap)
 	{
 		if (!pWorldMap)
@@ -92,6 +120,7 @@ Game& Game::operator=(const Game& GAME)
 	else
 		pWorldMap = nullptr;
 
+	// Player
 	if (GAME.pPlayer)
 	{
 		if (!pPlayer)
@@ -105,9 +134,50 @@ Game& Game::operator=(const Game& GAME)
 
 	menuManager = GAME.menuManager;
 
-	smallFont = GAME.smallFont;
-	mediumFont = GAME.mediumFont;
-	largeFont = GAME.largeFont;
+	// Small font
+	if (smallFont != NULL)
+	{
+		DeleteObject(smallFont);
+		smallFont = NULL;
+	}
+	if (GAME.smallFont != NULL)
+	{
+		LOGFONT lf;
+		if (GetObject(GAME.smallFont, sizeof(LOGFONT), &lf))
+			smallFont = CreateFontIndirect(&lf);
+	}
+	else
+		smallFont = NULL;
+
+	// Medium font
+	if (mediumFont != NULL)
+	{
+		DeleteObject(mediumFont);
+		mediumFont = NULL;
+	}
+	if (GAME.mediumFont != NULL)
+	{
+		LOGFONT lf;
+		if (GetObject(GAME.mediumFont, sizeof(LOGFONT), &lf))
+			mediumFont = CreateFontIndirect(&lf);
+	}
+	else
+		mediumFont = NULL;
+
+	// Large font
+	if (largeFont != NULL)
+	{
+		DeleteObject(largeFont);
+		largeFont = NULL;
+	}
+	if (GAME.largeFont != NULL)
+	{
+		LOGFONT lf;
+		if (GetObject(GAME.largeFont, sizeof(LOGFONT), &lf))
+			largeFont = CreateFontIndirect(&lf);
+	}
+	else
+		largeFont = NULL;
 
 	displayState = GAME.displayState;
 
@@ -174,6 +244,16 @@ Fighting & Game::getFighting() const
 MenuManager& Game::getMenuManager()
 {
 	return menuManager;
+}
+
+HFONT& Game::getFont(FontSize size)
+{
+	switch (size)
+	{
+	default: case FontSize::SMALL: return smallFont;
+	case FontSize::MEDIUM: return mediumFont;
+	case FontSize::LARGE: return largeFont;
+	}
 }
 
 void Game::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)

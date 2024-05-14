@@ -22,23 +22,23 @@ GameMenu::GameMenu(HWND hWnd) :
 {
 	char className[256] = "BUTTON";
 	hItems[BUT_RESUME] = CreateWindow(className, "Resume", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_SAVE] = CreateWindow(className, "Save game", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_LOAD] = CreateWindow(className, "Load game", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_SETTINGS] = CreateWindow(className, "Settings", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_EXIT_MENU] = CreateWindow(className, "Exit to menu", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 }
@@ -329,10 +329,10 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(SettingsItem::SETTINGS_ITEM_NUMBER);
 
-				hSubItems[SETTINGS_STAT_VIDEO] = (CreateWindow("STATIC", "Video settings (in progress)", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[SETTINGS_STAT_SOUND] = (CreateWindow("STATIC", "Sound: ", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[SETTINGS_BUT_SOUND] = (CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX, 0, 0, 0, 0, hWnd, 0, hInst, 0));
-				hSubItems[SETTINGS_BUT_BACK] = (CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0));
+				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", "Video settings (in progress)", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", "Sound: ", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_BUT_SOUND] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				currentSubMenu = Item::BUT_SETTINGS;
 				game.setBackground(Game::Background::GAME_MENU_SETTINGS);

@@ -34,7 +34,7 @@ CityMenu::CityMenu(HWND hWnd) :
 	// Getting the city name
 	buf = "City of " + localization.getCityName(game.getWorldMap().getCurrentCity());
 	hItems[STAT_CITY_NAME] = CreateWindow("STATIC", buf.c_str(), // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | SS_CENTER,
+		WS_CHILD | WS_VISIBLE | SS_OWNERDRAW | SS_CENTER,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 
@@ -46,31 +46,32 @@ CityMenu::CityMenu(HWND hWnd) :
 
 	char className[256] = "BUTTON";
 	hItems[BUT_ARENA] = CreateWindow(className, "Arena", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
+
 	hItems[BUT_QUEST] = CreateWindow(className, "Quest", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_MARKET] = CreateWindow(className, "Trader", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_CHARACTER] = CreateWindow(className, "View character", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_REST] = CreateWindow(className, "Rest", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_MAP] = CreateWindow(className, "Map", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 	hItems[BUT_MENU] = CreateWindow(className, "Menu", // TODO: Apply localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 }
@@ -985,19 +986,19 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				// TODO: Apply localization
 				hSubItems[ARENA_BUT_FIGHT] = CreateWindow("BUTTON", "Fight",
-					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0
 				);
 				hSubItems[ARENA_BUT_BET] = CreateWindow("BUTTON", "Bet",
-					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0
 				);
 				hSubItems[ARENA_BUT_TRAIN] = CreateWindow("BUTTON", "Train",
-					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0
 				);
 				hSubItems[ARENA_BUT_BACK] = CreateWindow("BUTTON", "Back",
-					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0
 				);
 
@@ -1030,10 +1031,10 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				int i;
 				for (i = CHARACTER_STAT_NAME; i <= CHARACTER_STAT_CHARISMA; i++)
-					hSubItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+					hSubItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_BACK; i++)
-					hSubItems[i] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+					hSubItems[i] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				Player& rPlayer = game.getPlayer();
 				pas.unnassignedAttributes = rPlayer.getUnnassignedAttributes();
@@ -1122,7 +1123,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Outputing player
 					int i = ARENA_FIGHT_STATIC_NAME;
 					for (; i <= ARENA_FIGHT_STATIC_PLAYER_FAME; i++)
-						hSubMenuItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+						hSubMenuItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 					Player& rPlayer = game.getPlayer();
 					// Name
@@ -1215,12 +1216,12 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						buf = localization.getNPCName(rOpponent) + " (lvl: " + to_string(rOpponent.getLevel()) + ")";
 						hSubMenuItems[i] = CreateWindow("BUTTON",
 							buf.c_str(),
-							WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTOCHECKBOX | BS_LEFTTEXT,
+							WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTORADIOBUTTON | BS_OWNERDRAW | BS_LEFTTEXT,
 							0, 0, 0, 0, hWnd, 0, hInst, 0);
 					}
 
-					hSubMenuItems[ARENA_FIGHT_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-					hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = CreateWindow("BUTTON", "Fight", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+					hSubMenuItems[ARENA_FIGHT_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+					hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = CreateWindow("BUTTON", "Fight", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 					currentSubMenuItem = ARENA_BUT_FIGHT;
 
@@ -1281,9 +1282,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					int i;
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT1])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT1], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT1;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -1375,9 +1373,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT2])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT2], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT2;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -1469,9 +1464,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT3])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT3], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT3;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -1563,9 +1555,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT4])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT4], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT4;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -1657,9 +1646,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT5])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT5], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT5;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -1751,9 +1737,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT6])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT6], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT6;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -1845,9 +1828,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT7])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT7], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT7;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -1939,9 +1919,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT8])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT8], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT8;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -2033,9 +2010,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT9])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT9], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT9;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -2127,9 +2101,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT10])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT10], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT10;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -2221,9 +2192,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT11])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT11], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT11;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -2315,9 +2283,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT12])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT12], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT12;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -2409,9 +2374,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT13])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT13], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT13;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -2503,9 +2465,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT14])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT14], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT14;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -2597,9 +2556,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT15])
 					{
-						for (HWND hSubMenuItem : hSubMenuItems)
-							SendMessage(hSubMenuItem, BM_SETCHECK, 0, 0);
-						SendMessage(hSubMenuItems[ARENA_FIGHT_BUT_OPPONENT15], BM_SETCHECK, 1, 0);
 						selectedOpponent = ARENA_FIGHT_BUT_OPPONENT15;
 						NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
 
@@ -2691,34 +2647,35 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Starting fight
-				if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] &&
-					selectedOpponent != -1 &&
-					game.getPlayer().getHP() > 30)
+				if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_FIGHT])
 				{
-					static int n = 0;
-					n++;
-					if (n > 1)
-						bool test = true;
-					// Destroying all buttons
-					for (HWND hItem : hSubMenuItems)
-						if (hItem != NULL)
-							DestroyWindow(hItem);
-					hSubMenuItems.clear();
+					if (selectedOpponent != -1 && game.getPlayer().getHP() > 30)
+					{
+						// Destroying all buttons
+						for (HWND hItem : hSubMenuItems)
+							if (hItem != NULL)
+								DestroyWindow(hItem);
+						hSubMenuItems.clear();
 
-					game.setDisplayState(DisplayState::FIGHTING);
-					game.getFighting().setScreen(Fighting::Screen::FIGHT_ARENA);
-					game.setBackground(Game::Background::FIGHTING_ARENA);
-					updateWindow(hWnd);
-					game.getFighting().fight(
-						hWnd,
-						game.getPlayer(),
-						game.getWorldMap().getCurrentCity().getArena()
+						game.setDisplayState(DisplayState::FIGHTING);
+						game.getFighting().setScreen(Fighting::Screen::FIGHT_ARENA);
+						game.setBackground(Game::Background::FIGHTING_ARENA);
+						updateWindow(hWnd);
+						game.getFighting().fight(
+							hWnd,
+							game.getPlayer(),
+							game.getWorldMap().getCurrentCity().getArena()
 							.getGladiator(selectedOpponent)
-					);
+						);
 
-					currentSubMenuItem = ArenaItem::ARENA_ITEM_NUMBER;
-					currentSubMenu = Item::ITEM_NUMBER;
-					break;
+						currentSubMenuItem = ArenaItem::ARENA_ITEM_NUMBER;
+						currentSubMenu = Item::ITEM_NUMBER;
+						break;
+					}
+					else if (selectedOpponent == -1)
+						MessageBox(hWnd, "You have to choose opponent which you want to fight", "Opponent is not selected", MB_OK | MB_ICONINFORMATION);
+					else
+						MessageBox(hWnd, "You have to rest before you can fight", "You are heavily injured", MB_OK | MB_ICONINFORMATION);
 				}
 
 				// Return
