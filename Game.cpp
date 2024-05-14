@@ -241,6 +241,11 @@ void Game::backgroundChangeCompleted()
 	backgroundChanged = false;
 }
 
+void Game::updateBackground()
+{
+	backgroundChanged = true;
+}
+
 Game::Background Game::getBackground() const
 {
 	return currentBackground;

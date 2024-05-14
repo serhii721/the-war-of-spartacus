@@ -98,7 +98,16 @@ Fighter& Fighter::operator=(const Fighter& F)
 
 Fighter::~Fighter() { }
 
-void Fighter::setHP(int hhp) { hp = hhp; }
+void Fighter::setHP(int n) { hp = n; }
+
+void Fighter::setFullHP(int n) { fullHP = n; }
+
+void Fighter::updateMaxHP()
+{
+	double multiplier = (hp * 100 / fullHP) / 100;
+	fullHP = 100 + (strength / 10) + (constitution * 3 / 10);
+	hp = fullHP * multiplier;
+}
 
 bool Fighter::equipWeapon(const Weapon& rWeapon)
 {

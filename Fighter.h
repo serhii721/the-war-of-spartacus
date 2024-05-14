@@ -22,7 +22,9 @@ public:
 	virtual ~Fighter();
 
 	void setHP(int);
+	void setFullHP(int);
 
+	void updateMaxHP();
 	bool equipWeapon(const Weapon&);
 	void attack(Fighter&, AttackResult&, int&);
 

@@ -8,7 +8,9 @@ PlayerAttributeStorage::PlayerAttributeStorage() :
 	dexterity(BASIC_ATTRIBUTES),
 	intelligence(BASIC_ATTRIBUTES),
 	wisdom(BASIC_ATTRIBUTES),
-	charisma(BASIC_ATTRIBUTES)
+	charisma(BASIC_ATTRIBUTES),
+	hp(BASIC_HP),
+	fullHP(BASIC_HP)
 { }
 
 PlayerAttributeStorage::PlayerAttributeStorage(const PlayerAttributeStorage& PAS) :
@@ -18,7 +20,9 @@ PlayerAttributeStorage::PlayerAttributeStorage(const PlayerAttributeStorage& PAS
 	dexterity(PAS.dexterity),
 	intelligence(PAS.intelligence),
 	wisdom(PAS.wisdom),
-	charisma(PAS.charisma)
+	charisma(PAS.charisma),
+	hp(PAS.hp),
+	fullHP(PAS.fullHP)
 { }
 
 PlayerAttributeStorage& PlayerAttributeStorage::operator=(const PlayerAttributeStorage& PAS)
@@ -32,5 +36,14 @@ PlayerAttributeStorage& PlayerAttributeStorage::operator=(const PlayerAttributeS
 	intelligence = PAS.intelligence;
 	wisdom = PAS.wisdom;
 	charisma = PAS.charisma;
+	hp = PAS.hp;
+	fullHP = PAS.fullHP;
 	return *this;
+}
+
+void PlayerAttributeStorage::updateMaxHP()
+{
+	double multiplier = (hp * 100 / fullHP) / 100;
+	fullHP = 100 + (strength / 10) + (constitution * 3 / 10);
+	hp = fullHP * multiplier;
 }

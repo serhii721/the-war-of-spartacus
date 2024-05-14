@@ -97,28 +97,30 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 
 	// 2. Generating weapons
 	unique_ptr<Weapon> rightHand = generateWeapon();
-	unique_ptr<Weapon> leftHand = generateWeapon();
-	if (!rightHand->isCompatibleWith(leftHand->getType()) &&
-		rightHand->getType() != Weapon::Type::AXE &&
-		rightHand->getType() != Weapon::Type::SPEAR)
+	unique_ptr<Weapon> leftHand;
+	if (rightHand->getType() != Weapon::Type::AXE && rightHand->getType() != Weapon::Type::SPEAR)
 	{
-		if (rand() % 100 < 75)
+		leftHand = generateWeapon();
+		if (!rightHand->isCompatibleWith(leftHand->getType()))
 		{
-			if (leftHand)
-				leftHand.release();
-			leftHand = generateWeapon(Weapon::SHIELD);
-		}
-		else if (rand() % 100 < 75)
-			do
+			if (rand() % 100 < 75)
 			{
 				if (leftHand)
 					leftHand.release();
-				leftHand = generateWeapon();
-			} while (!rightHand->isCompatibleWith(leftHand->getType()));
-		else if (leftHand)
-		{
-			leftHand.release();
-			leftHand = nullptr;
+				leftHand = generateWeapon(Weapon::SHIELD);
+			}
+			else if (rand() % 100 < 75)
+				do
+				{
+					if (leftHand)
+						leftHand.release();
+					leftHand = generateWeapon();
+				} while (!rightHand->isCompatibleWith(leftHand->getType()));
+			else if (leftHand)
+			{
+				leftHand.release();
+				leftHand = nullptr;
+			}
 		}
 	}
 	else
@@ -145,26 +147,26 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 	int points;
 	while (unnassignedAttributes > 0)
 	{
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 6; i++)
 		{
 			if (unnassignedAttributes > MAX_ATTRIBUTE - BASIC_ATTRIBUTES)
 				points = rand() % (MAX_ATTRIBUTE - BASIC_ATTRIBUTES + 1);
 			else
 				points = rand() % (unnassignedAttributes + 1);
-			attributes[i] += points;
-			unnassignedAttributes -= points;
+			points /= 2;
+			points++;
+			if (attributes[i] + points < MAX_ATTRIBUTE)
+			{
+				attributes[i] += points;
+				unnassignedAttributes -= points;
+			}
+			if (unnassignedAttributes == 0)
+				break;
 		}
-		if (unnassignedAttributes > MAX_ATTRIBUTE - BASIC_ATTRIBUTES)
-		{
-			attributes[5] += rand() % (MAX_ATTRIBUTE - BASIC_ATTRIBUTES + 1);
-			unnassignedAttributes -= attributes[5] - BASIC_ATTRIBUTES;
-		}
-		else
-			attributes[5] += unnassignedAttributes;
 	}
 
 
-	return make_unique<NPC>(
+	NPC npc(
 		Fighter(
 			Statistics(
 				attributes[0], // Strength
@@ -188,6 +190,9 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 		),
 		level
 	);
+	npc.updateMaxHP();
+
+	return make_unique<NPC>(npc);
 }
 
 //void displayPlayer(const Player& p)
@@ -867,12 +872,19 @@ unique_ptr<Weapon> generateWeapon(Weapon::Type ttype)
 {
 	if (ttype != Weapon::SHIELD)
 	{
-		int maxStrAdditionPerc = getWeaponScaleLimit(ttype, Attribute::STRENGTH, Limit::MAX),
-			maxDexAdditionPerc = getWeaponScaleLimit(ttype, Attribute::DEXTERITY, Limit::MAX);
+		Weapon::Type newWeaponType = ttype != Weapon::NUMBER ? ttype : Weapon::Type(rand() % (Weapon::NUMBER - 1));
+
+		int handsNeededForWeapon = 1;
+		if (newWeaponType == Weapon::Type::AXE || newWeaponType == Weapon::Type::SPEAR)
+			handsNeededForWeapon = 2;
+
+		int maxStrAdditionPerc = getWeaponScaleLimit(newWeaponType, Attribute::STRENGTH, Limit::MAX),
+			maxDexAdditionPerc = getWeaponScaleLimit(newWeaponType, Attribute::DEXTERITY, Limit::MAX);
+
 		return make_unique<Weapon>(
-			MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DAM_ADDITION,
+			(MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DAM_ADDITION) * handsNeededForWeapon, // Damage
 			// `Weapon::NUMBER - 1` is a shield
-			ttype != Weapon::NUMBER ? ttype : Weapon::Type(rand() % (Weapon::NUMBER - 1)),
+			newWeaponType, // Type
 			0, // Damage addition
 			maxStrAdditionPerc * 3 / 5 + (rand() % (maxStrAdditionPerc / 10 + 1)), // Strength damage addition
 			maxDexAdditionPerc * 3 / 5 + (rand() % (maxDexAdditionPerc / 10 + 1)), // Dexterity damage addition
