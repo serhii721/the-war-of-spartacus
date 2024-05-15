@@ -14,7 +14,6 @@ WorldMap::WorldMap() :
 	cities(),
 	currentCity(0),
 	selectedCity(0),
-	currentScreen(0),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 { }
@@ -24,7 +23,6 @@ WorldMap::WorldMap(HWND hWnd, const vector<City>& C, int ccurrentCity) :
 	cities(C),
 	currentCity(ccurrentCity),
 	selectedCity(ccurrentCity),
-	currentScreen(0),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 {
@@ -39,15 +37,14 @@ WorldMap::WorldMap(HWND hWnd, const vector<City>& C, int ccurrentCity) :
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	for (i = BUT_ROME_LIST; i <= BUT_MILAN_LIST; i++)
-		hItems[i] = CreateWindow("BUTTON", localization.getCityName(C[i - BUT_ROME_LIST]).c_str(),
+	{
+		buf = localization.getCityName(C[i - BUT_ROME_LIST]) + " (" + to_string(C[i - BUT_ROME_LIST].getLevel()) + " lvl)";
+		hItems[i] = CreateWindow("BUTTON", buf.c_str(),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTORADIOBUTTON | BS_OWNERDRAW | BS_LEFTTEXT,
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
+	}
 
 	hItems[BUT_TRAVEL_LIST] = CreateWindow("BUTTON", "Travel", // TODO: Localization
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
-		0, 0, 0, 0, hWnd, 0, hInst, 0);
-
-	hItems[BUT_ENTER_LIST] = CreateWindow("BUTTON", "Enter", // TODO: Localization
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 }
@@ -55,8 +52,7 @@ WorldMap::WorldMap(HWND hWnd, const vector<City>& C, int ccurrentCity) :
 WorldMap::WorldMap(const WorldMap& WM) :
 	cities(WM.cities),
 	currentCity(WM.currentCity),
-	selectedCity(WM.selectedCity),
-	currentScreen(WM.currentScreen)
+	selectedCity(WM.selectedCity)
 {
 	// Resizing items' vector
 	int sz = WM.hItems.size();
@@ -115,7 +111,6 @@ WorldMap& WorldMap::operator=(const WorldMap& WM)
 	cities = WM.cities;
 	currentCity = WM.currentCity;
 	selectedCity = WM.selectedCity;
-	currentScreen = WM.currentScreen;
 	hBackgroundImage = WM.hBackgroundImage;
 	hBackgroundBrush = WM.hBackgroundBrush;
 
@@ -229,27 +224,30 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 	}
 
 	// 2. Text
+	// TODO: Localization
 	switch (game.getBackground())
 	{
-	default:case Game::Background::WORLD_MAP:
-		if (currentCity == selectedCity)
+		default:case Game::Background::WORLD_MAP:
 		{
-			ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-			ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-		}
-		else
-		{
-			ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-			ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-		}
+			for (int i = BUT_ROME_MAP; i <= BUT_MILAN_LIST; i++)
+				ShowWindow(hItems[i], SW_SHOW);
 
-		for (int i = Cities::ROME; i <= Cities::MILAN; i++)
-		{
-			buf = localization.getCityName(cities[i]);
-			SendMessage(hItems[i], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+			if (currentCity == selectedCity)
+				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+			else
+				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+			for (int i = BUT_ROME_MAP; i <= BUT_MILAN_MAP; i++)
+			{
+				buf = localization.getCityName(cities[i]);
+				SendMessage(hItems[i], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				buf = localization.getCityName(cities[i]) + "   (" + to_string(cities[i].getLevel()) + " lvl)";
+				SendMessage(hItems[i + 11], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+			}
 		}
 		break;
 	}
+	game.backgroundChangeCompleted();
 }
 
 void WorldMap::resizeWindow(int cx, int cy)
@@ -260,34 +258,38 @@ void WorldMap::resizeWindow(int cx, int cy)
 
 	int x, y, i;
 
-	const int ITEM_HEIGHT = 40, ITEM_WIDTH = 300, BUT_WIDTH = 336, DISTANCE = 3;
-	const int FRAME_HEIGHT = 28, FRAME_WIDTH = 110;
-
-
-	MoveWindow(hItems[BUT_ROME_MAP], 417, 519, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_NAPLES_MAP], 542, 602, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_METAPONTO_MAP], 729, 665, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_BOJANO_MAP], 558, 528, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_ANCONA_MAP], 458, 315, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_PERUGIA_MAP], 395, 365, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_FLORENCE_MAP], 296, 335, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_BOLOGNA_MAP], 314, 238, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_GENOA_MAP], 147, 207, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_VENICE_MAP], 351, 108, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-	MoveWindow(hItems[BUT_MILAN_MAP], 119, 91, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-
-	x = 982, y = 126;
-	for (i = BUT_ROME_LIST; i <= BUT_MILAN_LIST; i++)
+	switch (game.getBackground())
 	{
-		MoveWindow(hItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
-		y += ITEM_HEIGHT + DISTANCE;
+	default:case Game::Background::WORLD_MAP:
+	{
+		const int ITEM_HEIGHT = 40, ITEM_WIDTH = 300, BUT_WIDTH = 336, DISTANCE = 3;
+		const int FRAME_HEIGHT = 28, FRAME_WIDTH = 110;
+
+		MoveWindow(hItems[BUT_ROME_MAP], 417, 519, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_NAPLES_MAP], 542, 602, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_METAPONTO_MAP], 729, 665, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_BOJANO_MAP], 558, 528, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_ANCONA_MAP], 458, 315, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_PERUGIA_MAP], 395, 365, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_FLORENCE_MAP], 296, 335, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_BOLOGNA_MAP], 314, 238, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_GENOA_MAP], 147, 207, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_VENICE_MAP], 351, 108, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_MILAN_MAP], 119, 91, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+
+		x = 982, y = 126;
+		for (i = BUT_ROME_LIST; i <= BUT_MILAN_LIST; i++)
+		{
+			MoveWindow(hItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
+			y += ITEM_HEIGHT + DISTANCE;
+		}
+
+		MoveWindow(hItems[STAT_MAP], x, 9, BUT_WIDTH, 72, TRUE);
+
+		MoveWindow(hItems[BUT_TRAVEL_LIST], x, 644, BUT_WIDTH, 67, TRUE);
 	}
-
-	MoveWindow(hItems[STAT_MAP], x, 9, BUT_WIDTH, 72, TRUE);
-
-	MoveWindow(hItems[BUT_TRAVEL_LIST], x, 644, BUT_WIDTH, 67, TRUE);
-
-	MoveWindow(hItems[BUT_ENTER_LIST], x, 644, BUT_WIDTH, 67, TRUE);
+	break;
+	}
 }
 
 void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
@@ -295,180 +297,212 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	switch (m)
 	{
 	case WM_COMMAND:
-		// Selecting city
+		switch (game.getBackground())
 		{
-		if ((HWND)lp == hItems[BUT_ROME_LIST] || (HWND)lp == hItems[BUT_ROME_MAP])
+		default:case Game::Background::WORLD_MAP:
 		{
-			selectedCity = BUT_ROME_MAP;
-			if (currentCity == selectedCity)
+			// Selecting city
 			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_NAPLES_LIST] || (HWND)lp == hItems[BUT_NAPLES_MAP])
-		{
-			selectedCity = BUT_NAPLES_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_METAPONTO_LIST] || (HWND)lp == hItems[BUT_METAPONTO_MAP])
-		{
-			selectedCity = BUT_METAPONTO_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_BOJANO_LIST] || (HWND)lp == hItems[BUT_BOJANO_MAP])
-		{
-			selectedCity = BUT_BOJANO_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_ANCONA_LIST] || (HWND)lp == hItems[BUT_ANCONA_MAP])
-		{
-			selectedCity = BUT_ANCONA_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_PERUGIA_LIST] || (HWND)lp == hItems[BUT_PERUGIA_MAP])
-		{
-			selectedCity = BUT_PERUGIA_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_FLORENCE_LIST] || (HWND)lp == hItems[BUT_FLORENCE_MAP])
-		{
-			selectedCity = BUT_FLORENCE_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_BOLOGNA_LIST] || (HWND)lp == hItems[BUT_BOLOGNA_MAP])
-		{
-			selectedCity = BUT_BOLOGNA_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_GENOA_LIST] || (HWND)lp == hItems[BUT_GENOA_MAP])
-		{
-			selectedCity = BUT_GENOA_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_VENICE_LIST] || (HWND)lp == hItems[BUT_VENICE_MAP])
-		{
-			selectedCity = BUT_VENICE_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		if ((HWND)lp == hItems[BUT_MILAN_LIST] || (HWND)lp == hItems[BUT_MILAN_MAP])
-		{
-			selectedCity = BUT_MILAN_MAP;
-			if (currentCity == selectedCity)
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			}
-			else
-			{
-				ShowWindow(hItems[BUT_TRAVEL_LIST], SW_SHOW);
-				ShowWindow(hItems[BUT_ENTER_LIST], SW_HIDE);
-			}
-		}
-		}
-		if ((HWND)lp == hItems[BUT_TRAVEL_LIST])
-		{
-			currentCity = selectedCity;
-			ShowWindow(hItems[BUT_TRAVEL_LIST], SW_HIDE);
-			ShowWindow(hItems[BUT_ENTER_LIST], SW_SHOW);
-			logStr += "You have traveled to " + localization.getCityName(getCurrentCity()) + "\r\n\r\n";
-		}
-		if ((HWND)lp == hItems[BUT_ENTER_LIST])
-		{
-			for (HWND hItem : hItems)
-				ShowWindow(hItem, SW_HIDE);
+				RECT rect;
+				if ((HWND)lp == hItems[BUT_ROME_LIST] || (HWND)lp == hItems[BUT_ROME_MAP])
+				{
+					selectedCity = BUT_ROME_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
 
-			game.setDisplayState(DisplayState::MENU);
-			game.setBackground(Game::Background::CITY_MENU);
-			updateWindow(hWnd);
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_NAPLES_LIST] || (HWND)lp == hItems[BUT_NAPLES_MAP])
+				{
+					selectedCity = BUT_NAPLES_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_METAPONTO_LIST] || (HWND)lp == hItems[BUT_METAPONTO_MAP])
+				{
+					selectedCity = BUT_METAPONTO_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_BOJANO_LIST] || (HWND)lp == hItems[BUT_BOJANO_MAP])
+				{
+					selectedCity = BUT_BOJANO_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_ANCONA_LIST] || (HWND)lp == hItems[BUT_ANCONA_MAP])
+				{
+					selectedCity = BUT_ANCONA_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_PERUGIA_LIST] || (HWND)lp == hItems[BUT_PERUGIA_MAP])
+				{
+					selectedCity = BUT_PERUGIA_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_FLORENCE_LIST] || (HWND)lp == hItems[BUT_FLORENCE_MAP])
+				{
+					selectedCity = BUT_FLORENCE_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_BOLOGNA_LIST] || (HWND)lp == hItems[BUT_BOLOGNA_MAP])
+				{
+					selectedCity = BUT_BOLOGNA_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_GENOA_LIST] || (HWND)lp == hItems[BUT_GENOA_MAP])
+				{
+					selectedCity = BUT_GENOA_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_VENICE_LIST] || (HWND)lp == hItems[BUT_VENICE_MAP])
+				{
+					selectedCity = BUT_VENICE_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+				if ((HWND)lp == hItems[BUT_MILAN_LIST] || (HWND)lp == hItems[BUT_MILAN_MAP])
+				{
+					selectedCity = BUT_MILAN_MAP;
+					if (currentCity == selectedCity)
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					else
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+
+					// Update button selection
+					GetWindowRect(hItems[selectedCity], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+					GetWindowRect(hItems[selectedCity + 11], &rect);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+					InvalidateRect(hWnd, &rect, 1);
+				}
+			}
+			if ((HWND)lp == hItems[BUT_TRAVEL_LIST])
+			{
+				if (currentCity != selectedCity)
+				{
+					currentCity = selectedCity;
+					SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+					logStr += "You have traveled to " + localization.getCityName(getCurrentCity()) + "\r\n\r\n";
+				}
+				else
+				{
+					for (HWND hItem : hItems)
+						ShowWindow(hItem, SW_HIDE);
+
+					game.setDisplayState(DisplayState::MENU);
+					game.setBackground(Game::Background::CITY_MENU);
+					updateWindow(hWnd);
+				}
+			}
 		}
 		break;
+		}
+	break;
 	}
 }
 
@@ -476,52 +510,55 @@ void WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (m)
 	{
-	case WM_DRAWITEM:
-	{
-		LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
-		HDC hdc = item->hDC;
-
-		GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
-
-		// Set text font and background
-		SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
-		SetBkMode(hdc, TRANSPARENT);
-
-		// Assing background and text color
-		SetTextColor(hdc, COLOR_WHITE);
-		FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-		// Draw text
-		int len = GetWindowTextLength(item->hwndItem);
-		buf.resize(len + 1); // Resize buffer to contain button text
-		GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-		DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
-
-		// Checking window type to draw it using correct styles
-
-		if (item->CtlType == ODT_STATIC) // Static windows
+		case WM_DRAWITEM:
 		{
-			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-		}
-		else if (strcmp(str, ("Edit")) == 0) // Edit windows
-		{
-			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-		}
-		else if (item->CtlType == ODT_BUTTON) // Button windows
-		{
-			if (item->itemState & ODS_HOTLIGHT)
-			{
-				FillRect(hdc, &item->rcItem, CreateSolidBrush(RGB(0, 0, 0)));
-			}
-			if (item->itemState & ODS_SELECTED)
+			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
+			HDC hdc = item->hDC;
+
+			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+			// Set text font and background
+			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+			SetBkMode(hdc, TRANSPARENT);
+
+			// Assing background and text color
+			SetTextColor(hdc, COLOR_WHITE);
+			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+			// Draw text
+			int len = GetWindowTextLength(item->hwndItem);
+			buf.resize(len + 1); // Resize buffer to contain button text
+			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
+
+			// Checking window to draw it using correct styles
+
+			if (item->hwndItem == hItems[selectedCity] || item->hwndItem == hItems[selectedCity + 11])
 			{
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
 				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
 			}
-			else
-				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+			else if (item->CtlType == ODT_STATIC) // Static windows
+			{
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
+			}
+			else if (strcmp(str, ("Edit")) == 0) // Edit windows
+			{
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
+			}
+			else if (item->CtlType == ODT_BUTTON) // Button windows
+			{
+				if (item->itemState & ODS_SELECTED)
+				{
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				}
+				else
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+			}
 		}
-	}
+		break;
 	}
 }

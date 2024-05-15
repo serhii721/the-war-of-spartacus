@@ -6,8 +6,6 @@ class MainMenu :
 {
 private:
 	vector<HWND> hItems;
-
-	int currentSubMenu;
 	vector<HWND> hSubItems;
 
 	HBITMAP hBackgroundImage;

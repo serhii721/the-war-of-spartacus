@@ -12,7 +12,6 @@ extern Game game;
 Fighting::Fighting() :
 	hItems(Item::ITEM_NUMBER),
 	pOpponentCopy(nullptr),
-	currentScreen(Screen::SCREEN_ITEM_NUMBER),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 { }
@@ -20,7 +19,6 @@ Fighting::Fighting() :
 Fighting::Fighting(HWND hWnd) :
 	hItems(Item::ITEM_NUMBER),
 	pOpponentCopy(nullptr),
-	currentScreen(Screen::SCREEN_ITEM_NUMBER),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 {
@@ -61,8 +59,7 @@ Fighting::Fighting(HWND hWnd) :
 }
 
 Fighting::Fighting(const Fighting& F) :
-	hItems(),
-	currentScreen(F.currentScreen)
+	hItems()
 {
 	// Resizing items' vector
 	int sz = F.hItems.size();
@@ -174,8 +171,6 @@ Fighting& Fighting::operator=(const Fighting& F)
 	else
 		pOpponentCopy = nullptr;
 
-	currentScreen = F.currentScreen;
-
 	if (hBackgroundImage != NULL)
 		DeleteObject(hBackgroundImage);
 
@@ -208,17 +203,6 @@ Fighting::~Fighting()
 	for (HWND hItem : hItems)
 		if (hItem != NULL)
 			DestroyWindow(hItem);
-
-	if (hBackgroundImage != NULL)
-		DeleteObject(hBackgroundImage);
-
-	if (hBackgroundBrush != NULL)
-		DeleteObject(hBackgroundBrush);
-}
-
-void Fighting::setScreen(Screen s)
-{
-	currentScreen = s;
 
 	if (hBackgroundImage != NULL)
 		DeleteObject(hBackgroundImage);
@@ -630,10 +614,9 @@ void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		GetClientRect(hWnd, &rect);
 
 		// Composing path based on current menu
-		switch (currentScreen)
+		switch (game.getBackground())
 		{
-		default:case Screen::SCREEN_ITEM_NUMBER: path = DIRECTORY + "" + FORMAT; break;
-		case Screen::FIGHT_ARENA: path = DIRECTORY + "fightArenaBackground768" + FORMAT; break;
+		default:case Game::Background::FIGHTING_ARENA: path = DIRECTORY + "fightArenaBackground768" + FORMAT; break;
 		}
 
 		// Loading image
@@ -647,8 +630,7 @@ void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		FillRect(hdc, &rect, hBackgroundBrush);
 		game.backgroundChangeCompleted();
 	}
-	// 2. Text
-	// TODO
+	game.backgroundChangeCompleted();
 }
 
 void Fighting::resizeWindow(int cx, int cy)
@@ -657,45 +639,51 @@ void Fighting::resizeWindow(int cx, int cy)
 	if (!game.isBackgroundChanged())
 		return;
 
-	const int ITEM_HEIGHT = 30, ITEM_WIDTH = 300, DISTANCE = 15;
-
 	int x = cx,
 		y = cy;
 
-	// Start
-	MoveWindow(hItems[STATIC_START], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y - (ITEM_HEIGHT + DISTANCE) * 4, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+	switch (game.getBackground())
+	{
+	default:case Game::Background::FIGHTING_ARENA:
+	{
+		const int ITEM_HEIGHT = 30, ITEM_WIDTH = 300, DISTANCE = 15;
+		// Start
+		MoveWindow(hItems[STATIC_START], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y - (ITEM_HEIGHT + DISTANCE) * 4, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-	// HP
-	MoveWindow(hItems[STATIC_PLAYER_HP], x - ITEM_WIDTH - DISTANCE, y, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
+		// HP
+		MoveWindow(hItems[STATIC_PLAYER_HP], x - ITEM_WIDTH - DISTANCE, y, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
 
-	MoveWindow(hItems[STATIC_OPPONENT_HP], x + DISTANCE + ITEM_WIDTH / 2, y, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[STATIC_OPPONENT_HP], x + DISTANCE + ITEM_WIDTH / 2, y, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
 
-	// Damage
-	MoveWindow(hItems[STATIC_PLAYER_DAMAGE], x - ITEM_WIDTH - DISTANCE, y + ITEM_HEIGHT + DISTANCE, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
+		// Damage
+		MoveWindow(hItems[STATIC_PLAYER_DAMAGE], x - ITEM_WIDTH - DISTANCE, y + ITEM_HEIGHT + DISTANCE, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
 
-	MoveWindow(hItems[STATIC_OPPONENT_DAMAGE], x + DISTANCE + ITEM_WIDTH / 2, y + ITEM_HEIGHT + DISTANCE, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[STATIC_OPPONENT_DAMAGE], x + DISTANCE + ITEM_WIDTH / 2, y + ITEM_HEIGHT + DISTANCE, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
 
-	// Defense
-	MoveWindow(hItems[STATIC_PLAYER_DEFENSE], x - ITEM_WIDTH - DISTANCE, y + (ITEM_HEIGHT + DISTANCE) * 2, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
+		// Defense
+		MoveWindow(hItems[STATIC_PLAYER_DEFENSE], x - ITEM_WIDTH - DISTANCE, y + (ITEM_HEIGHT + DISTANCE) * 2, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
 
-	MoveWindow(hItems[STATIC_OPPONENT_DEFENSE], x + DISTANCE + ITEM_WIDTH / 2, y + (ITEM_HEIGHT + DISTANCE) * 2, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[STATIC_OPPONENT_DEFENSE], x + DISTANCE + ITEM_WIDTH / 2, y + (ITEM_HEIGHT + DISTANCE) * 2, ITEM_WIDTH / 2, ITEM_HEIGHT, TRUE);
 
-	// Log
-	MoveWindow(hItems[EDIT_LOG_MESSAGES], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y, ITEM_WIDTH, ITEM_HEIGHT * 5, TRUE);
+		// Log
+		MoveWindow(hItems[EDIT_LOG_MESSAGES], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y, ITEM_WIDTH, ITEM_HEIGHT * 5, TRUE);
 
-	// Buttons
-	MoveWindow(hItems[BUT_SPARE_OPPONENT], x - ITEM_WIDTH - DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		// Buttons
+		MoveWindow(hItems[BUT_SPARE_OPPONENT], x - ITEM_WIDTH - DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-	MoveWindow(hItems[BUT_EXECUTE_OPPONENT], x + DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_EXECUTE_OPPONENT], x + DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-	MoveWindow(hItems[BUT_SURRENDER], x - ITEM_WIDTH - DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_SURRENDER], x - ITEM_WIDTH - DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-	MoveWindow(hItems[BUT_CONTINUE], x + DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_CONTINUE], x + DISTANCE, y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-	// End of the fight
-	MoveWindow(hItems[STATIC_FIGHT_RESULT], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		// End of the fight
+		MoveWindow(hItems[STATIC_FIGHT_RESULT], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y + ITEM_HEIGHT * 5 + DISTANCE, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-	MoveWindow(hItems[BUT_END_FIGHT], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y + ITEM_HEIGHT * 6 + DISTANCE + 2, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_END_FIGHT], x - (int)((ITEM_WIDTH + DISTANCE) * 0.5), y + ITEM_HEIGHT * 6 + DISTANCE + 2, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+	}
+	break;
+	}
 }
 
 void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
@@ -703,9 +691,10 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	switch (m)
 	{
 	case WM_COMMAND:
-		switch (currentScreen)
+		switch (game.getBackground())
 		{
-		case Screen::FIGHT_ARENA:
+		default:case Game::Background::FIGHTING_ARENA:
+		{
 			if ((HWND)lp == hItems[BUT_END_FIGHT])
 			{
 				game.setDisplayState(DisplayState::MENU);
@@ -716,12 +705,10 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				updateWindow(hWnd);
 			}
-			break;
-
-		default:case Screen::SCREEN_ITEM_NUMBER:
-			break;
 		}
 		break;
+		}
+	break;
 	}
 }
 
@@ -762,10 +749,6 @@ void Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			else if (item->CtlType == ODT_BUTTON) // Button windows
 			{
-				if (item->itemState & ODS_HOTLIGHT)
-				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(RGB(0, 0, 0)));
-				}
 				if (item->itemState & ODS_SELECTED)
 				{
 					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
@@ -776,5 +759,7 @@ void Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
 			}
 		}
+		break;
 	}
+
 }
