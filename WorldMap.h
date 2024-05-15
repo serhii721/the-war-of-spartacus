@@ -9,8 +9,6 @@ private:
 	int currentCity;
 	int selectedCity;
 
-	int currentScreen;
-
 	HBITMAP hBackgroundImage;
 	HBRUSH hBackgroundBrush;
 
@@ -41,7 +39,6 @@ public:
 		BUT_MILAN_LIST,
 		STAT_MAP,
 		BUT_TRAVEL_LIST,
-		BUT_ENTER_LIST,
 		ITEM_NUMBER
 	};
 	enum Screen

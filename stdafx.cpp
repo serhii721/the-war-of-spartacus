@@ -11,7 +11,7 @@
 // Buffers
 TCHAR str[256] = "";
 string buf = "";
-string logStr = "";
+string logStr = "Messages log:\r\n\r\n";
 
 extern HINSTANCE hInst;
 
@@ -176,7 +176,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 				attributes[4], // Wisdom
 				attributes[5], // Charisma
 				rand() % (MAX_AGE - MIN_AGE) + MIN_AGE,
-				BASIC_FAME * level
+				BASIC_FAME * level + rand() % 200
 			),
 			BASIC_HP,
 			BASIC_HP,

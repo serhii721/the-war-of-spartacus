@@ -7,8 +7,6 @@ private:
 
 	shared_ptr<NPC> pOpponentCopy;
 
-	int currentScreen;
-
 	HBITMAP hBackgroundImage;
 	HBRUSH hBackgroundBrush;
 public:
@@ -30,11 +28,6 @@ public:
 		BUT_END_FIGHT,
 		ITEM_NUMBER
 	};
-	enum Screen
-	{
-		FIGHT_ARENA,
-		SCREEN_ITEM_NUMBER
-	};
 	enum Attacker
 	{
 		PLAYER,
@@ -46,8 +39,6 @@ public:
 	Fighting(const Fighting&);
 	Fighting& operator=(const Fighting&);
 	~Fighting();
-
-	void setScreen(Screen);
 
 	FightStatus fight(HWND, Player&, shared_ptr<NPC>);
 	void getAttackResult(const Attacker, const AttackResult, const int damage_);

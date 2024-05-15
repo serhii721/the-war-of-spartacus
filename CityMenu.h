@@ -6,11 +6,7 @@ class CityMenu
 {
 private:
 	vector<HWND> hItems;
-
-	int currentSubMenu;
 	vector<HWND> hSubItems;
-
-	int currentSubMenuItem;
 	vector<HWND> hSubMenuItems;
 
 	int selectedOpponent;

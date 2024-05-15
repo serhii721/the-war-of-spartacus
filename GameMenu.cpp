@@ -11,14 +11,12 @@ extern Game game;
 GameMenu::GameMenu() :
 	hItems(),
 	hSubItems(),
-	currentSubMenu(Item::ITEM_NUMBER),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 { }
 
 GameMenu::GameMenu(HWND hWnd) :
 	hItems(Item::ITEM_NUMBER),
-	currentSubMenu(Item::ITEM_NUMBER),
 	hSubItems(),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
@@ -46,7 +44,7 @@ GameMenu::GameMenu(HWND hWnd) :
 	);
 }
 
-GameMenu::GameMenu(const GameMenu& GM) : currentSubMenu(Item::ITEM_NUMBER), hSubItems()
+GameMenu::GameMenu(const GameMenu& GM) : hSubItems()
 {
 	// Resizing items' vector
 	int sz = GM.hItems.size();
@@ -139,7 +137,6 @@ GameMenu& GameMenu::operator=(const GameMenu& GM)
 	}
 
 	hSubItems = vector<HWND>();
-	currentSubMenu = GM.currentSubMenu;
 
 	if (hBackgroundImage != NULL)
 		DeleteObject(hBackgroundImage);
@@ -219,6 +216,7 @@ void GameMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		FillRect(hdc, &rect, hBackgroundBrush);
 		game.backgroundChangeCompleted();
 	}
+	game.backgroundChangeCompleted();
 }
 
 void GameMenu::resizeMenu(int cx, int cy)
@@ -229,10 +227,9 @@ void GameMenu::resizeMenu(int cx, int cy)
 
 	int sz, x, y;
 
-	switch (currentSubMenu)
+	switch (game.getBackground())
 	{
-	// Game menu
-	case Item::ITEM_NUMBER:
+	default:case Game::Background::GAME_MENU:
 	{
 		const int ITEM_HEIGHT = 45, DISTANCE = 10, ITEM_WIDTH = 300;
 		sz = hItems.size();
@@ -246,29 +243,26 @@ void GameMenu::resizeMenu(int cx, int cy)
 	}
 	break;
 
-	// Save
-	case Item::BUT_SAVE:
+	case Game::Background::GAME_MENU_SAVE:
 	{
 		// TODO
 	}
 	break;
 
-	// Load
-	case Item::BUT_LOAD:
+	case Game::Background::GAME_MENU_LOAD:
 	{
 		// TODO
 	}
 	break;
 
-	// Settings
-	case Item::BUT_SETTINGS:
+	case Game::Background::GAME_MENU_SETTINGS:
 	{
 		const int ITEM_HEIGHT = 45, DISTANCE = 10, ITEM_WIDTH = 300, BUT_SIZE = 45;
 		sz = hItems.size();
 		x = cx - ITEM_WIDTH / 2;
 		y = cy - sz / 2 * (ITEM_HEIGHT + DISTANCE);
 
-		// Video settings (in progress)
+		// Video settings
 		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH / 3, ITEM_HEIGHT, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
 
@@ -299,9 +293,10 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	switch (m)
 	{
 	case WM_COMMAND:
-		switch (currentSubMenu)
+		switch (game.getBackground())
 		{
-		default:case ITEM_NUMBER:
+		default:case Game::Background::GAME_MENU:
+		{
 			if ((HWND)lp == hItems[BUT_RESUME] || LOWORD(wp) == IDCANCEL)
 			{
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
@@ -337,7 +332,6 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SETTINGS_BUT_SOUND] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-				currentSubMenu = Item::BUT_SETTINGS;
 				game.setBackground(Game::Background::GAME_MENU_SETTINGS);
 
 				updateWindow(hWnd);
@@ -349,8 +343,10 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
-			break;
-		case BUT_SETTINGS:
+		}
+		break;
+
+		case Game::Background::GAME_MENU_SETTINGS:
 		{
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_SOUND])
 			{
@@ -369,16 +365,15 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_SHOW);
 
-				currentSubMenu = Item::ITEM_NUMBER;
-				game.setBackground(Game::Background::GAME_MENU_SETTINGS);
+				game.setBackground(Game::Background::GAME_MENU);
 
 				updateWindow(hWnd);
 				break;
 			}
 		}
-			break;
-		}
 		break;
+		}
+	break;
 	}
 }
 
@@ -386,52 +381,49 @@ void GameMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (m)
 	{
-	case WM_DRAWITEM:
-	{
-		LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
-		HDC hdc = item->hDC;
-
-		GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
-
-		// Set text font and background
-		SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
-		SetBkMode(hdc, TRANSPARENT);
-
-		// Assing background and text color
-		SetTextColor(hdc, COLOR_WHITE);
-		FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-		// Draw text
-		int len = GetWindowTextLength(item->hwndItem);
-		buf.resize(len + 1); // Resize buffer to contain button text
-		GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-		DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
-
-		// Checking window type to draw it using correct styles
-
-		if (item->CtlType == ODT_STATIC) // Static windows
+		case WM_DRAWITEM:
 		{
-			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-		}
-		else if (strcmp(str, ("Edit")) == 0) // Edit windows
-		{
-			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-		}
-		else if (item->CtlType == ODT_BUTTON) // Button windows
-		{
-			if (item->itemState & ODS_HOTLIGHT)
+			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
+			HDC hdc = item->hDC;
+
+			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+			// Set text font and background
+			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+			SetBkMode(hdc, TRANSPARENT);
+
+			// Assing background and text color
+			SetTextColor(hdc, COLOR_WHITE);
+			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+			// Draw text
+			int len = GetWindowTextLength(item->hwndItem);
+			buf.resize(len + 1); // Resize buffer to contain button text
+			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
+
+			// Checking window type to draw it using correct styles
+
+			if (item->CtlType == ODT_STATIC) // Static windows
 			{
-				FillRect(hdc, &item->rcItem, CreateSolidBrush(RGB(0, 0, 0)));
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
 			}
-			if (item->itemState & ODS_SELECTED)
+			else if (strcmp(str, ("Edit")) == 0) // Edit windows
 			{
-				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
 			}
-			else
-				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+			else if (item->CtlType == ODT_BUTTON) // Button windows
+			{
+				if (item->itemState & ODS_SELECTED)
+				{
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				}
+				else
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+			}
 		}
-	}
+		break;
 	}
 }
