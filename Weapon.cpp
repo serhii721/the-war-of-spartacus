@@ -61,7 +61,8 @@ Weapon::~Weapon() { }
 
 void Weapon::update(int sstrength, int ddexterity)
 {
-	damageAddition = sstrength * strAdditionPerc / 100 + ddexterity * dexAdditionPerc / 100;
+	if (type != SHIELD)
+		damageAddition = sstrength * strAdditionPerc / 100 + ddexterity * dexAdditionPerc / 100;
 }
 
 void Weapon::setName(const string& newName) { name = newName; }

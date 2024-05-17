@@ -374,6 +374,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	switch (m)
 	{
 	case WM_COMMAND:
+	{
 		switch (game.getBackground())
 		{
 		case Game::Background::MAIN_MENU:
@@ -414,7 +415,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[STAT_INTELLIGENCE] = CreateWindow("STATIC", "Intelligence:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[STAT_WISDOM] = CreateWindow("STATIC", "Wisdom:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[STAT_CHARISMA] = CreateWindow("STATIC", "Charisma:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				
+
 				hSubItems[EDIT_NAME] = CreateWindow("EDIT", "", WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[EDIT_AGE] = CreateWindow("EDIT", to_string(nms->age).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES] = CreateWindow("EDIT", to_string(nms->unnassignedAttributes).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -424,7 +425,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[EDIT_INTELLIGENCE] = CreateWindow("EDIT", to_string(nms->intelligence).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[EDIT_WISDOM] = CreateWindow("EDIT", to_string(nms->wisdom).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[EDIT_CHARISMA] = CreateWindow("EDIT", to_string(nms->charisma).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				
+
 				hSubItems[BUT_AGE_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[BUT_STRENGTH_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[BUT_CONSTITUTION_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -674,6 +675,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hSubItems[NEW_GAME_BUT_NEXT])
 			{
 				// Player creation
+				// Weapons
 				unique_ptr<Weapon> rightHand = generateWeapon();
 				unique_ptr<Weapon> leftHand;
 				if (rightHand->getType() != Weapon::Type::AXE && rightHand->getType() != Weapon::Type::SPEAR)
@@ -704,13 +706,22 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				else
 					leftHand = nullptr;
 
+				// Updating weapon damage depending on stat scale
+				rightHand->update(nms->strength, nms->dexterity);
+				if (leftHand)
+					leftHand->update(nms->strength, nms->dexterity);
+
+				// Armour
 				unique_ptr<Armour> armour = generateArmour();
+
+				// Updating armour defense depending on stat scale
+				armour->update(nms->strength, nms->dexterity);
 
 				if (SendMessage(hSubItems[EDIT_NAME], WM_GETTEXTLENGTH, 0, 0) > 0)
 					SendMessage(hSubItems[EDIT_NAME], WM_GETTEXT, 256, (LPARAM)str);
 				else
 					strcpy_s(str, "Gladiator");
-				
+
 				game.setPlayer(
 					Player(
 						Fighter(
@@ -828,6 +839,97 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		}
 		break;
 		}
+	}
+	break;
+
+	case WM_MOUSEMOVE:
+	{
+		static int i;
+		// First method
+		RECT rect;
+		POINT pt;
+		// Get cursor position
+		GetCursorPos(&pt);
+		ScreenToClient(hWnd, &pt);
+
+		// Test
+		HDC hdc;
+		PAINTSTRUCT ps;
+		buf = to_string(pt.x) + " " + to_string(pt.y);
+		for (HWND hItem : hItems)
+			if ((HWND)lp == hItem)
+				SetWindowText(hWnd, buf.c_str());
+
+		// Second method
+		// Get cursor position
+		TRACKMOUSEEVENT tme;
+		tme.cbSize = sizeof(TRACKMOUSEEVENT);
+		tme.dwFlags = TME_HOVER | TME_LEAVE;
+		tme.dwHoverTime = HOVER_DEFAULT;
+
+		switch (game.getBackground())
+		{
+		case Game::Background::MAIN_MENU:
+		{
+			for (HWND hItem : hItems)
+			{
+				// Get button position
+				GetWindowRect(hItem, &rect);
+				MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+				//InvalidateRect(hWnd, &rect, 1);
+
+				if (PtInRect(&rect, pt))
+				{
+					HBRUSH hBrush = CreateSolidBrush(COLOR_ROMAN_RED);
+					SetWindowText(hItem, to_string(i).c_str());
+					i++;
+					hdc = BeginPaint(hWnd, &ps);
+					DrawText(hdc, "Test", -1, &rect, DT_LEFT);
+					FillRect(hdc, &rect, hBrush);
+					EndPaint(hWnd, &ps);
+					DeleteObject(hBrush);
+				}
+			}
+		}
+		break;
+
+		case Game::Background::MAIN_MENU_LOAD:
+		{
+			// TODO
+		}
+		break;
+
+		case Game::Background::MAIN_MENU_NEW_GAME:
+		{
+			// TODO
+		}
+		break;
+
+		case Game::Background::MAIN_MENU_SETTINGS:
+		{
+			// TODO
+		}
+		break;
+
+		case Game::Background::MAIN_MENU_SPECIALS:
+		{
+			// TODO
+		}
+		break;
+		}
+	}
+	break;
+
+	case WM_MOUSEHOVER:
+	{
+		SetWindowText(hWnd, "First stage succesful");
+	}
+	break;
+
+	case WM_MOUSELEAVE:
+	{
+		SetWindowText(hWnd, "Second stage succesful");
+	}
 	break;
 	}
 }

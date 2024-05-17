@@ -43,7 +43,8 @@ PlayerAttributeStorage& PlayerAttributeStorage::operator=(const PlayerAttributeS
 
 void PlayerAttributeStorage::updateMaxHP()
 {
-	double multiplier = (hp * 100 / fullHP) / 100;
-	fullHP = 100 + (strength / 10) + (constitution * 3 / 10);
-	hp = fullHP * multiplier;
+	if (hp == fullHP)
+		hp = fullHP = 100 + (strength / 10) + (constitution * 3 / 10);
+	else
+		fullHP = 100 + (strength / 10) + (constitution * 3 / 10);
 }
