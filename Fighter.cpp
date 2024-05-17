@@ -137,6 +137,11 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 	else if (rOpponent.isRightHandOccupied() && rOpponent.rightHand->getType() == Weapon::SHIELD)
 		whereShield = 2;
 
+	// Determining random damage spread - up to 10% less or more:
+	int randomDamageSpread = rand() % WEAPON_MAX_RAND_DMG_SPREAD_PERCENT;
+	if (rand() % 2)
+		randomDamageSpread = -randomDamageSpread;
+
 	// TODO: dodged => evaded
 	// Is the attack evaded?
 	if (
@@ -170,8 +175,9 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 			}
 
 			// (Opponent damage - Player defense) is reduced to prolong a fight
-			rDamage = (opponentWeaponDamage + rOpponent.strength + rOpponent.dexterity - getDefense()) *
-				(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
+			rDamage = (opponentWeaponDamage + rOpponent.strength + rOpponent.dexterity - getDefense()) * // Basic damage formula
+				(100 + randomDamageSpread) / 100 * // Random spread
+				(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT; // Damage reduction to prolong a fight
 
 			// Attack
 			hp -= rDamage;
@@ -217,11 +223,19 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 		rResult = AttackResult::WERE_BLOCKED;
 		// (Damage - Defense) is reduced by the block defense and by the percent to prolong fight
 		rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
-			(100 - rOpponent.constitution * 3 / 10 + blockDefPercentAddition) / 100 *
+			(100 - (rOpponent.constitution * 3 / 10 + blockDefPercentAddition)) / 100 *
+			(100 + randomDamageSpread) / 100 *
 			(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
+
+		if (rDamage < 1)
+			rDamage = 1;
 
 		// Attack
 		rOpponent.hp -= rDamage;
+
+		if (rOpponent.hp < 0)
+			rOpponent.hp = 0;
+
 		return;
 	}
 
@@ -235,10 +249,18 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 		 */
 		rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
 			(130 + dexterity * 4 / 10) / 100 *
+			(100 + randomDamageSpread) / 100 *
 			(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
+
+		if (rDamage < 1)
+			rDamage = 1;
 
 		// Attack
 		rOpponent.hp -= rDamage;
+
+		if (rOpponent.hp < 0)
+			rOpponent.hp = 0;
+
 		return;
 	}
 
@@ -254,12 +276,17 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 
 	// (Player damage - Opponent defense) is reduced to prolong a fight
 	rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
+		(100 + randomDamageSpread) / 100 *
 		(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
 
-	// Attack
 	if (rDamage < 1)
 		rDamage = 1;
+
+	// Attack
 	rOpponent.hp -= rDamage;
+
+	if (rOpponent.hp < 0)
+		rOpponent.hp = 0;
 }
 
 bool Fighter::isAlive() const { return hp > 0; }

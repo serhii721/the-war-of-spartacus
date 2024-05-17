@@ -165,6 +165,16 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 		}
 	}
 
+	// Updating weapon damage depending on stat scale
+	rightHand->update(attributes[0], attributes[2]);
+	if (leftHand)
+		leftHand->update(attributes[0], attributes[2]);
+
+	// Armour
+	unique_ptr<Armour> armour = generateArmour();
+
+	// Updating armour defense depending on stat scale
+	armour->update(attributes[0], attributes[2]);
 
 	NPC npc(
 		Fighter(
@@ -182,7 +192,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 			BASIC_HP,
 			move(rightHand),
 			move(leftHand),
-			generateArmour()
+			move(armour)
 		),
 		NamedNPC(
 			randomFirstName,
@@ -900,8 +910,8 @@ unique_ptr<Weapon> generateWeapon(Weapon::Type ttype)
 			0, // Damage addition
 			0, // Strength percent addition
 			0, // Dexterity percent addition
-			MIN_SHIELD_PROB_ADDITION + rand() % SHIELD_RAND_PROB_ADDITION,
-			MIN_SHIELD_PROB_ADDITION + rand() % SHIELD_RAND_DEF_PERC_ADDITION,
+			MIN_SHIELD_PROB_ADDITION + rand() % SHIELD_RAND_PROB_ADDITION, // Shield's probability addition
+			MIN_SHIELD_DEF_PERC_ADDITION + rand() % SHIELD_RAND_DEF_PERC_ADDITION, // Shield's defense percent addition
 			"" // Name
 		);
 }
@@ -1404,6 +1414,18 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return true;
 	}
 	break;
+
+	case WM_MOUSEMOVE:
+		game.handleInput(hwnd, message, wParam, lParam);
+		break;
+
+	case WM_MOUSEHOVER:
+		game.handleInput(hwnd, message, wParam, lParam);
+		break;
+
+	case WM_MOUSELEAVE:
+		game.handleInput(hwnd, message, wParam, lParam);
+		break;
 
 	case WM_DESTROY:
 		PostQuitMessage(0);

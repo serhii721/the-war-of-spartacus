@@ -435,10 +435,10 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			buf = "Damage: " + to_string(rRightHand.getTotalDamage());
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Strength scale: " + to_string(rRightHand.getStrengthAdditionPercentage());
+			buf = "Strength scale: " + to_string(rRightHand.getStrengthAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Dexterity scale: " + to_string(rRightHand.getDexterityAdditionPercentage());
+			buf = "Dexterity scale: " + to_string(rRightHand.getDexterityAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 		}
 		else
@@ -465,10 +465,10 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				buf = "Damage: " + to_string(rLeftHand.getTotalDamage());
 				SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Strength scale: " + to_string(rLeftHand.getStrengthAdditionPercentage());
+				buf = "Strength scale: " + to_string(rLeftHand.getStrengthAdditionPercentage()) + "%";
 				SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Dexterity scale: " + to_string(rLeftHand.getDexterityAdditionPercentage());
+				buf = "Dexterity scale: " + to_string(rLeftHand.getDexterityAdditionPercentage()) + "%";
 				SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				ShowWindow(hSubItems[CHARACTER_STAT_SHIELD_DEFENSE], SW_HIDE);
@@ -479,9 +479,9 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				ShowWindow(hSubItems[CHARACTER_STAT_SHIELD_DEFENSE], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_STAT_SHIELD_BLOCK_CHANCE], SW_SHOW);
 
-				buf = "Block defense: " + to_string(rLeftHand.getShieldDefPercentAddition());
+				buf = "Block defense: " + to_string(rLeftHand.getShieldDefPercentAddition()) + "%";
 				SendMessage(hSubItems[CHARACTER_STAT_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Block chance: " + to_string(rLeftHand.getShieldProbAddition());
+				buf = "Block chance: " + to_string(rLeftHand.getShieldProbAddition()) + "%";
 				SendMessage(hSubItems[CHARACTER_STAT_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], SW_HIDE);
@@ -509,16 +509,16 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			buf = "Defense: " + to_string(rArmour.getTotalDefense());
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Strength scale: " + to_string(rArmour.getStrengthAdditionPercentage());
+			buf = "Strength scale: " + to_string(rArmour.getStrengthAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Dexterity scale: " + to_string(rArmour.getDexterityAdditionPercentage());
+			buf = "Dexterity scale: " + to_string(rArmour.getDexterityAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 			if (rPlayer.getArmour()->getType() == Armour::Type::LIGHT)
-				buf = "Evasion chance: " + to_string(rArmour.getEvasionProbAddition());
+				buf = "Evasion chance: " + to_string(rArmour.getEvasionProbAddition()) + "%";
 			else
-				buf = "Stun resistance chance: " + to_string(rArmour.getStunProbSubtraction());
+				buf = "Stun resistance chance: " + to_string(rArmour.getStunProbSubtraction()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 		}
 		else
@@ -937,6 +937,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					hSubItems[i] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				Player& rPlayer = game.getPlayer();
+				pas.hp = rPlayer.getHP();
+				pas.fullHP = rPlayer.getFullHP();
 				pas.unnassignedAttributes = rPlayer.getUnnassignedAttributes();
 				pas.strength = rPlayer.getStrength();
 				pas.constitution = rPlayer.getConstitution();
@@ -2846,6 +2848,27 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					}
 
 				// Text
+				// Update weapon damage
+				if (rPlayer.getRightHand())
+				{
+					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				if (rPlayer.getLeftHand())
+				{
+					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update armour defense
+				if (rPlayer.getArmour())
+				{
+					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
+					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update stats
 				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Strength: " + to_string(pas.strength);
@@ -2897,6 +2920,27 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					}
 
 				// Text
+				// Update weapon damage
+				if (rPlayer.getRightHand())
+				{
+					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				if (rPlayer.getLeftHand())
+				{
+					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update armour defense
+				if (rPlayer.getArmour())
+				{
+					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
+					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update stats
 				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Dexterity: " + to_string(pas.dexterity);
@@ -3003,6 +3047,27 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Text
+				// Update weapon damage
+				if (rPlayer.getRightHand())
+				{
+					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				if (rPlayer.getLeftHand())
+				{
+					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update armour defense
+				if (rPlayer.getArmour())
+				{
+					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
+					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update stats
 				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Strength: " + to_string(pas.strength);
@@ -3076,6 +3141,27 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Text
+				// Update weapon damage
+				if (rPlayer.getRightHand())
+				{
+					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				if (rPlayer.getLeftHand())
+				{
+					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update armour defense
+				if (rPlayer.getArmour())
+				{
+					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
+					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update stats
 				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Dexterity: " + to_string(pas.dexterity);
@@ -3187,6 +3273,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Reset changes
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_RESET_CHANGES])
 			{
+				// Update stats
 				pas.unnassignedAttributes = rPlayer.getUnnassignedAttributes();
 				pas.strength = rPlayer.getStrength();
 				pas.constitution = rPlayer.getConstitution();
@@ -3206,6 +3293,27 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				ShowWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], SW_HIDE);
 
 				// Text
+				// Update weapon damage
+				if (rPlayer.getRightHand())
+				{
+					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				if (rPlayer.getLeftHand())
+				{
+					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update armour defense
+				if (rPlayer.getArmour())
+				{
+					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
+					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update stats
 				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
@@ -3236,6 +3344,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Apply changes
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_APPLY_CHANGES])
 			{
+				// Update player stats
 				rPlayer.setUnnassignedAttributes(pas.unnassignedAttributes);
 				rPlayer.setStrength(pas.strength);
 				rPlayer.setConstitution(pas.constitution);
@@ -3246,6 +3355,26 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				rPlayer.setHP(pas.hp);
 				rPlayer.setFullHP(pas.fullHP);
 
+				// Update weapon damage
+				if (rPlayer.getRightHand())
+				{
+					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				if (rPlayer.getLeftHand())
+				{
+					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
+					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
+				// Update armour defense
+				if (rPlayer.getArmour())
+				{
+					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
+					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				}
 				// Button appearance
 				if (rPlayer.getUnnassignedAttributes() > 0)
 					for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
@@ -3267,6 +3396,14 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					if (hItem != NULL)
 						DestroyWindow(hItem);
 				hSubItems.clear();
+
+				// Changing back weapon damage and armour defense based on stats in case player left without applying changes
+				if (rPlayer.getRightHand())
+					rPlayer.getRightHand()->update(rPlayer.getStrength(), rPlayer.getDexterity());
+				if (rPlayer.getLeftHand())
+					rPlayer.getLeftHand()->update(rPlayer.getStrength(), rPlayer.getDexterity());
+				if (rPlayer.getArmour())
+					rPlayer.getArmour()->update(rPlayer.getStrength(), rPlayer.getDexterity());
 
 				// Showing main menu buttons
 				for (HWND hItem : hItems)

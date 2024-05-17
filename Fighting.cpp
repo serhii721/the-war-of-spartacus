@@ -364,27 +364,28 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	// # 3. Fight rewards
 	// Gaining experience
 	int experience = EXPERIENCE_PER_LEVEL;
+	int playerLevel = rPlayer.getLevel();
+	int opponentLevel = pOpponent->getLevel();
 
-	// Calculating experience based on opponent's power compared to player
+	// # 3.1.1 Calculating experience based on opponent's power compared to player
 	double experienceMultiplier = 1.0;
 	// Level multiplier
 	// If player's level greater that opponent's level - player gains 10% more experience
 	// If difference is more than 5 levels - player gains another 40% more experience and vice versa
-	if (rPlayer.getLevel() > pOpponent->getLevel())
+	if (playerLevel > opponentLevel)
 	{
 		experienceMultiplier -= 0.3;
-		if (rPlayer.getLevel() - 5 > pOpponent->getLevel())
+		if (playerLevel - 5 > opponentLevel)
 			experienceMultiplier -= 0.6;
 	}
 	else
 	{
 		experienceMultiplier += 0.1;
-		if (rPlayer.getLevel() + 5 < pOpponent->getLevel())
+		if (playerLevel + 5 < opponentLevel)
 			experienceMultiplier += 0.4;
 
 	}
-	// Stats multiplier
-	int playerLevel = rPlayer.getLevel();
+	// # 3.1.2 Stats multiplier
 	int playerPhysStats = rPlayer.getStrength() + rPlayer.getConstitution() + rPlayer.getDexterity();
 	int opponentPhysStats = pOpponent->getStrength() + pOpponent->getConstitution() + pOpponent->getDexterity();
 	int statsDifference;
@@ -408,16 +409,22 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 		} while (statsDifference > 0);
 	}
 
+	// # 3.1.3 Player dealt damage multiplier
+	// Player's experience gain will multiply by percentage of opponent's missing health
+	// For example player lost and opponent has 90% hp remaining -> player gets 10% of experience
+	experienceMultiplier *= (100 - ((double)pOpponent->getHP() * 100.0 / (double)pOpponent->getFullHP())) / 100;
+
+	// Minimum value
 	if (experienceMultiplier < MIN_EXPERIENCE_MULTIPLIER)
 		experienceMultiplier = MIN_EXPERIENCE_MULTIPLIER;
-
+	// Maximum value
 	if (experienceMultiplier > MAX_EXPERIENCE_MULTIPLIER)
 		experienceMultiplier = MAX_EXPERIENCE_MULTIPLIER;
 
 	experience *= experienceMultiplier;
 	rPlayer.gainExperience(experience);
 
-	// Gaining fame
+	// # 3.2 Gaining fame
 	// Fame number calculates based on experience multiplied by difference from opponent's fame
 	int fame = (experience + pOpponent->getFame()) / 10;
 	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
@@ -581,16 +588,16 @@ void Fighting::getFightResult(const FightStatus sstatus, const int playerHP, con
 	switch (sstatus)
 	{
 	case FightStatus::OPPONENT_LOST:
-		result = "The opponent has lost";
+		result = "You have won. The opponent is executed.";
 		break;
 	case FightStatus::OPPONNENT_SURRENDERED:
-		result = "The opponent has surrendered with hit points of " + to_string(opponentHP);
+		result = "You have won. The opponent has surrendered with hit points of " + to_string(opponentHP) + ".";
 		break;
 	case FightStatus::PLAYER_SURRENDERED:
-		result = "You have surrendered with hit points of " + to_string(playerHP);
+		result = "You have surrendered with hit points of " + to_string(playerHP) + ".";
 		break;
 	case FightStatus::PLAYER_LOST:
-		result = "You have lost";
+		result = "You have lost.";
 		break;
 	case FightStatus::CONTINUE:
 		break;

@@ -33,8 +33,8 @@ const int WEAPON_RAND_DAM_ADDITION = 6;
 const Weapon::Type BASIC_WEAPON_TYPE = Weapon::SWORD;
 const int MIN_SHIELD_PROB_ADDITION = 10;
 const int SHIELD_RAND_PROB_ADDITION = 6;
-const int MIN_SHIELD_DEF_PERC_ADDITION = 20;
-const int SHIELD_RAND_DEF_PERC_ADDITION = 6;
+const int MIN_SHIELD_DEF_PERC_ADDITION = 40;
+const int SHIELD_RAND_DEF_PERC_ADDITION = 45;
 
 // Armour's statistics
 const Armour::Type BASIC_ARMOUR_TYPE = Armour::LIGHT;
@@ -73,8 +73,9 @@ const int MIN_ARMOUR_DEFENSE = 30, MAX_ARMOUR_DEFENSE = 50;
 const int ARMOUR_RAND_DEF_ADDITION = 6;
 
 // Fight's statistics
-const int ONE_HUNDRED_PERCENT = 1000; // 100.0%.
-const int DAMAGE_REDUCTION_PERCENT = 375; // 37.5%.
+const int ONE_HUNDRED_PERCENT = 1000; // 100.0%
+const int DAMAGE_REDUCTION_PERCENT = 375; // 37.5%
+const int WEAPON_MAX_RAND_DMG_SPREAD_PERCENT = 10; // 10.0%
 
 // Game settings
 const int SLEEP_TIME = 1000;
