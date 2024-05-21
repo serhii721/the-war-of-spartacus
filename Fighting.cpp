@@ -11,14 +11,12 @@ extern Game game;
 
 Fighting::Fighting() :
 	hItems(Item::ITEM_NUMBER),
-	pOpponentCopy(nullptr),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 { }
 
 Fighting::Fighting(HWND hWnd) :
 	hItems(Item::ITEM_NUMBER),
-	pOpponentCopy(nullptr),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 {
@@ -92,16 +90,6 @@ Fighting::Fighting(const Fighting& F) :
 		);
 	}
 
-	if (F.pOpponentCopy)
-	{
-		if (pOpponentCopy)
-			pOpponentCopy = make_shared<NPC>(*F.pOpponentCopy);
-		else
-			*pOpponentCopy = *F.pOpponentCopy;
-	}
-	else
-		pOpponentCopy = nullptr;
-
 	if (F.hBackgroundImage != NULL)
 	{
 		BITMAP bm;
@@ -161,16 +149,6 @@ Fighting& Fighting::operator=(const Fighting& F)
 		);
 	}
 
-	if (F.pOpponentCopy)
-	{
-		if (pOpponentCopy)
-			pOpponentCopy = make_shared<NPC>(*F.pOpponentCopy);
-		else
-			*pOpponentCopy = *F.pOpponentCopy;
-	}
-	else
-		pOpponentCopy = nullptr;
-
 	if (hBackgroundImage != NULL)
 		DeleteObject(hBackgroundImage);
 
@@ -211,9 +189,8 @@ Fighting::~Fighting()
 		DeleteObject(hBackgroundBrush);
 }
 
-FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponent)
+FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOpponent)
 {
-	pOpponentCopy = pOpponent;
 	AttackResult result = AttackResult::WERE_DODGED;
 	FightStatus status = FightStatus::CONTINUE;
 
@@ -235,12 +212,12 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	UpdateWindow(hWnd);
 
 	// Fight name
-	sprintf_s(str, "%s vs %s", rPlayer.getName().c_str(), localization.getNPCName(*pOpponent).c_str());
+	sprintf_s(str, "%s vs %s", rPlayer.getName().c_str(), localization.getNPCName(*rOpponent).c_str());
 	SendMessage(hItems[Item::STATIC_START], WM_SETTEXT, 0, (LPARAM)str);
 
 	// Show Player and Opponent health
 	int playerHP = game.getPlayer().getHP(),
-		opponentHP = pOpponentCopy->getHP();
+		opponentHP = rOpponent->getHP();
 
 	string pHP = "Health: " + to_string(playerHP),
 		oHP = "Health: " + to_string(opponentHP);
@@ -258,10 +235,10 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	SendMessage(hItems[Item::STATIC_PLAYER_DAMAGE], WM_SETTEXT, 0, (LPARAM)str);
 	damage = 0;
 
-	if (pOpponent->getRightHand())
-		damage += pOpponent->getRightHand()->getTotalDamage();
-	if (pOpponent->getLeftHand())
-		damage += pOpponent->getLeftHand()->getTotalDamage();
+	if (rOpponent->getRightHand())
+		damage += rOpponent->getRightHand()->getTotalDamage();
+	if (rOpponent->getLeftHand())
+		damage += rOpponent->getLeftHand()->getTotalDamage();
 	sprintf_s(str, "Damage: %d", damage);
 	SendMessage(hItems[Item::STATIC_OPPONENT_DAMAGE], WM_SETTEXT, 0, (LPARAM)str);
 	damage = 0;
@@ -273,13 +250,13 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	SendMessage(hItems[Item::STATIC_PLAYER_DEFENSE], WM_SETTEXT, 0, (LPARAM)str);
 
 	defense = 0;
-	if (pOpponent->getArmour())
-		defense = pOpponent->getArmour()->getTotalDefense();
+	if (rOpponent->getArmour())
+		defense = rOpponent->getArmour()->getTotalDefense();
 	sprintf_s(str, "Defense: %d", defense);
 	SendMessage(hItems[Item::STATIC_OPPONENT_DEFENSE], WM_SETTEXT, 0, (LPARAM)str);
 
 	// # 1. Determining whether the opponent attacks first
-	if (pOpponent->getWisdom() > rPlayer.getWisdom())
+	if (rOpponent->getWisdom() > rPlayer.getWisdom())
 	{
 
 		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Opponent has higher wisdom, so he attacks first\r\n\r\n");
@@ -287,19 +264,19 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 		Sleep(SLEEP_TIME);
 
 		// Opponent's attack
-		pOpponent->attack(rPlayer, result, damage);
+		rOpponent->attack(rPlayer, result, damage);
 
-		getAttackResult(Attacker::OPPONENT, result, damage);
+		getAttackResult(*rOpponent, Attacker::OPPONENT, result, damage);
 		Sleep(SLEEP_TIME);
 
 		// Checking the status of the fighting
-		status = checkFightStatus(rPlayer, *pOpponent);
+		status = checkFightStatus(rPlayer, *rOpponent);
 
 		if (status != FightStatus::CONTINUE)
 		{
 			if (status == FightStatus::PLAYER_LOST)
 				rPlayer.setHP(1);
-			getFightResult(status, rPlayer.getHP(), pOpponent->getHP());
+			getFightResult(status, rPlayer.getHP(), rOpponent->getHP());
 			ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
 			ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
 		}
@@ -318,18 +295,18 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 		if (result != AttackResult::STUNNED)
 		{
 			// Player's attack
-			rPlayer.attack(*pOpponent, result, damage);
+			rPlayer.attack(*rOpponent, result, damage);
 
 			// Output of the result of player's attack
-			getAttackResult(Attacker::PLAYER, result, damage);
+			getAttackResult(*rOpponent, Attacker::PLAYER, result, damage);
 			Sleep(SLEEP_TIME);
 
 			// Checking the status of the fighting
-			status = checkFightStatus(rPlayer, *pOpponent);
+			status = checkFightStatus(rPlayer, *rOpponent);
 
 			if (status != FightStatus::CONTINUE)
 			{
-				getFightResult(status, rPlayer.getHP(), pOpponent->getHP());
+				getFightResult(status, rPlayer.getHP(), rOpponent->getHP());
 				ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
 				ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
 				break;
@@ -343,19 +320,19 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 			continue; // Skip opponent's attack
 
 		// Opponent's attack
-		pOpponent->attack(rPlayer, result, damage);
+		rOpponent->attack(rPlayer, result, damage);
 
-		getAttackResult(Attacker::OPPONENT, result, damage);
+		getAttackResult(*rOpponent, Attacker::OPPONENT, result, damage);
 		Sleep(SLEEP_TIME);
 
 		// Checking the status of the fighting
-		status = checkFightStatus(rPlayer, *pOpponent);
+		status = checkFightStatus(rPlayer, *rOpponent);
 
 		if (status != FightStatus::CONTINUE)
 		{
 			if (status == FightStatus::PLAYER_LOST)
 				rPlayer.setHP(1);
-			getFightResult(status, rPlayer.getHP(), pOpponent->getHP());
+			getFightResult(status, rPlayer.getHP(), rOpponent->getHP());
 			ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
 			ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
 			break;
@@ -365,7 +342,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	// Gaining experience
 	int experience = EXPERIENCE_PER_LEVEL;
 	int playerLevel = rPlayer.getLevel();
-	int opponentLevel = pOpponent->getLevel();
+	int opponentLevel = rOpponent->getLevel();
 
 	// # 3.1.1 Calculating experience based on opponent's power compared to player
 	double experienceMultiplier = 1.0;
@@ -387,7 +364,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	}
 	// # 3.1.2 Stats multiplier
 	int playerPhysStats = rPlayer.getStrength() + rPlayer.getConstitution() + rPlayer.getDexterity();
-	int opponentPhysStats = pOpponent->getStrength() + pOpponent->getConstitution() + pOpponent->getDexterity();
+	int opponentPhysStats = rOpponent->getStrength() + rOpponent->getConstitution() + rOpponent->getDexterity();
 	int statsDifference;
 	// Player gains 10% more or less experience for every 10 physical stats difference from opponent
 	if (playerPhysStats > opponentPhysStats)
@@ -412,7 +389,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	// # 3.1.3 Player dealt damage multiplier
 	// Player's experience gain will multiply by percentage of opponent's missing health
 	// For example player lost and opponent has 90% hp remaining -> player gets 10% of experience
-	experienceMultiplier *= (100 - ((double)pOpponent->getHP() * 100.0 / (double)pOpponent->getFullHP())) / 100;
+	experienceMultiplier *= (100 - ((double)rOpponent->getHP() * 100.0 / (double)rOpponent->getFullHP())) / 100;
 
 	// Minimum value
 	if (experienceMultiplier < MIN_EXPERIENCE_MULTIPLIER)
@@ -426,12 +403,12 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 
 	// # 3.2 Gaining fame
 	// Fame number calculates based on experience multiplied by difference from opponent's fame
-	int fame = (experience + pOpponent->getFame()) / 10;
+	int fame = (experience + rOpponent->getFame()) / 10;
 	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
 	{
 		double fameMultiplier = 1.0;
 		int playerFame = rPlayer.getFame();
-		int opponentFame = pOpponent->getFame();
+		int opponentFame = rOpponent->getFame();
 		int fameDifference;
 		if (playerFame > opponentFame)
 		{
@@ -459,7 +436,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 	rPlayer.setFame(rPlayer.getFame() + fame);
 
 	// Information for messages log
-	logStr += "You have fought with " + localization.getNPCName(*pOpponent);
+	logStr += "You have fought with " + localization.getNPCName(*rOpponent);
 	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
 		logStr += " and won\r\n\r\n";
 	else
@@ -470,11 +447,10 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, shared_ptr<NPC> pOpponen
 		logStr += "You have leveled up to level " + to_string(rPlayer.getLevel()) +
 		" (" + to_string(rPlayer.getUnnassignedAttributes()) + " unnassigned attributes)\r\n\r\n";
 
-	pOpponentCopy = nullptr;
 	return status;
 }
 
-void Fighting::getAttackResult(const Attacker attacker, const AttackResult rresult, const int ddamage)
+void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, const AttackResult rresult, const int ddamage)
 {
 	// TODO: Localize
 	char logText[1024];
@@ -543,7 +519,7 @@ void Fighting::getAttackResult(const Attacker attacker, const AttackResult rresu
 	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 
 	int playerHP = game.getPlayer().getHP(),
-		opponentHP = pOpponentCopy->getHP();
+		opponentHP = rOpponent.getHP();
 
 	string pHP = "Health: " + to_string(playerHP),
 		   oHP = "Health: " + to_string(opponentHP);

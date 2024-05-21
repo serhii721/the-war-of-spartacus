@@ -14,4 +14,6 @@ public:
 	NPC(const NPC&);
 	NPC& operator=(const NPC&);
 	virtual ~NPC();
+
+	unique_ptr<NPC> clone() const;
 };

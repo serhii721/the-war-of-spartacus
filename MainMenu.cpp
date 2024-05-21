@@ -761,8 +761,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					PERUGIA_CITY_LEVEL, FLORENCE_CITY_LEVEL, BOLOGNA_CITY_LEVEL, GENOA_CITY_LEVEL, VENICE_CITY_LEVEL, MILAN_CITY_LEVEL
 				};
 
-				shared_ptr<NPC> pGladiator;
-				vector<shared_ptr<NPC>> gladiators;
+				vector<unique_ptr<NPC>> gladiators;
 
 				for (int i = 0; i < MAX_CITIES; i++)
 				{
@@ -770,8 +769,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					for (int j = 0; j < OPPONENTS_NUMBER; j++)
 					{
 						// Generating opponents of different levels for different cities
-						pGladiator = generateNPC(cityLevels[i]);
-						gladiators.push_back(pGladiator);
+						gladiators.push_back(generateNPC(cityLevels[i]));
 					}
 					// Creating cities based of arenas
 					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators), cityLevels[i]);

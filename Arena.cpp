@@ -3,20 +3,32 @@
 
 Arena::Arena() : gladiators() { }
 
-Arena::Arena(const vector<shared_ptr<NPC>>& G) : gladiators(G) { }
+Arena::Arena(const vector<unique_ptr<NPC>>& G)
+{
+	for (const auto& gladiator : G)
+		gladiators.push_back(gladiator->clone());
+}
 
-Arena::Arena(const Arena& A) : gladiators(A.gladiators) { }
+Arena::Arena(const Arena& A)
+{
+	for (const auto& gladiator : A.gladiators)
+		gladiators.push_back(gladiator->clone());
+}
 
 Arena& Arena::operator=(const Arena& A)
 {
 	if (&A == this) return *this;
-	gladiators = A.gladiators;
+
+	gladiators.clear();
+	for (const auto& gladiator : A.gladiators)
+		gladiators.push_back(gladiator->clone());
+
 	return *this;
 }
 
 Arena::~Arena() { }
 
-shared_ptr<NPC> Arena::getGladiator(int n)
+unique_ptr<NPC>& Arena::getGladiator(int n)
 {
 	return gladiators[n];
 }

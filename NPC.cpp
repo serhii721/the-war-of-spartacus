@@ -17,3 +17,8 @@ NPC& NPC::operator=(const NPC& C)
 }
 
 NPC::~NPC() { }
+
+unique_ptr<NPC> NPC::clone() const
+{
+	return make_unique<NPC>(*this);
+}
