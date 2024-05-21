@@ -80,6 +80,7 @@ const int WEAPON_MAX_RAND_DMG_SPREAD_PERCENT = 10; // 10.0%
 // Game settings
 const int SLEEP_TIME = 1000;
 const int STARTING_ADDITIONAL_ATTRIBUTES = 30;
+const int ATTRIBUTE_MAX_DIFFERENCE = 10; // How much a player can increase attributes relative to average attributes level
 
 const COLORREF COLOR_WHITE = RGB(255, 255, 255),
 			   COLOR_ROMAN_RED = RGB(80, 0, 0),
