@@ -11,11 +11,11 @@
 // Buffers
 TCHAR str[256] = "";
 string buf = "";
-string logStr = "Messages log:\r\n\r\n";
+string logStr = "";
 
 extern HINSTANCE hInst;
 
-Localization localization;
+Localization l;
 Game game;
 
 // __________ Other __________
@@ -63,7 +63,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 	const string PATH_BASE = "Data/Language/Names/", FORMAT = ".lang";
 	ifstream fin;
 	// Open file containing roman first names
-	switch (localization.getLanguage())
+	switch (l.getLanguage())
 	{
 	default: case Language::ENGLISH: fin.open(PATH_BASE + "En_FirstNames" + FORMAT); break;
 	case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_FirstNames" + FORMAT); break;
@@ -80,7 +80,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 	fin.close();
 
 	// Open file containing roman last names
-	switch (localization.getLanguage())
+	switch (l.getLanguage())
 	{
 	default: case Language::ENGLISH: fin.open(PATH_BASE + "En_LastNames" + FORMAT); break;
 	case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_LastNames" + FORMAT); break;
@@ -1388,7 +1388,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Setting the random seed
 		srand((unsigned)time(0));
 
-		localization.setLanguage();
+		l.setLanguage();
 		game.getMenuManager().setMenu(new MainMenu(hwnd));
 		break;
 

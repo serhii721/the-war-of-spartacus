@@ -6,7 +6,7 @@ extern string buf;
 extern string logStr;
 
 extern HINSTANCE hInst;
-extern Localization localization;
+extern Localization l;
 extern Game game;
 
 WorldMap::WorldMap() :
@@ -26,25 +26,25 @@ WorldMap::WorldMap(HWND hWnd, const vector<City>& C, int ccurrentCity) :
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 {
-	hItems[STAT_MAP] = CreateWindow("STATIC", "Map", // TODO: Localization
+	hItems[STAT_MAP] = CreateWindow("STATIC", l.getMessage(Localized::MAP).c_str(),
 		WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	int i = BUT_ROME_MAP;
 	for (; i <= BUT_MILAN_MAP; i++)
-		hItems[i] = CreateWindow("BUTTON", localization.getCityName(C[i]).c_str(),
+		hItems[i] = CreateWindow("BUTTON", l.getCityName(C[i]).c_str(),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	for (i = BUT_ROME_LIST; i <= BUT_MILAN_LIST; i++)
 	{
-		buf = localization.getCityName(C[i - BUT_ROME_LIST]) + " (" + to_string(C[i - BUT_ROME_LIST].getLevel()) + " lvl)";
+		buf = l.getCityName(C[i - BUT_ROME_LIST]) + " (" + to_string(C[i - BUT_ROME_LIST].getLevel()) + " lvl)";
 		hItems[i] = CreateWindow("BUTTON", buf.c_str(),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTORADIOBUTTON | BS_OWNERDRAW | BS_LEFTTEXT,
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 	}
 
-	hItems[BUT_TRAVEL_LIST] = CreateWindow("BUTTON", "Travel", // TODO: Localization
+	hItems[BUT_TRAVEL_LIST] = CreateWindow("BUTTON", l.getMessage(Localized::TRAVEL).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 }
@@ -233,15 +233,15 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 				ShowWindow(hItems[i], SW_SHOW);
 
 			if (currentCity == selectedCity)
-				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
+				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::ENTER).c_str());
 			else
-				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::TRAVEL).c_str());
 
 			for (int i = BUT_ROME_MAP; i <= BUT_MILAN_MAP; i++)
 			{
-				buf = localization.getCityName(cities[i]);
+				buf = l.getCityName(cities[i]);
 				SendMessage(hItems[i], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = localization.getCityName(cities[i]) + "   (" + to_string(cities[i].getLevel()) + " lvl)";
+				buf = l.getCityName(cities[i]) + "   (" + to_string(cities[i].getLevel()) + " " + l.getMessage(Localized::LVL) + ")";
 				SendMessage(hItems[i + 11], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 			}
 		}
@@ -303,191 +303,47 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			// Selecting city
 			{
-				RECT rect;
 				if ((HWND)lp == hItems[BUT_ROME_LIST] || (HWND)lp == hItems[BUT_ROME_MAP])
-				{
-					selectedCity = BUT_ROME_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_ROME_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_NAPLES_LIST] || (HWND)lp == hItems[BUT_NAPLES_MAP])
-				{
-					selectedCity = BUT_NAPLES_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_NAPLES_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_METAPONTO_LIST] || (HWND)lp == hItems[BUT_METAPONTO_MAP])
-				{
-					selectedCity = BUT_METAPONTO_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_METAPONTO_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_BOJANO_LIST] || (HWND)lp == hItems[BUT_BOJANO_MAP])
-				{
-					selectedCity = BUT_BOJANO_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_BOJANO_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_ANCONA_LIST] || (HWND)lp == hItems[BUT_ANCONA_MAP])
-				{
-					selectedCity = BUT_ANCONA_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_ANCONA_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_PERUGIA_LIST] || (HWND)lp == hItems[BUT_PERUGIA_MAP])
-				{
-					selectedCity = BUT_PERUGIA_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_PERUGIA_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_FLORENCE_LIST] || (HWND)lp == hItems[BUT_FLORENCE_MAP])
-				{
-					selectedCity = BUT_FLORENCE_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_FLORENCE_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_BOLOGNA_LIST] || (HWND)lp == hItems[BUT_BOLOGNA_MAP])
-				{
-					selectedCity = BUT_BOLOGNA_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_BOLOGNA_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_GENOA_LIST] || (HWND)lp == hItems[BUT_GENOA_MAP])
-				{
-					selectedCity = BUT_GENOA_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_GENOA_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_VENICE_LIST] || (HWND)lp == hItems[BUT_VENICE_MAP])
-				{
-					selectedCity = BUT_VENICE_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_VENICE_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 				if ((HWND)lp == hItems[BUT_MILAN_LIST] || (HWND)lp == hItems[BUT_MILAN_MAP])
-				{
-					selectedCity = BUT_MILAN_MAP;
-					if (currentCity == selectedCity)
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					else
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Travel");
+					selectCity(hWnd, BUT_MILAN_MAP);
 
-					// Update button selection
-					GetWindowRect(hItems[selectedCity], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-					GetWindowRect(hItems[selectedCity + 11], &rect);
-					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-					InvalidateRect(hWnd, &rect, 1);
-				}
 			}
 			if ((HWND)lp == hItems[BUT_TRAVEL_LIST])
 			{
 				if (currentCity != selectedCity)
 				{
 					currentCity = selectedCity;
-					SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Enter");
-					logStr += "You have traveled to " + localization.getCityName(getCurrentCity()) + "\r\n\r\n";
+					SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::ENTER).c_str());
+					logStr += l.getMessage(Localized::YOU_HAVE_TRAVELED) + " " + l.getCityName(getCurrentCity()) + "\r\n\r\n";
 				}
 				else
 				{
@@ -561,4 +417,24 @@ void WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		}
 		break;
 	}
+}
+
+void WorldMap::selectCity(HWND hWnd, Item city)
+{
+	RECT rect;
+
+	selectedCity = city;
+
+	if (currentCity == selectedCity)
+		SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::ENTER).c_str());
+	else
+		SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::TRAVEL).c_str());
+
+	// Update button selection
+	GetWindowRect(hItems[selectedCity], &rect);
+	MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+	InvalidateRect(hWnd, &rect, 1);
+	GetWindowRect(hItems[selectedCity + 11], &rect);
+	MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+	InvalidateRect(hWnd, &rect, 1);
 }

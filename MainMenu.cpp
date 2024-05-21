@@ -5,7 +5,7 @@ extern TCHAR str[256];
 extern string buf;
 
 extern HINSTANCE hInst;
-extern Localization localization;
+extern Localization l;
 extern Game game;
 
 MainMenu::MainMenu() :
@@ -13,7 +13,9 @@ MainMenu::MainMenu() :
 	hSubItems(),
 	nms(),
 	hBackgroundImage(NULL),
-	hBackgroundBrush(NULL)
+	hBackgroundBrush(NULL),
+	selectedLanguage(Language::ENGLISH),
+	changedSettings(false)
 { }
 
 MainMenu::MainMenu(HWND hWnd) :
@@ -21,31 +23,33 @@ MainMenu::MainMenu(HWND hWnd) :
 	hSubItems(),
 	nms(),
 	hBackgroundImage(NULL),
-	hBackgroundBrush(NULL)
+	hBackgroundBrush(NULL),
+	selectedLanguage(Language::ENGLISH),
+	changedSettings(false)
 {
 	char className[256] = "BUTTON";
-	hItems[BUT_CONTINUE] = CreateWindow(className, "Continue", // TODO: Apply localization
+	hItems[BUT_CONTINUE] = CreateWindow(className, l.getMessage(Localized::CONTINUE_GAME).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 
-	hItems[BUT_LOAD_GAME] = CreateWindow(className, "Load game", // TODO: Apply localization
+	hItems[BUT_LOAD_GAME] = CreateWindow(className, l.getMessage(Localized::LOAD_GAME).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_NEW_GAME] = CreateWindow(className, "New game", // TODO: Apply localization
+	hItems[BUT_NEW_GAME] = CreateWindow(className, l.getMessage(Localized::NEW_GAME).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_SETTINGS] = CreateWindow(className, "Settings", // TODO: Apply localization
+	hItems[BUT_SETTINGS] = CreateWindow(className, l.getMessage(Localized::SETTINGS).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_SPECIALS] = CreateWindow(className, "Specials", // TODO: Apply localization
+	hItems[BUT_SPECIALS] = CreateWindow(className, l.getMessage(Localized::SPECIALS).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_EXIT] = CreateWindow(className, "Exit", // TODO: Apply localization
+	hItems[BUT_EXIT] = CreateWindow(className, l.getMessage(Localized::EXIT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
@@ -103,6 +107,9 @@ MainMenu::MainMenu(const MainMenu& MM) : hSubItems()
 		hBackgroundBrush = NULL;
 
 	nms = make_unique<NewMenuStorage>();
+
+	selectedLanguage = MM.selectedLanguage;
+	changedSettings = MM.changedSettings;
 }
 
 MainMenu& MainMenu::operator=(const MainMenu& MM)
@@ -181,6 +188,9 @@ MainMenu& MainMenu::operator=(const MainMenu& MM)
 	else
 		hBackgroundBrush = NULL;
 
+	selectedLanguage = MM.selectedLanguage;
+	changedSettings = MM.changedSettings;
+
 	return *this;
 }
 
@@ -221,16 +231,10 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			for (HWND hItem : hItems)
 				ShowWindow(hItem, SW_SHOW);
 			break;
-		case Game::Background::MAIN_MENU_LOAD:
-			// TODO
-			break;
+		case Game::Background::MAIN_MENU_LOAD: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
 		case Game::Background::MAIN_MENU_NEW_GAME: path = DIRECTORY + "characterCreationBackground768" + FORMAT; break;
-		case Game::Background::MAIN_MENU_SETTINGS:
-			// TODO
-			break;
-		case Game::Background::MAIN_MENU_SPECIALS:
-			// TODO
-			break;
+		case Game::Background::MAIN_MENU_SETTINGS: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
+		case Game::Background::MAIN_MENU_SPECIALS: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
 		}
 		// Loading image
 		if (hBackgroundImage != NULL)
@@ -242,6 +246,24 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
 		FillRect(hdc, &rect, hBackgroundBrush);
 		game.backgroundChangeCompleted();
+	}
+
+	// 2. Text
+	switch (game.getBackground())
+	{
+	default:case Game::Background::MAIN_MENU: break;
+	case Game::Background::MAIN_MENU_LOAD: break;
+	case Game::Background::MAIN_MENU_NEW_GAME: break;
+	case Game::Background::MAIN_MENU_SETTINGS:
+	{
+		if (changedSettings)
+			ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_SHOW);
+		else
+			ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_HIDE);
+	}
+	break;
+
+	case Game::Background::MAIN_MENU_SPECIALS: break;
 	}
 	game.backgroundChangeCompleted();
 }
@@ -284,7 +306,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 				MoveWindow(hSubItems[i], 557, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
 			else
 			{
-				MoveWindow(hSubItems[i], 557, y + ITEM_HEIGHT + DISTANCE, STAT_WIDTH + 40, ITEM_HEIGHT * 2, TRUE);
+				MoveWindow(hSubItems[i], 557, y + ITEM_HEIGHT + DISTANCE, STAT_WIDTH + 70, ITEM_HEIGHT * 2, TRUE);
 				y += ITEM_HEIGHT * 2 + DISTANCE;
 			}
 			y += ITEM_HEIGHT + DISTANCE;
@@ -300,7 +322,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 				MoveWindow(hSubItems[i], 725, y, EDIT_WIDTH, ITEM_HEIGHT, TRUE);
 			else
 			{
-				MoveWindow(hSubItems[i], 725, y + ITEM_HEIGHT + DISTANCE * 4, EDIT_WIDTH, ITEM_HEIGHT, TRUE);
+				MoveWindow(hSubItems[i], 755, y + ITEM_HEIGHT + DISTANCE * 4, EDIT_WIDTH, ITEM_HEIGHT, TRUE);
 				y += ITEM_HEIGHT * 2 + DISTANCE;
 			}
 		}
@@ -332,7 +354,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 		y = cy - sz / 2 * (ITEM_HEIGHT + DISTANCE);
 
 		// Video settings (in progress)
-		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH / 3, ITEM_HEIGHT, TRUE);
+		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
 
 		// Sound settings
@@ -342,8 +364,16 @@ void MainMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubItems[SETTINGS_BUT_SOUND], x + ITEM_WIDTH - BUT_SIZE, y, BUT_SIZE, BUT_SIZE, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
 
-		// Back
-		MoveWindow(hSubItems[SETTINGS_BUT_BACK], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		// Language settings
+		MoveWindow(hSubItems[SETTINGS_STAT_LANGUAGE], x, y, (ITEM_WIDTH - DISTANCE) / 2, ITEM_HEIGHT, TRUE);
+
+		MoveWindow(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], x + ITEM_WIDTH / 2 + DISTANCE, y, ITEM_WIDTH / 2 - DISTANCE, ITEM_HEIGHT, TRUE);
+		y += ITEM_HEIGHT + DISTANCE;
+
+		// Back and apply changes
+		MoveWindow(hSubItems[SETTINGS_BUT_BACK], x, y, (ITEM_WIDTH - DISTANCE) / 2, ITEM_HEIGHT, TRUE);
+
+		MoveWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], x + ITEM_WIDTH / 2 + DISTANCE, y, ITEM_WIDTH / 2 - DISTANCE, ITEM_HEIGHT, TRUE);
 	}
 	break;
 
@@ -405,16 +435,16 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems.resize(NewGameItem::NEW_GAME_ITEM_NUMBER);
 
 				// TODO: Apply localization
-				hSubItems[STAT_CHARACTER_CREATION] = CreateWindow("STATIC", "Character creation", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[STAT_NAME] = CreateWindow("STATIC", "Name:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[STAT_AGE] = CreateWindow("STATIC", "Age:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[STAT_UNNASSIGNED_ATTRIBUTES] = CreateWindow("STATIC", "Unnassigned attributes:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[STAT_STRENGTH] = CreateWindow("STATIC", "Strength:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[STAT_CONSTITUTION] = CreateWindow("STATIC", "Constitution:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[STAT_DEXTERITY] = CreateWindow("STATIC", "Dexterity:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[STAT_INTELLIGENCE] = CreateWindow("STATIC", "Intelligence:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[STAT_WISDOM] = CreateWindow("STATIC", "Wisdom:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[STAT_CHARISMA] = CreateWindow("STATIC", "Charisma:", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_CHARACTER_CREATION] = CreateWindow("STATIC", l.getMessage(Localized::CHARACTER_CREATION).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_NAME] = CreateWindow("STATIC", l.getMessage(Localized::NAME).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_AGE] = CreateWindow("STATIC", l.getMessage(Localized::AGE).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_UNNASSIGNED_ATTRIBUTES] = CreateWindow("STATIC", l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_STRENGTH] = CreateWindow("STATIC", l.getMessage(Localized::STRENGTH).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_CONSTITUTION] = CreateWindow("STATIC", l.getMessage(Localized::CONSTITUTION).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_DEXTERITY] = CreateWindow("STATIC", l.getMessage(Localized::DEXTERITY).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_INTELLIGENCE] = CreateWindow("STATIC", l.getMessage(Localized::INTELLIGENCE).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_WISDOM] = CreateWindow("STATIC", l.getMessage(Localized::WISDOM).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[STAT_CHARISMA] = CreateWindow("STATIC", l.getMessage(Localized::CHARISMA).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				hSubItems[EDIT_NAME] = CreateWindow("EDIT", "", WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[EDIT_AGE] = CreateWindow("EDIT", to_string(nms->age).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -442,8 +472,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[BUT_WISDOM_PLUS] = CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[BUT_CHARISMA_PLUS] = CreateWindow("BUTTON", "+", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-				hSubItems[NEW_GAME_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[NEW_GAME_BUT_NEXT] = CreateWindow("BUTTON", "Next", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[NEW_GAME_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[NEW_GAME_BUT_NEXT] = CreateWindow("BUTTON", l.getMessage(Localized::NEXT).c_str(), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				game.setBackground(Game::Background::MAIN_MENU_NEW_GAME);
 
@@ -466,10 +496,20 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(SettingsItem::SETTINGS_ITEM_NUMBER);
 
-				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", "Video settings (in progress)", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", "Sound: ", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", l.getMessage(Localized::VIDEO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", l.getMessage(Localized::AUDIO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_STAT_LANGUAGE] = CreateWindow("STATIC", l.getMessage(Localized::LANGUAGE_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_COMBOBOX_LANGUAGE] = CreateWindow("COMBOBOX", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_SOUND] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_BUT_APPLY_CHANGES] = CreateWindow("BUTTON", l.getMessage(Localized::APPLY_CHANGES).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				// Fill combobox with languages
+				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_ADDSTRING, 0, (LPARAM)"English");
+				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_ADDSTRING, 0, (LPARAM)"Українська");
+				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_ADDSTRING, 0, (LPARAM)"Русский");
+				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_ADDSTRING, 0, (LPARAM)"Latinus");
+				ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_HIDE);
 
 				game.setBackground(Game::Background::MAIN_MENU_SETTINGS);
 
@@ -490,9 +530,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(SettingsItem::SETTINGS_ITEM_NUMBER);
 
-				hSubItems[SPECIALS_STAT_SPECIALS] = CreateWindow("STATIC", "Specials", WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SPECIALS_STAT_SPECIALS] = CreateWindow("STATIC", l.getMessage(Localized::SPECIALS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SPECIALS_STAT_TEXT] = CreateWindow("STATIC", "Text", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[SPECIALS_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SPECIALS_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				game.setBackground(Game::Background::MAIN_MENU_SPECIALS);
 
@@ -720,7 +760,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (SendMessage(hSubItems[EDIT_NAME], WM_GETTEXTLENGTH, 0, 0) > 0)
 					SendMessage(hSubItems[EDIT_NAME], WM_GETTEXT, 256, (LPARAM)str);
 				else
-					strcpy_s(str, "Gladiator");
+					strcpy_s(str, l.getMessage(Localized::GLADIATOR).c_str());
 
 				game.setPlayer(
 					Player(
@@ -765,12 +805,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				for (int i = 0; i < MAX_CITIES; i++)
 				{
-					// Creating opponents for arenas
+					// Creating opponents for arenas of different levels for different cities
 					for (int j = 0; j < OPPONENTS_NUMBER; j++)
-					{
-						// Generating opponents of different levels for different cities
 						gladiators.push_back(generateNPC(cityLevels[i]));
-					}
 					// Creating cities based of arenas
 					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators), cityLevels[i]);
 					cities.push_back(*pCity);
@@ -795,8 +832,39 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// TODO
 			}
 
+			if (HIWORD(wp) == CBN_SELCHANGE)
+			{
+				selectedLanguage = (Language)SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_GETCURSEL, 0, 0);
+				changedSettings = true;
+				ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_SHOW);
+			}
+
+			if ((HWND)lp == hSubItems[SETTINGS_BUT_APPLY_CHANGES])
+			{
+				// Update language
+				l.setLanguage(selectedLanguage);
+				SetWindowText(hItems[BUT_CONTINUE], l.getMessage(Localized::CONTINUE_GAME).c_str());
+				SetWindowText(hItems[BUT_LOAD_GAME], l.getMessage(Localized::LOAD_GAME).c_str());
+				SetWindowText(hItems[BUT_NEW_GAME], l.getMessage(Localized::NEW_GAME).c_str());
+				SetWindowText(hItems[BUT_SETTINGS], l.getMessage(Localized::SETTINGS).c_str());
+				SetWindowText(hItems[BUT_SPECIALS], l.getMessage(Localized::SPECIALS).c_str());
+				SetWindowText(hItems[BUT_EXIT], l.getMessage(Localized::EXIT).c_str());
+
+				SetWindowText(hSubItems[SETTINGS_STAT_VIDEO], l.getMessage(Localized::VIDEO_SETTINGS).c_str());
+				SetWindowText(hSubItems[SETTINGS_STAT_SOUND], l.getMessage(Localized::AUDIO_SETTINGS).c_str());
+				SetWindowText(hSubItems[SETTINGS_STAT_LANGUAGE], l.getMessage(Localized::LANGUAGE_SETTINGS).c_str());
+				SetWindowText(hSubItems[SETTINGS_BUT_APPLY_CHANGES], l.getMessage(Localized::APPLY_CHANGES).c_str());
+				SetWindowText(hSubItems[SETTINGS_BUT_BACK], l.getMessage(Localized::BACK).c_str());
+
+				// Save changes
+				changedSettings = false;
+				ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_HIDE);
+				game.updateBackground();
+			}
+
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				changedSettings = false;
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
 					if (hItem != NULL)
@@ -967,7 +1035,7 @@ void MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
 			}
-			else if (item->CtlType == ODT_BUTTON) // Button windows
+			else // Button windows
 			{
 				if (item->itemState & ODS_SELECTED)
 				{

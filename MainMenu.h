@@ -12,6 +12,9 @@ private:
 	HBRUSH hBackgroundBrush;
 
 	unique_ptr<NewMenuStorage> nms;
+
+	Language selectedLanguage;
+	bool changedSettings;
 public:
 	enum Item
 	{
@@ -66,7 +69,10 @@ public:
 	{
 		SETTINGS_STAT_VIDEO,
 		SETTINGS_STAT_SOUND,
+		SETTINGS_STAT_LANGUAGE,
+		SETTINGS_COMBOBOX_LANGUAGE,
 		SETTINGS_BUT_SOUND,
+		SETTINGS_BUT_APPLY_CHANGES,
 		SETTINGS_BUT_BACK,
 		SETTINGS_ITEM_NUMBER
 	};

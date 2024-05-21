@@ -5,7 +5,7 @@ extern TCHAR str[256];
 extern string buf;
 
 extern HINSTANCE hInst;
-extern Localization localization;
+extern Localization l;
 extern Game game;
 
 GameMenu::GameMenu() :
@@ -22,23 +22,23 @@ GameMenu::GameMenu(HWND hWnd) :
 	hBackgroundBrush(NULL)
 {
 	char className[256] = "BUTTON";
-	hItems[BUT_RESUME] = CreateWindow(className, "Resume", // TODO: Apply localization
+	hItems[BUT_RESUME] = CreateWindow(className, l.getMessage(Localized::RESUME_GAME).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_SAVE] = CreateWindow(className, "Save game", // TODO: Apply localization
+	hItems[BUT_SAVE] = CreateWindow(className, l.getMessage(Localized::SAVE_GAME).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_LOAD] = CreateWindow(className, "Load game", // TODO: Apply localization
+	hItems[BUT_LOAD] = CreateWindow(className, l.getMessage(Localized::LOAD_GAME).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_SETTINGS] = CreateWindow(className, "Settings", // TODO: Apply localization
+	hItems[BUT_SETTINGS] = CreateWindow(className, l.getMessage(Localized::SETTINGS).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_EXIT_MENU] = CreateWindow(className, "Exit to menu", // TODO: Apply localization
+	hItems[BUT_EXIT_MENU] = CreateWindow(className, l.getMessage(Localized::EXIT_TO_MENU).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
@@ -198,12 +198,9 @@ void GameMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		switch (game.getBackground())
 		{
 		default:case Game::Background::GAME_MENU: path = DIRECTORY + "menuBackground768" + FORMAT; break;
-		case Game::Background::GAME_MENU_SAVE: // TODO
-			break;
-		case Game::Background::GAME_MENU_LOAD: // TODO
-			break;
-		case Game::Background::GAME_MENU_SETTINGS: // TODO
-			break;
+		case Game::Background::GAME_MENU_SAVE: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
+		case Game::Background::GAME_MENU_LOAD: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
+		case Game::Background::GAME_MENU_SETTINGS: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
 		}
 		// Loading image
 		if (hBackgroundImage != NULL)
@@ -327,10 +324,10 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(SettingsItem::SETTINGS_ITEM_NUMBER);
 
-				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", "Video settings (in progress)", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", "Sound: ", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", l.getMessage(Localized::VIDEO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", l.getMessage(Localized::AUDIO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_SOUND] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				game.setBackground(Game::Background::GAME_MENU_SETTINGS);
 
