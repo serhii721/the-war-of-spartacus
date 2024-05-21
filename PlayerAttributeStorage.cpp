@@ -48,3 +48,8 @@ void PlayerAttributeStorage::updateMaxHP()
 	else
 		fullHP = 100 + (strength / 10) + (constitution * 3 / 10);
 }
+
+double PlayerAttributeStorage::calculateAverage()
+{
+	return (strength + constitution + dexterity + intelligence + wisdom + charisma) / 6.0;
+}

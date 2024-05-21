@@ -550,8 +550,37 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Increasing attributes
 		if (pas.unnassignedAttributes > 0)
 		{
-			for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
-				ShowWindow(hSubItems[i], SW_SHOW);
+			double average = pas.calculateAverage() + ATTRIBUTE_MAX_DIFFERENCE;
+			// Strength
+			if (pas.strength > average)
+				ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+			else
+				ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
+			// Constitution
+			if (pas.constitution > average)
+				ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+			else
+				ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
+			// Dexterity
+			if (pas.dexterity > average)
+				ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+			else
+				ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
+			// Intelligence
+			if (pas.intelligence > average)
+				ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+			else
+				ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
+			// Wisdom
+			if (pas.wisdom > average)
+				ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+			else
+				ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
+			// Charisma
+			if (pas.charisma > average)
+				ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
+			else
+				ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
 		}
 		else
 		{
@@ -2827,6 +2856,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			Player& rPlayer = game.getPlayer();
 			int i;
+			double average = ATTRIBUTE_MAX_DIFFERENCE;
 
 			// Plus buttons
 			// Strength
@@ -2835,18 +2865,44 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				pas.unnassignedAttributes--;
 				pas.strength++;
 				pas.updateMaxHP();
+				average += pas.calculateAverage();
 
 				// Buttons appearance
 				ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_MINUS], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_RESET_CHANGES], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], SW_SHOW);
 				if (pas.unnassignedAttributes == 0)
+				{
 					for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
-					{
 						ShowWindow(hSubItems[i], SW_HIDE);
-						game.updateBackground();
-					}
-
+				}
+				else
+				{
+					if (pas.strength <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					if (pas.constitution <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					if (pas.dexterity <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					if (pas.intelligence <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					if (pas.wisdom <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					if (pas.charisma <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
+				}
 				// Text
 				// Update weapon damage
 				if (rPlayer.getRightHand())
@@ -2875,6 +2931,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hSubItems[CHARACTER_STAT_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Health: (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
 				SendMessage(hSubItems[CHARACTER_STAT_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+
+				game.updateBackground();
 			}
 			// Constitution
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS])
@@ -2882,18 +2940,44 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				pas.unnassignedAttributes--;
 				pas.constitution++;
 				pas.updateMaxHP();
+				average += pas.calculateAverage();
 
 				// Buttons appearance
 				ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_MINUS], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_RESET_CHANGES], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], SW_SHOW);
 				if (pas.unnassignedAttributes == 0)
+				{
 					for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
-					{
 						ShowWindow(hSubItems[i], SW_HIDE);
-						game.updateBackground();
-					}
-
+				}
+				else
+				{
+					if (pas.strength <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					if (pas.constitution <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					if (pas.dexterity <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					if (pas.intelligence <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					if (pas.wisdom <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					if (pas.charisma <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
+				}
 				// Text
 				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
@@ -2901,24 +2985,52 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hSubItems[CHARACTER_STAT_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Health: (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
 				SendMessage(hSubItems[CHARACTER_STAT_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+
+				game.updateBackground();
 			}
 			// Dexterity
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_DEXTERITY_PLUS])
 			{
 				pas.unnassignedAttributes--;
 				pas.dexterity++;
+				average += pas.calculateAverage();
 
 				// Buttons appearance
 				ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_MINUS], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_RESET_CHANGES], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], SW_SHOW);
 				if (pas.unnassignedAttributes == 0)
+				{
 					for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
-					{
 						ShowWindow(hSubItems[i], SW_HIDE);
-						game.updateBackground();
-					}
-
+				}
+				else
+				{
+					if (pas.strength <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					if (pas.constitution <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					if (pas.dexterity <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					if (pas.intelligence <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					if (pas.wisdom <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					if (pas.charisma <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
+				}
 				// Text
 				// Update weapon damage
 				if (rPlayer.getRightHand())
@@ -2945,75 +3057,161 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Dexterity: " + to_string(pas.dexterity);
 				SendMessage(hSubItems[CHARACTER_STAT_DEXTERITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+
+				game.updateBackground();
 			}
 			// Intelligence
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS])
 			{
 				pas.unnassignedAttributes--;
 				pas.intelligence++;
+				average += pas.calculateAverage();
 
 				// Buttons appearance
 				ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_MINUS], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_RESET_CHANGES], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], SW_SHOW);
 				if (pas.unnassignedAttributes == 0)
+				{
 					for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
-					{
 						ShowWindow(hSubItems[i], SW_HIDE);
-						game.updateBackground();
-					}
-
+				}
+				else
+				{
+					if (pas.strength <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					if (pas.constitution <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					if (pas.dexterity <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					if (pas.intelligence <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					if (pas.wisdom <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					if (pas.charisma <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
+				}
 				// Text
 				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Inteliigence: " + to_string(pas.intelligence);
 				SendMessage(hSubItems[CHARACTER_STAT_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+
+				game.updateBackground();
 			}
 			// Wisdom
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_WISDOM_PLUS])
 			{
 				pas.unnassignedAttributes--;
 				pas.wisdom++;
+				average += pas.calculateAverage();
 
 				// Buttons appearance
 				ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_MINUS], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_RESET_CHANGES], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], SW_SHOW);
 				if (pas.unnassignedAttributes == 0)
+				{
 					for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
-					{
 						ShowWindow(hSubItems[i], SW_HIDE);
-						game.updateBackground();
-					}
-
+				}
+				else
+				{
+					if (pas.strength <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					if (pas.constitution <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					if (pas.dexterity <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					if (pas.intelligence <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					if (pas.wisdom <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					if (pas.charisma <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
+				}
 				// Text
 				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Wisdom: " + to_string(pas.wisdom);
 				SendMessage(hSubItems[CHARACTER_STAT_WISDOM], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+
+				game.updateBackground();
 			}
 			// Charisma
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_CHARISMA_PLUS])
 			{
 				pas.unnassignedAttributes--;
 				pas.charisma++;
+				average += pas.calculateAverage();
 
 				// Buttons appearance
 				ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_MINUS], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_RESET_CHANGES], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], SW_SHOW);
 				if (pas.unnassignedAttributes == 0)
+				{
 					for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
-					{
 						ShowWindow(hSubItems[i], SW_HIDE);
-						game.updateBackground();
-					}
-
+				}
+				else
+				{
+					if (pas.strength <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					if (pas.constitution <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					if (pas.dexterity <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					if (pas.intelligence <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					if (pas.wisdom <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					if (pas.charisma <= average)
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
+					else
+						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
+				}
 				// Text
 				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				buf = "Charisma: " + to_string(pas.charisma);
 				SendMessage(hSubItems[CHARACTER_STAT_CHARISMA], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+
+				game.updateBackground();
 			}
 
 			// Minus buttons
@@ -3023,12 +3221,39 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				pas.unnassignedAttributes++;
 				pas.strength--;
 				pas.updateMaxHP();
+				average += pas.calculateAverage();
 
 				// Buttons appearance
-				ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
+				if (pas.strength <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
 				if (pas.strength == rPlayer.getStrength())
 				{
 					ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_MINUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.constitution > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.dexterity > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.intelligence > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.wisdom > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.charisma > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 					game.updateBackground();
 				}
 
@@ -3081,12 +3306,39 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				pas.unnassignedAttributes++;
 				pas.constitution--;
 				pas.updateMaxHP();
+				average += pas.calculateAverage();
 
 				// Buttons appearance
-				ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
+				if (pas.constitution <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
 				if (pas.constitution == rPlayer.getConstitution())
 				{
 					ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_MINUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.strength > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.dexterity > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.intelligence > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.wisdom > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.charisma > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 					game.updateBackground();
 				}
 
@@ -3117,12 +3369,39 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				pas.unnassignedAttributes++;
 				pas.dexterity--;
+				average += pas.calculateAverage();
 
 				// Buttons appearance
-				ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
+				if (pas.dexterity <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
 				if (pas.dexterity == rPlayer.getDexterity())
 				{
 					ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_MINUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.strength > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.constitution > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.intelligence > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.wisdom > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.charisma > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 					game.updateBackground();
 				}
 
@@ -3172,12 +3451,39 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				pas.unnassignedAttributes++;
 				pas.intelligence--;
+				average += pas.calculateAverage();
 
 				// Buttons appearance
-				ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
+				if (pas.intelligence <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
 				if (pas.intelligence == rPlayer.getIntelligence())
 				{
 					ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_MINUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.strength > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.constitution > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.dexterity > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.wisdom > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.charisma > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 					game.updateBackground();
 				}
 
@@ -3206,12 +3512,39 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				pas.unnassignedAttributes++;
 				pas.wisdom--;
+				average += pas.calculateAverage();
 
 				// Buttons appearance
-				ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
+				if (pas.wisdom <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
 				if (pas.wisdom == rPlayer.getWisdom())
 				{
 					ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_MINUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.strength > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.constitution > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.dexterity > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.intelligence > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.charisma > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 					game.updateBackground();
 				}
 
@@ -3240,12 +3573,39 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				pas.unnassignedAttributes++;
 				pas.charisma--;
+				average += pas.calculateAverage();
 
 				// Buttons appearance
-				ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
+				if (pas.charisma <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
 				if (pas.charisma == rPlayer.getCharisma())
 				{
 					ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_MINUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.strength > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.constitution > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.dexterity > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.intelligence > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+					game.updateBackground();
+				}
+				if (pas.wisdom > average)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
 					game.updateBackground();
 				}
 
@@ -3281,10 +3641,33 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				pas.intelligence = rPlayer.getIntelligence();
 				pas.wisdom = rPlayer.getWisdom();
 				pas.charisma = rPlayer.getCharisma();
+				average += pas.calculateAverage();
 
 				// Button appearance
-				for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
-					ShowWindow(hSubItems[i], SW_SHOW);
+				if (pas.strength <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_SHOW);
+				else
+					ShowWindow(hSubItems[CHARACTER_BUT_STRENGTH_PLUS], SW_HIDE);
+				if (pas.constitution <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_SHOW);
+				else
+					ShowWindow(hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS], SW_HIDE);
+				if (pas.dexterity <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_SHOW);
+				else
+					ShowWindow(hSubItems[CHARACTER_BUT_DEXTERITY_PLUS], SW_HIDE);
+				if (pas.intelligence <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_SHOW);
+				else
+					ShowWindow(hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS], SW_HIDE);
+				if (pas.wisdom <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_SHOW);
+				else
+					ShowWindow(hSubItems[CHARACTER_BUT_WISDOM_PLUS], SW_HIDE);
+				if (pas.charisma <= average)
+					ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_SHOW);
+				else
+					ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 
 				for (i = CHARACTER_BUT_STRENGTH_MINUS; i <= CHARACTER_BUT_CHARISMA_MINUS; i++)
 					ShowWindow(hSubItems[i], SW_HIDE);
@@ -3376,10 +3759,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Button appearance
-				if (rPlayer.getUnnassignedAttributes() > 0)
-					for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_CHARISMA_PLUS; i++)
-						ShowWindow(hSubItems[i], SW_SHOW);
-
 				for (i = CHARACTER_BUT_STRENGTH_MINUS; i <= CHARACTER_BUT_CHARISMA_MINUS; i++)
 					ShowWindow(hSubItems[i], SW_HIDE);
 

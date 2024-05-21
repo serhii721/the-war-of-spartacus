@@ -11,4 +11,5 @@ public:
 	PlayerAttributeStorage& operator=(const PlayerAttributeStorage&);
 
 	void updateMaxHP();
+	double calculateAverage();
 };
