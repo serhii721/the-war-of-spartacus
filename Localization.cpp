@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Localization.h"
 
+extern string logStr;
+
 Localization::Localization() :
 	language(Language::ENGLISH),
 	messages(),
@@ -43,6 +45,13 @@ const string& Localization::operator[](int i) const { return messages[i]; }
 
 void Localization::setLanguage(Language llanguage)
 {
+	// Clear previous data
+	npcFirstNames.clear();
+	npcLastNames.clear();
+	gladiatorNicknames.clear();
+	weaponTypes.clear();
+	armourTypes.clear();
+	cityNames.clear();
 	// Determinating the language file
 	string fileName = "", langPrefix = "";
 	switch (llanguage)
@@ -184,9 +193,15 @@ void Localization::setLanguage(Language llanguage)
 
 	fin.close();
 	finEng.close();
+	logStr = l.getMessage(Localized::MESSAGES_LOG) + ":\r\n\r\n";
 }
 
 Language Localization::getLanguage() const { return language; }
+
+string Localization::getMessage(Localized::Message i) const
+{
+	return messages[i];
+}
 
 string Localization::getNPCName(const NamedNPC& NPC) const
 {

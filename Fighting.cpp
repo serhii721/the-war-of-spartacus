@@ -6,7 +6,7 @@ extern string buf;
 extern string logStr;
 
 extern HINSTANCE hInst;
-extern Localization localization;
+extern Localization l;
 extern Game game;
 
 Fighting::Fighting() :
@@ -21,31 +21,31 @@ Fighting::Fighting(HWND hWnd) :
 	hBackgroundBrush(NULL)
 {
 	for (int i = Item::STATIC_START; i <= Item::STATIC_FIGHT_RESULT; i++)
-		hItems[i] = CreateWindow("STATIC", "", // TODO: apply localization
+		hItems[i] = CreateWindow("STATIC", "",
 			WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW,
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::EDIT_LOG_MESSAGES] = CreateWindow("EDIT", "", // TODO: apply localization
+	hItems[Item::EDIT_LOG_MESSAGES] = CreateWindow("EDIT", "",
 		WS_CHILD | WS_VISIBLE | ES_READONLY | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_SPARE_OPPONENT] = CreateWindow("BUTTON", "Spare opponent", // TODO: apply localization
+	hItems[Item::BUT_SPARE_OPPONENT] = CreateWindow("BUTTON", l.getMessage(Localized::SPARE_OPPONENT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_EXECUTE_OPPONENT] = CreateWindow("BUTTON", "Execute opponent", // TODO: apply localization
+	hItems[Item::BUT_EXECUTE_OPPONENT] = CreateWindow("BUTTON", l.getMessage(Localized::EXECUTE_OPPONENT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_SURRENDER] = CreateWindow("BUTTON", "Surrender", // TODO: apply localization
+	hItems[Item::BUT_SURRENDER] = CreateWindow("BUTTON", l.getMessage(Localized::SURRENDER).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_CONTINUE] = CreateWindow("BUTTON", "Continue fight", // TODO: apply localization
+	hItems[Item::BUT_CONTINUE] = CreateWindow("BUTTON", l.getMessage(Localized::CONTINUE_FIGHT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_END_FIGHT] = CreateWindow("BUTTON", "End fight", // TODO: apply localization
+	hItems[Item::BUT_END_FIGHT] = CreateWindow("BUTTON", l.getMessage(Localized::END_FIGHT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
@@ -212,15 +212,15 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	UpdateWindow(hWnd);
 
 	// Fight name
-	sprintf_s(str, "%s vs %s", rPlayer.getName().c_str(), localization.getNPCName(*rOpponent).c_str());
-	SendMessage(hItems[Item::STATIC_START], WM_SETTEXT, 0, (LPARAM)str);
+	buf = rPlayer.getName() + " " + l.getMessage(Localized::VERSUS).c_str() + " " + l.getNPCName(*rOpponent);
+	SendMessage(hItems[Item::STATIC_START], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 	// Show Player and Opponent health
 	int playerHP = game.getPlayer().getHP(),
 		opponentHP = rOpponent->getHP();
 
-	string pHP = "Health: " + to_string(playerHP),
-		oHP = "Health: " + to_string(opponentHP);
+	string pHP = l.getMessage(Localized::HEALTH) + ": " + to_string(playerHP),
+		oHP = l.getMessage(Localized::HEALTH) + ": " + to_string(opponentHP);
 
 	SendMessage(hItems[Item::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)pHP.c_str());
 	SendMessage(hItems[Item::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)oHP.c_str());
@@ -231,35 +231,35 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 		damage += rPlayer.getRightHand()->getTotalDamage();
 	if (rPlayer.getLeftHand())
 		damage += rPlayer.getLeftHand()->getTotalDamage();
-	sprintf_s(str, "Damage: %d", damage);
-	SendMessage(hItems[Item::STATIC_PLAYER_DAMAGE], WM_SETTEXT, 0, (LPARAM)str);
+	buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(damage);
+	SendMessage(hItems[Item::STATIC_PLAYER_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 	damage = 0;
 
 	if (rOpponent->getRightHand())
 		damage += rOpponent->getRightHand()->getTotalDamage();
 	if (rOpponent->getLeftHand())
 		damage += rOpponent->getLeftHand()->getTotalDamage();
-	sprintf_s(str, "Damage: %d", damage);
-	SendMessage(hItems[Item::STATIC_OPPONENT_DAMAGE], WM_SETTEXT, 0, (LPARAM)str);
+	buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(damage);
+	SendMessage(hItems[Item::STATIC_OPPONENT_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 	damage = 0;
 
 	// Show Player and Opponent defense
 	if (rPlayer.getArmour())
 		defense = rPlayer.getArmour()->getTotalDefense();
-	sprintf_s(str, "Defense: %d", defense);
-	SendMessage(hItems[Item::STATIC_PLAYER_DEFENSE], WM_SETTEXT, 0, (LPARAM)str);
+	buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(defense);
+	SendMessage(hItems[Item::STATIC_PLAYER_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 	defense = 0;
 	if (rOpponent->getArmour())
 		defense = rOpponent->getArmour()->getTotalDefense();
-	sprintf_s(str, "Defense: %d", defense);
-	SendMessage(hItems[Item::STATIC_OPPONENT_DEFENSE], WM_SETTEXT, 0, (LPARAM)str);
+	buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(defense);
+	SendMessage(hItems[Item::STATIC_OPPONENT_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 	// # 1. Determining whether the opponent attacks first
 	if (rOpponent->getWisdom() > rPlayer.getWisdom())
 	{
-
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Opponent has higher wisdom, so he attacks first\r\n\r\n");
+		buf = l.getMessage(Localized::OPPONENT_ATTACKS_FIRST) + "\r\n\r\n";
+		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 		Sleep(SLEEP_TIME);
 
@@ -283,7 +283,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	}
 	else
 	{
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"You have higher wisdom, so you attack first\r\n\r\n");
+		buf = l.getMessage(Localized::PLAYER_ATTACKS_FIRST) + "\r\n\r\n";
+		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 		Sleep(SLEEP_TIME);
 	}
@@ -436,16 +437,16 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	rPlayer.setFame(rPlayer.getFame() + fame);
 
 	// Information for messages log
-	logStr += "You have fought with " + localization.getNPCName(*rOpponent);
+	logStr += l.getMessage(Localized::YOU_HAVE_FOUGHT_WITH) + " " + l.getNPCName(*rOpponent);
 	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
-		logStr += " and won\r\n\r\n";
+		logStr += ". " + l.getMessage(Localized::YOU_HAVE_WON) + "\r\n\r\n";
 	else
-		logStr += " and lost\r\n\r\n";
-	logStr += "You have gained " + to_string(fame) + " fame\r\n\r\n"
-		+ "You have gained " + to_string(experience) + " experience\r\n\r\n";
+		logStr += ". " + l.getMessage(Localized::YOU_HAVE_LOST) + "\r\n\r\n";
+	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(fame) + " " + l.getMessage(Localized::FAME_GENITIVE) + "\r\n\r\n"
+		+ l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(experience) + " " + l.getMessage(Localized::EXPERIENCE_GENITIVE) +"\r\n\r\n";
 	if (rPlayer.getLevel() > playerLevel)
-		logStr += "You have leveled up to level " + to_string(rPlayer.getLevel()) +
-		" (" + to_string(rPlayer.getUnnassignedAttributes()) + " unnassigned attributes)\r\n\r\n";
+		logStr += l.getMessage(Localized::LEVELED_UP) + " " + to_string(rPlayer.getLevel()) +
+		" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ")\r\n\r\n";
 
 	return status;
 }
@@ -464,22 +465,22 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 		switch (rresult)
 		{
 		case AttackResult::DEALT_DAMAGE:
-			result += "You have dealt " + to_string(ddamage) +  " damage";
+			result += l.getMessage(Localized::YOU_HAVE_DEALT) + " " + to_string(ddamage) +  " " + l.getMessage(Localized::DAMAGE_GENITIVE);
 			break;
 		case AttackResult::DEALT_CRIT_DAMAGE:
-			result += "You have dealt " + to_string(ddamage) + " critical damage";
+			result += l.getMessage(Localized::YOU_HAVE_DEALT) + " " + to_string(ddamage) + " " + l.getMessage(Localized::CRITICAL_DAMAGE_GENITIVE);
 			break;
 		case AttackResult::STUNNED:
-			result += "You have stunned the opponent and dealt " + to_string(ddamage) + " damage";
+			result += l.getMessage(Localized::YOU_HAVE_STUNNED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
 			break;
 		case AttackResult::WERE_DODGED:
-			result += "The opponent has dodged";
+			result += l.getMessage(Localized::YOU_MISSED);
 			break;
 		case AttackResult::WERE_BLOCKED:
-			result += "The opponent has blocked and taken " + to_string(ddamage) + " damage";
+			result += l.getMessage(Localized::OPPONENT_BLOCKED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
 			break;
 		case AttackResult::WERE_COUNTERATTAKED:
-			result += "The opponent has counterattacked and dealt " + to_string(ddamage) + " damage";
+			result += l.getMessage(Localized::OPPONENT_COUNTERATTACKED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
 			break;
 		default:
 			// TODO: handle error
@@ -491,22 +492,22 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 		switch (rresult)
 		{
 		case AttackResult::DEALT_DAMAGE:
-			result += "Opponent have dealt you " + to_string(ddamage) + " damage";
+			result += l.getMessage(Localized::OPPONENT_HAVE_DEALT) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
 			break;
 		case AttackResult::DEALT_CRIT_DAMAGE:
-			result += "Opponent have dealt you " + to_string(ddamage) + " critical damage";
+			result += l.getMessage(Localized::OPPONENT_HAVE_DEALT) + " " + to_string(ddamage) + " " + l.getMessage(Localized::CRITICAL_DAMAGE_GENITIVE);
 			break;
 		case AttackResult::STUNNED:
-			result += "Opponent have stunned you and dealt " + to_string(ddamage) + " damage";
+			result += l.getMessage(Localized::OPPONENT_HAVE_STUNNED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
 			break;
 		case AttackResult::WERE_DODGED:
-			result += "You have dodged";
+			result += l.getMessage(Localized::OPPONENT_MISSED);
 			break;
 		case AttackResult::WERE_BLOCKED:
-			result += "You have blocked and taken " + to_string(ddamage) + " damage";
+			result += l.getMessage(Localized::YOU_HAVE_BLOCKED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
 			break;
 		case AttackResult::WERE_COUNTERATTAKED:
-			result += "You have counterattacked and dealt " + to_string(ddamage) + " damage";
+			result += l.getMessage(Localized::YOU_HAVE_COUNTERATTACKED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
 			break;
 		default:
 			// TODO: handle error
@@ -521,8 +522,8 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 	int playerHP = game.getPlayer().getHP(),
 		opponentHP = rOpponent.getHP();
 
-	string pHP = "Health: " + to_string(playerHP),
-		   oHP = "Health: " + to_string(opponentHP);
+	string pHP = l.getMessage(Localized::HEALTH) + ": " + to_string(playerHP),
+		   oHP = l.getMessage(Localized::HEALTH) + ": " + to_string(opponentHP);
 
 	SendMessage(hItems[Item::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)pHP.c_str());
 	SendMessage(hItems[Item::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)oHP.c_str());
@@ -564,16 +565,16 @@ void Fighting::getFightResult(const FightStatus sstatus, const int playerHP, con
 	switch (sstatus)
 	{
 	case FightStatus::OPPONENT_LOST:
-		result = "You have won. The opponent is executed.";
+		result = l.getMessage(Localized::WON_OPPONENT_DEAD);
 		break;
 	case FightStatus::OPPONNENT_SURRENDERED:
-		result = "You have won. The opponent has surrendered with hit points of " + to_string(opponentHP) + ".";
+		result = l.getMessage(Localized::WON_OPPONENT_SURRENDERED) + ": " + to_string(opponentHP) + ".";
 		break;
 	case FightStatus::PLAYER_SURRENDERED:
-		result = "You have surrendered with hit points of " + to_string(playerHP) + ".";
+		result = l.getMessage(Localized::LOST_SURRENDER) + ": " + to_string(playerHP) + ".";
 		break;
 	case FightStatus::PLAYER_LOST:
-		result = "You have lost.";
+		result = l.getMessage(Localized::LOST_DEAD);
 		break;
 	case FightStatus::CONTINUE:
 		break;

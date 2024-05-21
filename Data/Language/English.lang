@@ -1,92 +1,100 @@
-Yes
-No
+Messages log
+Continue game
+Resume game
+Save game
+Load game
+Start new game
+Settings
+Specials
+Exit to main menu
+Exit
+Character creation
+Name
+Age
+Unnassigned attributes
 Strength
 Constitution
 Dexterity
 Intelligence
 Wisdom
 Charisma
-Start new game
-Load game
-Game sucessfully loaded!
-Error: Couldn't open save file or it's empty
-Change language
-Exit
-Thanks for playing!
-Choose your option:
-Wrong number. Try again!
-Start fight
-View Character
-View opponents
-Save
-Game sucessfuly saved!
-Error: Couldn't open file for save
-Gladiator:
-Weapon:
-Your gladiator:
-Your weapon:
-His weapon:
-Name:
-Age:
-Health:
-Fame:
-Fatigue:
-Strength:
-Constitution:
-Dexterity:
-Intelligence:
-Wisdom:
-Charisma:
-Your opponents:
-Create character!
-Name:
-Age:
-Unnasigned attribute points:
-You have 6 stats with a base value of 10
-Choose how many to add to each stat
-You have not enough points
-Strength:
-Constitution:
-Dexterity:
-Intelligence:
-Wisdom:
-Charisma:
-Your stats
-Is everything correct?
-Character sucessfuly created
-Error: Unknown weapon type!
-Error: Couldn't open file containing names
-Type:
-Damage:
-Length:
-Weigth:
-Speed:
-Durability:
-You are wounded! You can't fight! (HP < 30%)
-Choose opponent:
-This gladiator is wounded
-Fight started!
-You have won!
-You have lost!
-You attack!
-You hit enemy!
-Enemy attacks!
-Enemy hits you!
-You evade!
-Enemy evades!
-You are stunned!
-Enemy is stunned!
-You've made decisive strike!
-You've taken decisive strike!
-Your health:
-Enemy's health:
-From this fight you've gained:
-Money:
-Experience:
-Fame:
-Wait a day
-You wait a day
-You restore health by
-Current health:
-You're fully healed
-Nothing happens
+Back
+Next
+Video settings
+Audio settings
+Language
+Gladiator
+City of
+Arena
+Quest
+Market
+View character
+Rest
+Map
+Travel
+You have traveled to
+Enter
+Menu
+Fight
+Make a bet
+Train
+Level
+Experience
+Damage
+Block defense
+Block chance
+Empty hand
+Health
+Fame
+Strength scale
+Dexterity scale
+Armour defense
+Evasion chance
+Stun resistance chance
+No armour
+Reset
+Apply
+You have rested and restored
+You are fully healed
+You are fully healed and don't need to rest
+health
+hp
+lvl
+You have trained and gained
+You have to rest before you can train
+You have leveled up to level
+experience
+You have to choose opponent which you want to fight.
+Opponent is not selected 
+You have to rest before you can fight.
+You are heavily injured
+Spare opponent
+Execute opponent
+Surrender
+Continue
+End fight
+versus
+Opponent has higher wisdom so he attacks first
+You have higher wisdom so you attack first
+You have fought with
+You have won
+You have lost
+You have gained
+fame
+You have dealt
+You have stunned the opponent and dealt
+You have missed
+Oponent have blocked and taken
+You have missed. The opponent counterattacked and dealt 
+Opponent have dealt
+Opponent have stunned you and dealt
+Opponent missed
+You have blocked and taken
+Opponent missed. You have counterattacked and dealt
+damage
+critical damage
+You have won. Opponent is executed
+You have won. Opponent have surrendered with health points of
+You have surrendered with health points of
+You have lost
+MESSAGE_NUMBER

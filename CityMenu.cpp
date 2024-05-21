@@ -6,7 +6,7 @@ extern string buf;
 extern string logStr;
 
 extern HINSTANCE hInst;
-extern Localization localization;
+extern Localization l;
 extern Game game;
 
 CityMenu::CityMenu() :
@@ -28,8 +28,8 @@ CityMenu::CityMenu(HWND hWnd) :
 	pas()
 {
 	// Getting the city name
-	buf = "City of " + localization.getCityName(game.getWorldMap().getCurrentCity());
-	hItems[STAT_CITY_NAME] = CreateWindow("STATIC", buf.c_str(), // TODO: Apply localization
+	buf = l.getMessage(Localized::CITY) + " " + l.getCityName(game.getWorldMap().getCurrentCity());
+	hItems[STAT_CITY_NAME] = CreateWindow("STATIC", buf.c_str(),
 		WS_CHILD | WS_VISIBLE | SS_OWNERDRAW | SS_CENTER,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
@@ -40,32 +40,32 @@ CityMenu::CityMenu(HWND hWnd) :
 	);
 
 	char className[256] = "BUTTON";
-	hItems[BUT_ARENA] = CreateWindow(className, "Arena", // TODO: Apply localization
+	hItems[BUT_ARENA] = CreateWindow(className, l.getMessage(Localized::ARENA).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 
-	hItems[BUT_QUEST] = CreateWindow(className, "Quest", // TODO: Apply localization
+	hItems[BUT_QUEST] = CreateWindow(className, l.getMessage(Localized::QUEST).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_MARKET] = CreateWindow(className, "Trader", // TODO: Apply localization
+	hItems[BUT_MARKET] = CreateWindow(className, l.getMessage(Localized::MARKET).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_CHARACTER] = CreateWindow(className, "View character", // TODO: Apply localization
+	hItems[BUT_CHARACTER] = CreateWindow(className, l.getMessage(Localized::VIEW_CHARACTER).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_REST] = CreateWindow(className, "Rest", // TODO: Apply localization
+	hItems[BUT_REST] = CreateWindow(className, l.getMessage(Localized::REST).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_MAP] = CreateWindow(className, "Map", // TODO: Apply localization
+	hItems[BUT_MAP] = CreateWindow(className, l.getMessage(Localized::MAP).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
-	hItems[BUT_MENU] = CreateWindow(className, "Menu", // TODO: Apply localization
+	hItems[BUT_MENU] = CreateWindow(className, l.getMessage(Localized::MENU).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
@@ -261,7 +261,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	default:case Game::Background::CITY_MENU:
 		for (HWND hItem : hItems)
 			ShowWindow(hItem, SW_SHOW);
-		buf = "City of " + localization.getCityName(game.getWorldMap().getCurrentCity());
+		buf = l.getMessage(Localized::CITY) + " " + l.getCityName(game.getWorldMap().getCurrentCity());
 		SendMessage(hItems[STAT_CITY_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 		// Updating log
 		SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)(TCHAR*)logStr.c_str());
@@ -286,83 +286,81 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				// Level
-				buf = "Level: " + to_string(rPlayer.getLevel());
+				buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rPlayer.getLevel());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEVEL], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				// Right hand
 				if (rPlayer.getRightHand())
 				{
-					buf = localization.getWeaponTypeName(*rPlayer.getRightHand());
+					buf = l.getWeaponTypeName(*rPlayer.getRightHand());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 
 				// Left hand
 				if (rPlayer.getLeftHand())
 				{
-					buf = localization.getWeaponTypeName(*rPlayer.getLeftHand());
+					buf = l.getWeaponTypeName(*rPlayer.getLeftHand());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 					if (rPlayer.getLeftHand()->getType() != Weapon::Type::SHIELD)
 					{
-						buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 					}
 					else
 					{
-						buf = "Block defense: " + to_string(rPlayer.getLeftHand()->getShieldDefPercentAddition());
+						buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(rPlayer.getLeftHand()->getShieldDefPercentAddition()) + "%";
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-						buf = "Block chance: " + to_string(rPlayer.getLeftHand()->getShieldProbAddition());
+						buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(rPlayer.getLeftHand()->getShieldProbAddition()) + "%";
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 					}
 				}
 				else
 				{
-					buf = "Empty hand";
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::EMPTY_HAND).c_str());
 
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"");
 				}
 
 				// Health
-				buf = "Health: " + to_string(rPlayer.getHP());
+				buf = l.getMessage(Localized::HEALTH) + ": " + to_string(rPlayer.getHP());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				// Armour
 				if (rPlayer.getArmour())
 				{
-					buf = localization.getArmourTypeName(*rPlayer.getArmour());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
 
-					buf = "Armour defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 
 				// Stats
-				buf = "Strength: " + to_string(rPlayer.getStrength());
+				buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(rPlayer.getStrength());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Constitution: " + to_string(rPlayer.getConstitution());
+				buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(rPlayer.getConstitution());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Dexterity: " + to_string(rPlayer.getDexterity());
+				buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(rPlayer.getDexterity());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_DEXTERITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Inteliigence: " + to_string(rPlayer.getIntelligence());
+				buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(rPlayer.getIntelligence());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Wisdom: " + to_string(rPlayer.getWisdom());
+				buf = l.getMessage(Localized::WISDOM) + ": " + to_string(rPlayer.getWisdom());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_WISDOM], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Charisma: " + to_string(rPlayer.getCharisma());
+				buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(rPlayer.getCharisma());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CHARISMA], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Age: " + to_string(rPlayer.getAge());
+				buf = l.getMessage(Localized::AGE) + ": " + to_string(rPlayer.getAge());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_AGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Fame: " + to_string(rPlayer.getFame());
+				buf = l.getMessage(Localized::FAME) + ": " + to_string(rPlayer.getFame());
 				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_FAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 			}
 
@@ -399,45 +397,45 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		SendMessage(hSubItems[CHARACTER_STAT_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Level
-		buf = "Level: " + to_string(rPlayer.getLevel());
+		buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rPlayer.getLevel());
 		SendMessage(hSubItems[CHARACTER_STAT_LEVEL], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Experience
-		buf = "Experience: " + to_string(rPlayer.getExperience()) + " / 200";
+		buf = l.getMessage(Localized::EXPERIENCE) + ": " + to_string(rPlayer.getExperience()) + " / 200"; // TODO: Remake levelling system
 		SendMessage(hSubItems[CHARACTER_STAT_EXPERIENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Age
-		buf = "Age: " + to_string(rPlayer.getAge());
+		buf = l.getMessage(Localized::AGE) + ": " + to_string(rPlayer.getAge());
 		SendMessage(hSubItems[CHARACTER_STAT_AGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Fame
-		buf = "Fame: " + to_string(rPlayer.getFame());
+		buf = l.getMessage(Localized::FAME) + ": " + to_string(rPlayer.getFame());
 		SendMessage(hSubItems[CHARACTER_STAT_FAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Health
-		buf = "Health: (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
+		buf = l.getMessage(Localized::HEALTH) + ":(" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
 		SendMessage(hSubItems[CHARACTER_STAT_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Stats
-		buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+		buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 		SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-		buf = "Strength: " + to_string(pas.strength);
+		buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(pas.strength);
 		SendMessage(hSubItems[CHARACTER_STAT_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-		buf = "Constitution: " + to_string(pas.constitution);
+		buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(pas.constitution);
 		SendMessage(hSubItems[CHARACTER_STAT_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-		buf = "Dexterity: " + to_string(pas.dexterity);
+		buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(pas.dexterity);
 		SendMessage(hSubItems[CHARACTER_STAT_DEXTERITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-		buf = "Inteliigence: " + to_string(pas.intelligence);
+		buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(pas.intelligence);
 		SendMessage(hSubItems[CHARACTER_STAT_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-		buf = "Wisdom: " + to_string(pas.wisdom);
+		buf = l.getMessage(Localized::WISDOM) + ": " + to_string(pas.wisdom);
 		SendMessage(hSubItems[CHARACTER_STAT_WISDOM], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-		buf = "Charisma: " + to_string(pas.charisma);
+		buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(pas.charisma);
 		SendMessage(hSubItems[CHARACTER_STAT_CHARISMA], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Right hand
@@ -447,21 +445,21 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_STRENGTH_SCALE], SW_SHOW);
 			ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE], SW_SHOW);
 			Weapon& rRightHand = *rPlayer.getRightHand();
-			buf = localization.getWeaponTypeName(rRightHand);
+			buf = l.getWeaponTypeName(rRightHand);
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Damage: " + to_string(rRightHand.getTotalDamage());
+			buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand.getTotalDamage());
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Strength scale: " + to_string(rRightHand.getStrengthAdditionPercentage()) + "%";
+			buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rRightHand.getStrengthAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Dexterity scale: " + to_string(rRightHand.getDexterityAdditionPercentage()) + "%";
+			buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rRightHand.getDexterityAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 		}
 		else
 		{
-			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Right hand");
+			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::EMPTY_HAND).c_str());
 			ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], SW_HIDE);
 			ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_STRENGTH_SCALE], SW_HIDE);
 			ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE], SW_HIDE);
@@ -471,7 +469,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		if (rPlayer.getLeftHand())
 		{
 			Weapon& rLeftHand = *rPlayer.getLeftHand();
-			buf = localization.getWeaponTypeName(rLeftHand);
+			buf = l.getWeaponTypeName(rLeftHand);
 			SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 			if (rLeftHand.getType() != Weapon::Type::SHIELD)
@@ -480,13 +478,13 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_STRENGTH_SCALE], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DEXTERITY_SCALE], SW_SHOW);
 
-				buf = "Damage: " + to_string(rLeftHand.getTotalDamage());
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rLeftHand.getTotalDamage());
 				SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Strength scale: " + to_string(rLeftHand.getStrengthAdditionPercentage()) + "%";
+				buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rLeftHand.getStrengthAdditionPercentage()) + "%";
 				SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Dexterity scale: " + to_string(rLeftHand.getDexterityAdditionPercentage()) + "%";
+				buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rLeftHand.getDexterityAdditionPercentage()) + "%";
 				SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				ShowWindow(hSubItems[CHARACTER_STAT_SHIELD_DEFENSE], SW_HIDE);
@@ -497,9 +495,9 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				ShowWindow(hSubItems[CHARACTER_STAT_SHIELD_DEFENSE], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_STAT_SHIELD_BLOCK_CHANCE], SW_SHOW);
 
-				buf = "Block defense: " + to_string(rLeftHand.getShieldDefPercentAddition()) + "%";
+				buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(rLeftHand.getShieldDefPercentAddition()) + "%";
 				SendMessage(hSubItems[CHARACTER_STAT_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Block chance: " + to_string(rLeftHand.getShieldProbAddition()) + "%";
+				buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(rLeftHand.getShieldProbAddition()) + "%";
 				SendMessage(hSubItems[CHARACTER_STAT_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], SW_HIDE);
@@ -509,7 +507,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		}
 		else
 		{
-			SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"Left hand");
+			SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::EMPTY_HAND).c_str());
 			ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], SW_HIDE);
 			ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_STRENGTH_SCALE], SW_HIDE);
 			ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DEXTERITY_SCALE], SW_HIDE);
@@ -521,27 +519,27 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		if (rPlayer.getArmour())
 		{
 			Armour& rArmour = *rPlayer.getArmour();
-			buf = localization.getArmourTypeName(rArmour);
+			buf = l.getArmourTypeName(rArmour);
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Defense: " + to_string(rArmour.getTotalDefense());
+			buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour.getTotalDefense());
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Strength scale: " + to_string(rArmour.getStrengthAdditionPercentage()) + "%";
+			buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rArmour.getStrengthAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			buf = "Dexterity scale: " + to_string(rArmour.getDexterityAdditionPercentage()) + "%";
+			buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rArmour.getDexterityAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 			if (rPlayer.getArmour()->getType() == Armour::Type::LIGHT)
-				buf = "Evasion chance: " + to_string(rArmour.getEvasionProbAddition()) + "%";
+				buf = l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(rArmour.getEvasionProbAddition()) + "%";
 			else
-				buf = "Stun resistance chance: " + to_string(rArmour.getStunProbSubtraction()) + "%";
+				buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(rArmour.getStunProbSubtraction()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 		}
 		else
 		{
-			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"No armour");
+			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::NO_ARMOUR).c_str());
 			ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], SW_HIDE);
 			ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_STRENGTH_SCALE], SW_HIDE);
 			ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_DEXTERITY_SCALE], SW_HIDE);
@@ -555,14 +553,11 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		for (i = CHARACTER_BUT_STRENGTH_MINUS; i <= CHARACTER_BUT_CHARISMA_MINUS; i++)
 			SendMessage(hSubItems[i], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"-");
 
-		buf = "Reset changes";
-		SendMessage(hSubItems[CHARACTER_BUT_RESET_CHANGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+		SendMessage(hSubItems[CHARACTER_BUT_RESET_CHANGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::RESET_CHANGES).c_str());
 
-		buf = "Apply changes";
-		SendMessage(hSubItems[CHARACTER_BUT_APPLY_CHANGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+		SendMessage(hSubItems[CHARACTER_BUT_APPLY_CHANGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::APPLY_CHANGES).c_str());
 
-		buf = "Back";
-		SendMessage(hSubItems[CHARACTER_BUT_BACK], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+		SendMessage(hSubItems[CHARACTER_BUT_BACK], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::BACK).c_str());
 
 		// Buttons display
 		// Increasing attributes
@@ -813,7 +808,7 @@ void CityMenu::resizeMenu(int cx, int cy)
 
 	case Game::Background::CITY_MENU_CHARACTER:
 	{
-		const int BIG_STAT_WIDTH = 200, BIG_STAT_HEIGHT = 30,
+		const int BIG_STAT_WIDTH = 250, BIG_STAT_HEIGHT = 30,
 				SMALL_STAT_WIDTH = 170, SMALL_STAT_HEIGHT = 20,
 				BIG_DISTANCE = 9, SMALL_DISTANCE = 4,
 				BUT_SIZE = 20;
@@ -941,19 +936,19 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems.resize(ARENA_ITEM_NUMBER);
 
 				// TODO: Apply localization
-				hSubItems[ARENA_BUT_FIGHT] = CreateWindow("BUTTON", "Fight",
+				hSubItems[ARENA_BUT_FIGHT] = CreateWindow("BUTTON", l.getMessage(Localized::FIGHT).c_str(),
 					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0
 				);
-				hSubItems[ARENA_BUT_BET] = CreateWindow("BUTTON", "Bet",
+				hSubItems[ARENA_BUT_BET] = CreateWindow("BUTTON", l.getMessage(Localized::BET).c_str(),
 					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0
 				);
-				hSubItems[ARENA_BUT_TRAIN] = CreateWindow("BUTTON", "Train",
+				hSubItems[ARENA_BUT_TRAIN] = CreateWindow("BUTTON", l.getMessage(Localized::TRAIN).c_str(),
 					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0
 				);
-				hSubItems[ARENA_BUT_BACK] = CreateWindow("BUTTON", "Back",
+				hSubItems[ARENA_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(),
 					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0
 				);
@@ -1019,18 +1014,18 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					{
 						regen = rPlayer.getFullHP() - rPlayer.getHP();
 						rPlayer.setHP(rPlayer.getFullHP());
-						logStr += "You have rested and restored " + to_string(regen) + " health points\r\n"
-							+ "You are fully healed (" + to_string(rPlayer.getFullHP()) + " hp)\r\n\r\n";
+						logStr += l.getMessage(Localized::REST_REGEN) + " " + to_string(regen) + " " + l.getMessage(Localized::HEALTH_POINTS_GENITIVE) + "\r\n"
+							+ l.getMessage(Localized::REST_REGEN_FULL) + " (" + to_string(rPlayer.getFullHP()) + l.getMessage(Localized::HP) + ")\r\n\r\n";
 					}
 					else
 					{
 						rPlayer.setHP(rPlayer.getHP() + regen);
-						logStr += "You have rested and restored " + to_string(regen) + " health points (" + to_string(rPlayer.getHP()) + " hp)\r\n\r\n";
+						logStr += l.getMessage(Localized::REST_REGEN) + " " + to_string(regen) + " " + l.getMessage(Localized::HEALTH_POINTS_GENITIVE) + " (" + to_string(rPlayer.getHP()) + l.getMessage(Localized::HP) + ")\r\n\r\n";
 					}
 					isExhausted = false;
 				}
 				else
-					logStr += "You are fully healed and don't need to rest\r\n\r\n";
+					logStr += l.getMessage(Localized::REST_FULL) + "\r\n\r\n";
 				SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)(TCHAR*)logStr.c_str());
 				SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
 			}
@@ -1084,47 +1079,63 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						hSubMenuItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 					Player& rPlayer = game.getPlayer();
+
+					if (rPlayer.getLeftHand())
+					{
+						if (rPlayer.getLeftHand()->getType() != Weapon::Type::SHIELD)
+						{
+							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_SHOW);
+							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], SW_HIDE);
+							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], SW_HIDE);
+						}
+						else
+						{
+							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_HIDE);
+							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], SW_SHOW);
+							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], SW_SHOW);
+						}
+					}
+
 					// Name
 					buf = rPlayer.getName();
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 					// Level
-					buf = "Level: " + to_string(rPlayer.getLevel());
+					buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rPlayer.getLevel());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEVEL], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 					// Right hand
 					if (rPlayer.getRightHand())
 					{
-						buf = localization.getWeaponTypeName(*rPlayer.getRightHand());
+						buf = l.getWeaponTypeName(*rPlayer.getRightHand());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-						buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 					}
 
 					// Left hand
 					if (rPlayer.getLeftHand())
 					{
-						buf = localization.getWeaponTypeName(*rPlayer.getLeftHand());
+						buf = l.getWeaponTypeName(*rPlayer.getLeftHand());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 						if (rPlayer.getLeftHand()->getType() != Weapon::Type::SHIELD)
 						{
-							buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+							buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 							SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 						}
 						else
 						{
-							buf = "Block defense: " + to_string(rPlayer.getLeftHand()->getShieldDefPercentAddition());
+							buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(rPlayer.getLeftHand()->getShieldDefPercentAddition());
 							SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-							buf = "Block chance: " + to_string(rPlayer.getLeftHand()->getShieldProbAddition());
+							buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(rPlayer.getLeftHand()->getShieldProbAddition());
 							SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 						}
 					}
 					else
 					{
-						buf = "Empty hand";
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::EMPTY_HAND).c_str());
 
 						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_HIDE);
 						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], SW_HIDE);
@@ -1132,42 +1143,42 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					}
 
 					// Health
-					buf = "Health: " + to_string(rPlayer.getHP());
+					buf = l.getMessage(Localized::HEALTH) + ": " + to_string(rPlayer.getHP());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 					// Armour
 					if (rPlayer.getArmour())
 					{
-						buf = localization.getArmourTypeName(*rPlayer.getArmour());
+						buf = l.getArmourTypeName(*rPlayer.getArmour());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-						buf = "Armour defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+						buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 					}
 
 					// Stats
-					buf = "Strength: " + to_string(rPlayer.getStrength());
+					buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(rPlayer.getStrength());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-					buf = "Constitution: " + to_string(rPlayer.getConstitution());
+					buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(rPlayer.getConstitution());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-					buf = "Dexterity: " + to_string(rPlayer.getDexterity());
+					buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(rPlayer.getDexterity());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_DEXTERITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-					buf = "Inteliigence: " + to_string(rPlayer.getIntelligence());
+					buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(rPlayer.getIntelligence());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-					buf = "Wisdom: " + to_string(rPlayer.getWisdom());
+					buf = l.getMessage(Localized::WISDOM) + ": " + to_string(rPlayer.getWisdom());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_WISDOM], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-					buf = "Charisma: " + to_string(rPlayer.getCharisma());
+					buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(rPlayer.getCharisma());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CHARISMA], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-					buf = "Age: " + to_string(rPlayer.getAge());
+					buf = l.getMessage(Localized::AGE) + ": " + to_string(rPlayer.getAge());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_AGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-					buf = "Fame: " + to_string(rPlayer.getFame());
+					buf = l.getMessage(Localized::FAME) + ": " + to_string(rPlayer.getFame());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_FAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 
@@ -1176,15 +1187,15 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (i = ARENA_FIGHT_BUT_OPPONENT1; i <= ARENA_FIGHT_BUT_OPPONENT15; i++)
 				{
 					const NPC& rOpponent = *rArena.getGladiator(i);
-					buf = localization.getNPCName(rOpponent) + " (lvl: " + to_string(rOpponent.getLevel()) + ")";
+					buf = l.getNPCName(rOpponent) + " (" + l.getMessage(Localized::LVL) + ": " + to_string(rOpponent.getLevel()) + ")";
 					hSubMenuItems[i] = CreateWindow("BUTTON",
 						buf.c_str(),
 						WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTORADIOBUTTON | BS_OWNERDRAW | BS_LEFTTEXT,
 						0, 0, 0, 0, hWnd, 0, hInst, 0);
 				}
 
-				hSubMenuItems[ARENA_FIGHT_BUT_BACK] = CreateWindow("BUTTON", "Back", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = CreateWindow("BUTTON", "Fight", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubMenuItems[ARENA_FIGHT_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubMenuItems[ARENA_FIGHT_BUT_FIGHT] = CreateWindow("BUTTON", l.getMessage(Localized::FIGHT).c_str(), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				for (i = ARENA_FIGHT_STATIC_NAME; i <= ARENA_FIGHT_STATIC_FAME; i++)
 					ShowWindow(hSubMenuItems[i], SW_HIDE);
@@ -1207,16 +1218,16 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					int level = rPlayer.getLevel();
 
 					rPlayer.gainExperience(experience);
-					logStr += "You have trained and gained " + to_string(experience) + " experience\r\n\r\n";
+					logStr += l.getMessage(Localized::TRAIN_GAIN) + " " + to_string(experience) + " " + l.getMessage(Localized::EXPERIENCE_GENITIVE) + "\r\n\r\n";
 					if (level < rPlayer.getLevel())
-						logStr += "You have leved up to level " +
+						logStr += l.getMessage(Localized::LEVELED_UP) + " " +
 						to_string(rPlayer.getLevel()) +
-						" (" + to_string(rPlayer.getUnnassignedAttributes()) + " unnassigned attributes)\r\n\r\n";
+						" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ")\r\n\r\n";
 
 					isExhausted = true;
 				}
 				else
-					logStr += "You have to rest before you can train\r\n\r\n";
+					logStr += l.getMessage(Localized::TRAIN_NEED_REST) + "\r\n\r\n";
 				SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)(TCHAR*)logStr.c_str());
 				SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
 			}
@@ -1318,9 +1329,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					break;
 				}
 				else if (selectedOpponent == -1)
-					MessageBox(hWnd, "You have to choose opponent which you want to fight", "Opponent is not selected", MB_OK | MB_ICONINFORMATION);
+					MessageBox(hWnd, l.getMessage(Localized::HAVE_TO_CHOOSE_OPPONENT).c_str(), l.getMessage(Localized::OPPONENT_NOT_SELECTED).c_str(), MB_OK | MB_ICONINFORMATION);
 				else
-					MessageBox(hWnd, "You have to rest before you can fight", "You are heavily injured", MB_OK | MB_ICONINFORMATION);
+					MessageBox(hWnd, l.getMessage(Localized::FIGHT_NEED_REST).c_str(), l.getMessage(Localized::FIGHT_INJURED).c_str(), MB_OK | MB_ICONINFORMATION);
 			}
 
 			// Return
@@ -1407,28 +1418,28 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update armour defense
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update stats
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Strength: " + to_string(pas.strength);
+				buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(pas.strength);
 				SendMessage(hSubItems[CHARACTER_STAT_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Health: (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
+				buf = l.getMessage(Localized::HEALTH) + " : (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
 				SendMessage(hSubItems[CHARACTER_STAT_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				game.updateBackground();
@@ -1478,11 +1489,11 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 				}
 				// Text
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Constitution: " + to_string(pas.constitution);
+				buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(pas.constitution);
 				SendMessage(hSubItems[CHARACTER_STAT_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Health: (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
+				buf = l.getMessage(Localized::HEALTH) + ": (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
 				SendMessage(hSubItems[CHARACTER_STAT_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				game.updateBackground();
@@ -1535,26 +1546,26 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update armour defense
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update stats
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Dexterity: " + to_string(pas.dexterity);
+				buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(pas.dexterity);
 				SendMessage(hSubItems[CHARACTER_STAT_DEXTERITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				game.updateBackground();
@@ -1603,9 +1614,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 				}
 				// Text
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Inteliigence: " + to_string(pas.intelligence);
+				buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(pas.intelligence);
 				SendMessage(hSubItems[CHARACTER_STAT_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				game.updateBackground();
@@ -1654,9 +1665,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 				}
 				// Text
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Wisdom: " + to_string(pas.wisdom);
+				buf = l.getMessage(Localized::WISDOM) + ": " + to_string(pas.wisdom);
 				SendMessage(hSubItems[CHARACTER_STAT_WISDOM], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				game.updateBackground();
@@ -1705,9 +1716,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_PLUS], SW_HIDE);
 				}
 				// Text
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Charisma: " + to_string(pas.charisma);
+				buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(pas.charisma);
 				SendMessage(hSubItems[CHARACTER_STAT_CHARISMA], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				game.updateBackground();
@@ -1775,28 +1786,28 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update armour defense
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update stats
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Strength: " + to_string(pas.strength);
+				buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(pas.strength);
 				SendMessage(hSubItems[CHARACTER_STAT_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Health: (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
+				buf = l.getMessage(Localized::HEALTH) + ": (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
 				SendMessage(hSubItems[CHARACTER_STAT_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 			}
 			// Constitution
@@ -1856,11 +1867,11 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Text
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Constitution: " + to_string(pas.constitution);
+				buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(pas.constitution);
 				SendMessage(hSubItems[CHARACTER_STAT_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Health: (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
+				buf = l.getMessage(Localized::HEALTH) + ": (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
 				SendMessage(hSubItems[CHARACTER_STAT_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 			}
 			// Dexterity
@@ -1923,26 +1934,26 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update armour defense
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update stats
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Dexterity: " + to_string(pas.dexterity);
+				buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(pas.dexterity);
 				SendMessage(hSubItems[CHARACTER_STAT_DEXTERITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 			}
 			// Intelligence
@@ -2001,9 +2012,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Text
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Inteliigence: " + to_string(pas.intelligence);
+				buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(pas.intelligence);
 				SendMessage(hSubItems[CHARACTER_STAT_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 			}
 			// Wisdom
@@ -2062,9 +2073,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Text
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Wisdom: " + to_string(pas.wisdom);
+				buf = l.getMessage(Localized::WISDOM) + ": " + to_string(pas.wisdom);
 				SendMessage(hSubItems[CHARACTER_STAT_WISDOM], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 			}
 			// Charisma
@@ -2123,9 +2134,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Text
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				buf = "Charisma: " + to_string(pas.charisma);
+				buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(pas.charisma);
 				SendMessage(hSubItems[CHARACTER_STAT_CHARISMA], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 			}
 
@@ -2179,45 +2190,45 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update armour defense
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 				}
 				// Update stats
-				buf = "Unnassigned attributes: " + to_string(pas.unnassignedAttributes);
+				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Strength: " + to_string(pas.strength);
+				buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(pas.strength);
 				SendMessage(hSubItems[CHARACTER_STAT_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Constitution: " + to_string(pas.constitution);
+				buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(pas.constitution);
 				SendMessage(hSubItems[CHARACTER_STAT_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Dexterity: " + to_string(pas.dexterity);
+				buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(pas.dexterity);
 				SendMessage(hSubItems[CHARACTER_STAT_DEXTERITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Inteliigence: " + to_string(pas.intelligence);
+				buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(pas.intelligence);
 				SendMessage(hSubItems[CHARACTER_STAT_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Wisdom: " + to_string(pas.wisdom);
+				buf = l.getMessage(Localized::WISDOM) + ": " + to_string(pas.wisdom);
 				SendMessage(hSubItems[CHARACTER_STAT_WISDOM], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Charisma: " + to_string(pas.charisma);
+				buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(pas.charisma);
 				SendMessage(hSubItems[CHARACTER_STAT_CHARISMA], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-				buf = "Health: (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
+				buf = l.getMessage(Localized::HEALTH) + ": (" + to_string(pas.hp) + " / " + to_string(pas.fullHP) + " )";
 				SendMessage(hSubItems[CHARACTER_STAT_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 				game.updateBackground();
@@ -2237,26 +2248,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				rPlayer.setHP(pas.hp);
 				rPlayer.setFullHP(pas.fullHP);
 
-				// Update weapon damage
-				if (rPlayer.getRightHand())
-				{
-					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getRightHand()->getTotalDamage());
-					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				}
-				if (rPlayer.getLeftHand())
-				{
-					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = "Damage: " + to_string(rPlayer.getLeftHand()->getTotalDamage());
-					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				}
-				// Update armour defense
-				if (rPlayer.getArmour())
-				{
-					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = "Defense: " + to_string(rPlayer.getArmour()->getTotalDefense());
-					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-				}
 				// Button appearance
 				for (i = CHARACTER_BUT_STRENGTH_MINUS; i <= CHARACTER_BUT_CHARISMA_MINUS; i++)
 					ShowWindow(hSubItems[i], SW_HIDE);
@@ -2396,32 +2387,32 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 		ShowWindow(hSubMenuItems[i], SW_SHOW);
 
 	// Name
-	buf = localization.getNPCName(rOpponent);
+	buf = l.getNPCName(rOpponent);
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 	// Level
-	buf = "Level: " + to_string(rOpponent.getLevel());
+	buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rOpponent.getLevel());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEVEL], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 	// Right hand
 	if (rOpponent.getRightHand())
 	{
-		buf = localization.getWeaponTypeName(*rOpponent.getRightHand());
+		buf = l.getWeaponTypeName(*rOpponent.getRightHand());
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-		buf = "Damage: " + to_string(rOpponent.getRightHand()->getTotalDamage());
+		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rOpponent.getRightHand()->getTotalDamage());
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 	}
 
 	// Left hand
 	if (rOpponent.getLeftHand())
 	{
-		buf = localization.getWeaponTypeName(*rOpponent.getLeftHand());
+		buf = l.getWeaponTypeName(*rOpponent.getLeftHand());
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		if (rOpponent.getLeftHand()->getType() != Weapon::Type::SHIELD)
 		{
-			buf = "Damage: " + to_string(rOpponent.getLeftHand()->getTotalDamage());
+			buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rOpponent.getLeftHand()->getTotalDamage());
 			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 			ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_SHIELD_DEFENSE], SW_HIDE);
@@ -2430,16 +2421,15 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 		}
 		else
 		{
-			buf = "Block defense: " + to_string(rOpponent.getLeftHand()->getShieldDefPercentAddition());
+			buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(rOpponent.getLeftHand()->getShieldDefPercentAddition());
 			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
-			buf = "Block chance: " + to_string(rOpponent.getLeftHand()->getShieldProbAddition());
+			buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(rOpponent.getLeftHand()->getShieldProbAddition());
 			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 		}
 	}
 	else
 	{
-		buf = "Empty hand";
-		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::EMPTY_HAND).c_str());
 
 		ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], SW_HIDE);
 		ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_SHIELD_DEFENSE], SW_HIDE);
@@ -2448,41 +2438,41 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	}
 
 	// Health
-	buf = "Health: " + to_string(rOpponent.getHP());
+	buf = l.getMessage(Localized::HEALTH) + ": " + to_string(rOpponent.getHP());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_HEALTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 	// Armour
 	if (rOpponent.getArmour())
 	{
-		buf = localization.getArmourTypeName(*rOpponent.getArmour());
+		buf = l.getArmourTypeName(*rOpponent.getArmour());
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-		buf = "Armour defense: " + to_string(rOpponent.getArmour()->getTotalDefense());
+		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rOpponent.getArmour()->getTotalDefense());
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 	}
 
 	// Stats
-	buf = "Strength: " + to_string(rOpponent.getStrength());
+	buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(rOpponent.getStrength());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_STRENGTH], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-	buf = "Constitution: " + to_string(rOpponent.getConstitution());
+	buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(rOpponent.getConstitution());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-	buf = "Dexterity: " + to_string(rOpponent.getDexterity());
+	buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(rOpponent.getDexterity());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_DEXTERITY], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-	buf = "Inteliigence: " + to_string(rOpponent.getIntelligence());
+	buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(rOpponent.getIntelligence());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-	buf = "Wisdom: " + to_string(rOpponent.getWisdom());
+	buf = l.getMessage(Localized::WISDOM) + ": " + to_string(rOpponent.getWisdom());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_WISDOM], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-	buf = "Charisma: " + to_string(rOpponent.getCharisma());
+	buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(rOpponent.getCharisma());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_CHARISMA], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-	buf = "Age: " + to_string(rOpponent.getAge());
+	buf = l.getMessage(Localized::AGE) + ": " + to_string(rOpponent.getAge());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_AGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-	buf = "Fame: " + to_string(rOpponent.getFame());
+	buf = l.getMessage(Localized::FAME) + ": " + to_string(rOpponent.getFame());
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_FAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 }

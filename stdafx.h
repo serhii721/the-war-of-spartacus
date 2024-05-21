@@ -33,6 +33,7 @@ using namespace std;
 
 #include "resource.h"
 
+#include "LocalizationEnums.h"
 #include "NewMenuStorage.h"
 #include "PlayerAttributeStorage.h"
 #include "IMenu.h"
@@ -58,11 +59,10 @@ using namespace std;
 #include "WorldMap.h"
 #include "Game.h"
 
-#include "LocalizationEnums.h"
 #include "Localization.h"
 
 const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-extern Localization localization;
+extern Localization l;
 extern Game game;
 
 void updateWindow(HWND);
