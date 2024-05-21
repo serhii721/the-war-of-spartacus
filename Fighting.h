@@ -5,8 +5,6 @@ class Fighting
 private:
 	vector<HWND> hItems;
 
-	shared_ptr<NPC> pOpponentCopy;
-
 	HBITMAP hBackgroundImage;
 	HBRUSH hBackgroundBrush;
 public:
@@ -40,8 +38,8 @@ public:
 	Fighting& operator=(const Fighting&);
 	~Fighting();
 
-	FightStatus fight(HWND, Player&, shared_ptr<NPC>);
-	void getAttackResult(const Attacker, const AttackResult, const int damage_);
+	FightStatus fight(HWND, Player&, unique_ptr<NPC>&);
+	void getAttackResult(const NPC& opponent_, const Attacker, const AttackResult, const int damage_);
 	FightStatus checkFightStatus(const Player&, const NPC&);
 	void getFightResult(const FightStatus, const int playerHP_, const int opponentHP_);
 
