@@ -12,6 +12,9 @@ public:
 	Arena& operator=(const Arena&);
 	~Arena();
 
-	// TODO: void update();
+	vector<unique_ptr<NPC>>& getGladiators();
 	unique_ptr<NPC>& getGladiator(int);
+
+	void changeGladiator(int index_, int level_);
+	// TODO: void update();
 };

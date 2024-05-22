@@ -52,6 +52,7 @@ public:
 	~WorldMap();
 
 	City& getCurrentCity();
+	City& getCity(int);
 
 	void drawWindow(HWND, HDC, int, int);
 	void resizeWindow(int, int);

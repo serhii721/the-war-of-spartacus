@@ -190,6 +190,11 @@ City& WorldMap::getCurrentCity()
 	return cities[currentCity];
 }
 
+City& WorldMap::getCity(int i)
+{
+	return cities[i];
+}
+
 void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 {
 	// 1. Background

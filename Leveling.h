@@ -21,4 +21,8 @@ public:
 	void setUnnassignedAttributes(int);
 
 	void gainExperience(int);
+	int calculateExperienceForLevel(int);
+
+private:
+	int calculateLevelForExperience(int);
 };
