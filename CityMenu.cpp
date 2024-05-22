@@ -397,12 +397,12 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		SendMessage(hSubItems[CHARACTER_STAT_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Level
+		rPlayer.gainExperience(1908);
 		buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rPlayer.getLevel());
 		SendMessage(hSubItems[CHARACTER_STAT_LEVEL], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Experience
-		rPlayer.gainExperience(1000);
-		buf = l.getMessage(Localized::EXPERIENCE) + ": " + to_string(rPlayer.getExperience()) + " / " + to_string(rPlayer.calculateExperienceForLevel(rPlayer.getLevel() + 1));
+		buf = l.getMessage(Localized::EXPERIENCE) + ": " + to_string(rPlayer.getExperience()) + " / " + to_string(rPlayer.calculateExperienceForOneLevel(rPlayer.getLevel() + 1));
 		SendMessage(hSubItems[CHARACTER_STAT_EXPERIENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Age

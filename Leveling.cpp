@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Leveling.h"
 
-Leveling::Leveling() : level(MIN_LEVEL), experience(0) { }
+Leveling::Leveling() : level(MIN_LEVEL), experience(EXPERIENCE_PER_LEVEL) { }
 
 Leveling::Leveling(int l, int e, int a) : level(l), experience(e), unnassignedAttributes(a) { }
 
@@ -27,17 +27,7 @@ int Leveling::getLevel() const { return level; }
 int Leveling::getExperience() const
 {
 	// Method returns experience which was not used to level up
-	int currentLevel = level,
-		expForLevel = EXPERIENCE_PER_LEVEL * (100 + EXPERIENCE_PER_LEVEL_INCREASE_PERC) / 100,
-		exp = expForLevel;
-	while (currentLevel > 1)
-	{
-		// Increasing needed experience for every next level by 5%
-		expForLevel = expForLevel * (100 + EXPERIENCE_PER_LEVEL_INCREASE_PERC) / 100;
-		exp += expForLevel;
-		currentLevel--;
-	}
-	return experience - (exp - EXPERIENCE_PER_LEVEL);
+	return experience - calculateExperienceForLevel(level);
 }
 
 int Leveling::getUnnassignedAttributes()
@@ -70,16 +60,23 @@ void Leveling::gainExperience(int e)
 	}
 }
 
-int Leveling::calculateExperienceForLevel(int i)
+int Leveling::calculateExperienceForOneLevel(int i) const
 {
 	if (i == 1)
 		return EXPERIENCE_PER_LEVEL;
-	return calculateExperienceForLevel(i - 1) * (100 + EXPERIENCE_PER_LEVEL_INCREASE_PERC) / 100;
+	return calculateExperienceForOneLevel(i - 1) * (100 + EXPERIENCE_PER_LEVEL_INCREASE_PERC) / 100;
+}
+
+int Leveling::calculateExperienceForLevel(int i) const
+{
+	if (i == 1)
+		return EXPERIENCE_PER_LEVEL;
+	return calculateExperienceForOneLevel(i) + calculateExperienceForLevel(i - 1);
 }
 
 int Leveling::calculateLevelForExperience(int exp)
 {
-	int levelsGained = 1;
+	int levelsGained = 0;
 	int requiredExp = EXPERIENCE_PER_LEVEL;
 
 	while (exp >= requiredExp)
