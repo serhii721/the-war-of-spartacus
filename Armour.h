@@ -1,9 +1,11 @@
 #pragma once
+#include "Item.h"
 
-class Armour
+class Armour :
+	public Item
 {
 public:
-	enum Type { LIGHT, HEAVY, NUMBER };
+	enum ArmourType { LIGHT, HEAVY, NUMBER };
 	enum Stat
 	{
 		DEFENSE,
@@ -14,7 +16,7 @@ public:
 	};
 
 	Armour();
-	Armour(int, Type, int, int, int, int, int);
+	Armour(const Item&, int, ArmourType, int, int, int, int, int);
 	Armour(const Armour&);
 	Armour& operator=(const Armour&);
 	virtual ~Armour();
@@ -23,7 +25,7 @@ public:
 	int getTotalDefense() const;
 
 	int getDefense() const;
-	Type getType() const;
+	ArmourType getArmourType() const;
 	int getDefAddition() const;
 	int getStrengthAdditionPercentage() const;
 	int getDexterityAdditionPercentage() const;
@@ -32,7 +34,7 @@ public:
 private:
 	int defense;
 
-	Type type;
+	ArmourType type;
 	int defAddition;
 	int strAdditionPerc, dexAdditionPerc;
 	int evasionProbAddition, stunProbSubtraction;

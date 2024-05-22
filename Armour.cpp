@@ -2,6 +2,7 @@
 #include "Armour.h"
 
 Armour::Armour() :
+	Item(ItemType::ARMOUR),
 	defense(0),
 	type(BASIC_ARMOUR_TYPE),
 	defAddition(0),
@@ -12,14 +13,16 @@ Armour::Armour() :
 { }
 
 Armour::Armour(
+	const Item& rItem,
 	int ddefense,
-	Type ttype,
+	ArmourType ttype,
 	int ddefAddition,
 	int sstrAdditionPerc,
 	int ddexAdditionPerc,
 	int eevasionProbAddition,
 	int sstunProbSubstraction
 ) :
+	Item(rItem),
 	defense(ddefense),
 	type(ttype),
 	defAddition(ddefAddition),
@@ -30,6 +33,7 @@ Armour::Armour(
 { }
 
 Armour::Armour(const Armour& A) :
+	Item(A),
 	defense(A.defense),
 	type(A.type),
 	defAddition(A.defAddition),
@@ -42,6 +46,8 @@ Armour::Armour(const Armour& A) :
 Armour& Armour::operator=(const Armour& A)
 {
 	if (&A == this) return *this;
+
+	Item::operator=(A);
 	defense = A.defense;
 	type = A.type;
 	defAddition = A.defAddition;
@@ -49,6 +55,7 @@ Armour& Armour::operator=(const Armour& A)
 	dexAdditionPerc = A.dexAdditionPerc;
 	evasionProbAddition = A.evasionProbAddition;
 	stunProbSubtraction = A.stunProbSubtraction;
+
 	return *this;
 }
 
@@ -63,7 +70,7 @@ int Armour::getTotalDefense() const { return defense + defAddition; }
 
 int Armour::getDefense() const { return defense; }
 
-Armour::Type Armour::getType() const { return type; }
+Armour::ArmourType Armour::getArmourType() const { return type; }
 
 int Armour::getDefAddition() const { return defAddition; }
 

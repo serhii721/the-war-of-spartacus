@@ -1,9 +1,11 @@
 #pragma once
+#include "Item.h"
 
-class Weapon
+class Weapon :
+	public Item
 {
 public:
-	enum Type
+	enum WeaponType
 	{
 		SWORD,
 		SPEAR,
@@ -17,8 +19,9 @@ public:
 
 	Weapon();
 	Weapon(
+		const Item& item_,
 		int damage_,
-		Type type_,
+		WeaponType type_,
 		int damageAddition_,
 		int strAdditionPerc_,
 		int dexAdditionPerc_,
@@ -34,10 +37,10 @@ public:
 	void setName(const string&);
 
 	int getTotalDamage() const;
-	bool isCompatibleWith(Type) const;
+	bool isCompatibleWith(WeaponType) const;
 
 	int getDamage() const;
-	Type getType() const;
+	WeaponType getWeaponType() const;
 	int getDamageAddition() const;
 	int getStrengthAdditionPercentage() const;
 	int getDexterityAdditionPercentage() const;
@@ -47,7 +50,7 @@ public:
 private:
 	int damage;
 
-	Type type;
+	WeaponType type;
 	int damageAddition;
 	int strAdditionPerc, dexAdditionPerc;
 

@@ -98,10 +98,10 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 	// 2. Generating weapons
 	unique_ptr<Weapon> rightHand = generateWeapon();
 	unique_ptr<Weapon> leftHand;
-	if (rightHand->getType() != Weapon::Type::AXE && rightHand->getType() != Weapon::Type::SPEAR)
+	if (rightHand->getWeaponType() != Weapon::WeaponType::AXE && rightHand->getWeaponType() != Weapon::WeaponType::SPEAR)
 	{
 		leftHand = generateWeapon();
-		if (!rightHand->isCompatibleWith(leftHand->getType()))
+		if (!rightHand->isCompatibleWith(leftHand->getWeaponType()))
 		{
 			if (rand() % 100 < 75)
 			{
@@ -115,7 +115,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 					if (leftHand)
 						leftHand.release();
 					leftHand = generateWeapon();
-				} while (!rightHand->isCompatibleWith(leftHand->getType()));
+				} while (!rightHand->isCompatibleWith(leftHand->getWeaponType()));
 			else if (leftHand)
 			{
 				leftHand.release();
@@ -697,7 +697,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 
 // __________ Weapon and Armour __________
 
-int getWeaponScaleLimit(Weapon::Type ttype, Attribute aattribute, Limit llimit)
+int getWeaponScaleLimit(Weapon::WeaponType ttype, Attribute aattribute, Limit llimit)
 {
 	switch (ttype)
 	{
@@ -807,7 +807,7 @@ int getWeaponScaleLimit(Weapon::Type ttype, Attribute aattribute, Limit llimit)
 	return -1;
 }
 
-int getArmourScaleLimit(Armour::Type ttype, Armour::Stat sstat, Limit llimit)
+int getArmourScaleLimit(Armour::ArmourType ttype, Armour::Stat sstat, Limit llimit)
 {
 	switch (ttype)
 	{
@@ -878,20 +878,24 @@ int getArmourScaleLimit(Armour::Type ttype, Armour::Stat sstat, Limit llimit)
 	return -1;
 }
 
-unique_ptr<Weapon> generateWeapon(Weapon::Type ttype)
+unique_ptr<Weapon> generateWeapon(Weapon::WeaponType ttype)
 {
 	if (ttype != Weapon::SHIELD)
 	{
-		Weapon::Type newWeaponType = ttype != Weapon::NUMBER ? ttype : Weapon::Type(rand() % (Weapon::NUMBER - 1));
+		Weapon::WeaponType newWeaponType = ttype != Weapon::NUMBER ? ttype : Weapon::WeaponType(rand() % (Weapon::NUMBER - 1));
 
 		int handsNeededForWeapon = 1;
-		if (newWeaponType == Weapon::Type::AXE || newWeaponType == Weapon::Type::SPEAR)
+		if (newWeaponType == Weapon::WeaponType::AXE || newWeaponType == Weapon::WeaponType::SPEAR)
 			handsNeededForWeapon = 2;
 
 		int maxStrAdditionPerc = getWeaponScaleLimit(newWeaponType, Attribute::STRENGTH, Limit::MAX),
 			maxDexAdditionPerc = getWeaponScaleLimit(newWeaponType, Attribute::DEXTERITY, Limit::MAX);
 
 		return make_unique<Weapon>(
+			Item(
+				Item::ItemType::WEAPON,
+				BASIC_ITEM_VALUE
+			),
 			(MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DAM_ADDITION) * handsNeededForWeapon, // Damage
 			// `Weapon::NUMBER - 1` is a shield
 			newWeaponType, // Type
@@ -905,6 +909,10 @@ unique_ptr<Weapon> generateWeapon(Weapon::Type ttype)
 	}
 	else // A shield only created manually
 		return make_unique<Weapon>(
+			Item(
+				Item::ItemType::WEAPON,
+				BASIC_ITEM_VALUE
+			),
 			0, // Damage
 			Weapon::SHIELD,
 			0, // Damage addition
@@ -916,10 +924,10 @@ unique_ptr<Weapon> generateWeapon(Weapon::Type ttype)
 		);
 }
 
-unique_ptr<Armour> generateArmour(Armour::Type ttype)
+unique_ptr<Armour> generateArmour(Armour::ArmourType ttype)
 {
 	// Determining the type
-	Armour::Type type = ttype != Armour::NUMBER ? ttype : Armour::Type(rand() % Armour::NUMBER);
+	Armour::ArmourType type = ttype != Armour::NUMBER ? ttype : Armour::ArmourType(rand() % Armour::NUMBER);
 
 	// Calculating the armour statistics based on its type
 	int maxStrDefAddition = getArmourScaleLimit(type, Armour::STR_ADDITION_PERC, Limit::MAX),

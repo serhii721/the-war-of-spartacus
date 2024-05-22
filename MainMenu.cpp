@@ -718,10 +718,10 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Weapons
 				unique_ptr<Weapon> rightHand = generateWeapon();
 				unique_ptr<Weapon> leftHand;
-				if (rightHand->getType() != Weapon::Type::AXE && rightHand->getType() != Weapon::Type::SPEAR)
+				if (rightHand->getWeaponType() != Weapon::WeaponType::AXE && rightHand->getWeaponType() != Weapon::WeaponType::SPEAR)
 				{
 					leftHand = generateWeapon();
-					if (!rightHand->isCompatibleWith(leftHand->getType()))
+					if (!rightHand->isCompatibleWith(leftHand->getWeaponType()))
 					{
 						if (rand() % 100 < 75)
 						{
@@ -735,7 +735,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 								if (leftHand)
 									leftHand.release();
 								leftHand = generateWeapon();
-							} while (!rightHand->isCompatibleWith(leftHand->getType()));
+							} while (!rightHand->isCompatibleWith(leftHand->getWeaponType()));
 						else if (leftHand)
 						{
 							leftHand.release();

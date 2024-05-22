@@ -25,7 +25,8 @@ public:
 	void setFullHP(int);
 
 	void updateMaxHP();
-	bool equipWeapon(const Weapon&);
+	void equipWeapon(const Weapon&);
+	void equipArmour(const Armour&);
 	void attack(Fighter&, AttackResult&, int&);
 
 	bool isAlive() const;

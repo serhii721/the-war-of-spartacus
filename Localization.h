@@ -8,6 +8,7 @@ private:
 	vector<string> npcFirstNames;
 	vector<string> npcLastNames;
 	vector<string> gladiatorNicknames;
+	vector<string> itemTypes;
 	vector<string> weaponTypes;
 	vector<string> armourTypes;
 	vector<string> cityNames;
@@ -28,6 +29,7 @@ public:
 	const string& getNPCFirstName(const NamedNPC&) const;
 	const string& getNPCLastName(const NamedNPC&) const;
 	const string& getNPCNickname(const NamedNPC&) const;
+	const string& getItemTypeName(const Item&) const;
 	const string& getWeaponTypeName(const Weapon&) const;
 	const string& getArmourTypeName(const Armour&) const;
 	const string& getCityName(const City&) const;
