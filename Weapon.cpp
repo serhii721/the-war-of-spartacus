@@ -2,6 +2,7 @@
 #include "Weapon.h"
 
 Weapon::Weapon() :
+	Item(ItemType::WEAPON),
 	damage(MIN_WEAPON_DAMAGE),
 	type(BASIC_WEAPON_TYPE),
 	damageAddition(0),
@@ -13,8 +14,9 @@ Weapon::Weapon() :
 { }
 
 Weapon::Weapon(
+	const Item& rItem,
 	int ddamage,
-	Type ttype,
+	WeaponType ttype,
 	int ddamageAddition,
 	int sstrAdditionPerc,
 	int ddexAdditionPerc,
@@ -22,6 +24,7 @@ Weapon::Weapon(
 	int sshieldDefPercentAddition,
 	const string& nname
 ) :
+	Item(rItem),
 	damage(ddamage),
 	type(ttype),
 	damageAddition(ddamageAddition),
@@ -33,6 +36,7 @@ Weapon::Weapon(
 { }
 
 Weapon::Weapon(const Weapon& W) :
+	Item(W),
 	damage(W.damage),
 	type(W.type),
 	damageAddition(W.damageAddition),
@@ -46,6 +50,8 @@ Weapon::Weapon(const Weapon& W) :
 Weapon& Weapon::operator=(const Weapon& W)
 {
 	if (&W == this) return *this;
+
+	Item::operator=(W);
 	damage = W.damage;
 	type = W.type;
 	damageAddition = W.damageAddition;
@@ -69,7 +75,7 @@ void Weapon::setName(const string& newName) { name = newName; }
 
 int Weapon::getTotalDamage() const { return damage + damageAddition; }
 
-bool Weapon::isCompatibleWith(Type ttype) const
+bool Weapon::isCompatibleWith(WeaponType ttype) const
 {
 	switch (type)
 	{
@@ -102,7 +108,7 @@ bool Weapon::isCompatibleWith(Type ttype) const
 
 int Weapon::getDamage() const { return damage; }
 
-Weapon::Type Weapon::getType() const { return type; }
+Weapon::WeaponType Weapon::getWeaponType() const { return type; }
 
 int Weapon::getDamageAddition() const { return damageAddition; }
 

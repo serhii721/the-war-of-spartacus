@@ -3,13 +3,26 @@
 class Item
 {
 public:
-	enum Type { ARMOUR, WEAPON };
+	enum ItemType
+	{
+		ARMOUR,
+		WEAPON,
+		GOLD
+	};
 
 	Item();
-	// TODO: ctors, operator=()
+	Item(ItemType, int value_ = 1);
+	Item(const Item&);
+	Item& operator=(const Item&);
 	virtual ~Item();
 
-	// TODO: getType()
 private:
-	Type type;
+	ItemType itemType;
+	int value;
+
+public:
+	ItemType getItemType() const;
+	int getValue() const;
+
+	void setValue(int);
 };

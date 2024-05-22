@@ -76,10 +76,10 @@ unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);
 //void displayNPCBatch(const NPC*, int);
 //Player* createPlayer();
 
-int getWeaponScaleLimit(Weapon::Type, Attribute, Limit);
-int getArmourScaleLimit(Armour::Type, Armour::Stat, Limit);
-unique_ptr<Weapon> generateWeapon(Weapon::Type = Weapon::NUMBER);
-unique_ptr<Armour> generateArmour(Armour::Type = Armour::NUMBER);
+int getWeaponScaleLimit(Weapon::WeaponType, Attribute, Limit);
+int getArmourScaleLimit(Armour::ArmourType, Armour::Stat, Limit);
+unique_ptr<Weapon> generateWeapon(Weapon::WeaponType = Weapon::NUMBER);
+unique_ptr<Armour> generateArmour(Armour::ArmourType = Armour::NUMBER);
 //void displayWeapon(const Weapon&);
 //void displayArmour(const Armour&);
 

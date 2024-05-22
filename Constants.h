@@ -28,17 +28,20 @@ const int ATTRIBUTES_PER_LEVEL = 5;
 const double MIN_EXPERIENCE_MULTIPLIER = 0.1;
 const double MAX_EXPERIENCE_MULTIPLIER = 2.5;
 
+// Item's statistics
+const int BASIC_ITEM_VALUE = 1;
+
 // Weapon's statistics
 const int MIN_WEAPON_DAMAGE = 20;
 const int WEAPON_RAND_DAM_ADDITION = 6;
-const Weapon::Type BASIC_WEAPON_TYPE = Weapon::SWORD;
+const Weapon::WeaponType BASIC_WEAPON_TYPE = Weapon::SWORD;
 const int MIN_SHIELD_PROB_ADDITION = 10;
 const int SHIELD_RAND_PROB_ADDITION = 6;
 const int MIN_SHIELD_DEF_PERC_ADDITION = 40;
 const int SHIELD_RAND_DEF_PERC_ADDITION = 45;
 
 // Armour's statistics
-const Armour::Type BASIC_ARMOUR_TYPE = Armour::LIGHT;
+const Armour::ArmourType BASIC_ARMOUR_TYPE = Armour::LIGHT;
 /*
  * Maximum values of the parameters are assumed.
  *

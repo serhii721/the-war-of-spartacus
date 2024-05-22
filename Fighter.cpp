@@ -109,20 +109,18 @@ void Fighter::updateMaxHP()
 	hp = fullHP * multiplier;
 }
 
-bool Fighter::equipWeapon(const Weapon& rWeapon)
+void Fighter::equipWeapon(const Weapon& rWeapon)
 {
-	if (!isRightHandOccupied())
-	{
+	if (!isRightHandOccupied() && rWeapon.getWeaponType() != Weapon::WeaponType::SHIELD)
 		rightHand = make_unique<Weapon>(rWeapon);;
-		return true;
-	}
-	if (!isLeftHandOccupied() && rightHand->isCompatibleWith(rWeapon.getType()))
-	{
+	if (!isLeftHandOccupied() && rightHand->isCompatibleWith(rWeapon.getWeaponType()))
 		leftHand = make_unique<Weapon>(rWeapon);
-		return true;
-	}
-	return false;
-	// TODO: process using the inventory; move a shield to the left hand
+}
+
+void Fighter::equipArmour(const Armour& rArmour)
+{
+	if (!isArmourEquipped())
+		armour = make_unique<Armour>(rArmour);
 }
 
 void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
@@ -132,9 +130,9 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 	 * 0 -- no shield, 1 -- a left hand, 2 -- a right hand.
 	 */
 	int whereShield = 0;
-	if (rOpponent.isLeftHandOccupied() && rOpponent.leftHand->getType() == Weapon::SHIELD)
+	if (rOpponent.isLeftHandOccupied() && rOpponent.leftHand->getWeaponType() == Weapon::SHIELD)
 		whereShield = 1;
-	else if (rOpponent.isRightHandOccupied() && rOpponent.rightHand->getType() == Weapon::SHIELD)
+	else if (rOpponent.isRightHandOccupied() && rOpponent.rightHand->getWeaponType() == Weapon::SHIELD)
 		whereShield = 2;
 
 	// Determining random damage spread - up to 10% less or more:
@@ -207,9 +205,9 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 
 	// Determining the weapon damage
 	int weaponDamage = 0;
-	if (isLeftHandOccupied() && leftHand->getType() != Weapon::SHIELD)
+	if (isLeftHandOccupied() && leftHand->getWeaponType() != Weapon::SHIELD)
 		weaponDamage += leftHand->getTotalDamage();
-	if (isRightHandOccupied() && rightHand->getType() != Weapon::SHIELD)
+	if (isRightHandOccupied() && rightHand->getWeaponType() != Weapon::SHIELD)
 		weaponDamage += rightHand->getTotalDamage();
 
 	/*

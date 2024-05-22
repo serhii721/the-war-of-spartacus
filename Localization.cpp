@@ -9,6 +9,7 @@ Localization::Localization() :
 	npcFirstNames(),
 	npcLastNames(),
 	gladiatorNicknames(),
+	itemTypes(),
 	weaponTypes(),
 	armourTypes(),
 	cityNames()
@@ -20,6 +21,7 @@ Localization::Localization(const Localization& L) :
 	npcFirstNames(L.npcFirstNames),
 	npcLastNames(L.npcLastNames),
 	gladiatorNicknames(L.gladiatorNicknames),
+	itemTypes(L.itemTypes),
 	weaponTypes(L.weaponTypes),
 	armourTypes(L.armourTypes),
 	cityNames(L.cityNames)
@@ -33,6 +35,7 @@ Localization& Localization::operator=(const Localization& L)
 	npcFirstNames = L.npcFirstNames;
 	npcLastNames = L.npcLastNames;
 	gladiatorNicknames = L.gladiatorNicknames;
+	itemTypes = L.itemTypes;
 	weaponTypes = L.weaponTypes;
 	armourTypes = L.armourTypes;
 	cityNames = L.cityNames;
@@ -49,6 +52,7 @@ void Localization::setLanguage(Language llanguage)
 	npcFirstNames.clear();
 	npcLastNames.clear();
 	gladiatorNicknames.clear();
+	itemTypes.clear();
 	weaponTypes.clear();
 	armourTypes.clear();
 	cityNames.clear();
@@ -144,6 +148,23 @@ void Localization::setLanguage(Language llanguage)
 
 	// Reading the file of weapon types
 	path = "Data/Language/World/";
+	fileName = "ItemTypes";
+	fin.open(path + langPrefix + fileName + FORMAT);
+	finEng.open(path + "En_" + fileName + FORMAT);
+
+	while (getline(fin, line))
+	{
+		getline(finEng, lineEng);
+		if (line != "")
+			itemTypes.push_back(line);
+		else
+			itemTypes.push_back(lineEng);
+	}
+
+	fin.close();
+	finEng.close();
+
+	// Reading the file of weapon types
 	fileName = "WeaponTypes";
 	fin.open(path + langPrefix + fileName + FORMAT);
 	finEng.open(path + "En_" + fileName + FORMAT);
@@ -223,14 +244,19 @@ const string& Localization::getNPCNickname(const NamedNPC& NPC) const
 	return npcLastNames[NPC.getLastNameIndex()]; // TODO: return gladiatorNicknames[NPC.getNicknameIndex()];
 }
 
+const string & Localization::getItemTypeName(const Item& I) const
+{
+	return itemTypes[I.getItemType()];
+}
+
 const string& Localization::getWeaponTypeName(const Weapon& W) const
 {
-	return weaponTypes[W.getType()];
+	return weaponTypes[W.getWeaponType()];
 }
 
 const string& Localization::getArmourTypeName(const Armour& A) const
 {
-	return armourTypes[A.getType()];
+	return armourTypes[A.getArmourType()];
 }
 
 const string& Localization::getCityName(const City& C) const

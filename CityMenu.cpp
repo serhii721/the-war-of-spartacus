@@ -305,7 +305,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 					buf = l.getWeaponTypeName(*rPlayer.getLeftHand());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-					if (rPlayer.getLeftHand()->getType() != Weapon::Type::SHIELD)
+					if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 					{
 						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
@@ -373,7 +373,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 					ShowWindow(hSubMenuItems[i], SW_SHOW);
 				if (rOpponent.getLeftHand())
 				{
-					if (rOpponent.getLeftHand()->getType() != Weapon::Type::SHIELD)
+					if (rOpponent.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], SW_SHOW);
 					else
 					{
@@ -473,7 +473,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			buf = l.getWeaponTypeName(rLeftHand);
 			SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			if (rLeftHand.getType() != Weapon::Type::SHIELD)
+			if (rLeftHand.getWeaponType() != Weapon::WeaponType::SHIELD)
 			{
 				ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_STRENGTH_SCALE], SW_SHOW);
@@ -532,7 +532,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rArmour.getDexterityAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-			if (rPlayer.getArmour()->getType() == Armour::Type::LIGHT)
+			if (rPlayer.getArmour()->getArmourType() == Armour::ArmourType::LIGHT)
 				buf = l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(rArmour.getEvasionProbAddition()) + "%";
 			else
 				buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(rArmour.getStunProbSubtraction()) + "%";
@@ -1106,7 +1106,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					if (rPlayer.getLeftHand())
 					{
-						if (rPlayer.getLeftHand()->getType() != Weapon::Type::SHIELD)
+						if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 						{
 							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_SHOW);
 							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], SW_HIDE);
@@ -1144,7 +1144,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						buf = l.getWeaponTypeName(*rPlayer.getLeftHand());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-						if (rPlayer.getLeftHand()->getType() != Weapon::Type::SHIELD)
+						if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 						{
 							buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 							SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
@@ -2417,7 +2417,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 		ShowWindow(hSubMenuItems[i], SW_SHOW);
 	if (rOpponent.getLeftHand())
 	{
-		if (rOpponent.getLeftHand()->getType() != Weapon::Type::SHIELD)
+		if (rOpponent.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 			ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], SW_SHOW);
 		else
 		{
@@ -2452,7 +2452,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 		buf = l.getWeaponTypeName(*rOpponent.getLeftHand());
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
-		if (rOpponent.getLeftHand()->getType() != Weapon::Type::SHIELD)
+		if (rOpponent.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 		{
 			buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rOpponent.getLeftHand()->getTotalDamage());
 			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());

@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "Player.h"
 
+extern Localization l;
+
 Player::Player() :
 	Fighter(),
 	Leveling(),
-	name("Nameless gladiator") // TODO: localized
+	name(l.getMessage(Localized::GLADIATOR))
 { }
 
 Player::Player(
