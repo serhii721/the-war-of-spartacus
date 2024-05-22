@@ -401,7 +401,8 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		SendMessage(hSubItems[CHARACTER_STAT_LEVEL], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Experience
-		buf = l.getMessage(Localized::EXPERIENCE) + ": " + to_string(rPlayer.getExperience()) + " / 200"; // TODO: Remake levelling system
+		rPlayer.gainExperience(1000);
+		buf = l.getMessage(Localized::EXPERIENCE) + ": " + to_string(rPlayer.getExperience()) + " / " + to_string(rPlayer.calculateExperienceForLevel(rPlayer.getLevel() + 1));
 		SendMessage(hSubItems[CHARACTER_STAT_EXPERIENCE], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Age
@@ -909,7 +910,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	RECT windowRect;
 	GetWindowRect(hWnd, &windowRect);
-	int i;
+	int i, j;
 	static bool isExhausted = false;
 
 	switch (m)
@@ -1010,17 +1011,40 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				{
 					int regen = BASIC_REGEN * rPlayer.getFullHP() / 100;
 
+					// Heal player
 					if (rPlayer.getHP() + regen >= rPlayer.getFullHP())
 					{
 						regen = rPlayer.getFullHP() - rPlayer.getHP();
 						rPlayer.setHP(rPlayer.getFullHP());
 						logStr += l.getMessage(Localized::REST_REGEN) + " " + to_string(regen) + " " + l.getMessage(Localized::HEALTH_POINTS_GENITIVE) + "\r\n"
-							+ l.getMessage(Localized::REST_REGEN_FULL) + " (" + to_string(rPlayer.getFullHP()) + l.getMessage(Localized::HP) + ")\r\n\r\n";
+							+ l.getMessage(Localized::REST_REGEN_FULL) + " (" + to_string(rPlayer.getFullHP()) + " " + l.getMessage(Localized::HP) + ")\r\n\r\n";
 					}
 					else
 					{
 						rPlayer.setHP(rPlayer.getHP() + regen);
 						logStr += l.getMessage(Localized::REST_REGEN) + " " + to_string(regen) + " " + l.getMessage(Localized::HEALTH_POINTS_GENITIVE) + " (" + to_string(rPlayer.getHP()) + l.getMessage(Localized::HP) + ")\r\n\r\n";
+					}
+
+					// Heal opponents across all arenas
+					for (i = Cities::ROME; i < Cities::CITIES_NUMBER; i++)
+					{
+						// Get opponents
+						vector<unique_ptr<NPC>>& opponents = game.getWorldMap().getCity(i).getArena().getGladiators();
+
+						// Check every opponent
+						for (j = 0; j < opponents.size(); j++)
+						{
+							NPC& opponent = *opponents[j];
+							int hp = opponent.getHP();
+							int fullHP = opponent.getFullHP();
+							if (hp < fullHP)
+							{
+								if (hp + BASIC_REGEN < fullHP)
+									opponent.setHP(hp + BASIC_REGEN);
+								else
+									opponent.setHP(fullHP);
+							}
+						}
 					}
 					isExhausted = false;
 				}
@@ -1317,13 +1341,31 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.setBackground(Game::Background::FIGHTING_ARENA);
 					updateWindow(hWnd);
 
-					game.getFighting().fight(
+					// Fight
+					City& currentCity = game.getWorldMap().getCurrentCity();
+					Arena& currentArena = currentCity.getArena();
+
+					FightStatus fightStatus = game.getFighting().fight(
 						hWnd,
 						game.getPlayer(),
-						game.getWorldMap().getCurrentCity().getArena()
-						.getGladiator(selectedOpponent)
+						currentArena.getGladiator(selectedOpponent)
 					);
 
+					// Fight result
+					switch (fightStatus)
+					{
+					// In case of opponent's death he's replaced on arena with new gladiator
+					case FightStatus::OPPONENT_LOST: currentArena.changeGladiator(selectedOpponent, currentCity.getLevel());
+						break;
+					case FightStatus::OPPONNENT_SURRENDERED:
+						break;
+					case FightStatus::PLAYER_SURRENDERED:
+						break;
+					case FightStatus::PLAYER_LOST:
+						break;
+					}
+
+					// Return to city
 					game.setBackground(Game::Background::CITY_MENU);
 					selectedOpponent = -1;
 					break;

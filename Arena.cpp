@@ -28,7 +28,17 @@ Arena& Arena::operator=(const Arena& A)
 
 Arena::~Arena() { }
 
+vector<unique_ptr<NPC>>& Arena::getGladiators()
+{
+	return gladiators;
+}
+
 unique_ptr<NPC>& Arena::getGladiator(int n)
 {
 	return gladiators[n];
+}
+
+void Arena::changeGladiator(int index, int level)
+{
+	gladiators[index] = generateNPC(level);
 }

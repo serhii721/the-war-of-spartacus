@@ -26,7 +26,18 @@ int Leveling::getLevel() const { return level; }
 
 int Leveling::getExperience() const
 {
-	return experience;
+	// Method returns experience which was not used to level up
+	int currentLevel = level,
+		expForLevel = EXPERIENCE_PER_LEVEL * (100 + EXPERIENCE_PER_LEVEL_INCREASE_PERC) / 100,
+		exp = expForLevel;
+	while (currentLevel > 1)
+	{
+		// Increasing needed experience for every next level by 5%
+		expForLevel = expForLevel * (100 + EXPERIENCE_PER_LEVEL_INCREASE_PERC) / 100;
+		exp += expForLevel;
+		currentLevel--;
+	}
+	return experience - (exp - EXPERIENCE_PER_LEVEL);
 }
 
 int Leveling::getUnnassignedAttributes()
@@ -47,13 +58,37 @@ void Leveling::setUnnassignedAttributes(int n)
 void Leveling::gainExperience(int e)
 {
 	experience += e;
-	while (experience >= EXPERIENCE_PER_LEVEL)
+	int calculatedLevel = calculateLevelForExperience(experience);
+
+	while (level < calculatedLevel)
 	{
-		experience -= EXPERIENCE_PER_LEVEL;
 		level++;
 		unnassignedAttributes += ATTRIBUTES_PER_LEVEL;
 		// Additional 1 attributes point for first 10 level ups
 		if (level < 11)
 			unnassignedAttributes++;
 	}
+}
+
+int Leveling::calculateExperienceForLevel(int i)
+{
+	if (i == 1)
+		return EXPERIENCE_PER_LEVEL;
+	return calculateExperienceForLevel(i - 1) * (100 + EXPERIENCE_PER_LEVEL_INCREASE_PERC) / 100;
+}
+
+int Leveling::calculateLevelForExperience(int exp)
+{
+	int levelsGained = 1;
+	int requiredExp = EXPERIENCE_PER_LEVEL;
+
+	while (exp >= requiredExp)
+	{
+		exp -= requiredExp;
+		levelsGained++;
+		// Increasing needed experience for every next level by 5%
+		requiredExp = requiredExp * (100 + EXPERIENCE_PER_LEVEL_INCREASE_PERC) / 100;
+	}
+
+	return levelsGained;
 }
