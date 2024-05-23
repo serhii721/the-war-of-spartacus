@@ -146,7 +146,7 @@ void Localization::setLanguage(Language llanguage)
 	fin.close();
 	finEng.close();
 
-	// Reading the file of weapon types
+	// Reading the file of item types
 	path = "Data/Language/World/";
 	fileName = "ItemTypes";
 	fin.open(path + langPrefix + fileName + FORMAT);
@@ -244,9 +244,24 @@ const string& Localization::getNPCNickname(const NamedNPC& NPC) const
 	return npcLastNames[NPC.getLastNameIndex()]; // TODO: return gladiatorNicknames[NPC.getNicknameIndex()];
 }
 
-const string & Localization::getItemTypeName(const Item& I) const
+const string& Localization::getItemTypeName(const Item& I) const
 {
-	return itemTypes[I.getItemType()];
+	switch (I.getItemType())
+	{
+	case Item::ItemType::WEAPON:
+		if (dynamic_cast<const Weapon*>(&I))
+			return getWeaponTypeName(*dynamic_cast<const Weapon*>(&I));
+
+		break;
+
+	case Item::ItemType::ARMOUR:
+		if (dynamic_cast<const Armour*>(&I))
+			return getArmourTypeName(*dynamic_cast<const Armour*>(&I));
+
+		break;
+
+	default: return itemTypes[I.getItemType()];
+	}
 }
 
 const string& Localization::getWeaponTypeName(const Weapon& W) const

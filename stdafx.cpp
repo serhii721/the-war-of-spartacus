@@ -194,6 +194,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 			),
 			BASIC_HP,
 			BASIC_HP,
+			Inventory(),
 			move(rightHand),
 			move(leftHand),
 			move(armour)
@@ -898,7 +899,7 @@ unique_ptr<Weapon> generateWeapon(Weapon::WeaponType ttype)
 		return make_unique<Weapon>(
 			Item(
 				Item::ItemType::WEAPON,
-				BASIC_ITEM_VALUE // TODO: Calculate value
+				rand() % 100 // TODO: Calculate value
 			),
 			(MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DAM_ADDITION) * handsNeededForWeapon, // Damage
 			// `Weapon::NUMBER - 1` is a shield
@@ -915,7 +916,7 @@ unique_ptr<Weapon> generateWeapon(Weapon::WeaponType ttype)
 		return make_unique<Weapon>(
 			Item(
 				Item::ItemType::WEAPON,
-				BASIC_ITEM_VALUE // TODO: Calculate value
+				rand() % 100 // TODO: Calculate value
 			),
 			0, // Damage
 			Weapon::SHIELD,
@@ -952,7 +953,7 @@ unique_ptr<Armour> generateArmour(Armour::ArmourType ttype)
 	return make_unique<Armour>(
 		Item(
 			Item::ItemType::ARMOUR,
-			BASIC_ITEM_VALUE // TODO: Calculate value
+			rand() % 100 // TODO: Calculate value
 		),
 		MIN_ARMOUR_DEFENSE + 5 + rand() % ARMOUR_RAND_DEF_ADDITION, // Defense
 		type,

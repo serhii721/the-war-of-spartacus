@@ -16,7 +16,7 @@ private:
 	Language selectedLanguage;
 	bool changedSettings;
 public:
-	enum Item
+	enum MenuItem
 	{
 		BUT_CONTINUE,
 		BUT_LOAD_GAME,

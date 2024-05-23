@@ -28,6 +28,9 @@ const int ATTRIBUTES_PER_LEVEL = 5;
 const double MIN_EXPERIENCE_MULTIPLIER = 0.1;
 const double MAX_EXPERIENCE_MULTIPLIER = 2.5;
 
+// Inventory's statistics
+const int MAX_INVENTORY_SIZE = 14;
+
 // Item's statistics
 const int BASIC_ITEM_VALUE = 1;
 

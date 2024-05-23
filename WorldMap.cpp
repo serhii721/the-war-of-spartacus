@@ -238,16 +238,16 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 				ShowWindow(hItems[i], SW_SHOW);
 
 			if (currentCity == selectedCity)
-				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::ENTER).c_str());
+				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
 			else
-				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::TRAVEL).c_str());
+				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::TRAVEL).c_str());
 
 			for (int i = BUT_ROME_MAP; i <= BUT_MILAN_MAP; i++)
 			{
 				buf = l.getCityName(cities[i]);
-				SendMessage(hItems[i], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				SendMessage(hItems[i], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				buf = l.getCityName(cities[i]) + "   (" + to_string(cities[i].getLevel()) + " " + l.getMessage(Localized::LVL) + ")";
-				SendMessage(hItems[i + 11], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+				SendMessage(hItems[i + 11], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 			}
 		}
 		break;
@@ -347,7 +347,7 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (currentCity != selectedCity)
 				{
 					currentCity = selectedCity;
-					SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::ENTER).c_str());
+					SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
 					logStr += l.getMessage(Localized::YOU_HAVE_TRAVELED) + " " + l.getCityName(getCurrentCity()) + "\r\n\r\n";
 				}
 				else
@@ -431,9 +431,9 @@ void WorldMap::selectCity(HWND hWnd, Item city)
 	selectedCity = city;
 
 	if (currentCity == selectedCity)
-		SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::ENTER).c_str());
+		SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
 	else
-		SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)(TCHAR*)l.getMessage(Localized::TRAVEL).c_str());
+		SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::TRAVEL).c_str());
 
 	// Update button selection
 	GetWindowRect(hItems[selectedCity], &rect);

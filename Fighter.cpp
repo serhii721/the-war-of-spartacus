@@ -20,7 +20,7 @@ Fighter::Fighter(
 	const Statistics& rStats,
 	int hhp,
 	int ffullHP,
-	unique_ptr<Inventory> pInventory,
+	const Inventory& rInventory,
 	unique_ptr<Weapon> pRightHand,
 	unique_ptr<Weapon> pLeftHand,
 	unique_ptr<Armour> pArmour
@@ -28,7 +28,7 @@ Fighter::Fighter(
 	Statistics(rStats),
 	hp(hhp),
 	fullHP(ffullHP),
-	inventory(move(pInventory)),
+	inventory(make_unique<Inventory>(rInventory)),
 	rightHand(move(pRightHand)),
 	leftHand(move(pLeftHand)),
 	armour(move(pArmour))
@@ -153,20 +153,22 @@ void Fighter::equipItemFromInventory(int id)
 
 	// 2. Check item type
 	const auto& rItem = inventory->getItem(id);
+	Weapon* pWeapon;
+	Armour* pArmour;
 	switch (inventory->getItemType(id))
 	{
 	case Item::ItemType::WEAPON:
-		Weapon* pWeapon = dynamic_cast<Weapon*>(rItem.get());
+		pWeapon = dynamic_cast<Weapon*>(rItem.get());
 		if (pWeapon) // If retrieved item is a weapon
 		{
 			if (!isRightHandOccupied() && pWeapon->getWeaponType() != Weapon::WeaponType::SHIELD) // If right hand is empty and retrieved weapon is not a shield
 			{
-				rightHand = make_unique<Weapon>(pWeapon);
+				rightHand = make_unique<Weapon>(*pWeapon);
 				inventory->removeItem(id);
 			}
 			else if (!isLeftHandOccupied() && rightHand->isCompatibleWith(pWeapon->getWeaponType())) // If left hand is empty and retrieved weapon is compatible with existing
 			{
-				leftHand = make_unique<Weapon>(pWeapon);
+				leftHand = make_unique<Weapon>(*pWeapon);
 				inventory->removeItem(id);
 			}
 			else
@@ -175,10 +177,10 @@ void Fighter::equipItemFromInventory(int id)
 		break;
 
 	case Item::ItemType::ARMOUR:
-		Armour* pArmour = dynamic_cast<Armour*>(rItem.get());
+		pArmour = dynamic_cast<Armour*>(rItem.get());
 		if (pArmour && !isArmourEquipped()) // If retrieved item is an armour and armour is not already equipped
 		{
-			armour = make_unique<Armour>(pArmour);
+			armour = make_unique<Armour>(*pArmour);
 			inventory->removeItem(id);
 		}
 		else
