@@ -40,6 +40,11 @@ void Leveling::setLevel(int l)
 	level = l;
 }
 
+void Leveling::setExperience(int n)
+{
+	experience = n;
+}
+
 void Leveling::setUnnassignedAttributes(int n)
 {
 	unnassignedAttributes = n;
