@@ -158,6 +158,7 @@
     <ClInclude Include="GladiatorGame.h" />
     <ClInclude Include="HarmlessNPC.h" />
     <ClInclude Include="IMenu.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Leveling.h" />
     <ClInclude Include="Localization.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="GladiatorGame.cpp" />
     <ClCompile Include="HarmlessNPC.cpp" />
     <ClCompile Include="IMenu.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Leveling.cpp" />
     <ClCompile Include="Localization.cpp" />

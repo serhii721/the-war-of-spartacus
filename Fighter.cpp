@@ -10,6 +10,7 @@ Fighter::Fighter() :
 	Statistics(),
 	hp(BASIC_HP),
 	fullHP(BASIC_HP),
+	inventory(),
 	rightHand(),
 	leftHand(),
 	armour()
@@ -19,6 +20,7 @@ Fighter::Fighter(
 	const Statistics& rStats,
 	int hhp,
 	int ffullHP,
+	unique_ptr<Inventory> pInventory,
 	unique_ptr<Weapon> pRightHand,
 	unique_ptr<Weapon> pLeftHand,
 	unique_ptr<Armour> pArmour
@@ -26,6 +28,7 @@ Fighter::Fighter(
 	Statistics(rStats),
 	hp(hhp),
 	fullHP(ffullHP),
+	inventory(move(pInventory)),
 	rightHand(move(pRightHand)),
 	leftHand(move(pLeftHand)),
 	armour(move(pArmour))
@@ -38,6 +41,11 @@ Fighter::Fighter(const Fighter& F) :
 	hp(F.hp),
 	fullHP(F.fullHP)
 {
+	if (F.inventory)
+		inventory = make_unique<Inventory>(*F.inventory);
+	else
+		inventory = nullptr;
+
 	if (F.rightHand)
 		rightHand = make_unique<Weapon>(*F.rightHand);
 	else
@@ -63,10 +71,20 @@ Fighter& Fighter::operator=(const Fighter& F)
 	hp = F.hp;
 	fullHP = F.fullHP;
 
+	if (F.inventory)
+	{
+		if (!inventory)
+			inventory = make_unique<Inventory>(*F.inventory);
+		else
+			*inventory = *F.inventory;
+	}
+	else
+		rightHand = nullptr;
+
 	if (F.rightHand)
 	{
 		if (!rightHand)
-			rightHand = std::make_unique<Weapon>(*F.rightHand);
+			rightHand = make_unique<Weapon>(*F.rightHand);
 		else
 			*rightHand = *F.rightHand;
 	}
@@ -76,7 +94,7 @@ Fighter& Fighter::operator=(const Fighter& F)
 	if (F.leftHand)
 	{
 		if (!leftHand)
-			leftHand = std::make_unique<Weapon>(*F.leftHand);
+			leftHand = make_unique<Weapon>(*F.leftHand);
 		else
 			*leftHand = *F.leftHand;
 	}
@@ -86,7 +104,7 @@ Fighter& Fighter::operator=(const Fighter& F)
 	if (F.armour)
 	{
 		if (!armour)
-			armour = std::make_unique<Armour>(*F.armour);
+			armour = make_unique<Armour>(*F.armour);
 		else
 			*armour = *F.armour;
 	}
@@ -109,18 +127,66 @@ void Fighter::updateMaxHP()
 	hp = fullHP * multiplier;
 }
 
-void Fighter::equipWeapon(const Weapon& rWeapon)
+void Fighter::unequipItem(int id)
 {
-	if (!isRightHandOccupied() && rWeapon.getWeaponType() != Weapon::WeaponType::SHIELD)
-		rightHand = make_unique<Weapon>(rWeapon);;
-	if (!isLeftHandOccupied() && rightHand->isCompatibleWith(rWeapon.getWeaponType()))
-		leftHand = make_unique<Weapon>(rWeapon);
+	if (rightHand && rightHand->getID() == id) // Right hand weapon
+	{
+		inventory->addItem(move(rightHand));
+	}
+	else if (leftHand && leftHand->getID() == id) // Left hand weapon
+	{
+		inventory->addItem(move(leftHand));
+	}
+	else if (armour && armour->getID() == id) // Armour
+	{
+		inventory->addItem(move(armour));
+	}
+	else // Item not found
+		throw exception("Cannot unequip item. It's not equipped.");
 }
 
-void Fighter::equipArmour(const Armour& rArmour)
+void Fighter::equipItemFromInventory(int id)
 {
-	if (!isArmourEquipped())
-		armour = make_unique<Armour>(rArmour);
+	// 1. Chech item validity
+	if (!inventory->getItem(id))
+		return; // If item is not found return
+
+	// 2. Check item type
+	const auto& rItem = inventory->getItem(id);
+	switch (inventory->getItemType(id))
+	{
+	case Item::ItemType::WEAPON:
+		Weapon* pWeapon = dynamic_cast<Weapon*>(rItem.get());
+		if (pWeapon) // If retrieved item is a weapon
+		{
+			if (!isRightHandOccupied() && pWeapon->getWeaponType() != Weapon::WeaponType::SHIELD) // If right hand is empty and retrieved weapon is not a shield
+			{
+				rightHand = make_unique<Weapon>(pWeapon);
+				inventory->removeItem(id);
+			}
+			else if (!isLeftHandOccupied() && rightHand->isCompatibleWith(pWeapon->getWeaponType())) // If left hand is empty and retrieved weapon is compatible with existing
+			{
+				leftHand = make_unique<Weapon>(pWeapon);
+				inventory->removeItem(id);
+			}
+			else
+				throw exception("Weapon cannot be equipped. Slots are occupied or it's incompatible.");
+		}
+		break;
+
+	case Item::ItemType::ARMOUR:
+		Armour* pArmour = dynamic_cast<Armour*>(rItem.get());
+		if (pArmour && !isArmourEquipped()) // If retrieved item is an armour and armour is not already equipped
+		{
+			armour = make_unique<Armour>(pArmour);
+			inventory->removeItem(id);
+		}
+		else
+			throw exception("Armour cannot be equipped. Slot is occupied.");
+		break;
+
+	default: throw exception("Cannot equip item. The retrieved item is neither a weapon nor an armour.");
+	}
 }
 
 void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
@@ -298,6 +364,8 @@ bool Fighter::isArmourEquipped() const { return armour != nullptr; }
 int Fighter::getHP() const { return hp; }
 
 int Fighter::getFullHP() const { return fullHP; }
+
+const unique_ptr<Inventory>& Fighter::getInventory() const { return inventory; }
 
 const unique_ptr<Weapon>& Fighter::getRightHand() const { return rightHand; }
 

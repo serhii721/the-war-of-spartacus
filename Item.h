@@ -2,12 +2,16 @@
 
 class Item
 {
+protected:
+	static int currentID;
+	int id;
 public:
 	enum ItemType
 	{
 		ARMOUR,
 		WEAPON,
-		GOLD
+		GOLD,
+		ITEM
 	};
 
 	Item();
@@ -21,6 +25,7 @@ private:
 	int value;
 
 public:
+	int getID() const;
 	ItemType getItemType() const;
 	int getValue() const;
 
