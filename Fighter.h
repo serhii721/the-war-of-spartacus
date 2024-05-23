@@ -7,6 +7,7 @@ class Fighter :
 protected:
 	int hp, fullHP;
 
+	unique_ptr<Inventory> inventory;
 	unique_ptr<Weapon> rightHand;
 	unique_ptr<Weapon> leftHand;
 	unique_ptr<Armour> armour;
@@ -15,7 +16,7 @@ protected:
 public:
 	// TODO: move AttackResult over here
 	Fighter();
-	Fighter(const Statistics&, int, int, const unique_ptr<Weapon> rightHand_, const unique_ptr<Weapon> leftHand_, const unique_ptr<Armour> armour_);
+	Fighter(const Statistics&, int, int, const unique_ptr<Inventory>, const unique_ptr<Weapon> rightHand_, const unique_ptr<Weapon> leftHand_, const unique_ptr<Armour> armour_);
 	Fighter(const Fighter&);
 	Fighter& operator=(const Fighter&);
 	virtual ~Fighter();
@@ -24,8 +25,8 @@ public:
 	void setFullHP(int);
 
 	void updateMaxHP();
-	void equipWeapon(const Weapon&);
-	void equipArmour(const Armour&);
+	void unequipItem(int id_);
+	void equipItemFromInventory(int id_);
 	void attack(Fighter&, AttackResult&, int&);
 
 	bool isAlive() const;
@@ -35,6 +36,7 @@ public:
 
 	int getHP() const;
 	int getFullHP() const;
+	const unique_ptr<Inventory>& getInventory() const;
 	const unique_ptr<Weapon>& getRightHand() const;
 	const unique_ptr<Weapon>& getLeftHand() const;
 	const unique_ptr<Armour>& getArmour() const;
