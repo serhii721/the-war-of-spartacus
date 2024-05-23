@@ -55,6 +55,13 @@ Item& Item::operator=(const Item& I)
 
 Item::~Item() { }
 
+bool Item::operator<(const Item& other) const
+{
+	if (itemType != other.itemType)
+		return itemType < other.itemType;
+	return value < other.value;
+}
+
 int Item::getID() const
 {
 	return id;

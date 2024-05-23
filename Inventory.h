@@ -2,15 +2,19 @@
 class Inventory
 {
 private:
-	unordered_map<int, pair<unique_ptr<Item>, int>> items;
+	map<int, pair<unique_ptr<Item>, int>> items;
 
 public:
 	Inventory();
-	Inventory(const unordered_map<int, pair<unique_ptr<Item>, int>> items_);
+	Inventory(const map<int, pair<unique_ptr<Item>, int>>& items_);
 	Inventory(const Inventory&);
 	Inventory& operator=(const Inventory&);
 	~Inventory();
 
+	PairRef<unique_ptr<Item>&, int&> operator[](int id_);
+	PairRef<const unique_ptr<Item>&, const int&> operator[](int id_) const;
+
+	int size() const;
 	const unique_ptr<Item>& getItem(int id_) const;
 	int getItemQuantity(int id_) const;
 	Item::ItemType getItemType(int id_) const;

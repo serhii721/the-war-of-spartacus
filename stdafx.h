@@ -25,7 +25,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <iostream>
 #include <string>
 #include <vector>
-#include <unordered_map> // `unordered_map` for inventory
+#include <map> // `map` for inventory
 #include <exception>
 #include <memory>
 using namespace std;
@@ -47,6 +47,7 @@ using namespace std;
 #include "Item.h"
 #include "Weapon.h"
 #include "Armour.h"
+#include "PairRef.h"
 #include "Inventory.h"
 #include "Fighter.h"
 #include "Leveling.h"

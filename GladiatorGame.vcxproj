@@ -168,6 +168,7 @@
     <ClInclude Include="NamedNPC.h" />
     <ClInclude Include="NewMenuStorage.h" />
     <ClInclude Include="NPC.h" />
+    <ClInclude Include="PairRef.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAttributeStorage.h" />
     <ClInclude Include="resource.h" />

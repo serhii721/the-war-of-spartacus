@@ -222,9 +222,9 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	string pHP = l.getMessage(Localized::HEALTH) + ": " + to_string(playerHP),
 		oHP = l.getMessage(Localized::HEALTH) + ": " + to_string(opponentHP);
 
-	SendMessage(hItems[Item::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)pHP.c_str());
-	SendMessage(hItems[Item::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)oHP.c_str());
-	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)"");
+	SendMessage(hItems[Item::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)pHP.c_str());
+	SendMessage(hItems[Item::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)oHP.c_str());
+	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)"");
 
 	// Show Player and Opponent damage
 	if (rPlayer.getRightHand())
@@ -259,7 +259,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	if (rOpponent->getWisdom() > rPlayer.getWisdom())
 	{
 		buf = l.getMessage(Localized::OPPONENT_ATTACKS_FIRST) + "\r\n\r\n";
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 		Sleep(SLEEP_TIME);
 
@@ -284,7 +284,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	else
 	{
 		buf = l.getMessage(Localized::PLAYER_ATTACKS_FIRST) + "\r\n\r\n";
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
+		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 		Sleep(SLEEP_TIME);
 	}
@@ -516,7 +516,7 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 		break;
 	}
 	result += "\r\n\r\n";
-	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)(TCHAR*)result.c_str());
+	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)result.c_str());
 	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 
 	int playerHP = game.getPlayer().getHP(),
@@ -525,8 +525,8 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 	string pHP = l.getMessage(Localized::HEALTH) + ": " + to_string(playerHP),
 		   oHP = l.getMessage(Localized::HEALTH) + ": " + to_string(opponentHP);
 
-	SendMessage(hItems[Item::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)pHP.c_str());
-	SendMessage(hItems[Item::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)(TCHAR*)oHP.c_str());
+	SendMessage(hItems[Item::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)pHP.c_str());
+	SendMessage(hItems[Item::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)oHP.c_str());
 }
 
 FightStatus Fighting::checkFightStatus(const Player & rPlayer, const NPC & rOpponent)
@@ -582,7 +582,7 @@ void Fighting::getFightResult(const FightStatus sstatus, const int playerHP, con
 		// TODO: handle error
 		break;
 	}
-	SendMessage(hItems[Item::STATIC_FIGHT_RESULT], WM_SETTEXT, 0, (LPARAM)(TCHAR*)result.c_str());
+	SendMessage(hItems[Item::STATIC_FIGHT_RESULT], WM_SETTEXT, 0, (LPARAM)result.c_str());
 }
 
 void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)

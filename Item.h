@@ -20,6 +20,7 @@ public:
 	Item& operator=(const Item&);
 	virtual ~Item();
 
+	bool operator<(const Item&) const;
 private:
 	ItemType itemType;
 	int value;

@@ -3,20 +3,68 @@
 
 Inventory::Inventory() : items() { }
 
-Inventory::Inventory(const unordered_map<int, pair<unique_ptr<Item>, int>> iitems) : items(iitems) { }
+Inventory::Inventory(const map<int, pair<unique_ptr<Item>, int>>& iitems)
+{
+	for (const auto& pair : iitems)
+	{
+		// Create new unique_ptr and move it into pair
+		unique_ptr<Item> newItem = pair.second.first ? make_unique<Item>(*pair.second.first) : nullptr;
+		items.emplace(pair.first, make_pair(move(newItem), pair.second.second));
+	}
+}
 
-Inventory::Inventory(const Inventory& I) : items(I.items) { }
+Inventory::Inventory(const Inventory& I)
+{
+	for (const auto& pair : I.items)
+	{
+		// Create new unique_ptr and move it into pair
+		unique_ptr<Item> newItem = pair.second.first ? make_unique<Item>(*pair.second.first) : nullptr;
+		items.emplace(pair.first, make_pair(move(newItem), pair.second.second));
+	}
+}
 
 Inventory& Inventory::operator=(const Inventory& I)
 {
 	if (&I == this) return *this;
 
-	items = I.items;
+	items.clear();
+
+	for (const auto& pair : I.items)
+	{
+		// Create new unique_ptr and move it into pair
+		unique_ptr<Item> newItem = pair.second.first ? make_unique<Item>(*pair.second.first) : nullptr;
+		items.emplace(pair.first, make_pair(move(newItem), pair.second.second));
+	}
 
 	return *this;
 }
 
 Inventory::~Inventory() { }
+
+PairRef<unique_ptr<Item>&, int&> Inventory::operator[](int index)
+{
+	if (index >= items.size())
+		throw out_of_range("Index out of range");
+
+	auto it = items.begin();
+	advance(it, index);
+	return { it->second.first, it->second.second };
+}
+
+PairRef<const unique_ptr<Item>&, const int&> Inventory::operator[](int index) const
+{
+	if (index >= items.size())
+		throw out_of_range("Index out of range");
+
+	auto it = items.begin();
+	advance(it, index);
+	return { it->second.first, it->second.second };
+}
+
+int Inventory::size() const
+{
+	return items.size();
+}
 
 const unique_ptr<Item>& Inventory::getItem(int id) const
 {
@@ -44,6 +92,10 @@ Item::ItemType Inventory::getItemType(int id) const
 
 void Inventory::addItem(unique_ptr<Item> item, int quantity)
 {
+	// Check space in inventory
+	if (items.size() >= MAX_INVENTORY_SIZE)
+		throw out_of_range("Cannot add item. Inventory is full.");
+
 	// Get item unique ID
 	int id = item->getID();
 
