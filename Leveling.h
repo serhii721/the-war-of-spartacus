@@ -18,6 +18,7 @@ public:
 	int getUnnassignedAttributes();
 
 	void setLevel(int);
+	void setExperience(int);
 	void setUnnassignedAttributes(int);
 
 	void gainExperience(int);

@@ -397,7 +397,6 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		SendMessage(hSubItems[CHARACTER_STAT_NAME], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 
 		// Level
-		rPlayer.gainExperience(1908);
 		buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rPlayer.getLevel());
 		SendMessage(hSubItems[CHARACTER_STAT_LEVEL], WM_SETTEXT, 0, (LPARAM)(TCHAR*)buf.c_str());
 

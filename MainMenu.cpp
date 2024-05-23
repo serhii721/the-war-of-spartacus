@@ -783,7 +783,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						),
 						Leveling(
 							MIN_LEVEL,
-							0,
+							EXPERIENCE_PER_LEVEL,
 							nms->unnassignedAttributes
 						),
 						string(str)

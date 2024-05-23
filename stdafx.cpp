@@ -135,6 +135,10 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 	else if (level > MAX_LEVEL)
 		level = MAX_LEVEL;
 
+	// Calculating experience for current level
+	Leveling leveling(level);
+	leveling.setExperience(leveling.calculateExperienceForLevel(leveling.getLevel()));
+
 	// Calculating unnassigned attributes for current level
 	int unnassignedAttributes = level * ATTRIBUTES_PER_LEVEL;
 	if (level > 9)
@@ -198,7 +202,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 			randomFirstName,
 			randomLastName
 		),
-		level
+		leveling
 	);
 	npc.updateMaxHP();
 
@@ -894,7 +898,7 @@ unique_ptr<Weapon> generateWeapon(Weapon::WeaponType ttype)
 		return make_unique<Weapon>(
 			Item(
 				Item::ItemType::WEAPON,
-				BASIC_ITEM_VALUE
+				BASIC_ITEM_VALUE // TODO: Calculate value
 			),
 			(MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DAM_ADDITION) * handsNeededForWeapon, // Damage
 			// `Weapon::NUMBER - 1` is a shield
@@ -911,7 +915,7 @@ unique_ptr<Weapon> generateWeapon(Weapon::WeaponType ttype)
 		return make_unique<Weapon>(
 			Item(
 				Item::ItemType::WEAPON,
-				BASIC_ITEM_VALUE
+				BASIC_ITEM_VALUE // TODO: Calculate value
 			),
 			0, // Damage
 			Weapon::SHIELD,
@@ -946,6 +950,10 @@ unique_ptr<Armour> generateArmour(Armour::ArmourType ttype)
 	}
 
 	return make_unique<Armour>(
+		Item(
+			Item::ItemType::ARMOUR,
+			BASIC_ITEM_VALUE // TODO: Calculate value
+		),
 		MIN_ARMOUR_DEFENSE + 5 + rand() % ARMOUR_RAND_DEF_ADDITION, // Defense
 		type,
 		0, // Defense addition
