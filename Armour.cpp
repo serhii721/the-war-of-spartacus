@@ -3,6 +3,7 @@
 
 Armour::Armour() :
 	Item(ItemType::ARMOUR),
+	tier(MIN_ARMOUR_TIER),
 	defense(0),
 	type(BASIC_ARMOUR_TYPE),
 	defAddition(0),
@@ -14,6 +15,7 @@ Armour::Armour() :
 
 Armour::Armour(
 	const Item& rItem,
+	int ttier,
 	int ddefense,
 	ArmourType ttype,
 	int ddefAddition,
@@ -23,6 +25,7 @@ Armour::Armour(
 	int sstunProbSubstraction
 ) :
 	Item(rItem),
+	tier(ttier),
 	defense(ddefense),
 	type(ttype),
 	defAddition(ddefAddition),
@@ -34,6 +37,7 @@ Armour::Armour(
 
 Armour::Armour(const Armour& A) :
 	Item(A),
+	tier(A.tier),
 	defense(A.defense),
 	type(A.type),
 	defAddition(A.defAddition),
@@ -48,6 +52,7 @@ Armour& Armour::operator=(const Armour& A)
 	if (&A == this) return *this;
 
 	Item::operator=(A);
+	tier = A.tier;
 	defense = A.defense;
 	type = A.type;
 	defAddition = A.defAddition;
@@ -61,12 +66,19 @@ Armour& Armour::operator=(const Armour& A)
 
 Armour::~Armour() { }
 
+unique_ptr<Item> Armour::clone() const
+{
+	return make_unique<Armour>(*this);
+}
+
 void Armour::update(int sstrength, int ddexterity)
 {
 	defAddition = ddexterity * dexAdditionPerc / 100 + sstrength * strAdditionPerc / 100;
 }
 
 int Armour::getTotalDefense() const { return defense + defAddition; }
+
+int Armour::getTier() const { return tier; }
 
 int Armour::getDefense() const { return defense; }
 

@@ -20,6 +20,7 @@ public:
 	Weapon();
 	Weapon(
 		const Item& item_,
+		int tier_,
 		int damage_,
 		WeaponType type_,
 		int damageAddition_,
@@ -32,6 +33,7 @@ public:
 	Weapon(const Weapon&);
 	Weapon& operator=(const Weapon&);
 	virtual ~Weapon();
+	unique_ptr<Item> clone() const;
 
 	void update(int, int);
 	void setName(const string&);
@@ -39,6 +41,7 @@ public:
 	int getTotalDamage() const;
 	bool isCompatibleWith(WeaponType) const;
 
+	int getTier() const;
 	int getDamage() const;
 	WeaponType getWeaponType() const;
 	int getDamageAddition() const;
@@ -48,6 +51,7 @@ public:
 	int getShieldDefPercentAddition() const;
 	const string& getName() const;
 private:
+	int tier;
 	int damage;
 
 	WeaponType type;

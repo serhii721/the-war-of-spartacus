@@ -50,7 +50,7 @@ Strength scale
 Dexterity scale
 Armour defense
 Evasion chance
-Stun resistance chance
+Stun chance reduction
 No armour
 Reset
 Apply
@@ -108,4 +108,12 @@ Destroy
 Value
 Quantity
 Total value
+Tier
+Sell
+Buy
+Can't sell item
+Trader doesn't have enough gold
+Can't buy item
+You don't have enough gold
+You don't have enough inventory space
 MESSAGE_NUMBER

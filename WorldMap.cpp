@@ -367,7 +367,7 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	}
 }
 
-void WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+bool WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (m)
 	{
@@ -399,26 +399,9 @@ void WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
 				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				return true;
 			}
-			else if (item->CtlType == ODT_STATIC) // Static windows
-			{
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-			}
-			else if (strcmp(str, ("Edit")) == 0) // Edit windows
-			{
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-			}
-			else if (item->CtlType == ODT_BUTTON) // Button windows
-			{
-				if (item->itemState & ODS_SELECTED)
-				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-				}
-				else
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-			}
+			return false;
 		}
 		break;
 	}

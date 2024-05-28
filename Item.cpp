@@ -29,7 +29,7 @@ Item::Item(const Item& I) : itemType(I.itemType)
 	}
 	else
 	{
-		id = currentID++;
+		id = I.id;
 		value = I.value;
 	}
 }
@@ -46,7 +46,7 @@ Item& Item::operator=(const Item& I)
 	}
 	else
 	{
-		id = currentID++;
+		id = I.id;
 		value = I.value;
 	}
 
@@ -54,6 +54,11 @@ Item& Item::operator=(const Item& I)
 }
 
 Item::~Item() { }
+
+unique_ptr<Item> Item::clone() const
+{
+	return make_unique<Item>(*this);
+}
 
 bool Item::operator<(const Item& other) const
 {

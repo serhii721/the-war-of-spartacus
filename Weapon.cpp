@@ -3,6 +3,7 @@
 
 Weapon::Weapon() :
 	Item(ItemType::WEAPON),
+	tier(MIN_WEAPON_TIER),
 	damage(MIN_WEAPON_DAMAGE),
 	type(BASIC_WEAPON_TYPE),
 	damageAddition(0),
@@ -15,6 +16,7 @@ Weapon::Weapon() :
 
 Weapon::Weapon(
 	const Item& rItem,
+	int ttier,
 	int ddamage,
 	WeaponType ttype,
 	int ddamageAddition,
@@ -25,6 +27,7 @@ Weapon::Weapon(
 	const string& nname
 ) :
 	Item(rItem),
+	tier(ttier),
 	damage(ddamage),
 	type(ttype),
 	damageAddition(ddamageAddition),
@@ -37,6 +40,7 @@ Weapon::Weapon(
 
 Weapon::Weapon(const Weapon& W) :
 	Item(W),
+	tier(W.tier),
 	damage(W.damage),
 	type(W.type),
 	damageAddition(W.damageAddition),
@@ -52,6 +56,7 @@ Weapon& Weapon::operator=(const Weapon& W)
 	if (&W == this) return *this;
 
 	Item::operator=(W);
+	tier = W.tier;
 	damage = W.damage;
 	type = W.type;
 	damageAddition = W.damageAddition;
@@ -64,6 +69,11 @@ Weapon& Weapon::operator=(const Weapon& W)
 }
 
 Weapon::~Weapon() { }
+
+unique_ptr<Item> Weapon::clone() const
+{
+	return make_unique<Weapon>(*this);
+}
 
 void Weapon::update(int sstrength, int ddexterity)
 {
@@ -105,6 +115,8 @@ bool Weapon::isCompatibleWith(WeaponType ttype) const
 	}
 	return true;
 }
+
+int Weapon::getTier() const { return tier; }
 
 int Weapon::getDamage() const { return damage; }
 

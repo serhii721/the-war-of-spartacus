@@ -263,20 +263,24 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	switch (game.getBackground())
 	{
 	default:case Game::Background::CITY_MENU:
+	{
 		for (HWND hItem : hItems)
-			ShowWindow(hItem, SW_SHOW);
+					ShowWindow(hItem, SW_SHOW);
 		buf = l.getMessage(Localized::CITY) + " " + l.getCityName(game.getWorldMap().getCurrentCity());
 		SendMessage(hItems[STAT_CITY_NAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		// Updating log
 		SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
 		SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
-		break;
+	}
+	break;
 
 	case Game::Background::CITY_MENU_ARENA:
+	{
 		// Updating log
 		SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
 		SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
-		break;
+	}
+	break;
 
 	case Game::Background::CITY_MENU_ARENA_FIGHT:
 	{
@@ -296,7 +300,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				// Right hand
 				if (rPlayer.getRightHand())
 				{
-					buf = l.getWeaponTypeName(*rPlayer.getRightHand());
+					buf = l.getWeaponTypeName(*rPlayer.getRightHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getRightHand()->getTier()) + ")";
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
@@ -312,7 +316,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				// Left hand
 				if (rPlayer.getLeftHand())
 				{
-					buf = l.getWeaponTypeName(*rPlayer.getLeftHand());
+					buf = l.getWeaponTypeName(*rPlayer.getLeftHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getLeftHand()->getTier()) + ")";
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 					if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
@@ -342,7 +346,8 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				// Armour
 				if (rPlayer.getArmour())
 				{
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
+					buf = l.getArmourTypeName(*rPlayer.getArmour()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getArmour()->getTier()) + ")";
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
@@ -395,6 +400,66 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 					ShowWindow(hSubMenuItems[i], SW_SHOW);
 			}
 		}
+	}
+	break;
+
+	case Game::Background::CITY_MENU_MARKET:
+	{
+		// 1. Player inventory
+		Player& rPlayer = game.getPlayer();
+		Inventory& rPlayerInventory = *rPlayer.getInventory();
+		int inventorySize = rPlayerInventory.size();
+		buf = l.getMessage(Localized::INVENTORY) + " of " + rPlayer.getName() + " (" + to_string(inventorySize) + " / " + to_string(MAX_INVENTORY_SIZE) + ")";
+		SendMessage(hSubItems[MARKET_STAT_INVENTORY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		// Hide unused slots with no items
+		for (i = inventorySize; i < MAX_INVENTORY_SIZE; i++)
+		{
+			ShowWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i], SW_HIDE);
+			ShowWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i], SW_HIDE);
+		}
+		for (i = 0; i < inventorySize; i++)
+		{
+			ShowWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i], SW_SHOW);
+			ShowWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i], SW_SHOW);
+			Item& item = *rPlayerInventory[i].first;
+			int quantity = rPlayerInventory[i].second;
+			buf = l.getItemTypeName(item);
+			if (quantity > 1)
+				buf += " (" + to_string(quantity) + ")";
+			SendMessage(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		}
+
+		// 2. Trader inventory
+		HarmlessNPC& rTrader = game.getWorldMap().getCurrentCity().getTrader();
+		Inventory& rTraderInventory = *rTrader.getInventory();
+		inventorySize = rTraderInventory.size();
+		buf = l.getMessage(Localized::INVENTORY) + " of " + l.getNPCName(rTrader) + " (" + to_string(inventorySize) + " / " + to_string(MAX_INVENTORY_SIZE) + ")";
+		SendMessage(hSubItems[MARKET_STAT_TRADER_INVENTORY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		// Hide unused slots with no items
+		for (i = inventorySize; i < MAX_INVENTORY_SIZE; i++)
+		{
+			ShowWindow(hSubItems[MARKET_BUT_TRADER_ITEM1 + i], SW_HIDE);
+			ShowWindow(hSubItems[MARKET_STAT_TRADER_ITEM1 + i], SW_HIDE);
+		}
+		for (i = 0; i < inventorySize; i++)
+		{
+			ShowWindow(hSubItems[MARKET_BUT_TRADER_ITEM1 + i], SW_SHOW);
+			ShowWindow(hSubItems[MARKET_STAT_TRADER_ITEM1 + i], SW_SHOW);
+			Item& item = *rTraderInventory[i].first;
+			int quantity = rTraderInventory[i].second;
+			buf = l.getItemTypeName(item);
+			if (quantity > 1)
+				buf += " (" + to_string(quantity) + ")";
+			SendMessage(hSubItems[MARKET_STAT_TRADER_ITEM1 + i], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		}
+
+		// 3. Other windows
+		SendMessage(hSubItems[MARKET_STAT_MARKET], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::MARKET).c_str());
+
+		SendMessage(hSubItems[MARKET_BUT_SELL], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::SELL).c_str());
+		SendMessage(hSubItems[MARKET_BUT_BUY], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::BUY).c_str());
+
+		SendMessage(hSubItems[MARKET_BUT_BACK], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::BACK).c_str());
 	}
 	break;
 
@@ -559,7 +624,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_STRENGTH_SCALE], SW_SHOW);
 			ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE], SW_SHOW);
 			Weapon& rRightHand = *rPlayer.getRightHand();
-			buf = l.getWeaponTypeName(rRightHand);
+			buf = l.getWeaponTypeName(rRightHand) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rRightHand.getTier()) + ")";
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 			buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand.getTotalDamage());
@@ -584,7 +649,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		if (rPlayer.getLeftHand())
 		{
 			Weapon& rLeftHand = *rPlayer.getLeftHand();
-			buf = l.getWeaponTypeName(rLeftHand);
+			buf = l.getWeaponTypeName(rLeftHand) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rLeftHand.getTier()) + ")";
 			SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 			if (rLeftHand.getWeaponType() != Weapon::WeaponType::SHIELD)
@@ -641,7 +706,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_DEXTERITY_SCALE], SW_SHOW);
 			ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_ABILITY], SW_SHOW);
 
-			buf = l.getArmourTypeName(rArmour);
+			buf = l.getArmourTypeName(rArmour) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rArmour.getTier()) + ")";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 			buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour.getTotalDefense());
@@ -852,7 +917,86 @@ void CityMenu::resizeMenu(int cx, int cy)
 
 	case Game::Background::CITY_MENU_MARKET:
 	{
-		// TODO
+		const int BIG_STAT_WIDTH = 505, STAT_HEIGHT = 30,
+				  STAT_WIDTH = 278,
+				  DISTANCE = 9,
+				  ITEM_BUT_WIDTH = 120, ITEM_BUT_HEIGHT = 97,
+				  ITEM_STAT_WIDTH = 120, ITEM_STAT_HEIGHT = 20;
+
+		MoveWindow(hSubItems[MARKET_STAT_MARKET], cx - BIG_STAT_WIDTH / 2, STAT_HEIGHT + DISTANCE, BIG_STAT_WIDTH, STAT_HEIGHT, TRUE);
+
+		// Player's inventory
+		x = DISTANCE * 2, y = ITEM_BUT_HEIGHT + DISTANCE * 2;
+		MoveWindow(hSubItems[MARKET_STAT_INVENTORY], x, y - STAT_HEIGHT - DISTANCE, BIG_STAT_WIDTH, STAT_HEIGHT, TRUE);
+		Inventory& playerInventory = *game.getPlayer().getInventory();
+		int inventorySize = playerInventory.size();
+		for (i = 0; i < inventorySize; i++)
+		{
+			MoveWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i], x, y, ITEM_BUT_WIDTH, ITEM_BUT_HEIGHT, TRUE);
+			MoveWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i], x, y + ITEM_BUT_HEIGHT, ITEM_STAT_WIDTH, ITEM_STAT_HEIGHT, TRUE);
+
+			x += ITEM_BUT_WIDTH + DISTANCE;
+			if (i % 4 == 3)
+			{
+				x -= (ITEM_BUT_WIDTH + DISTANCE) * 4;
+				y += ITEM_BUT_WIDTH + DISTANCE;
+			}
+		}
+
+		// Trader's inventory
+		x = cx + ITEM_BUT_WIDTH + DISTANCE * 2, y = ITEM_BUT_HEIGHT + DISTANCE * 2;
+		MoveWindow(hSubItems[MARKET_STAT_TRADER_INVENTORY], x, y - STAT_HEIGHT - DISTANCE, BIG_STAT_WIDTH, STAT_HEIGHT, TRUE);
+		Inventory& traderInventory = *game.getWorldMap().getCurrentCity().getTrader().getInventory();
+		inventorySize = traderInventory.size();
+		for (i = 0; i < inventorySize; i++)
+		{
+			MoveWindow(hSubItems[MARKET_BUT_TRADER_ITEM1 + i], x, y, ITEM_BUT_WIDTH, ITEM_BUT_HEIGHT, TRUE);
+			MoveWindow(hSubItems[MARKET_STAT_TRADER_ITEM1 + i], x, y + ITEM_BUT_HEIGHT, ITEM_STAT_WIDTH, ITEM_STAT_HEIGHT, TRUE);
+
+			x += ITEM_BUT_WIDTH + DISTANCE;
+			if (i % 4 == 3)
+			{
+				x -= (ITEM_BUT_WIDTH + DISTANCE) * 4;
+				y += ITEM_BUT_WIDTH + DISTANCE;
+			}
+		}
+
+		// Item stats
+		x = 534, y = 115;
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_TYPE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + DISTANCE;
+
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_TIER], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + DISTANCE;
+
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_DAMAGE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_DEFENSE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_SHIELD_CHANCE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + DISTANCE;
+
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_STRENGTH_SCALE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_SHIELD_BLOCK_DEFENSE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + DISTANCE;
+
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_DEXTERITY_SCALE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + DISTANCE;
+		
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_ARMOUR_ABILITY], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + DISTANCE;
+
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_VALUE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + DISTANCE;
+
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_QUANTITY], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + DISTANCE;
+
+		MoveWindow(hSubItems[MARKET_STAT_ITEM_TOTAL_VALUE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + DISTANCE;
+
+		// Other buttons
+		MoveWindow(hSubItems[MARKET_BUT_SELL], cx - 100, 600, 200, 30, TRUE);
+		MoveWindow(hSubItems[MARKET_BUT_BUY], cx - 100, 600, 200, 30, TRUE);
+		MoveWindow(hSubItems[MARKET_BUT_BACK], cx - 150, 660, 300, 30, TRUE);
 	}
 	break;
 
@@ -1078,7 +1222,34 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_MARKET])
 			{
-				// TODO
+				// Hiding all windows
+				for (HWND hItem : hItems)
+					ShowWindow(hItem, SW_HIDE);
+
+				// Erasing previous sub menu items
+				for (HWND hItem : hSubItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubItems.clear();
+
+				// Creating new sub menu items
+				hSubItems.resize(MARKET_ITEM_NUMBER);
+
+				for (i = MARKET_STAT_MARKET; i <= MARKET_STAT_TRADER_ITEM14; i++)
+					hSubItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				for (i = MARKET_BUT_SELL; i <= MARKET_BUT_BACK; i++)
+					hSubItems[i] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				for (int i = MARKET_STAT_ITEM_TYPE; i <= MARKET_STAT_ITEM_TOTAL_VALUE; i++)
+					ShowWindow(hSubItems[i], SW_HIDE);
+
+				ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_BUY], SW_HIDE);
+
+				game.setBackground(Game::Background::CITY_MENU_MARKET);
+
+				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_CHARACTER])
 			{
@@ -1095,7 +1266,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(CHARACTER_ITEM_NUMBER);
 
-				int i;
 				for (i = CHARACTER_STAT_NAME; i <= CHARACTER_STAT_INVENTORY_ITEM14_NAME; i++)
 					hSubItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
@@ -1250,7 +1420,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Right hand
 					if (rPlayer.getRightHand())
 					{
-						buf = l.getWeaponTypeName(*rPlayer.getRightHand());
+						buf = l.getWeaponTypeName(*rPlayer.getRightHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getRightHand()->getTier()) + ")";
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
@@ -1266,7 +1436,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Left hand
 					if (rPlayer.getLeftHand())
 					{
-						buf = l.getWeaponTypeName(*rPlayer.getLeftHand());
+						buf = l.getWeaponTypeName(*rPlayer.getLeftHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getLeftHand()->getTier()) + ")";
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 						if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
@@ -1298,7 +1468,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Armour
 					if (rPlayer.getArmour())
 					{
-						buf = l.getArmourTypeName(*rPlayer.getArmour());
+						buf = l.getArmourTypeName(*rPlayer.getArmour()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getArmour()->getTier()) + ")";
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 						buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
@@ -1484,9 +1654,184 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		}
 		break;
 
-		case ArenaItem::ARENA_BUT_BET:
+		case Game::Background::CITY_MENU_ARENA_BET:
 		{
 			// TODO
+		}
+		break;
+
+		case Game::Background::CITY_MENU_MARKET:
+		{
+			// Player's items buttons
+			for (i = MARKET_BUT_INVENTORY_ITEM1; i <= MARKET_BUT_INVENTORY_ITEM14; i++)
+			{
+				if ((HWND)lp == hSubItems[i])
+				{
+
+					if (selectedItem != -1)
+					{
+						int id = selectedItem;
+						selectedItem = i;
+						updateWindow(hSubItems[id]);
+					}
+					else
+						selectedItem = i;
+					auto itemPair = (*game.getPlayer().getInventory())[i - MARKET_BUT_INVENTORY_ITEM1];
+					unique_ptr<Item>& rItem = itemPair.first;
+
+					if (rItem->getItemType() != Item::ItemType::GOLD)
+					{
+						ShowWindow(hSubItems[MARKET_BUT_SELL], SW_SHOW);
+						ShowWindow(hSubItems[MARKET_BUT_BUY], SW_HIDE);
+					}
+					else
+					{
+						ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
+						ShowWindow(hSubItems[MARKET_BUT_BUY], SW_HIDE);
+					}
+
+					outputMarketItem(hWnd, rItem, itemPair.second);
+				}
+			}
+
+			// Trader's items button
+			for (i = MARKET_BUT_TRADER_ITEM1; i <= MARKET_BUT_TRADER_ITEM14; i++)
+			{
+				if ((HWND)lp == hSubItems[i])
+				{
+					if (selectedItem != -1)
+					{
+						int id = selectedItem;
+						selectedItem = i;
+						updateWindow(hSubItems[id]);
+					}
+					else
+						selectedItem = i;
+					auto itemPair = (*game.getWorldMap().getCurrentCity().getTrader().getInventory())[i - MARKET_BUT_TRADER_ITEM1];
+					unique_ptr<Item>& rItem = itemPair.first;
+
+					if (rItem->getItemType() != Item::ItemType::GOLD)
+					{
+						ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
+						ShowWindow(hSubItems[MARKET_BUT_BUY], SW_SHOW);
+					}
+					else
+					{
+						ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
+						ShowWindow(hSubItems[MARKET_BUT_BUY], SW_HIDE);
+					}
+					outputMarketItem(hWnd, rItem, itemPair.second);
+				}
+			}
+
+			if ((HWND)lp == hSubItems[MARKET_BUT_BUY])
+			{
+				// Get inventories
+				Inventory& rPlayerInventory = *game.getPlayer().getInventory();
+				if (rPlayerInventory.size() < MAX_INVENTORY_SIZE)
+				{
+					Inventory& rTraderInventory = *game.getWorldMap().getCurrentCity().getTrader().getInventory();
+					// Get item
+					auto itemPair = rTraderInventory[selectedItem - MARKET_BUT_TRADER_ITEM1];
+					unique_ptr<Item>& rItem = itemPair.first;
+					// Get cost
+					int cost = rItem->getValue();
+
+					// Check if player has enough gold
+					int playerGold = rPlayerInventory.getItemQuantity(0); // 0 is ID for gold
+
+					if (cost < playerGold)
+					{
+						// Get item ID
+						int id = rItem->getID();
+						// Make copy of item
+						unique_ptr<Item> itemCopy = rTraderInventory.getItem(id)->clone();
+						// Remove item from trader
+						rTraderInventory.removeItem(id);
+						// Add item copy to player
+						rPlayerInventory.addItem(move(itemCopy));
+						// Remove gold from player
+						rPlayerInventory.removeItem(0, cost); // 0 is ID for gold
+						// Add gold to trader
+						rTraderInventory.addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), cost);
+
+						// Update windows
+						selectedItem = -1;
+						for (int i = MARKET_STAT_ITEM_TYPE; i <= MARKET_STAT_ITEM_TOTAL_VALUE; i++)
+							ShowWindow(hSubItems[i], SW_HIDE);
+						ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
+						ShowWindow(hSubItems[MARKET_BUT_BUY], SW_HIDE);
+						ShowWindow(hSubItems[MARKET_BUT_TRADER_ITEM1 + rTraderInventory.size()], SW_HIDE);
+						ShowWindow(hSubItems[MARKET_STAT_TRADER_ITEM1 + rTraderInventory.size()], SW_HIDE);
+						game.updateBackground();
+						updateWindow(hWnd);
+					}
+					else
+						MessageBox(hWnd, l.getMessage(Localized::PLAYER_DOESNT_HAVE_GOLD).c_str(), l.getMessage(Localized::CANT_BUY_ITEM).c_str(), MB_OK | MB_ICONINFORMATION);
+				}
+				else
+					MessageBox(hWnd, l.getMessage(Localized::PLAYER_DOESNT_HAVE_STORAGE).c_str(), l.getMessage(Localized::CANT_BUY_ITEM).c_str(), MB_OK | MB_ICONINFORMATION);
+				
+			}
+
+			if ((HWND)lp == hSubItems[MARKET_BUT_SELL])
+			{
+				// Get inventories
+				Inventory& rPlayerInventory = *game.getPlayer().getInventory();
+				Inventory& rTraderInventory = *game.getWorldMap().getCurrentCity().getTrader().getInventory();
+				// Get item
+				auto itemPair = rPlayerInventory[selectedItem - MARKET_BUT_INVENTORY_ITEM1];
+				unique_ptr<Item>& rItem = itemPair.first;
+				// Get cost
+				int cost = rItem->getValue();
+
+				// Check if trader has enough gold
+				int traderGold = rTraderInventory.getItemQuantity(0); // 0 is ID for gold
+
+				if (cost < traderGold)
+				{
+					// Remove item
+					rPlayerInventory.removeItem(rItem->getID());
+					// Remove gold from trader
+					rTraderInventory.removeItem(0, cost); // 0 is ID for gold
+					// Add gold to player
+					rPlayerInventory.addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), cost);
+
+					// Update windows
+					selectedItem = -1;
+					for (int i = MARKET_STAT_ITEM_TYPE; i <= MARKET_STAT_ITEM_TOTAL_VALUE; i++)
+						ShowWindow(hSubItems[i], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_BUT_BUY], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + rPlayerInventory.size()], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + rPlayerInventory.size()], SW_HIDE);
+					game.updateBackground();
+					updateWindow(hWnd);
+				}
+				else
+					MessageBox(hWnd, l.getMessage(Localized::TRADER_DOESNT_HAVE_GOLD).c_str(), l.getMessage(Localized::CANT_SELL_ITEM).c_str(), MB_OK | MB_ICONINFORMATION);
+
+			}
+
+			// Back button
+			if ((HWND)lp == hSubItems[MARKET_BUT_BACK] || LOWORD(wp) == IDCANCEL)
+			{
+				// Destroying all buttons
+				for (HWND hItem : hSubItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubItems.clear();
+
+				// Showing main menu buttons
+				for (HWND hItem : hItems)
+					ShowWindow(hItem, SW_SHOW);
+
+				game.setBackground(Game::Background::CITY_MENU);
+				selectedItem = -1;
+
+				updateWindow(hWnd);
+				break;
+			}
 		}
 		break;
 
@@ -2399,6 +2744,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 			}
 
+			// Unequip item
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM])
 			{
 				// Adjust item index for button index
@@ -2455,6 +2801,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 			}
 
+			// Equip item
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM])
 			{
 				// Adjust item index for button index
@@ -2485,12 +2832,14 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 			}
 
+			// Inspect item
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM])
 			{
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE);
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE);
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
+				game.updateBackground();
 
 				// 1. Determine which item to inspect
 				unique_ptr<Item> pItem;
@@ -2531,46 +2880,11 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					quantity = (*game.getPlayer().getInventory()).getItemQuantity(pItem->getID());
 					break;
 				}
-				// 2. Determine item type
-				string MBName = "";
-				string MBDescription = "";
-				switch (pItem->getItemType())
-				{
-				case Item::ItemType::WEAPON:
-					if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
-					{
-						MBName += l.getWeaponTypeName(*weapon);
-						MBDescription += l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getTotalDamage()) + "\n";
-						MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(weapon->getStrengthAdditionPercentage()) + "%" + "\n";
-						MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(weapon->getDexterityAdditionPercentage()) + "%" + "\n";
-					}
-					break;
-
-				case Item::ItemType::ARMOUR:
-					if (auto armour = dynamic_cast<Armour*>(pItem.get()))
-					{
-						MBName += l.getArmourTypeName(*armour);
-						MBDescription += l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(armour->getTotalDefense()) + "\n";
-						MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(armour->getStrengthAdditionPercentage()) + "%" + "\n";
-						MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(armour->getDexterityAdditionPercentage()) + "%" + "\n";
-
-						if (armour->getArmourType() == Armour::ArmourType::LIGHT)
-							MBDescription += l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(armour->getEvasionProbAddition()) + "%" + "\n";
-						else
-							MBDescription += l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(armour->getStunProbSubtraction()) + "%" + "\n";
-					}
-					break;
-				}
-
-				MBDescription += l.getMessage(Localized::VALUE) + ": " + to_string(pItem->getValue()) + "\n";
-				MBDescription += l.getMessage(Localized::QUANTITY) + ": " + to_string(quantity) +"\n";
-				MBDescription += l.getMessage(Localized::TOTAL_VALUE) + ": " + to_string(pItem->getValue() * quantity) +"\n";
-
-				MessageBox(hWnd, MBDescription.c_str(), MBName.c_str(), MB_OK | MB_ICONINFORMATION);
-
-				game.updateBackground();
+				// 2. Output item based on type
+				inspectItem(hWnd, move(pItem), quantity);
 			}
 
+			// Destroy item
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM])
 			{
 				// Adjust item index for button index
@@ -2622,6 +2936,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItem, SW_SHOW);
 
 				game.setBackground(Game::Background::CITY_MENU);
+				selectedItem = -1;
 
 				updateWindow(hWnd);
 				break;
@@ -2652,7 +2967,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	}	
 }
 
-void CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (m)
 	{
@@ -2667,76 +2982,198 @@ void CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
 			SetBkMode(hdc, TRANSPARENT);
 
-			// Assing background and text color
-			SetTextColor(hdc, COLOR_WHITE);
-			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-			// Draw text
+			// Get text
 			int len = GetWindowTextLength(item->hwndItem);
 			buf.resize(len + 1); // Resize buffer to contain button text
 			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
+
+			SetTextColor(hdc, COLOR_WHITE); // Set basic text color
 
 			// Checking window type to draw it using correct styles
-
-			if (game.getBackground() == Game::Background::CITY_MENU_CHARACTER)
+			if (game.getBackground() == Game::Background::CITY_MENU && item->hwndItem == hItems[STAT_CITY_NAME])
+			{
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
+				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+				return true;
+			}
+			else if (game.getBackground() == Game::Background::CITY_MENU_CHARACTER)
 			{
 				// Equipment
 				if (item->hwndItem == hSubItems[CHARACTER_BUT_RIGHT_HAND])
 				{
 					drawEquippedItem(hWnd, item, 0); // 0 -- right hand
-					return;
+					return true;
 				}
 				if (item->hwndItem == hSubItems[CHARACTER_BUT_LEFT_HAND])
 				{
 					drawEquippedItem(hWnd, item, 1); // 1 -- left hand
-					return;
+					return true;
 				}
 				if (item->hwndItem == hSubItems[CHARACTER_BUT_ARMOUR])
 				{
 					drawEquippedItem(hWnd, item, 2); // 2 -- armour
-					return;
+					return true;
 				}
 				// Inventory
 				for (int i = CHARACTER_BUT_INVENTORY_ITEM1; i <= CHARACTER_BUT_INVENTORY_ITEM14; i++)
 				{
 					if (item->hwndItem == hSubItems[i])
 					{
-						drawInventoryItem(hWnd, item, i);
-						return;
+						drawInventoryItem(hWnd, item, *game.getPlayer().getInventory(), i - CHARACTER_BUT_INVENTORY_ITEM1);
+						return true;
 					}
 				}
 			}
-			if (game.getBackground() == Game::Background::CITY_MENU_ARENA_FIGHT &&
+			else if (game.getBackground() == Game::Background::CITY_MENU_ARENA_FIGHT &&
 				selectedOpponent != -1 &&
 				item->hwndItem == hSubMenuItems[selectedOpponent])
 			{
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
 				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				return true;
 			}
-			else if (item->CtlType == ODT_STATIC) // Static windows
+			else if (game.getBackground() == Game::Background::CITY_MENU_MARKET)
 			{
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-			}
-			else if (strcmp(str, ("Edit")) == 0) // Edit windows
-			{
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-			}
-			else if (item->CtlType == ODT_BUTTON) // Button windows
-			{
-				if (item->itemState & ODS_SELECTED)
+				int i;
+				bool isPushed = false;
+				// Player inventory
+				for (i = MARKET_BUT_INVENTORY_ITEM1; i <= MARKET_BUT_INVENTORY_ITEM14; i++)
 				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+					if (item->hwndItem == hSubItems[i])
+					{
+						if (selectedItem != -1 && item->hwndItem == hSubItems[selectedItem])
+							isPushed = true;
+
+						drawInventoryItem(hWnd, item, *game.getPlayer().getInventory(), i - MARKET_BUT_INVENTORY_ITEM1, isPushed);
+						return true;
+					}
 				}
-				else
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				// Trader inventory
+				for (i = MARKET_BUT_TRADER_ITEM1; i <= MARKET_BUT_TRADER_ITEM14; i++)
+				{
+					if (item->hwndItem == hSubItems[i])
+					{
+						if (selectedItem != -1 && item->hwndItem == hSubItems[selectedItem])
+							isPushed = true;
+						
+						drawInventoryItem(hWnd, item, *game.getWorldMap().getCurrentCity().getTrader().getInventory(), i - MARKET_BUT_TRADER_ITEM1, isPushed);
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		break;
+	}
+}
+
+void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity)
+{
+	for (int i = MARKET_STAT_ITEM_TYPE; i <= MARKET_STAT_ITEM_TOTAL_VALUE; i++)
+		ShowWindow(hSubItems[i], SW_HIDE);
+	game.updateBackground();
+
+	// Item type
+	ShowWindow(hSubItems[MARKET_STAT_ITEM_TYPE], SW_SHOW);
+	SendMessage(hSubItems[MARKET_STAT_ITEM_TYPE], WM_SETTEXT, 0, (LPARAM)l.getItemTypeName(*rItem).c_str());
+	switch (rItem->getItemType())
+	{
+	case Item::ItemType::WEAPON:
+		if (auto weapon = dynamic_cast<Weapon*>(rItem.get()))
+		{
+			// Item tier
+			ShowWindow(hSubItems[MARKET_STAT_ITEM_TIER], SW_SHOW);
+			buf = l.getMessage(Localized::ITEM_TIER) + " " + to_string(weapon->getTier());
+			SendMessage(hSubItems[MARKET_STAT_ITEM_TIER], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			switch (weapon->getWeaponType())
+			{
+			default: // Default for every weapon type except shield
+				// Damage
+				ShowWindow(hSubItems[MARKET_STAT_ITEM_DAMAGE], SW_SHOW);
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getDamage());
+				SendMessage(hSubItems[MARKET_STAT_ITEM_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				// Strength scale
+				ShowWindow(hSubItems[MARKET_STAT_ITEM_STRENGTH_SCALE], SW_SHOW);
+				buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(weapon->getStrengthAdditionPercentage()) + "%";
+				SendMessage(hSubItems[MARKET_STAT_ITEM_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				// Dexterity scale
+				ShowWindow(hSubItems[MARKET_STAT_ITEM_DEXTERITY_SCALE], SW_SHOW);
+				buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(weapon->getDexterityAdditionPercentage()) + "%";
+				SendMessage(hSubItems[MARKET_STAT_ITEM_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				break;
+			case Weapon::WeaponType::SHIELD:
+				// Block chance
+				ShowWindow(hSubItems[MARKET_STAT_ITEM_SHIELD_CHANCE], SW_SHOW);
+				buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(weapon->getShieldProbAddition()) + "%";
+				SendMessage(hSubItems[MARKET_STAT_ITEM_SHIELD_CHANCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				// Block defense
+				ShowWindow(hSubItems[MARKET_STAT_ITEM_SHIELD_BLOCK_DEFENSE], SW_SHOW);
+				buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(weapon->getShieldDefPercentAddition()) + "%";
+				SendMessage(hSubItems[MARKET_STAT_ITEM_SHIELD_BLOCK_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				break;
+			}
+		}
+		break;
+
+	case Item::ItemType::ARMOUR:
+		if (auto armour = dynamic_cast<Armour*>(rItem.get()))
+		{
+			// Item tier
+			ShowWindow(hSubItems[MARKET_STAT_ITEM_TIER], SW_SHOW);
+			buf = l.getMessage(Localized::ITEM_TIER) + " " + to_string(armour->getTier());
+			SendMessage(hSubItems[MARKET_STAT_ITEM_TIER], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			// Defense
+			ShowWindow(hSubItems[MARKET_STAT_ITEM_DEFENSE], SW_SHOW);
+			buf = l.getMessage(Localized::ARMOUR_DEFENSE) + " " + to_string(armour->getDefense());
+			SendMessage(hSubItems[MARKET_STAT_ITEM_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			// Strength scale
+			ShowWindow(hSubItems[MARKET_STAT_ITEM_STRENGTH_SCALE], SW_SHOW);
+			buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(armour->getStrengthAdditionPercentage()) + "%";
+			SendMessage(hSubItems[MARKET_STAT_ITEM_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			// Dexterity scale
+			ShowWindow(hSubItems[MARKET_STAT_ITEM_DEXTERITY_SCALE], SW_SHOW);
+			buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(armour->getDexterityAdditionPercentage()) + "%";
+			SendMessage(hSubItems[MARKET_STAT_ITEM_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			switch (armour->getArmourType())
+			{
+			case Armour::ArmourType::LIGHT:
+				// Evasion chance
+				ShowWindow(hSubItems[MARKET_STAT_ITEM_ARMOUR_ABILITY], SW_SHOW);
+				buf = l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(armour->getEvasionProbAddition()) + "%";
+				SendMessage(hSubItems[MARKET_STAT_ITEM_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				break;
+			case Armour::ArmourType::HEAVY:
+				// Stun resistance chance
+				ShowWindow(hSubItems[MARKET_STAT_ITEM_ARMOUR_ABILITY], SW_SHOW);
+				buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(armour->getStunProbSubtraction()) + "%";
+				SendMessage(hSubItems[MARKET_STAT_ITEM_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				break;
 			}
 		}
 		break;
 	}
+
+	ShowWindow(hSubItems[MARKET_STAT_ITEM_VALUE], SW_SHOW);
+	buf = l.getMessage(Localized::VALUE) + ": " + to_string(rItem->getValue());
+	SendMessage(hSubItems[MARKET_STAT_ITEM_VALUE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+	ShowWindow(hSubItems[MARKET_STAT_ITEM_QUANTITY], SW_SHOW);
+	buf = l.getMessage(Localized::QUANTITY) + ": " + to_string(quantity);
+	SendMessage(hSubItems[MARKET_STAT_ITEM_QUANTITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+	ShowWindow(hSubItems[MARKET_STAT_ITEM_TOTAL_VALUE], SW_SHOW);
+	buf = l.getMessage(Localized::TOTAL_VALUE) + ": " + to_string(rItem->getValue() * quantity);
+	SendMessage(hSubItems[MARKET_STAT_ITEM_TOTAL_VALUE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 }
 
 void CityMenu::outputOpponent(HWND hWnd, int n)
@@ -2787,7 +3224,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	// Right hand
 	if (rOpponent.getRightHand())
 	{
-		buf = l.getWeaponTypeName(*rOpponent.getRightHand());
+		buf = l.getWeaponTypeName(*rOpponent.getRightHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rOpponent.getRightHand()->getTier()) + ")";
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rOpponent.getRightHand()->getTotalDamage());
@@ -2797,7 +3234,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	// Left hand
 	if (rOpponent.getLeftHand())
 	{
-		buf = l.getWeaponTypeName(*rOpponent.getLeftHand());
+		buf = l.getWeaponTypeName(*rOpponent.getLeftHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rOpponent.getLeftHand()->getTier()) + ")";
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 		if (rOpponent.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
@@ -2834,7 +3271,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	// Armour
 	if (rOpponent.getArmour())
 	{
-		buf = l.getArmourTypeName(*rOpponent.getArmour());
+		buf = l.getArmourTypeName(*rOpponent.getArmour()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rOpponent.getArmour()->getTier()) + ")";
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rOpponent.getArmour()->getTotalDefense());
@@ -2867,18 +3304,15 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_FAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 }
 
-void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, int buttonIndex)
+void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, Inventory& rInventory, int buttonIndex, bool isPushed)
 {
-	// Adjust for button id
-	buttonIndex -= CHARACTER_BUT_INVENTORY_ITEM1;
-
 	// Selecting image for button based on item type
 	const string DIRECTORY = "Data/Image/Items/",
 				 FORMAT = ".bmp";
 	string path = "";
 
 	// Getting item represented by button
-	auto itemPair = (*game.getPlayer().getInventory())[buttonIndex];
+	auto itemPair = rInventory[buttonIndex];
 	unique_ptr<Item>& rItem = itemPair.first;
 
 	switch (rItem->getItemType())
@@ -2919,7 +3353,7 @@ void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, int buttonInd
 	default: path = DIRECTORY + "error"; break;
 	}
 
-	if (item->itemState & ODS_SELECTED) // Pushed button
+	if (item->itemState & ODS_SELECTED || isPushed) // Pushed button
 		path += "Pushed" + FORMAT;
 	else // Unpushed button
 		path += FORMAT;
@@ -3011,6 +3445,45 @@ void CityMenu::drawEquippedItem(HWND hWnd, LPDRAWITEMSTRUCT item, int itemIndex)
 	FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
 	// Drawing edge
 	DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
+}
+
+void CityMenu::inspectItem(HWND hWnd, unique_ptr<Item> pItem, int quantity)
+{
+	string MBName = "";
+	string MBDescription = "";
+	switch (pItem->getItemType())
+	{
+	case Item::ItemType::WEAPON:
+		if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
+		{
+			MBName += l.getWeaponTypeName(*weapon) + " (" + l.getMessage(Localized::ITEM_TIER) + "  " + to_string(weapon->getTier()) + ")";
+			MBDescription += l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getTotalDamage()) + "\n";
+			MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(weapon->getStrengthAdditionPercentage()) + "%" + "\n";
+			MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(weapon->getDexterityAdditionPercentage()) + "%" + "\n";
+		}
+		break;
+
+	case Item::ItemType::ARMOUR:
+		if (auto armour = dynamic_cast<Armour*>(pItem.get()))
+		{
+			MBName += l.getArmourTypeName(*armour) + " (" + l.getMessage(Localized::ITEM_TIER) + "  " + to_string(armour->getTier()) + ")";
+			MBDescription += l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(armour->getTotalDefense()) + "\n";
+			MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(armour->getStrengthAdditionPercentage()) + "%" + "\n";
+			MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(armour->getDexterityAdditionPercentage()) + "%" + "\n";
+
+			if (armour->getArmourType() == Armour::ArmourType::LIGHT)
+				MBDescription += l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(armour->getEvasionProbAddition()) + "%" + "\n";
+			else
+				MBDescription += l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(armour->getStunProbSubtraction()) + "%" + "\n";
+		}
+		break;
+	}
+
+	MBDescription += l.getMessage(Localized::VALUE) + ": " + to_string(pItem->getValue()) + "\n";
+	MBDescription += l.getMessage(Localized::QUANTITY) + ": " + to_string(quantity) + "\n";
+	MBDescription += l.getMessage(Localized::TOTAL_VALUE) + ": " + to_string(pItem->getValue() * quantity) + "\n";
+
+	MessageBox(hWnd, MBDescription.c_str(), MBName.c_str(), MB_OK | MB_ICONINFORMATION);
 }
 
 void CityMenu::manageInventory(HWND hWnd, int selectedItemm)

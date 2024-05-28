@@ -16,14 +16,26 @@ public:
 	};
 
 	Armour();
-	Armour(const Item&, int, ArmourType, int, int, int, int, int);
+	Armour(
+		const Item&,
+		int tier_,
+		int defense_,
+		ArmourType,
+		int defenseAddition_,
+		int strAdditionPerc_,
+		int dexAdditionPerc_,
+		int evasionProbAddition_,
+		int stunProbSubtraction_
+	);
 	Armour(const Armour&);
 	Armour& operator=(const Armour&);
 	virtual ~Armour();
+	unique_ptr<Item> clone() const;
 
 	void update(int, int);
 	int getTotalDefense() const;
 
+	int getTier() const;
 	int getDefense() const;
 	ArmourType getArmourType() const;
 	int getDefAddition() const;
@@ -32,6 +44,7 @@ public:
 	int getEvasionProbAddition() const;
 	int getStunProbSubtraction() const;
 private:
+	int tier;
 	int defense;
 
 	ArmourType type;

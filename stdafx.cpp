@@ -96,25 +96,32 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 	fin.close();
 
 	// 2. Generating weapons
-	unique_ptr<Weapon> rightHand = generateWeapon();
+	int itemTier = 0, n = aproximateLevel;
+	// For every 16 levels of NPC increasing it's equipment tier by 1
+	while (n > 0)
+	{
+		itemTier++;
+		n -= 16;
+	}
+	unique_ptr<Weapon> rightHand = generateWeapon(itemTier);
 	unique_ptr<Weapon> leftHand;
 	if (rightHand->getWeaponType() != Weapon::WeaponType::AXE && rightHand->getWeaponType() != Weapon::WeaponType::SPEAR)
 	{
-		leftHand = generateWeapon();
+		leftHand = generateWeapon(itemTier);
 		if (!rightHand->isCompatibleWith(leftHand->getWeaponType()))
 		{
 			if (rand() % 100 < 75)
 			{
 				if (leftHand)
 					leftHand.release();
-				leftHand = generateWeapon(Weapon::SHIELD);
+				leftHand = generateWeapon(itemTier, Weapon::SHIELD);
 			}
 			else if (rand() % 100 < 75)
 				do
 				{
 					if (leftHand)
 						leftHand.release();
-					leftHand = generateWeapon();
+					leftHand = generateWeapon(itemTier);
 				} while (!rightHand->isCompatibleWith(leftHand->getWeaponType()));
 			else if (leftHand)
 			{
@@ -175,7 +182,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 		leftHand->update(attributes[0], attributes[2]);
 
 	// Armour
-	unique_ptr<Armour> armour = generateArmour();
+	unique_ptr<Armour> armour = generateArmour(itemTier);
 
 	// Updating armour defense depending on stat scale
 	armour->update(attributes[0], attributes[2]);
@@ -194,7 +201,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 			),
 			BASIC_HP,
 			BASIC_HP,
-			Inventory(),
+			make_unique<Inventory>(),
 			move(rightHand),
 			move(leftHand),
 			move(armour)
@@ -208,6 +215,75 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 	npc.updateMaxHP();
 
 	return make_unique<NPC>(npc);
+}
+
+unique_ptr<HarmlessNPC> generateTrader(int level)
+{
+	//// 1. Generating name
+	//const string PATH_BASE = "Data/Language/Names/", FORMAT = ".lang";
+	//ifstream fin;
+	//// Open file containing roman first names
+	//switch (l.getLanguage())
+	//{
+	//default: case Language::ENGLISH: fin.open(PATH_BASE + "En_FirstNames" + FORMAT); break;
+	//case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_FirstNames" + FORMAT); break;
+	//case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_FirstNames" + FORMAT); break;
+	//}
+	////if (!fin)
+	////	output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
+
+	//int count = 0;
+	//string line;
+	//while (getline(fin, line)) // Count lines in file
+	//	count++;
+	//int randomFirstName = rand() % count; // Choose random line
+	//fin.close();
+
+	//// Open file containing roman last names
+	//switch (l.getLanguage())
+	//{
+	//default: case Language::ENGLISH: fin.open(PATH_BASE + "En_LastNames" + FORMAT); break;
+	//case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_LastNames" + FORMAT); break;
+	//case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_LastNames" + FORMAT); break;
+	//}
+	////if (!fin)
+	//	//output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
+
+	//count = 0;
+	//while (getline(fin, line)) // Count lines in file
+	//	count++;
+	//int randomLastName = rand() % count; // Choose random line
+	//fin.close();
+
+	// 2. Generating inventory
+	unique_ptr<Inventory> inventory = make_unique<Inventory>();
+
+	// Add gold
+	inventory->addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), 2000 * level);
+	// Add items
+	for (int i = 1; i < MAX_INVENTORY_SIZE; i++)
+	{
+		if (rand() % 100 < 75) // 75% chance to generate weapon
+		{
+			if (rand() % 100 < 75) // 75% chance to generate normal weapon
+				inventory->addItem(generateWeapon(level));
+			else // 25% chance to generate shield
+				inventory->addItem(generateWeapon(level, Weapon::WeaponType::SHIELD));
+		}
+		else // 25% chance to generate armour
+			inventory->addItem(generateArmour(level));
+	}
+
+	HarmlessNPC trader(
+		Statistics(),
+		NamedNPC(
+			1,
+			1
+		),
+		move(inventory)
+	);
+
+	return make_unique<HarmlessNPC>(trader);
 }
 
 //void displayPlayer(const Player& p)
@@ -883,8 +959,36 @@ int getArmourScaleLimit(Armour::ArmourType ttype, Armour::Stat sstat, Limit llim
 	return -1;
 }
 
-unique_ptr<Weapon> generateWeapon(Weapon::WeaponType ttype)
+unique_ptr<Weapon> generateWeapon(int tier, Weapon::WeaponType ttype)
 {
+	int minValue, maxValue;
+	switch (tier)
+	{
+	case 1:
+		minValue = MIN_VALUE_ITEM_LEVEL1;
+		maxValue = MAX_VALUE_ITEM_LEVEL1;
+		break;
+	case 2:
+		minValue = MIN_VALUE_ITEM_LEVEL2;
+		maxValue = MAX_VALUE_ITEM_LEVEL2;
+		break;
+	case 3:
+		minValue = MIN_VALUE_ITEM_LEVEL3;
+		maxValue = MAX_VALUE_ITEM_LEVEL3;
+		break;
+	case 4:
+		minValue = MIN_VALUE_ITEM_LEVEL4;
+		maxValue = MAX_VALUE_ITEM_LEVEL4;
+		break;
+	case 5:
+		minValue = MIN_VALUE_ITEM_LEVEL5;
+		maxValue = MAX_VALUE_ITEM_LEVEL5;
+		break;
+	default:
+		throw out_of_range("Invalid weapon level. Must be between 1 and 5");
+	}
+	int value = minValue + (rand() % (maxValue - minValue + 1));
+
 	if (ttype != Weapon::SHIELD)
 	{
 		Weapon::WeaponType newWeaponType = ttype != Weapon::NUMBER ? ttype : Weapon::WeaponType(rand() % (Weapon::NUMBER - 1));
@@ -899,14 +1003,15 @@ unique_ptr<Weapon> generateWeapon(Weapon::WeaponType ttype)
 		return make_unique<Weapon>(
 			Item(
 				Item::ItemType::WEAPON,
-				rand() % 100 // TODO: Calculate value
+				value
 			),
+			tier,
 			(MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DAM_ADDITION) * handsNeededForWeapon, // Damage
 			// `Weapon::NUMBER - 1` is a shield
 			newWeaponType, // Type
 			0, // Damage addition
-			maxStrAdditionPerc * 3 / 5 + (rand() % (maxStrAdditionPerc / 10 + 1)), // Strength damage addition
-			maxDexAdditionPerc * 3 / 5 + (rand() % (maxDexAdditionPerc / 10 + 1)), // Dexterity damage addition
+			(maxStrAdditionPerc * 3 / 5 + (rand() % (maxStrAdditionPerc / 10 + 1))) * (tier * (100 / MAX_WEAPON_TIER)) / 100, // Strength damage addition
+			(maxDexAdditionPerc * 3 / 5 + (rand() % (maxDexAdditionPerc / 10 + 1))) * (tier * (100 / MAX_WEAPON_TIER)) / 100, // Dexterity damage addition
 			0, // Shield's probability addition
 			0, // Shield's defense percent addition
 			"" // Name
@@ -916,20 +1021,21 @@ unique_ptr<Weapon> generateWeapon(Weapon::WeaponType ttype)
 		return make_unique<Weapon>(
 			Item(
 				Item::ItemType::WEAPON,
-				rand() % 100 // TODO: Calculate value
+				value
 			),
+			tier,
 			0, // Damage
 			Weapon::SHIELD,
 			0, // Damage addition
 			0, // Strength percent addition
 			0, // Dexterity percent addition
-			MIN_SHIELD_PROB_ADDITION + rand() % SHIELD_RAND_PROB_ADDITION, // Shield's probability addition
-			MIN_SHIELD_DEF_PERC_ADDITION + rand() % SHIELD_RAND_DEF_PERC_ADDITION, // Shield's defense percent addition
+			(MIN_SHIELD_PROB_ADDITION + rand() % SHIELD_RAND_PROB_ADDITION) * (tier * (100 / MAX_WEAPON_TIER)) / 100, // Shield's probability addition
+			(MIN_SHIELD_DEF_PERC_ADDITION + rand() % SHIELD_RAND_DEF_PERC_ADDITION) * (tier * (100 / MAX_WEAPON_TIER)) / 100, // Shield's defense percent addition
 			"" // Name
 		);
 }
 
-unique_ptr<Armour> generateArmour(Armour::ArmourType ttype)
+unique_ptr<Armour> generateArmour(int tier, Armour::ArmourType ttype)
 {
 	// Determining the type
 	Armour::ArmourType type = ttype != Armour::NUMBER ? ttype : Armour::ArmourType(rand() % Armour::NUMBER);
@@ -950,16 +1056,45 @@ unique_ptr<Armour> generateArmour(Armour::ArmourType ttype)
 		break;
 	}
 
+	int minValue, maxValue;
+	switch (tier)
+	{
+	case 1:
+		minValue = MIN_VALUE_ITEM_LEVEL1;
+		maxValue = MAX_VALUE_ITEM_LEVEL1;
+		break;
+	case 2:
+		minValue = MIN_VALUE_ITEM_LEVEL2;
+		maxValue = MAX_VALUE_ITEM_LEVEL2;
+		break;
+	case 3:
+		minValue = MIN_VALUE_ITEM_LEVEL3;
+		maxValue = MAX_VALUE_ITEM_LEVEL3;
+		break;
+	case 4:
+		minValue = MIN_VALUE_ITEM_LEVEL4;
+		maxValue = MAX_VALUE_ITEM_LEVEL4;
+		break;
+	case 5:
+		minValue = MIN_VALUE_ITEM_LEVEL5;
+		maxValue = MAX_VALUE_ITEM_LEVEL5;
+		break;
+	default:
+		throw out_of_range("Invalid armour level. Must be between 1 and 5");
+	}
+	int value = minValue + (rand() % (maxValue - minValue + 1));
+
 	return make_unique<Armour>(
 		Item(
 			Item::ItemType::ARMOUR,
-			rand() % 100 // TODO: Calculate value
+			value
 		),
+		tier,
 		MIN_ARMOUR_DEFENSE + 5 + rand() % ARMOUR_RAND_DEF_ADDITION, // Defense
 		type,
 		0, // Defense addition
-		maxStrDefAddition * 3 / 5 + (rand() % maxStrDefAddition / 10 + 1), // Strength defense addition
-		maxDexDefAddition * 3 / 5 + (rand() % maxDexDefAddition / 10 + 1), // Dexterity defense addition
+		(maxStrDefAddition * 3 / 5 + (rand() % maxStrDefAddition / 10 + 1)) * (tier * (100 / MAX_ARMOUR_TIER)) / 100, // Strength defense addition
+		(maxDexDefAddition * 3 / 5 + (rand() % maxDexDefAddition / 10 + 1)) * (tier * (100 / MAX_ARMOUR_TIER)) / 100, // Dexterity defense addition
 		evasionProbAddition,
 		stunProbSubstraction
 	);
@@ -1431,7 +1566,52 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_DRAWITEM:
 	{
-		game.stylizeWindow(hwnd, message, wParam, lParam);
+		// If item has a custom style it is drawn using stylizeWindow()
+		// Otherwise it is drawn using generic style
+		if (!game.stylizeWindow(hwnd, message, wParam, lParam))
+		{
+			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lParam;
+			HDC hdc = item->hDC;
+
+			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+			// Set text font and background
+			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+			SetBkMode(hdc, TRANSPARENT);
+
+			// Get text
+			int len = GetWindowTextLength(item->hwndItem);
+			buf.resize(len + 1); // Resize buffer to contain button text
+			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+
+			SetTextColor(hdc, COLOR_WHITE); // Set basic text color
+
+			if (item->CtlType == ODT_STATIC) // Static windows
+			{
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_STATIC_BROWN)); // Fill background
+				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+			}
+			else if (strcmp(str, ("Edit")) == 0) // Edit windows
+			{
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
+			}
+			else if (item->CtlType == ODT_BUTTON) // Button windows
+			{
+				if (item->itemState & ODS_SELECTED)
+				{
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+				}
+				else
+				{
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED)); // Fill background
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+				}
+			}
+		}
 		return true;
 	}
 	break;

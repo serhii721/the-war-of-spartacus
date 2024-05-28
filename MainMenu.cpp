@@ -727,7 +727,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						{
 							if (leftHand)
 								leftHand.release();
-							leftHand = generateWeapon(Weapon::SHIELD);
+							leftHand = generateWeapon(MIN_WEAPON_TIER, Weapon::SHIELD);
 						}
 						else if (rand() % 100 < 75)
 							do
@@ -777,7 +777,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 							),
 							BASIC_HP,
 							BASIC_HP,
-							Inventory(),
+							make_unique<Inventory>(),
 							move(rightHand),
 							move(leftHand),
 							move(armour)
@@ -792,25 +792,75 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				);
 				game.getPlayer().updateMaxHP();
 
+				// Give player starting gold
+				game.getPlayer().getInventory()->addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), 200);
+
 				nms.reset();
 
 				// World creation
 				unique_ptr<City> pCity;
 				vector<City> cities;
-				vector<int> cityLevels = {
-					ROME_CITY_LEVEL, NAPLES_CITY_LEVEL, METAPONTO_CITY_LEVEL, BOJANO_CITY_LEVEL, ANCONA_CITY_LEVEL,
-					PERUGIA_CITY_LEVEL, FLORENCE_CITY_LEVEL, BOLOGNA_CITY_LEVEL, GENOA_CITY_LEVEL, VENICE_CITY_LEVEL, MILAN_CITY_LEVEL
-				};
 
 				vector<unique_ptr<NPC>> gladiators;
 
 				for (int i = 0; i < MAX_CITIES; i++)
 				{
+					int cityLevel, traderLevel;
+					// Use predetermined parameters for different cities
+					switch (i)
+					{
+					case 0: // Rome
+						cityLevel = ROME_CITY_LEVEL;
+						traderLevel = ROME_TRADER_LEVEL;
+						break;
+					case 1: // Naples
+						cityLevel = NAPLES_CITY_LEVEL;
+						traderLevel = NAPLES_TRADER_LEVEL;
+						break;
+					case 2: // Metaponto
+						cityLevel = METAPONTO_CITY_LEVEL;
+						traderLevel = METAPONTO_TRADER_LEVEL;
+						break;
+					case 3: // Bojano
+						cityLevel = BOJANO_CITY_LEVEL;
+						traderLevel = BOJANO_TRADER_LEVEL;
+						break;
+					case 4: // Ancona
+						cityLevel = ANCONA_CITY_LEVEL;
+						traderLevel = ANCONA_TRADER_LEVEL;
+						break;
+					case 5: // Perugia
+						cityLevel = PERUGIA_CITY_LEVEL;
+						traderLevel = PERUGIA_TRADER_LEVEL;
+						break;
+					case 6: // Florence
+						cityLevel = FLORENCE_CITY_LEVEL;
+						traderLevel = FLORENCE_TRADER_LEVEL;
+						break;
+					case 7: // Bologna
+						cityLevel = BOLOGNA_CITY_LEVEL;
+						traderLevel = BOLOGNA_TRADER_LEVEL;
+						break;
+					case 8: // Genoa
+						cityLevel = GENOA_CITY_LEVEL;
+						traderLevel = GENOA_TRADER_LEVEL;
+						break;
+					case 9: // Venice
+						cityLevel = VENICE_CITY_LEVEL;
+						traderLevel = VENICE_TRADER_LEVEL;
+						break;
+					case 10: // Milan
+						cityLevel = MILAN_CITY_LEVEL;
+						traderLevel = MILAN_TRADER_LEVEL;
+						break;
+					}
+
 					// Creating opponents for arenas of different levels for different cities
 					for (int j = 0; j < OPPONENTS_NUMBER; j++)
-						gladiators.push_back(generateNPC(cityLevels[i]));
-					// Creating cities based of arenas
-					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators), cityLevels[i]);
+						gladiators.push_back(generateNPC(cityLevel));
+
+					// Creating cities
+					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators), cityLevel, *generateTrader(traderLevel));
 					cities.push_back(*pCity);
 					gladiators.clear();
 				}
@@ -1001,52 +1051,13 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	}
 }
 
-void MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (m)
 	{
 		case WM_DRAWITEM:
 		{
-			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
-			HDC hdc = item->hDC;
-
-			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
-
-			// Set text font and background
-			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
-			SetBkMode(hdc, TRANSPARENT);
-
-			// Assing background and text color
-			SetTextColor(hdc, COLOR_WHITE);
-			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-			// Draw text
-			int len = GetWindowTextLength(item->hwndItem);
-			buf.resize(len + 1); // Resize buffer to contain button text
-			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
-
-			// Checking window type to draw it using correct styles
-
-			if (item->CtlType == ODT_STATIC) // Static windows
-			{
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-			}
-			else if (strcmp(str, ("Edit")) == 0) // Edit windows
-			{
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-			}
-			else // Button windows
-			{
-				if (item->itemState & ODS_SELECTED)
-				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-				}
-				else
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-			}
+			return false;
 		}
 		break;
 	}
