@@ -57,7 +57,7 @@ public:
 	void drawWindow(HWND, HDC, int, int);
 	void resizeWindow(int, int);
 	void handleInput(HWND, UINT, WPARAM, LPARAM);
-	void stylizeWindow(HWND, UINT, WPARAM, LPARAM);
+	bool stylizeWindow(HWND, UINT, WPARAM, LPARAM);
 
 	void selectCity(HWND, Item city_);
 };

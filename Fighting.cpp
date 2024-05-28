@@ -696,11 +696,13 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	}
 }
 
-void Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+bool Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (m)
 	{
 	case WM_DRAWITEM:
+		{
+		if (game.getBackground() == Game::Background::FIGHTING_ARENA)
 		{
 			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
 			HDC hdc = item->hDC;
@@ -711,37 +713,35 @@ void Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
 			SetBkMode(hdc, TRANSPARENT);
 
-			// Assing background and text color
-			SetTextColor(hdc, COLOR_WHITE);
-			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-			// Draw text
+			// Get text
 			int len = GetWindowTextLength(item->hwndItem);
 			buf.resize(len + 1); // Resize buffer to contain button text
 			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
 
-			// Checking window type to draw it using correct styles
+			SetTextColor(hdc, COLOR_WHITE); // Set basic text color
 
-			if (item->CtlType == ODT_STATIC) // Static windows
-			{
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-			}
-			else if (strcmp(str, ("Edit")) == 0) // Edit windows
-			{
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
-			}
-			else if (item->CtlType == ODT_BUTTON) // Button windows
+			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED)); // Fill background
+			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+
+			if (item->CtlType == ODT_BUTTON) // Button windows
 			{
 				if (item->itemState & ODS_SELECTED)
 				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
 				}
 				else
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				{
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED)); // Fill background
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+				}
 			}
+			return true;
+		}
+		return false;
 		}
 		break;
 	}

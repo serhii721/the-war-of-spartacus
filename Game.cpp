@@ -310,20 +310,20 @@ void Game::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	}
 }
 
-void Game::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+bool Game::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (displayState)
 	{
 	default:case DisplayState::MENU:
-		menuManager.stylizeWindow(hWnd, m, wp, lp);
+		return menuManager.stylizeWindow(hWnd, m, wp, lp);
 		break;
 
 	case DisplayState::WORLD_MAP:
-		pWorldMap->stylizeWindow(hWnd, m, wp, lp);
+		return pWorldMap->stylizeWindow(hWnd, m, wp, lp);
 		break;
 
 	case DisplayState::FIGHTING:
-		pFighting->stylizeWindow(hWnd, m, wp, lp);
+		return pFighting->stylizeWindow(hWnd, m, wp, lp);
 		break;
 	}
 }

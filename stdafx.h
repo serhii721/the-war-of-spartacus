@@ -40,15 +40,15 @@ using namespace std;
 #include "IMenu.h"
 #include "MainMenu.h"
 #include "GameMenu.h"
+#include "Item.h"
+#include "PairRef.h"
+#include "Inventory.h"
 #include "CityMenu.h"
 #include "MenuManager.h"
 #include "Enums.h"
 #include "Statistics.h"
-#include "Item.h"
 #include "Weapon.h"
 #include "Armour.h"
-#include "PairRef.h"
-#include "Inventory.h"
 #include "Fighter.h"
 #include "Leveling.h"
 #include "Player.h"
@@ -75,6 +75,7 @@ string toStringPrecision(double, int = 2);
 //void outputError(const string&, int = 4);
 
 unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);
+unique_ptr<HarmlessNPC> generateTrader(int level_ = MIN_TRADER_LEVEL);
 //void displayPlayer(const Player&);
 //void displayNPC(const NPC&);
 //void displayNPCBatch(const NPC*, int);
@@ -82,8 +83,8 @@ unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);
 
 int getWeaponScaleLimit(Weapon::WeaponType, Attribute, Limit);
 int getArmourScaleLimit(Armour::ArmourType, Armour::Stat, Limit);
-unique_ptr<Weapon> generateWeapon(Weapon::WeaponType = Weapon::NUMBER);
-unique_ptr<Armour> generateArmour(Armour::ArmourType = Armour::NUMBER);
+unique_ptr<Weapon> generateWeapon(int tier_ = MIN_WEAPON_TIER, Weapon::WeaponType = Weapon::NUMBER);
+unique_ptr<Armour> generateArmour(int tier_ = MIN_ARMOUR_TIER, Armour::ArmourType = Armour::NUMBER);
 //void displayWeapon(const Weapon&);
 //void displayArmour(const Armour&);
 

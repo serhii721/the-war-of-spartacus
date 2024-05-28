@@ -27,14 +27,24 @@ const int EXPERIENCE_PER_LEVEL_INCREASE_PERC = 2; // 5.0% more experience needed
 const int ATTRIBUTES_PER_LEVEL = 5;
 const double MIN_EXPERIENCE_MULTIPLIER = 0.1;
 const double MAX_EXPERIENCE_MULTIPLIER = 2.5;
+// Trader's statistics
+const int MIN_TRADER_LEVEL = 1, MAX_TRADER_LEVEL = 5; // Trader level affects it's goods (weapon and armour level)
 
 // Inventory's statistics
 const int MAX_INVENTORY_SIZE = 14;
 
 // Item's statistics
 const int BASIC_ITEM_VALUE = 1;
+// value for weapon and armour of different levels
+const int MIN_VALUE_ITEM_LEVEL1 = 100, MAX_VALUE_ITEM_LEVEL1 = 300,
+		  MIN_VALUE_ITEM_LEVEL2 = 300, MAX_VALUE_ITEM_LEVEL2 = 500,
+	  	  MIN_VALUE_ITEM_LEVEL3 = 500, MAX_VALUE_ITEM_LEVEL3 = 700,
+		  MIN_VALUE_ITEM_LEVEL4 = 700, MAX_VALUE_ITEM_LEVEL4 = 1000,
+		  MIN_VALUE_ITEM_LEVEL5 = 1000, MAX_VALUE_ITEM_LEVEL5 = 1500;
 
 // Weapon's statistics
+const int MIN_WEAPON_TIER = MIN_TRADER_LEVEL,
+		  MAX_WEAPON_TIER = MAX_TRADER_LEVEL;
 const int MIN_WEAPON_DAMAGE = 20;
 const int WEAPON_RAND_DAM_ADDITION = 6;
 const Weapon::WeaponType BASIC_WEAPON_TYPE = Weapon::SWORD;
@@ -44,6 +54,8 @@ const int MIN_SHIELD_DEF_PERC_ADDITION = 40;
 const int SHIELD_RAND_DEF_PERC_ADDITION = 45;
 
 // Armour's statistics
+const int MIN_ARMOUR_TIER = MIN_TRADER_LEVEL,
+		  MAX_ARMOUR_TIER = MAX_TRADER_LEVEL;
 const Armour::ArmourType BASIC_ARMOUR_TYPE = Armour::LIGHT;
 /*
  * Maximum values of the parameters are assumed.
@@ -90,6 +102,7 @@ const int STARTING_ADDITIONAL_ATTRIBUTES = 30;
 const int ATTRIBUTE_MAX_DIFFERENCE = 10; // How much a player can increase attributes relative to average attributes level
 
 const COLORREF COLOR_WHITE = RGB(255, 255, 255),
+			   COLOR_STATIC_BROWN = RGB(119, 89, 59),
 			   COLOR_ROMAN_RED = RGB(80, 0, 0),
 			   COLOR_ROMAN_RED_PUSHED = RGB(50, 0, 0);
 
@@ -104,3 +117,16 @@ const int ROME_CITY_LEVEL = 80,
 		  GENOA_CITY_LEVEL = 40,
 		  VENICE_CITY_LEVEL = 50,
 		  MILAN_CITY_LEVEL = 60;
+
+const int ROME_TRADER_LEVEL = 5,
+		  NAPLES_TRADER_LEVEL = 5,
+		  METAPONTO_TRADER_LEVEL = 2,
+		  BOJANO_TRADER_LEVEL = 2,
+	  	  ANCONA_TRADER_LEVEL = 2,
+		  PERUGIA_TRADER_LEVEL = 1,
+		  FLORENCE_TRADER_LEVEL = 3,
+		  BOLOGNA_TRADER_LEVEL = 2,
+		  GENOA_TRADER_LEVEL = 3,
+		  VENICE_TRADER_LEVEL = 4,
+		  MILAN_TRADER_LEVEL = 4;
+

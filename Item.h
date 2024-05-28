@@ -19,6 +19,7 @@ public:
 	Item(const Item&);
 	Item& operator=(const Item&);
 	virtual ~Item();
+	virtual unique_ptr<Item> clone() const;
 
 	bool operator<(const Item&) const;
 private:

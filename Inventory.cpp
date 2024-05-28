@@ -8,8 +8,8 @@ Inventory::Inventory(const map<int, pair<unique_ptr<Item>, int>>& iitems)
 	for (const auto& pair : iitems)
 	{
 		// Create new unique_ptr and move it into pair
-		unique_ptr<Item> newItem = pair.second.first ? make_unique<Item>(*pair.second.first) : nullptr;
-		items.emplace(pair.first, make_pair(move(newItem), pair.second.second));
+		unique_ptr<Item> newItem = pair.second.first ? pair.second.first->clone() : nullptr;
+		items.emplace(newItem->getID(), make_pair(move(newItem), pair.second.second));
 	}
 }
 
@@ -18,8 +18,8 @@ Inventory::Inventory(const Inventory& I)
 	for (const auto& pair : I.items)
 	{
 		// Create new unique_ptr and move it into pair
-		unique_ptr<Item> newItem = pair.second.first ? make_unique<Item>(*pair.second.first) : nullptr;
-		items.emplace(pair.first, make_pair(move(newItem), pair.second.second));
+		unique_ptr<Item> newItem = pair.second.first ? pair.second.first->clone() : nullptr;
+		items.emplace(newItem->getID(), make_pair(move(newItem), pair.second.second));
 	}
 }
 
@@ -32,8 +32,8 @@ Inventory& Inventory::operator=(const Inventory& I)
 	for (const auto& pair : I.items)
 	{
 		// Create new unique_ptr and move it into pair
-		unique_ptr<Item> newItem = pair.second.first ? make_unique<Item>(*pair.second.first) : nullptr;
-		items.emplace(pair.first, make_pair(move(newItem), pair.second.second));
+		unique_ptr<Item> newItem = pair.second.first ? pair.second.first->clone() : nullptr;
+		items.emplace(newItem->getID(), make_pair(move(newItem), pair.second.second));
 	}
 
 	return *this;
@@ -92,10 +92,6 @@ Item::ItemType Inventory::getItemType(int id) const
 
 void Inventory::addItem(unique_ptr<Item> item, int quantity)
 {
-	// Check space in inventory
-	if (items.size() >= MAX_INVENTORY_SIZE)
-		throw out_of_range("Cannot add item. Inventory is full.");
-
 	// Get item unique ID
 	int id = item->getID();
 
@@ -104,6 +100,8 @@ void Inventory::addItem(unique_ptr<Item> item, int quantity)
 
 	if (it != items.end()) // If item is already in inventory - increase its quantity
 		it->second.second += quantity;
+	else if (items.size() >= MAX_INVENTORY_SIZE) // Check space in inventory
+		throw out_of_range("Cannot add item. Inventory is full.");
 	else // If item is not in inventory - add it
 		items.emplace(id, make_pair(move(item), quantity));
 }

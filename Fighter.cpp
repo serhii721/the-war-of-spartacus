@@ -20,7 +20,7 @@ Fighter::Fighter(
 	const Statistics& rStats,
 	int hhp,
 	int ffullHP,
-	const Inventory& rInventory,
+	unique_ptr<Inventory> pInventory,
 	unique_ptr<Weapon> pRightHand,
 	unique_ptr<Weapon> pLeftHand,
 	unique_ptr<Armour> pArmour
@@ -28,7 +28,7 @@ Fighter::Fighter(
 	Statistics(rStats),
 	hp(hhp),
 	fullHP(ffullHP),
-	inventory(make_unique<Inventory>(rInventory)),
+	inventory(move(pInventory)),
 	rightHand(move(pRightHand)),
 	leftHand(move(pLeftHand)),
 	armour(move(pArmour))
@@ -79,7 +79,7 @@ Fighter& Fighter::operator=(const Fighter& F)
 			*inventory = *F.inventory;
 	}
 	else
-		rightHand = nullptr;
+		inventory = nullptr;
 
 	if (F.rightHand)
 	{
