@@ -792,17 +792,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				);
 				game.getPlayer().updateMaxHP();
 
-				// TODO: remove
-				// Test for inventory
-				unique_ptr<Item> gold = make_unique<Item>(Item(Item::ItemType::GOLD));
-				game.getPlayer().getInventory()->addItem(move(gold), 1654);
-				for (int i = 0; i < 6; i++)
-				{
-					game.getPlayer().getInventory()->addItem(move(generateWeapon()));
-					game.getPlayer().getInventory()->addItem(move(generateArmour()));
-				}
-				//game.getPlayer().getInventory()->addItem(move(generateArmour()));
-				// TODO: remove
 				nms.reset();
 
 				// World creation

@@ -1413,6 +1413,10 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		game.handleInput(hwnd, message, wParam, lParam);
 		break;
 
+	case WM_LBUTTONDOWN:
+		game.handleInput(hwnd, message, wParam, lParam);
+		break;
+
 	case WM_SIZE:
 		sx = LOWORD(lParam);
 		sy = HIWORD(lParam);
