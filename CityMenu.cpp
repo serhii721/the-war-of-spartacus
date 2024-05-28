@@ -14,6 +14,7 @@ CityMenu::CityMenu() :
 	hSubItems(),
 	hSubMenuItems(),
 	selectedOpponent(-1),
+	selectedItem(-1),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL),
 	pas()
@@ -23,6 +24,7 @@ CityMenu::CityMenu(HWND hWnd) :
 	hItems(MenuItem::ITEM_NUMBER),
 	hSubItems(),
 	selectedOpponent(-1),
+	selectedItem(-1),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL),
 	pas()
@@ -75,6 +77,7 @@ CityMenu::CityMenu(const CityMenu& CM) :
 	hSubItems(),
 	hSubMenuItems(),
 	selectedOpponent(-1),
+	selectedItem(-1),
 	pas()
 {
 	// Resizing items' vector
@@ -172,6 +175,7 @@ CityMenu& CityMenu::operator=(const CityMenu& CM)
 	hSubMenuItems = vector<HWND>();
 
 	selectedOpponent = CM.selectedOpponent;
+	selectedItem = CM.selectedItem;
 
 	if (hBackgroundImage != NULL)
 		DeleteObject(hBackgroundImage);
@@ -297,6 +301,12 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				}
+				else
+				{
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
+
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)"");
 				}
 
 				// Left hand
@@ -542,6 +552,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 		// 2. Equipment
 		// Right hand
+		SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::RIGHT_HAND).c_str());
 		if (rPlayer.getRightHand())
 		{
 			ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], SW_SHOW);
@@ -569,6 +580,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		}
 
 		// Left hand
+		SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::LEFT_HAND).c_str());
 		if (rPlayer.getLeftHand())
 		{
 			Weapon& rLeftHand = *rPlayer.getLeftHand();
@@ -619,9 +631,16 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		}
 
 		// Armour
+		SendMessage(hSubItems[CHARACTER_STAT_ARMOUR], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ARMOUR).c_str());
 		if (rPlayer.getArmour())
 		{
 			Armour& rArmour = *rPlayer.getArmour();
+
+			ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], SW_SHOW);
+			ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_STRENGTH_SCALE], SW_SHOW);
+			ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_DEXTERITY_SCALE], SW_SHOW);
+			ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_ABILITY], SW_SHOW);
+
 			buf = l.getArmourTypeName(rArmour);
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
@@ -634,7 +653,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rArmour.getDexterityAdditionPercentage()) + "%";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
-			if (rPlayer.getArmour()->getArmourType() == Armour::ArmourType::LIGHT)
+			if (rArmour.getArmourType() == Armour::ArmourType::LIGHT)
 				buf = l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(rArmour.getEvasionProbAddition()) + "%";
 			else
 				buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(rArmour.getStunProbSubtraction()) + "%";
@@ -652,7 +671,8 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// 3. Inventory
 		Inventory& inventory = *rPlayer.getInventory();
 		int size = inventory.size();
-		SendMessage(hSubItems[CHARACTER_STAT_INVENTORY], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::INVENTORY).c_str());
+		buf = l.getMessage(Localized::INVENTORY) + " (" + to_string(size) + " / " + to_string(MAX_INVENTORY_SIZE) + ")";
+		SendMessage(hSubItems[CHARACTER_STAT_INVENTORY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		// Hide unused slots with no items
 		for (i = size; i < MAX_INVENTORY_SIZE; i++)
 		{
@@ -673,6 +693,12 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 		// Back button
 		SendMessage(hSubItems[CHARACTER_BUT_BACK], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::BACK).c_str());
+
+		// Item interaction buttons
+		SendMessage(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::UNEQUIP_ITEM).c_str());
+		SendMessage(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EQUIP_ITEM).c_str());
+		SendMessage(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::INSPECT_ITEM).c_str());
+		SendMessage(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::DESTROY_ITEM).c_str());
 	}
 	break;
 	}
@@ -887,8 +913,21 @@ void CityMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], x + (SMALL_STAT_WIDTH * 2 / 3) + BIG_DISTANCE, y, SMALL_STAT_WIDTH * 2 / 3, BIG_STAT_HEIGHT, TRUE);
 
 		// 2. Equipment
-		// Left hand
+		const int INVENTORY_BUT_WIDTH = 120, INVENTORY_BUT_HEIGHT = 97;
+		// Right hand
 		x = 364, y = 195;
+		MoveWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND], x, y - INVENTORY_BUT_HEIGHT - BIG_STAT_HEIGHT - BIG_DISTANCE * 2, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[CHARACTER_BUT_RIGHT_HAND], x + 65, y - INVENTORY_BUT_HEIGHT - BIG_DISTANCE, INVENTORY_BUT_WIDTH, INVENTORY_BUT_HEIGHT, TRUE);
+		for (i = CHARACTER_STAT_RIGHT_HAND_TYPE; i <= CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE; i++)
+		{
+			MoveWindow(hSubItems[i], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+			y += BIG_STAT_HEIGHT + BIG_DISTANCE;
+		}
+
+		// Left hand
+		x += BIG_STAT_WIDTH + 10, y = 195;
+		MoveWindow(hSubItems[CHARACTER_STAT_LEFT_HAND], x, y - INVENTORY_BUT_HEIGHT - BIG_STAT_HEIGHT - BIG_DISTANCE * 2, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[CHARACTER_BUT_LEFT_HAND], x + 65, y - INVENTORY_BUT_HEIGHT - BIG_DISTANCE, INVENTORY_BUT_WIDTH, INVENTORY_BUT_HEIGHT, TRUE);
 		for (i = CHARACTER_STAT_LEFT_HAND_TYPE; i <= CHARACTER_STAT_LEFT_HAND_DEXTERITY_SCALE; i++)
 		{
 			MoveWindow(hSubItems[i], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
@@ -900,18 +939,10 @@ void CityMenu::resizeMenu(int cx, int cy)
 			y += BIG_STAT_HEIGHT + BIG_DISTANCE;
 		}
 
-		// Right hand
-		x += BIG_STAT_WIDTH + 10;
-		y = 195;
-		for (i = CHARACTER_STAT_RIGHT_HAND_TYPE; i <= CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE; i++)
-		{
-			MoveWindow(hSubItems[i], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
-			y += BIG_STAT_HEIGHT + BIG_DISTANCE;
-		}
-
 		// Armour
-		x += BIG_STAT_WIDTH + 10;
-		y = 195;
+		x += BIG_STAT_WIDTH + 10, y = 195;
+		MoveWindow(hSubItems[CHARACTER_STAT_ARMOUR], x, y - INVENTORY_BUT_HEIGHT - BIG_STAT_HEIGHT - BIG_DISTANCE * 2, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[CHARACTER_BUT_ARMOUR], x + 65, y - INVENTORY_BUT_HEIGHT - BIG_DISTANCE, INVENTORY_BUT_WIDTH, INVENTORY_BUT_HEIGHT, TRUE);
 		for (i = CHARACTER_STAT_ARMOUR_TYPE; i <= CHARACTER_STAT_ARMOUR_ABILITY; i++)
 		{
 			MoveWindow(hSubItems[i], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
@@ -919,7 +950,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 		}
 
 		// 3. Inventory
-		const int INVENTORY_BUT_SIZE = 120;
 		Inventory& inventory = *game.getPlayer().getInventory();
 
 		x = 364, y = 390;
@@ -930,18 +960,53 @@ void CityMenu::resizeMenu(int cx, int cy)
 		int size = inventory.size();
 		for (i = 0; i < size; i++)
 		{
-			MoveWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1 + i], x, y, INVENTORY_BUT_SIZE, INVENTORY_BUT_SIZE - SMALL_STAT_HEIGHT - 3, TRUE);
-			y += 97;
-			MoveWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME + i], x, y, INVENTORY_BUT_SIZE - 1, SMALL_STAT_HEIGHT + 3, TRUE);
-			y-= 97;
+			MoveWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1 + i], x, y, INVENTORY_BUT_WIDTH, INVENTORY_BUT_HEIGHT, TRUE);
+			MoveWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME + i], x, y + INVENTORY_BUT_HEIGHT, INVENTORY_BUT_WIDTH - 1, SMALL_STAT_HEIGHT + 3, TRUE);
 
-			x += INVENTORY_BUT_SIZE + SMALL_DISTANCE;
+			x += INVENTORY_BUT_WIDTH + SMALL_DISTANCE;
 			if (i == 6)
 			{
-				x -= (INVENTORY_BUT_SIZE + SMALL_DISTANCE) * 7;
-				y += INVENTORY_BUT_SIZE + SMALL_DISTANCE;
+				x -= (INVENTORY_BUT_WIDTH + SMALL_DISTANCE) * 7;
+				y += INVENTORY_BUT_WIDTH + SMALL_DISTANCE;
 			}
 		}
+		// Interaction buttons
+		MoveWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], 0, 0, 100, 30, TRUE);
+		MoveWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], 0, 0, 100, 30, TRUE);
+		MoveWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], 0, 0, 100, 30, TRUE);
+		MoveWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], 0, 0, 100, 30, TRUE);
+
+		// TODO
+		// Inspect window
+		/*x = 475, y = 113;
+		MoveWindow(hSubItems[CHARACTER_INSPECT], x, y, 400, 500, TRUE);
+		x += 140, y += BIG_DISTANCE;
+		MoveWindow(hSubItems[CHARACTER_BUT_INSPECT_ICON], x, y, INVENTORY_BUT_WIDTH, INVENTORY_BUT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_TYPE], x, y + INVENTORY_BUT_HEIGHT, INVENTORY_BUT_WIDTH - 1, SMALL_STAT_HEIGHT + 3, TRUE);
+		x -= 66, y += INVENTORY_BUT_HEIGHT + SMALL_STAT_HEIGHT + BIG_DISTANCE * 2;
+
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_DAMAGE], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_ARMOUR_DEFENSE], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_SHIELD_DEFENSE], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		y += BIG_STAT_HEIGHT + BIG_DISTANCE;
+
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_STRENGTH_SCALE], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_SHIELD_BLOCK_CHANCE], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		y += BIG_STAT_HEIGHT + BIG_DISTANCE;
+
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_DEXTERITY_SCALE], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		y += BIG_STAT_HEIGHT + BIG_DISTANCE;
+
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_VALUE], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		y += BIG_STAT_HEIGHT + BIG_DISTANCE;
+
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_QUANTITY], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		y += BIG_STAT_HEIGHT + BIG_DISTANCE;
+
+		MoveWindow(hSubItems[CHARACTER_STAT_INSPECT_TOTAL_VALUE], x, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		y += BIG_STAT_HEIGHT * 2 + BIG_DISTANCE;
+
+		MoveWindow(hSubItems[CHARACTER_BUT_INSPECT_CLOSE], x + 50, y, BIG_STAT_WIDTH - 100, BIG_STAT_HEIGHT, TRUE);*/
 
 		// Back button
 		MoveWindow(hSubItems[CHARACTER_BUT_BACK], 364, 680, 300, BIG_STAT_HEIGHT, TRUE);
@@ -1036,7 +1101,12 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_BACK; i++)
 					hSubItems[i] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-
+				
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
+				
 				Player& rPlayer = game.getPlayer();
 				pas.hp = rPlayer.getHP();
 				pas.fullHP = rPlayer.getFullHP();
@@ -1152,7 +1222,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						hSubMenuItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 					Player& rPlayer = game.getPlayer();
-
+					
 					if (rPlayer.getLeftHand())
 					{
 						if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
@@ -1185,6 +1255,12 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					}
+					else
+					{
+						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
+
+						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], SW_HIDE);
 					}
 
 					// Left hand
@@ -2313,13 +2389,215 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 
 			// 2. Inventory
-
-			for (i = CHARACTER_BUT_INVENTORY_ITEM1; i <= CHARACTER_BUT_INVENTORY_ITEM14; i++)
+			for (i = CHARACTER_BUT_INVENTORY_ITEM1; i <= CHARACTER_BUT_ARMOUR; i++)
 			{
 				if ((HWND)lp == hSubItems[i])
 				{
+					selectedItem = i;
 					manageInventory(hWnd, i);
+					break;
 				}
+			}
+
+			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM])
+			{
+				// Adjust item index for button index
+				selectedItem -= CHARACTER_BUT_RIGHT_HAND;
+				/*
+				selectedItem
+				0 -- rightHand
+				1 -- leftHand
+				2 -- armour
+				*/
+				int itemID;
+				switch (selectedItem)
+				{
+				case 0:
+					itemID = rPlayer.getRightHand()->getID();
+					ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], SW_HIDE);
+					ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_STRENGTH_SCALE], SW_HIDE);
+					ShowWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE], SW_HIDE);
+					break;
+
+				case 1:
+					itemID = rPlayer.getLeftHand()->getID();
+					ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], SW_HIDE);
+					ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_STRENGTH_SCALE], SW_HIDE);
+					ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DEXTERITY_SCALE], SW_HIDE);
+					break;
+
+				case 2:
+					itemID = rPlayer.getArmour()->getID();
+					ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], SW_HIDE);
+					ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_STRENGTH_SCALE], SW_HIDE);
+					ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_DEXTERITY_SCALE], SW_HIDE);
+					ShowWindow(hSubItems[CHARACTER_STAT_ARMOUR_ABILITY], SW_HIDE);
+					break;
+
+				default: throw out_of_range("Wrong item ID"); break;
+				}
+
+				rPlayer.unequipItem(itemID);
+
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE);
+
+				int size = rPlayer.getInventory()->size();
+				for (i = 0; i < size; i++)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1], SW_SHOW);
+					updateWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1 + i]);
+					ShowWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME], SW_SHOW);
+					updateWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME + i]);
+				}
+
+				game.updateBackground();
+				updateWindow(hWnd);
+			}
+
+			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM])
+			{
+				// Adjust item index for button index
+				selectedItem -= CHARACTER_BUT_INVENTORY_ITEM1;
+
+				Inventory& rInventory = *rPlayer.getInventory();
+				int itemID = rInventory[selectedItem].first->getID();
+
+				rPlayer.equipItemFromInventory(itemID);
+
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
+
+				int size = rInventory.size();
+				for (i = size; i < MAX_INVENTORY_SIZE; i++)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1 + i], SW_HIDE);
+					ShowWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME + i], SW_HIDE);
+				}
+				for (i = 0; i < size; i++)
+				{
+					updateWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1 + i]);
+					updateWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME + i]);
+				}
+
+				game.updateBackground();
+				updateWindow(hWnd);
+			}
+
+			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM])
+			{
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
+
+				// 1. Determine which item to inspect
+				unique_ptr<Item> pItem;
+				int quantity = 1;
+
+				/*
+				selectedItem
+				less than 0 --item from inventory
+				0 --rightHand
+				1 --leftHand
+				2 --armour
+				*/
+				switch (selectedItem - CHARACTER_BUT_RIGHT_HAND)
+				{
+				case 0: // rightHand
+					pItem = make_unique<Weapon>(*rPlayer.getRightHand());
+					break;
+
+				case 1: // leftHand
+					pItem = make_unique<Weapon>(*rPlayer.getLeftHand());
+					break;
+
+				case 2: // armour
+					pItem = make_unique<Armour>(*rPlayer.getArmour());
+					break;
+
+				default: // item from inventory
+					
+					auto itemPair = (*game.getPlayer().getInventory())[selectedItem - CHARACTER_BUT_INVENTORY_ITEM1];
+
+					if (auto weapon = dynamic_cast<Weapon*>(itemPair.first.get()))
+						pItem = make_unique<Weapon>(*weapon);
+					else if (auto armour = dynamic_cast<Armour*>(itemPair.first.get()))
+						pItem = make_unique<Armour>(*armour);
+					else
+						pItem = make_unique<Item>(*itemPair.first);
+
+					quantity = (*game.getPlayer().getInventory()).getItemQuantity(pItem->getID());
+					break;
+				}
+				// 2. Determine item type
+				string MBName = "";
+				string MBDescription = "";
+				switch (pItem->getItemType())
+				{
+				case Item::ItemType::WEAPON:
+					if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
+					{
+						MBName += l.getWeaponTypeName(*weapon);
+						MBDescription += l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getTotalDamage()) + "\n";
+						MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(weapon->getStrengthAdditionPercentage()) + "%" + "\n";
+						MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(weapon->getDexterityAdditionPercentage()) + "%" + "\n";
+					}
+					break;
+
+				case Item::ItemType::ARMOUR:
+					if (auto armour = dynamic_cast<Armour*>(pItem.get()))
+					{
+						MBName += l.getArmourTypeName(*armour);
+						MBDescription += l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(armour->getTotalDefense()) + "\n";
+						MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(armour->getStrengthAdditionPercentage()) + "%" + "\n";
+						MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(armour->getDexterityAdditionPercentage()) + "%" + "\n";
+
+						if (armour->getArmourType() == Armour::ArmourType::LIGHT)
+							MBDescription += l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(armour->getEvasionProbAddition()) + "%" + "\n";
+						else
+							MBDescription += l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(armour->getStunProbSubtraction()) + "%" + "\n";
+					}
+					break;
+				}
+
+				MBDescription += l.getMessage(Localized::VALUE) + ": " + to_string(pItem->getValue()) + "\n";
+				MBDescription += l.getMessage(Localized::QUANTITY) + ": " + to_string(quantity) +"\n";
+				MBDescription += l.getMessage(Localized::TOTAL_VALUE) + ": " + to_string(pItem->getValue() * quantity) +"\n";
+
+				MessageBox(hWnd, MBDescription.c_str(), MBName.c_str(), MB_OK | MB_ICONINFORMATION);
+
+				game.updateBackground();
+			}
+
+			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM])
+			{
+				// Adjust item index for button index
+				selectedItem -= CHARACTER_BUT_INVENTORY_ITEM1;
+
+				Inventory& rInventory = *rPlayer.getInventory();
+				int itemID = rInventory[selectedItem].first->getID();
+				int quantity = rInventory.getItemQuantity(itemID);
+				rInventory.removeItem(itemID, quantity);
+
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
+
+				int size = rInventory.size();
+				for (i = size; i < MAX_INVENTORY_SIZE; i++)
+				{
+					ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1 + i], SW_HIDE);
+					ShowWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME + i], SW_HIDE);
+				}
+				for (i = 0; i < size; i++)
+				{
+					updateWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1 + i]);
+					updateWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME + i]);
+				}
+
+				game.updateBackground();
 			}
 
 			// Back button
@@ -2352,6 +2630,25 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		break;
 		}
 	break;
+
+	case WM_LBUTTONDOWN:
+		if (game.getBackground() == Game::Background::CITY_MENU_CHARACTER)
+		{
+			if (
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE) ||
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE) ||
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE) ||
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE)
+				)
+			{
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
+				game.updateBackground();
+			}
+		}
+		break;
 	}	
 }
 
@@ -2384,6 +2681,23 @@ void CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if (game.getBackground() == Game::Background::CITY_MENU_CHARACTER)
 			{
+				// Equipment
+				if (item->hwndItem == hSubItems[CHARACTER_BUT_RIGHT_HAND])
+				{
+					drawEquippedItem(hWnd, item, 0); // 0 -- right hand
+					return;
+				}
+				if (item->hwndItem == hSubItems[CHARACTER_BUT_LEFT_HAND])
+				{
+					drawEquippedItem(hWnd, item, 1); // 1 -- left hand
+					return;
+				}
+				if (item->hwndItem == hSubItems[CHARACTER_BUT_ARMOUR])
+				{
+					drawEquippedItem(hWnd, item, 2); // 2 -- armour
+					return;
+				}
+				// Inventory
 				for (int i = CHARACTER_BUT_INVENTORY_ITEM1; i <= CHARACTER_BUT_INVENTORY_ITEM14; i++)
 				{
 					if (item->hwndItem == hSubItems[i])
@@ -2565,12 +2879,12 @@ void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, int buttonInd
 
 	// Getting item represented by button
 	auto itemPair = (*game.getPlayer().getInventory())[buttonIndex];
-	unique_ptr<Item>& pItem = itemPair.first;
+	unique_ptr<Item>& rItem = itemPair.first;
 
-	switch (pItem->getItemType())
+	switch (rItem->getItemType())
 	{
 	case Item::ItemType::WEAPON:
-		if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
+		if (auto weapon = dynamic_cast<Weapon*>(rItem.get()))
 		{
 			switch (weapon->getWeaponType())
 			{
@@ -2583,10 +2897,12 @@ void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, int buttonInd
 			default: path = DIRECTORY + "error"; break;
 			}
 		}
+		else
+			path = DIRECTORY + "error";
 		break;
 
 	case Item::ItemType::ARMOUR:
-		if (auto armour = dynamic_cast<Armour*>(pItem.get()))
+		if (auto armour = dynamic_cast<Armour*>(rItem.get()))
 		{
 			switch (armour->getArmourType())
 			{
@@ -2595,6 +2911,8 @@ void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, int buttonInd
 			default: path = DIRECTORY + "error"; break;
 			}
 		}
+		else
+			path = DIRECTORY + "error";
 		break;
 
 	case Item::ItemType::GOLD: path = DIRECTORY + "gold"; break;
@@ -2615,9 +2933,245 @@ void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, int buttonInd
 	DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
 }
 
-void CityMenu::manageInventory(HWND hWnd, int selectedItem)
+void CityMenu::drawEquippedItem(HWND hWnd, LPDRAWITEMSTRUCT item, int itemIndex)
 {
-	// Adjust for button id
-	selectedItem -= CHARACTER_BUT_INVENTORY_ITEM1;
+	/*
+	itemIndex
+	0 -- rightHand
+	1 -- leftHand
+	2 -- armour
+	*/
 
+	Player& rPlayer = game.getPlayer();
+	// Selecting image for button based on item type
+	const string DIRECTORY = "Data/Image/Items/",
+		FORMAT = ".bmp";
+	string path = "";
+	switch (itemIndex)
+	{
+	case 0:
+		if (rPlayer.getRightHand())
+		{
+			switch (rPlayer.getRightHand()->getWeaponType())
+			{
+			case Weapon::WeaponType::SWORD: path = DIRECTORY + "sword"; break;
+			case Weapon::WeaponType::SPEAR: path = DIRECTORY + "spear"; break;
+			case Weapon::WeaponType::DAGGER: path = DIRECTORY + "dagger"; break;
+			case Weapon::WeaponType::AXE: path = DIRECTORY + "axe"; break;
+			case Weapon::WeaponType::MACE: path = DIRECTORY + "mace"; break;
+			case Weapon::WeaponType::SHIELD: path = DIRECTORY + "shield"; break;
+			default: path = DIRECTORY + "error"; break;
+			}
+		}
+		else
+			path = DIRECTORY + "emptyHand"; break;
+		break;
+	case 1:
+		if (rPlayer.getLeftHand())
+		{
+			switch (rPlayer.getLeftHand()->getWeaponType())
+			{
+			case Weapon::WeaponType::SWORD: path = DIRECTORY + "sword"; break;
+			case Weapon::WeaponType::SPEAR: path = DIRECTORY + "spear"; break;
+			case Weapon::WeaponType::DAGGER: path = DIRECTORY + "dagger"; break;
+			case Weapon::WeaponType::AXE: path = DIRECTORY + "axe"; break;
+			case Weapon::WeaponType::MACE: path = DIRECTORY + "mace"; break;
+			case Weapon::WeaponType::SHIELD: path = DIRECTORY + "shield"; break;
+			default: path = DIRECTORY + "error"; break;
+			}
+		}
+		else
+			path = DIRECTORY + "emptyHand"; break;
+		break;
+	case 2:
+		if (rPlayer.getArmour())
+		{
+			switch (rPlayer.getArmour()->getArmourType())
+			{
+			case Armour::ArmourType::LIGHT: path = DIRECTORY + "lightArmour"; break;
+			case Armour::ArmourType::HEAVY: path = DIRECTORY + "heavyArmour"; break;
+			default: path = DIRECTORY + "error"; break;
+			}
+		}
+		else
+			path = DIRECTORY + "noArmour"; break;
+		break;
+	default: path = DIRECTORY + "error"; break;
+	}
+
+	if (item->itemState & ODS_SELECTED) // Pushed button
+		path += "Pushed" + FORMAT;
+	else // Unpushed button
+		path += FORMAT;
+
+	// Select image
+	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	// Filling background with selected image
+	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+	FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
+	// Drawing edge
+	DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
+}
+
+void CityMenu::manageInventory(HWND hWnd, int selectedItemm)
+{
+	// Get cursor position
+	POINT pt;
+	GetCursorPos(&pt);
+	ScreenToClient(hWnd, &pt);
+
+	Player& rPlayer = game.getPlayer();
+	if (selectedItemm  == CHARACTER_BUT_RIGHT_HAND) // Right hand weapon
+	{
+		if (!rPlayer.getRightHand())
+			return;
+
+		// Hide unrelated buttons
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
+		// Show buttons near cursor
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_SHOW);
+		SetWindowPos(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+
+		if (rPlayer.getInventory()->size() < MAX_INVENTORY_SIZE)
+		{
+			ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_SHOW);
+			SetWindowPos(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], HWND_TOP, pt.x, pt.y + 30, 0, 0, SWP_NOSIZE);
+		}
+
+		RedrawWindow(hSubItems[CHARACTER_BUT_RIGHT_HAND], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_TYPE], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+		game.updateBackground();
+	}
+	else if (selectedItem == CHARACTER_BUT_LEFT_HAND) // Left hand weapon
+	{
+		if (!rPlayer.getLeftHand())
+			return;
+
+		// Hide unrelated buttons
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
+		// Show buttons near cursor
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_SHOW);
+		SetWindowPos(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+
+		if (rPlayer.getInventory()->size() < MAX_INVENTORY_SIZE)
+		{
+			ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_SHOW);
+			SetWindowPos(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], HWND_TOP, pt.x, pt.y + 30, 0, 0, SWP_NOSIZE);
+		}
+
+		RedrawWindow(hSubItems[CHARACTER_BUT_LEFT_HAND], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_TYPE], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+		game.updateBackground();
+	}
+	else if (selectedItem == CHARACTER_BUT_ARMOUR) // Armour
+	{
+		if (!rPlayer.getArmour())
+			return;
+
+		// Hide unrelated buttons
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
+		// Show buttons near cursor
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_SHOW);
+		SetWindowPos(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+
+		if (rPlayer.getInventory()->size() < MAX_INVENTORY_SIZE)
+		{
+			ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_SHOW);
+			SetWindowPos(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], HWND_TOP, pt.x, pt.y + 30, 0, 0, SWP_NOSIZE);
+		}
+
+		RedrawWindow(hSubItems[CHARACTER_BUT_ARMOUR], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[CHARACTER_STAT_ARMOUR_TYPE], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+		game.updateBackground();
+	}
+	else // Inventory
+	{
+		// Hide unrelated buttons
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE);
+
+		// Adjust for button id
+		selectedItemm -= CHARACTER_BUT_INVENTORY_ITEM1;
+
+		// Getting item represented by button
+		auto itemPair = (*game.getPlayer().getInventory())[selectedItemm];
+		unique_ptr<Item>& pItem = itemPair.first;
+
+		bool isEquippable = false;
+		switch (pItem->getItemType())
+		{
+		case Item::ItemType::WEAPON:
+			if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
+			{
+				switch (weapon->getWeaponType())
+				{
+				default:
+					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
+						isEquippable = true;
+					else if (rPlayer.getRightHand() && rPlayer.getRightHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getLeftHand())
+						isEquippable = true;
+					else if (rPlayer.getLeftHand() && rPlayer.getLeftHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getRightHand())
+						isEquippable = true;
+					break;
+
+				case Weapon::WeaponType::AXE:
+					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
+						isEquippable = true;
+					break;
+
+				case Weapon::WeaponType::SPEAR:
+					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
+						isEquippable = true;
+					break;
+				}
+			}
+			break;
+
+		case Item::ItemType::ARMOUR:
+			if (auto armour = dynamic_cast<Armour*>(pItem.get()))
+				if (!rPlayer.getArmour())
+					isEquippable = true;
+			break;
+
+		case Item::ItemType::GOLD: break;
+		default: break;
+		}
+
+		if (isEquippable)
+		{
+			ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_SHOW);
+			SetWindowPos(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+			pt.y += 30;
+		}
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_SHOW);
+		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_SHOW);
+
+		SetWindowPos(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+		SetWindowPos(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], HWND_TOP, pt.x, pt.y + 30, 0, 0, SWP_NOSIZE);
+
+		RedrawWindow(hSubItems[selectedItemm + CHARACTER_BUT_INVENTORY_ITEM1], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[selectedItemm + CHARACTER_BUT_INVENTORY_ITEM1 + 1], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[selectedItemm + CHARACTER_STAT_INVENTORY_ITEM1_NAME], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[selectedItemm + CHARACTER_STAT_INVENTORY_ITEM1_NAME + 1], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		if (selectedItemm < 7)
+		{
+			RedrawWindow(hSubItems[selectedItemm + CHARACTER_BUT_INVENTORY_ITEM1 + 7], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+			RedrawWindow(hSubItems[selectedItemm + CHARACTER_BUT_INVENTORY_ITEM1 + 8], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+			RedrawWindow(hSubItems[selectedItemm + CHARACTER_STAT_INVENTORY_ITEM1_NAME + 7], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+			RedrawWindow(hSubItems[selectedItemm + CHARACTER_STAT_INVENTORY_ITEM1_NAME + 8], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		}
+		else
+			RedrawWindow(hSubItems[CHARACTER_BUT_BACK], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		
+		game.updateBackground();
+	}
 }
