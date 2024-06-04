@@ -703,7 +703,7 @@ void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		// Composing path based on current menu
 		switch (game.getBackground())
 		{
-		default:case Game::Background::FIGHTING_ARENA: path = DIRECTORY + "fightArenaBackground768" + FORMAT; break;
+		default:case Game::Background::FIGHTING_ARENA: path = DIRECTORY + "fightArenaBackground" + FORMAT; break;
 		}
 		// Loading image
 		if (hBackgroundImage != NULL)

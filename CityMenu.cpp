@@ -243,13 +243,28 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Composing path based on current menu
 		switch (game.getBackground())
 		{
-		default:case Game::Background::CITY_MENU: path = DIRECTORY + "cityBackground768" + FORMAT; break;
-		case Game::Background::CITY_MENU_ARENA: path = DIRECTORY + "arenaBackground768" + FORMAT; break;
-		case Game::Background::CITY_MENU_ARENA_FIGHT: path = DIRECTORY + "arenaFightBackground768" + FORMAT; break;
-		case Game::Background::CITY_MENU_ARENA_BET: path = DIRECTORY + "arenaBetBackground768" + FORMAT; break;
-		case Game::Background::CITY_MENU_QUEST: path = DIRECTORY + "questBackground768" + FORMAT; break;
-		case Game::Background::CITY_MENU_MARKET: path = DIRECTORY + "marketBackground768" + FORMAT; break;
-		case Game::Background::CITY_MENU_CHARACTER: path = DIRECTORY + "characterInventoryBackground768" + FORMAT; break;
+		default:case Game::Background::CITY_MENU:
+			switch (game.getWorldMap().getCurrentCity().getNameIndex())
+			{
+			case ROME: break;
+			case NAPLES: path = DIRECTORY + "Cities/NaplesBackground" + FORMAT; break;
+			case METAPONTO: path = DIRECTORY + "Cities/MetapontoBackground" + FORMAT; break;
+			case BOJANO: path = DIRECTORY + "Cities/BojanoBackground" + FORMAT; break;
+			case ANCONA: path = DIRECTORY + "Cities/AnconaBackground" + FORMAT; break;
+			case PERUGIA: path = DIRECTORY + "Cities/PerugiaBackground" + FORMAT; break;
+			case FLORENCE: path = DIRECTORY + "Cities/FlorenceBackground" + FORMAT; break;
+			case BOLOGNA: path = DIRECTORY + "Cities/BolognaBackground" + FORMAT; break;
+			case GENOA: path = DIRECTORY + "Cities/GenoaBackground" + FORMAT; break;
+			case VENICE: path = DIRECTORY + "Cities/AquileaBackground" + FORMAT; break;
+			case MILAN: path = DIRECTORY + "Cities/MilanBackground" + FORMAT; break;
+			}
+			break;
+		case Game::Background::CITY_MENU_ARENA: path = DIRECTORY + "arenaBackground" + FORMAT; break;
+		case Game::Background::CITY_MENU_ARENA_FIGHT: path = DIRECTORY + "arenaFightBackground" + FORMAT; break;
+		case Game::Background::CITY_MENU_ARENA_BET: path = DIRECTORY + "arenaBetBackground" + FORMAT; break;
+		case Game::Background::CITY_MENU_QUEST: path = DIRECTORY + "questBackground" + FORMAT; break;
+		case Game::Background::CITY_MENU_MARKET: path = DIRECTORY + "marketBackground" + FORMAT; break;
+		case Game::Background::CITY_MENU_CHARACTER: path = DIRECTORY + "characterInventoryBackground" + FORMAT; break;
 		}
 		// Loading image
 		if (hBackgroundImage != NULL)
