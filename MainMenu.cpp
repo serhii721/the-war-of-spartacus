@@ -261,15 +261,15 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		switch (game.getBackground())
 		{
 		default:case Game::Background::MAIN_MENU:
-			path = DIRECTORY + "menuBackground768" + FORMAT;
+			path = DIRECTORY + "menuBackground" + FORMAT;
 			for (HWND hItem : hItems)
 				ShowWindow(hItem, SW_SHOW);
 			break;
-		case Game::Background::MAIN_MENU_LOAD: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
-		case Game::Background::MAIN_MENU_NEW_GAME: path = DIRECTORY + "characterCreationBackground768" + FORMAT; break;
-		case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT: path = DIRECTORY + "characterCreationBackground768" + FORMAT; break; // TODO: background
-		case Game::Background::MAIN_MENU_SETTINGS: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
-		case Game::Background::MAIN_MENU_SPECIALS: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
+		case Game::Background::MAIN_MENU_LOAD: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
+		case Game::Background::MAIN_MENU_NEW_GAME: path = DIRECTORY + "characterCreationBackground" + FORMAT; break;
+		case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT: path = DIRECTORY + "characterCreationBackground" + FORMAT; break; // TODO: background
+		case Game::Background::MAIN_MENU_SETTINGS: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
+		case Game::Background::MAIN_MENU_SPECIALS: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
 		}
 		// Loading image
 		if (hBackgroundImage != NULL)

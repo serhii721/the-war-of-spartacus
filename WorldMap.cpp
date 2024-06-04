@@ -211,7 +211,7 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		switch (game.getBackground())
 		{
 		default:case Game::Background::WORLD_MAP:
-			path = DIRECTORY + "mapBackground768" + FORMAT;
+			path = DIRECTORY + "mapBackground" + FORMAT;
 			for (HWND hItem : hItems)
 				ShowWindow(hItem, SW_SHOW);
 			break;

@@ -197,10 +197,10 @@ void GameMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Composing path based on current menu
 		switch (game.getBackground())
 		{
-		default:case Game::Background::GAME_MENU: path = DIRECTORY + "menuBackground768" + FORMAT; break;
-		case Game::Background::GAME_MENU_SAVE: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
-		case Game::Background::GAME_MENU_LOAD: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
-		case Game::Background::GAME_MENU_SETTINGS: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
+		default:case Game::Background::GAME_MENU: path = DIRECTORY + "menuBackground" + FORMAT; break;
+		case Game::Background::GAME_MENU_SAVE: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
+		case Game::Background::GAME_MENU_LOAD: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
+		case Game::Background::GAME_MENU_SETTINGS: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
 		}
 		// Loading image
 		if (hBackgroundImage != NULL)
