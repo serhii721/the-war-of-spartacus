@@ -219,41 +219,41 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 
 unique_ptr<HarmlessNPC> generateTrader(int level)
 {
-	//// 1. Generating name
-	//const string PATH_BASE = "Data/Language/Names/", FORMAT = ".lang";
-	//ifstream fin;
-	//// Open file containing roman first names
-	//switch (l.getLanguage())
-	//{
-	//default: case Language::ENGLISH: fin.open(PATH_BASE + "En_FirstNames" + FORMAT); break;
-	//case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_FirstNames" + FORMAT); break;
-	//case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_FirstNames" + FORMAT); break;
-	//}
-	////if (!fin)
-	////	output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
+	// 1. Generating name
+	const string PATH_BASE = "Data/Language/Names/", FORMAT = ".lang";
+	ifstream fin;
+	// Open file containing roman first names
+	switch (l.getLanguage())
+	{
+	default: case Language::ENGLISH: fin.open(PATH_BASE + "En_FirstNames" + FORMAT); break;
+	case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_FirstNames" + FORMAT); break;
+	case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_FirstNames" + FORMAT); break;
+	}
+	//if (!fin)
+	//	output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
 
-	//int count = 0;
-	//string line;
-	//while (getline(fin, line)) // Count lines in file
-	//	count++;
-	//int randomFirstName = rand() % count; // Choose random line
-	//fin.close();
+	int count = 0;
+	string line;
+	while (getline(fin, line)) // Count lines in file
+		count++;
+	int randomFirstName = rand() % count; // Choose random line
+	fin.close();
 
-	//// Open file containing roman last names
-	//switch (l.getLanguage())
-	//{
-	//default: case Language::ENGLISH: fin.open(PATH_BASE + "En_LastNames" + FORMAT); break;
-	//case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_LastNames" + FORMAT); break;
-	//case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_LastNames" + FORMAT); break;
-	//}
-	////if (!fin)
-	//	//output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
+	// Open file containing roman last names
+	switch (l.getLanguage())
+	{
+	default: case Language::ENGLISH: fin.open(PATH_BASE + "En_LastNames" + FORMAT); break;
+	case Language::UKRAINIAN: fin.open(PATH_BASE + "Uk_LastNames" + FORMAT); break;
+	case Language::RUSSIAN: fin.open(PATH_BASE + "Ru_LastNames" + FORMAT); break;
+	}
+	//if (!fin)
+		//output(localization[Localized::CREATION_NAME_LOAD_ERROR], 4);
 
-	//count = 0;
-	//while (getline(fin, line)) // Count lines in file
-	//	count++;
-	//int randomLastName = rand() % count; // Choose random line
-	//fin.close();
+	count = 0;
+	while (getline(fin, line)) // Count lines in file
+		count++;
+	int randomLastName = rand() % count; // Choose random line
+	fin.close();
 
 	// 2. Generating inventory
 	unique_ptr<Inventory> inventory = make_unique<Inventory>();
@@ -275,10 +275,11 @@ unique_ptr<HarmlessNPC> generateTrader(int level)
 	}
 
 	HarmlessNPC trader(
+		level,
 		Statistics(),
 		NamedNPC(
-			1,
-			1
+			randomFirstName,
+			randomLastName
 		),
 		move(inventory)
 	);
@@ -994,8 +995,12 @@ unique_ptr<Weapon> generateWeapon(int tier, Weapon::WeaponType ttype)
 		Weapon::WeaponType newWeaponType = ttype != Weapon::NUMBER ? ttype : Weapon::WeaponType(rand() % (Weapon::NUMBER - 1));
 
 		int handsNeededForWeapon = 1;
+		// Axe and spear are two handed weapons, they have double the damage and value but occupy two weapon slots
 		if (newWeaponType == Weapon::WeaponType::AXE || newWeaponType == Weapon::WeaponType::SPEAR)
+		{
 			handsNeededForWeapon = 2;
+			value *= 2;
+		}
 
 		int maxStrAdditionPerc = getWeaponScaleLimit(newWeaponType, Attribute::STRENGTH, Limit::MAX),
 			maxDexAdditionPerc = getWeaponScaleLimit(newWeaponType, Attribute::DEXTERITY, Limit::MAX);
@@ -1576,7 +1581,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
 
 			// Set text font and background
-			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
 			SetBkMode(hdc, TRANSPARENT);
 
 			// Get text
@@ -1588,7 +1593,8 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			if (item->CtlType == ODT_STATIC) // Static windows
 			{
-				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_STATIC_BROWN)); // Fill background
+				//SetTextColor(hdc, RGB(0,0,0)); // Set basic text color
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
 				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 			}

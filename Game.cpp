@@ -11,8 +11,8 @@ Game::Game() :
 	backgroundChanged(true)
 {
 	smallFont = CreateFont(
-		16,						// Size
-		7,						// Width
+		15,						// Size
+		6,						// Width
 		0,						// Lean angle
 		0,						// Rotation angle
 		FW_NORMAL,				// Thickness
@@ -29,8 +29,8 @@ Game::Game() :
 	);
 
 	mediumFont = CreateFont(
-		24,						// Size
-		15,						// Width
+		16,						// Size
+		7,						// Width
 		0,						// Lean angle
 		0,						// Rotation angle
 		FW_NORMAL,				// Thickness
@@ -47,8 +47,8 @@ Game::Game() :
 	);
 
 	largeFont = CreateFont(
-		40,						// Size
-		15,						// Width
+		20,						// Size
+		8,						// Width
 		0,						// Lean angle
 		0,						// Rotation angle
 		FW_NORMAL,				// Thickness

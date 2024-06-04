@@ -15,6 +15,7 @@ public:
 	PairRef<const unique_ptr<Item>&, const int&> operator[](int id_) const;
 
 	int size() const;
+	unique_ptr<Item> extractItem(int id_);
 	const unique_ptr<Item>& getItem(int id_) const;
 	int getItemQuantity(int id_) const;
 	Item::ItemType getItemType(int id_) const;

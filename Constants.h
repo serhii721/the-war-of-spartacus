@@ -23,7 +23,7 @@ const int BASIC_HP = 100;
 const int MIN_LEVEL = 1;
 const int MAX_LEVEL = 100;
 const int EXPERIENCE_PER_LEVEL = 200;
-const int EXPERIENCE_PER_LEVEL_INCREASE_PERC = 2; // 5.0% more experience needed for every next level from 1
+const int EXPERIENCE_PER_LEVEL_INCREASE_PERC = 2; // 2.0% more experience needed for every next level from 1
 const int ATTRIBUTES_PER_LEVEL = 5;
 const double MIN_EXPERIENCE_MULTIPLIER = 0.1;
 const double MAX_EXPERIENCE_MULTIPLIER = 2.5;
@@ -95,6 +95,7 @@ const int ARMOUR_RAND_DEF_ADDITION = 6;
 const int ONE_HUNDRED_PERCENT = 1000; // 100.0%
 const int DAMAGE_REDUCTION_PERCENT = 375; // 37.5%
 const int WEAPON_MAX_RAND_DMG_SPREAD_PERCENT = 10; // 10.0%
+const int VICTORY_LOOT_CHANCE = 30; // 30.0%
 
 // Game settings
 const int SLEEP_TIME = 1000; // Delay between attacks in fight
@@ -104,7 +105,8 @@ const int ATTRIBUTE_MAX_DIFFERENCE = 10; // How much a player can increase attri
 const COLORREF COLOR_WHITE = RGB(255, 255, 255),
 			   COLOR_STATIC_BROWN = RGB(119, 89, 59),
 			   COLOR_ROMAN_RED = RGB(80, 0, 0),
-			   COLOR_ROMAN_RED_PUSHED = RGB(50, 0, 0);
+			   COLOR_ROMAN_RED_PUSHED = RGB(50, 0, 0),
+			   COLOR_DARK_BLUE = RGB(15, 15, 30);
 
 const int ROME_CITY_LEVEL = 80,
 		  NAPLES_CITY_LEVEL = 70,

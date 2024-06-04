@@ -229,7 +229,6 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 	}
 
 	// 2. Text
-	// TODO: Localization
 	switch (game.getBackground())
 	{
 		default:case Game::Background::WORLD_MAP:
@@ -379,7 +378,7 @@ bool WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
 
 			// Set text font and background
-			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
 			SetBkMode(hdc, TRANSPARENT);
 
 			// Assing background and text color
@@ -405,6 +404,7 @@ bool WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		}
 		break;
 	}
+	return false;
 }
 
 void WorldMap::selectCity(HWND hWnd, Item city)

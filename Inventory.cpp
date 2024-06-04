@@ -66,6 +66,18 @@ int Inventory::size() const
 	return items.size();
 }
 
+unique_ptr<Item> Inventory::extractItem(int id)
+{
+	auto it = items.find(id);
+	if (it != items.end())
+	{
+		unique_ptr<Item> item = move(it->second.first);
+		items.erase(it);
+		return item;
+	}
+	return nullptr;
+}
+
 const unique_ptr<Item>& Inventory::getItem(int id) const
 {
 	auto it = items.find(id);

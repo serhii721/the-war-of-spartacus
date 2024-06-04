@@ -178,12 +178,14 @@ public:
 	};
 	enum CharacterItem
 	{
+		CHARACTER_STAT_INFO,
 		CHARACTER_STAT_NAME,
 		CHARACTER_STAT_LEVEL,
 		CHARACTER_STAT_EXPERIENCE,
 		CHARACTER_STAT_AGE,
 		CHARACTER_STAT_FAME,
 		CHARACTER_STAT_HEALTH,
+		CHARACTER_STAT_EQUIPMENT,
 		CHARACTER_STAT_RIGHT_HAND,
 		CHARACTER_STAT_RIGHT_HAND_TYPE,
 		CHARACTER_STAT_RIGHT_HAND_DAMAGE,
@@ -286,7 +288,6 @@ public:
 
 	void drawMenu(HWND, HDC, int, int) override;
 	void resizeMenu(int, int) override;
-	void updateLanguage() override;
 	void handleInput(HWND, UINT, WPARAM, LPARAM) override;
 	bool stylizeWindow(HWND, UINT, WPARAM, LPARAM) override;
 
