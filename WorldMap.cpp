@@ -278,7 +278,7 @@ void WorldMap::resizeWindow(int cx, int cy)
 		MoveWindow(hItems[BUT_FLORENCE_MAP], 296, 335, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
 		MoveWindow(hItems[BUT_BOLOGNA_MAP], 314, 238, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
 		MoveWindow(hItems[BUT_GENOA_MAP], 147, 207, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
-		MoveWindow(hItems[BUT_VENICE_MAP], 351, 108, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
+		MoveWindow(hItems[BUT_AQUILEIA_MAP], 351, 108, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
 		MoveWindow(hItems[BUT_MILAN_MAP], 119, 91, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
 
 		x = 982, y = 126;
@@ -334,8 +334,8 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if ((HWND)lp == hItems[BUT_GENOA_LIST] || (HWND)lp == hItems[BUT_GENOA_MAP])
 					selectCity(hWnd, BUT_GENOA_MAP);
 
-				if ((HWND)lp == hItems[BUT_VENICE_LIST] || (HWND)lp == hItems[BUT_VENICE_MAP])
-					selectCity(hWnd, BUT_VENICE_MAP);
+				if ((HWND)lp == hItems[BUT_AQUILEIA_LIST] || (HWND)lp == hItems[BUT_AQUILEIA_MAP])
+					selectCity(hWnd, BUT_AQUILEIA_MAP);
 
 				if ((HWND)lp == hItems[BUT_MILAN_LIST] || (HWND)lp == hItems[BUT_MILAN_MAP])
 					selectCity(hWnd, BUT_MILAN_MAP);
@@ -396,6 +396,25 @@ bool WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if (item->hwndItem == hItems[selectedCity] || item->hwndItem == hItems[selectedCity + 11])
 			{
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				return true;
+			}
+			if (item->hwndItem == hItems[STAT_MAP])
+			{
+				// Set text font and background
+				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+				SetBkMode(hdc, TRANSPARENT);
+
+				// Assing background and text color
+				SetTextColor(hdc, COLOR_WHITE);
+
+				// Draw text
+				int len = GetWindowTextLength(item->hwndItem);
+				buf.resize(len + 1); // Resize buffer to contain button text
+				GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE));
 				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
 				return true;

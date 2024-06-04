@@ -267,7 +267,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			break;
 		case Game::Background::MAIN_MENU_LOAD: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
 		case Game::Background::MAIN_MENU_NEW_GAME: path = DIRECTORY + "characterCreationBackground" + FORMAT; break;
-		case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT: path = DIRECTORY + "characterCreationBackground" + FORMAT; break; // TODO: background
+		case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT: path = DIRECTORY + "startingEquipmentBackground" + FORMAT; break;
 		case Game::Background::MAIN_MENU_SETTINGS: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
 		case Game::Background::MAIN_MENU_SPECIALS: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
 		}
@@ -619,7 +619,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 			BUT_SIZE = 20,
 			ITEM_WIDTH = 120, ITEM_HEIGHT = 97;
 
-		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_CHOOSE], cx - 150, BIG_DISTANCE * 2, 300, 40, TRUE);
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_CHOOSE], cx - 150, BIG_DISTANCE, 300, 40, TRUE);
 		// Set 1
 		x = cx - (SMALL_STAT_WIDTH + BIG_DISTANCE) * 3 - BIG_DISTANCE, y = BIG_STAT_HEIGHT * 7;
 		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET1], x + (BIG_DISTANCE + SMALL_STAT_WIDTH) / 2, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 5, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
@@ -656,7 +656,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET1_ARMOUR], x + ITEM_WIDTH / 4, y - SMALL_DISTANCE * 4 - BIG_STAT_HEIGHT * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		for (i = EQUIPMENT_STAT_SET1_ARMOUR_TYPE; i <= EQUIPMENT_STAT_SET1_ARMOUR_ABILITY; i++)
 		{
-			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			MoveWindow(hSubMenuItems[i], x - 10, y, SMALL_STAT_WIDTH + 20, SMALL_STAT_HEIGHT, TRUE);
 			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
 		}
 		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET1], x + SMALL_STAT_WIDTH / 4, y + SMALL_DISTANCE, SMALL_STAT_WIDTH / 2, BIG_STAT_HEIGHT, TRUE);
@@ -697,7 +697,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET2_ARMOUR], x + ITEM_WIDTH / 4, y - SMALL_DISTANCE * 4 - BIG_STAT_HEIGHT * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		for (i = EQUIPMENT_STAT_SET2_ARMOUR_TYPE; i <= EQUIPMENT_STAT_SET2_ARMOUR_ABILITY; i++)
 		{
-			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			MoveWindow(hSubMenuItems[i], x - 10, y, SMALL_STAT_WIDTH + 20, SMALL_STAT_HEIGHT, TRUE);
 			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
 		}
 		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET2], x + SMALL_STAT_WIDTH / 4, y + SMALL_DISTANCE, SMALL_STAT_WIDTH / 2, BIG_STAT_HEIGHT, TRUE);
@@ -738,7 +738,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET3_ARMOUR], x + ITEM_WIDTH / 4, y - SMALL_DISTANCE * 4 - BIG_STAT_HEIGHT * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		for (i = EQUIPMENT_STAT_SET3_ARMOUR_TYPE; i <= EQUIPMENT_STAT_SET3_ARMOUR_ABILITY; i++)
 		{
-			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			MoveWindow(hSubMenuItems[i], x - 10, y, SMALL_STAT_WIDTH + 20, SMALL_STAT_HEIGHT, TRUE);
 			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
 		}
 		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET3], x + SMALL_STAT_WIDTH / 4, y + SMALL_DISTANCE, SMALL_STAT_WIDTH / 2, BIG_STAT_HEIGHT, TRUE);
@@ -1367,9 +1367,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						cityLevel = GENOA_CITY_LEVEL;
 						traderLevel = GENOA_TRADER_LEVEL;
 						break;
-					case 9: // Venice
-						cityLevel = VENICE_CITY_LEVEL;
-						traderLevel = VENICE_TRADER_LEVEL;
+					case 9: // Aquileia
+						cityLevel = AQUILEIA_CITY_LEVEL;
+						traderLevel = AQUILEIA_TRADER_LEVEL;
 						break;
 					case 10: // Milan
 						cityLevel = MILAN_CITY_LEVEL;

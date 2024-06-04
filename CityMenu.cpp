@@ -246,7 +246,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		default:case Game::Background::CITY_MENU:
 			switch (game.getWorldMap().getCurrentCity().getNameIndex())
 			{
-			case ROME: break;
+			case ROME: path = DIRECTORY + "Cities/RomeBackground" + FORMAT; break;
 			case NAPLES: path = DIRECTORY + "Cities/NaplesBackground" + FORMAT; break;
 			case METAPONTO: path = DIRECTORY + "Cities/MetapontoBackground" + FORMAT; break;
 			case BOJANO: path = DIRECTORY + "Cities/BojanoBackground" + FORMAT; break;
@@ -255,7 +255,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			case FLORENCE: path = DIRECTORY + "Cities/FlorenceBackground" + FORMAT; break;
 			case BOLOGNA: path = DIRECTORY + "Cities/BolognaBackground" + FORMAT; break;
 			case GENOA: path = DIRECTORY + "Cities/GenoaBackground" + FORMAT; break;
-			case VENICE: path = DIRECTORY + "Cities/AquileaBackground" + FORMAT; break;
+			case AQUILEIA: path = DIRECTORY + "Cities/AquileiaBackground" + FORMAT; break;
 			case MILAN: path = DIRECTORY + "Cities/MilanBackground" + FORMAT; break;
 			}
 			break;
@@ -319,8 +319,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				// Right hand
 				if (rPlayer.getRightHand())
 				{
-					buf = l.getWeaponTypeName(*rPlayer.getRightHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getRightHand()->getTier()) + ")";
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getRightHand()).c_str());
 
 					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
@@ -335,8 +334,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				// Left hand
 				if (rPlayer.getLeftHand())
 				{
-					buf = l.getWeaponTypeName(*rPlayer.getLeftHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getLeftHand()->getTier()) + ")";
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getLeftHand()).c_str());
 
 					if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 					{
@@ -365,8 +363,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				// Armour
 				if (rPlayer.getArmour())
 				{
-					buf = l.getArmourTypeName(*rPlayer.getArmour()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getArmour()->getTier()) + ")";
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
 
 					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
@@ -1437,8 +1434,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Right hand
 					if (rPlayer.getRightHand())
 					{
-						buf = l.getWeaponTypeName(*rPlayer.getRightHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getRightHand()->getTier()) + ")";
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getRightHand()).c_str());
 
 						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
@@ -1453,8 +1449,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Left hand
 					if (rPlayer.getLeftHand())
 					{
-						buf = l.getWeaponTypeName(*rPlayer.getLeftHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getLeftHand()->getTier()) + ")";
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getLeftHand()).c_str());
 
 						if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 						{
@@ -1485,8 +1480,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Armour
 					if (rPlayer.getArmour())
 					{
-						buf = l.getArmourTypeName(*rPlayer.getArmour()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rPlayer.getArmour()->getTier()) + ")";
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
 
 						buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
@@ -3246,8 +3240,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	// Right hand
 	if (rOpponent.getRightHand())
 	{
-		buf = l.getWeaponTypeName(*rOpponent.getRightHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rOpponent.getRightHand()->getTier()) + ")";
-		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rOpponent.getRightHand()).c_str());
 
 		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rOpponent.getRightHand()->getTotalDamage());
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
@@ -3256,8 +3249,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	// Left hand
 	if (rOpponent.getLeftHand())
 	{
-		buf = l.getWeaponTypeName(*rOpponent.getLeftHand()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rOpponent.getLeftHand()->getTier()) + ")";
-		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rOpponent.getLeftHand()).c_str());
 
 		if (rOpponent.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 		{
@@ -3293,8 +3285,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	// Armour
 	if (rOpponent.getArmour())
 	{
-		buf = l.getArmourTypeName(*rOpponent.getArmour()) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rOpponent.getArmour()->getTier()) + ")";
-		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rOpponent.getArmour()).c_str());
 
 		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rOpponent.getArmour()->getTotalDefense());
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
