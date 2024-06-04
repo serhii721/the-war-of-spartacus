@@ -277,11 +277,6 @@ void GameMenu::resizeMenu(int cx, int cy)
 	}
 }
 
-void GameMenu::updateLanguage()
-{
-	// TODO: update localization
-}
-
 void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	RECT windowRect;
@@ -384,4 +379,5 @@ bool GameMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		}
 		break;
 	}
+	return false;
 }

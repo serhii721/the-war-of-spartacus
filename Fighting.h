@@ -8,7 +8,7 @@ private:
 	HBITMAP hBackgroundImage;
 	HBRUSH hBackgroundBrush;
 public:
-	enum Item
+	enum MenuItem
 	{
 		STATIC_START,
 		STATIC_PLAYER_HP,
@@ -38,7 +38,7 @@ public:
 	Fighting& operator=(const Fighting&);
 	~Fighting();
 
-	FightStatus fight(HWND, Player&, unique_ptr<NPC>&);
+	FightStatus fight(HWND, Player&, NPC&);
 	void getAttackResult(const NPC& opponent_, const Attacker, const AttackResult, const int damage_);
 	FightStatus checkFightStatus(const Player&, const NPC&);
 	void getFightResult(const FightStatus, const int playerHP_, const int opponentHP_);

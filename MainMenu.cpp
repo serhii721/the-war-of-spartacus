@@ -11,22 +11,32 @@ extern Game game;
 MainMenu::MainMenu() :
 	hItems(),
 	hSubItems(),
+	hSubMenuItems(),
 	nms(),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL),
 	selectedLanguage(Language::ENGLISH),
-	changedSettings(false)
-{ }
+	changedSettings(false),
+	selectedSet(-1)
+{
+	// Generate 3 sets of random starting equipment
+	se.push_back(make_unique<StartingEquipment>());
+	se.push_back(make_unique<StartingEquipment>());
+	se.push_back(make_unique<StartingEquipment>());
+}
 
 MainMenu::MainMenu(HWND hWnd) :
 	hItems(MenuItem::ITEM_NUMBER),
 	hSubItems(),
+	hSubMenuItems(),
 	nms(),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL),
 	selectedLanguage(Language::ENGLISH),
-	changedSettings(false)
+	changedSettings(false),
+	selectedSet(-1)
 {
+	// Create starting windows
 	char className[256] = "BUTTON";
 	hItems[BUT_CONTINUE] = CreateWindow(className, l.getMessage(Localized::CONTINUE_GAME).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
@@ -53,9 +63,14 @@ MainMenu::MainMenu(HWND hWnd) :
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
+
+	// Generate 3 sets of random starting equipment
+	se.push_back(make_unique<StartingEquipment>());
+	se.push_back(make_unique<StartingEquipment>());
+	se.push_back(make_unique<StartingEquipment>());
 }
 
-MainMenu::MainMenu(const MainMenu& MM) : hSubItems()
+MainMenu::MainMenu(const MainMenu& MM) : hSubItems(), hSubMenuItems()
 {
 	// Resizing items' vector
 	int sz = MM.hItems.size();
@@ -106,10 +121,16 @@ MainMenu::MainMenu(const MainMenu& MM) : hSubItems()
 	else
 		hBackgroundBrush = NULL;
 
+	// New menu storage
 	nms = make_unique<NewMenuStorage>();
+
+	// Starting equipment
+	for (const auto& equipmentSet : MM.se)
+		se.push_back(make_unique<StartingEquipment>(*equipmentSet));
 
 	selectedLanguage = MM.selectedLanguage;
 	changedSettings = MM.changedSettings;
+	selectedSet = MM.selectedSet;
 }
 
 MainMenu& MainMenu::operator=(const MainMenu& MM)
@@ -153,7 +174,9 @@ MainMenu& MainMenu::operator=(const MainMenu& MM)
 	}
 
 	hSubItems = vector<HWND>();
+	hSubMenuItems = vector<HWND>();
 
+	// New menu storage
 	if (MM.nms)
 	{
 		if (!nms)
@@ -164,6 +187,12 @@ MainMenu& MainMenu::operator=(const MainMenu& MM)
 	else
 		nms = nullptr;
 
+	// Starting equipment
+	se.clear();
+	for (const auto& equipmentSet : MM.se)
+		se.push_back(make_unique<StartingEquipment>(*equipmentSet));
+
+	// Image
 	if (hBackgroundImage != NULL)
 		DeleteObject(hBackgroundImage);
 
@@ -190,6 +219,7 @@ MainMenu& MainMenu::operator=(const MainMenu& MM)
 
 	selectedLanguage = MM.selectedLanguage;
 	changedSettings = MM.changedSettings;
+	selectedSet = MM.selectedSet;
 
 	return *this;
 }
@@ -201,6 +231,10 @@ MainMenu::~MainMenu()
 			DestroyWindow(hItem);
 
 	for (HWND hItem : hSubItems)
+		if (hItem != NULL)
+			DestroyWindow(hItem);
+
+	for (HWND hItem : hSubMenuItems)
 		if (hItem != NULL)
 			DestroyWindow(hItem);
 
@@ -233,6 +267,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			break;
 		case Game::Background::MAIN_MENU_LOAD: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
 		case Game::Background::MAIN_MENU_NEW_GAME: path = DIRECTORY + "characterCreationBackground768" + FORMAT; break;
+		case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT: path = DIRECTORY + "characterCreationBackground768" + FORMAT; break; // TODO: background
 		case Game::Background::MAIN_MENU_SETTINGS: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
 		case Game::Background::MAIN_MENU_SPECIALS: path = DIRECTORY + "menuBackground768" + FORMAT; break; // TODO: background
 		}
@@ -254,6 +289,236 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	default:case Game::Background::MAIN_MENU: break;
 	case Game::Background::MAIN_MENU_LOAD: break;
 	case Game::Background::MAIN_MENU_NEW_GAME: break;
+	case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT:
+	{
+		// General
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_CHOOSE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::CHOOSE_STARTING_EQUIPMENT).c_str());
+		SendMessage(hSubMenuItems[EQUIPMENT_BUT_NEXT], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::NEXT).c_str());
+		SendMessage(hSubMenuItems[EQUIPMENT_BUT_BACK], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::BACK).c_str());
+		for (int i = EQUIPMENT_BUT_SET1; i <= EQUIPMENT_BUT_SET3; i++)
+			SendMessage(hSubMenuItems[i], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::SELECT).c_str());
+
+		// Equipment
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_RIGHT_HAND], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::RIGHT_HAND).c_str());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_RIGHT_HAND], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::RIGHT_HAND).c_str());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_RIGHT_HAND], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::RIGHT_HAND).c_str());
+
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::LEFT_HAND).c_str());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::LEFT_HAND).c_str());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::LEFT_HAND).c_str());
+
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ARMOUR).c_str());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ARMOUR).c_str());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ARMOUR).c_str());
+
+		// Get equipment
+		// Left hand is a unique_ptr since it can be empty thus unable to be received by reference
+		Weapon& rRightHand1 = *se[0]->rightHand;
+		auto& pLeftHand1 = se[0]->leftHand;
+		Armour& rArmour1 = *se[0]->armour;
+
+		Weapon& rRightHand2 = *se[1]->rightHand;
+		auto& pLeftHand2 = se[1]->leftHand;
+		Armour& rArmour2 = *se[1]->armour;
+
+		Weapon& rRightHand3 = *se[2]->rightHand;
+		auto& pLeftHand3 = se[2]->leftHand;
+		Armour& rArmour3 = *se[2]->armour;
+
+		// Set 1
+		{
+		buf = l.getMessage(Localized::SET) + " 1";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		// Right hand
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(rRightHand1).c_str());
+
+		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand1.getTotalDamage());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rRightHand1.getStrengthAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_RIGHT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rRightHand1.getDexterityAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_RIGHT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		// Left hand
+		if (pLeftHand1)
+		{
+			SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*pLeftHand1).c_str());
+
+			if (pLeftHand1->getWeaponType() != Weapon::WeaponType::SHIELD)
+			{
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(pLeftHand1->getTotalDamage());
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(pLeftHand1->getStrengthAdditionPercentage()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(pLeftHand1->getDexterityAdditionPercentage()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+			}
+			else
+			{
+				buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(pLeftHand1->getShieldDefPercentAddition()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(pLeftHand1->getShieldProbAddition()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+			}
+		}
+		else
+			SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
+
+		// Armour
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(rArmour1).c_str());
+
+		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour1.getTotalDefense());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rArmour1.getStrengthAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rArmour1.getDexterityAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		if (rArmour1.getArmourType() == Armour::ArmourType::LIGHT)
+			buf = l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(rArmour1.getEvasionProbAddition()) + "%";
+		else
+			buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(rArmour1.getStunProbSubtraction()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		}
+
+		// Set 2
+		{
+		buf = l.getMessage(Localized::SET) + " 2";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		// Right hand
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(rRightHand2).c_str());
+
+		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand2.getTotalDamage());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rRightHand2.getStrengthAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_RIGHT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rRightHand2.getDexterityAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_RIGHT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		// Left hand
+		if (pLeftHand2)
+		{
+			SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*pLeftHand2).c_str());
+
+			if (pLeftHand2->getWeaponType() != Weapon::WeaponType::SHIELD)
+			{
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(pLeftHand2->getTotalDamage());
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(pLeftHand2->getStrengthAdditionPercentage()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(pLeftHand2->getDexterityAdditionPercentage()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+			}
+			else
+			{
+				buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(pLeftHand2->getShieldDefPercentAddition()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(pLeftHand2->getShieldProbAddition()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+			}
+		}
+		else
+			SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
+		
+		// Armour
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(rArmour2).c_str());
+
+		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour2.getTotalDefense());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rArmour2.getStrengthAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rArmour2.getDexterityAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		if (rArmour2.getArmourType() == Armour::ArmourType::LIGHT)
+			buf = l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(rArmour2.getEvasionProbAddition()) + "%";
+		else
+			buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(rArmour2.getStunProbSubtraction()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		}
+
+		// Set 3
+		{
+		buf = l.getMessage(Localized::SET) + " 3";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		// Right hand
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(rRightHand3).c_str());
+
+		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand3.getTotalDamage());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rRightHand3.getStrengthAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_RIGHT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rRightHand3.getDexterityAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_RIGHT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		// Left hand
+		if (pLeftHand3)
+		{
+			SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*pLeftHand3).c_str());
+
+			if (pLeftHand3->getWeaponType() != Weapon::WeaponType::SHIELD)
+			{
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(pLeftHand3->getTotalDamage());
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(pLeftHand3->getStrengthAdditionPercentage()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(pLeftHand3->getDexterityAdditionPercentage()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+			}
+			else
+			{
+				buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(pLeftHand3->getShieldDefPercentAddition()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(pLeftHand3->getShieldProbAddition()) + "%";
+				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+			}
+		}
+		else
+			SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
+
+		// Armour
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(rArmour3).c_str());
+
+		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour3.getTotalDefense());
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rArmour3.getStrengthAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR_STRENGTH_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		buf = l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(rArmour3.getDexterityAdditionPercentage()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR_DEXTERITY_SCALE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		if (rArmour3.getArmourType() == Armour::ArmourType::LIGHT)
+			buf = l.getMessage(Localized::EVASION_CHANCE) + ": " + to_string(rArmour3.getEvasionProbAddition()) + "%";
+		else
+			buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(rArmour3.getStunProbSubtraction()) + "%";
+		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		}
+	}
+	break;
+
 	case Game::Background::MAIN_MENU_SETTINGS:
 	{
 		if (changedSettings)
@@ -299,14 +564,14 @@ void MainMenu::resizeMenu(int cx, int cy)
 		y = cy;
 
 		// Resizing static windows
-		MoveWindow(hSubItems[STAT_CHARACTER_CREATION], 400, 40, 566, 55, TRUE);
+		MoveWindow(hSubItems[STAT_CHARACTER_CREATION], cx - 150, 40, 300, 55, TRUE);
 		for (i = NewGameItem::STAT_NAME; i <= NewGameItem::STAT_CHARISMA; i++)
 		{
 			if (i != NewGameItem::STAT_UNNASSIGNED_ATTRIBUTES)
 				MoveWindow(hSubItems[i], 557, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
 			else
 			{
-				MoveWindow(hSubItems[i], 557, y + ITEM_HEIGHT + DISTANCE, STAT_WIDTH + 70, ITEM_HEIGHT * 2, TRUE);
+				MoveWindow(hSubItems[i], 557, y + ITEM_HEIGHT + DISTANCE * 3, STAT_WIDTH + 70, 30, TRUE);
 				y += ITEM_HEIGHT * 2 + DISTANCE;
 			}
 			y += ITEM_HEIGHT + DISTANCE;
@@ -343,6 +608,146 @@ void MainMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubItems[NEW_GAME_BUT_BACK], 557, y, 120, ITEM_HEIGHT, TRUE);
 
 		MoveWindow(hSubItems[NEW_GAME_BUT_NEXT], 687, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
+	}
+	break;
+
+	case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT:
+	{
+		const int BIG_STAT_WIDTH = 250, BIG_STAT_HEIGHT = 30,
+			SMALL_STAT_WIDTH = 180, SMALL_STAT_HEIGHT = 20,
+			BIG_DISTANCE = 9, SMALL_DISTANCE = 4,
+			BUT_SIZE = 20,
+			ITEM_WIDTH = 120, ITEM_HEIGHT = 97;
+
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_CHOOSE], cx - 150, BIG_DISTANCE * 2, 300, 40, TRUE);
+		// Set 1
+		x = cx - (SMALL_STAT_WIDTH + BIG_DISTANCE) * 3 - BIG_DISTANCE, y = BIG_STAT_HEIGHT * 7;
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET1], x + (BIG_DISTANCE + SMALL_STAT_WIDTH) / 2, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 5, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		// Right hand
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_RIGHT_HAND], x, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 4, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET1_RIGHT_HAND], x + ITEM_WIDTH / 4, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		y += BIG_DISTANCE * 2;
+		for (i = EQUIPMENT_STAT_SET1_RIGHT_HAND_TYPE; i <= EQUIPMENT_STAT_SET1_RIGHT_HAND_DEXTERITY_SCALE; i++)
+		{
+			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
+		}
+
+		// Left hand
+		x += SMALL_STAT_WIDTH + BIG_DISTANCE, y = BIG_STAT_HEIGHT * 7;
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND], x, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 4, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET1_LEFT_HAND], x + ITEM_WIDTH / 4, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		y += BIG_DISTANCE * 2;
+		for (i = EQUIPMENT_STAT_SET1_LEFT_HAND_TYPE; i <= EQUIPMENT_STAT_SET1_LEFT_HAND_DEXTERITY_SCALE; i++)
+		{
+			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			// Shield stats
+			if (i == EQUIPMENT_STAT_SET1_LEFT_HAND_DAMAGE)
+				MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_SHIELD_DEFENSE], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			if (i == EQUIPMENT_STAT_SET1_LEFT_HAND_STRENGTH_SCALE)
+				MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_SHIELD_BLOCK_CHANCE], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
+		}
+
+		// Armour
+		x -= (SMALL_STAT_WIDTH + BIG_DISTANCE) / 2, y += SMALL_STAT_HEIGHT * 2 + BIG_DISTANCE;
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR], x, y - BIG_DISTANCE * 2 - SMALL_STAT_HEIGHT, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		y += ITEM_HEIGHT;
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET1_ARMOUR], x + ITEM_WIDTH / 4, y - SMALL_DISTANCE * 4 - BIG_STAT_HEIGHT * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		for (i = EQUIPMENT_STAT_SET1_ARMOUR_TYPE; i <= EQUIPMENT_STAT_SET1_ARMOUR_ABILITY; i++)
+		{
+			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
+		}
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET1], x + SMALL_STAT_WIDTH / 4, y + SMALL_DISTANCE, SMALL_STAT_WIDTH / 2, BIG_STAT_HEIGHT, TRUE);
+
+		// Set 2
+		x = cx - SMALL_STAT_WIDTH - BIG_DISTANCE / 2, y = BIG_STAT_HEIGHT * 7;
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET2], x + (BIG_DISTANCE + SMALL_STAT_WIDTH) / 2, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 5, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		// Right hand
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_RIGHT_HAND], x, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 4, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET2_RIGHT_HAND], x + ITEM_WIDTH / 4, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		y += BIG_DISTANCE * 2;
+		for (i = EQUIPMENT_STAT_SET2_RIGHT_HAND_TYPE; i <= EQUIPMENT_STAT_SET2_RIGHT_HAND_DEXTERITY_SCALE; i++)
+		{
+			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
+		}
+
+		// Left hand
+		x += SMALL_STAT_WIDTH + BIG_DISTANCE, y = BIG_STAT_HEIGHT * 7;
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND], x, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 4, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET2_LEFT_HAND], x + ITEM_WIDTH / 4, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		y += BIG_DISTANCE * 2;
+		for (i = EQUIPMENT_STAT_SET2_LEFT_HAND_TYPE; i <= EQUIPMENT_STAT_SET2_LEFT_HAND_DEXTERITY_SCALE; i++)
+		{
+			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			// Shield stats
+			if (i == EQUIPMENT_STAT_SET2_LEFT_HAND_DAMAGE)
+				MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_SHIELD_DEFENSE], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			if (i == EQUIPMENT_STAT_SET2_LEFT_HAND_STRENGTH_SCALE)
+				MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_SHIELD_BLOCK_CHANCE], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
+		}
+
+		// Armour
+		x -= (SMALL_STAT_WIDTH + BIG_DISTANCE) / 2, y += SMALL_STAT_HEIGHT * 2 + BIG_DISTANCE;
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR], x, y - BIG_DISTANCE * 2 - SMALL_STAT_HEIGHT, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		y += ITEM_HEIGHT;
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET2_ARMOUR], x + ITEM_WIDTH / 4, y - SMALL_DISTANCE * 4 - BIG_STAT_HEIGHT * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		for (i = EQUIPMENT_STAT_SET2_ARMOUR_TYPE; i <= EQUIPMENT_STAT_SET2_ARMOUR_ABILITY; i++)
+		{
+			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
+		}
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET2], x + SMALL_STAT_WIDTH / 4, y + SMALL_DISTANCE, SMALL_STAT_WIDTH / 2, BIG_STAT_HEIGHT, TRUE);
+
+		// Set 3
+		x = cx + SMALL_STAT_WIDTH + BIG_DISTANCE * 3, y = BIG_STAT_HEIGHT * 7;
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET3], x + (BIG_DISTANCE + SMALL_STAT_WIDTH) / 2, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 5, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		// Right hand
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_RIGHT_HAND], x, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 4, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET3_RIGHT_HAND], x + ITEM_WIDTH / 4, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		y += BIG_DISTANCE * 2;
+		for (i = EQUIPMENT_STAT_SET3_RIGHT_HAND_TYPE; i <= EQUIPMENT_STAT_SET3_RIGHT_HAND_DEXTERITY_SCALE; i++)
+		{
+			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
+		}
+
+		// Left hand
+		x += SMALL_STAT_WIDTH + BIG_DISTANCE, y = BIG_STAT_HEIGHT * 7;
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND], x, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 4, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET3_LEFT_HAND], x + ITEM_WIDTH / 4, y - (BIG_DISTANCE + SMALL_STAT_HEIGHT) * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		y += BIG_DISTANCE * 2;
+		for (i = EQUIPMENT_STAT_SET3_LEFT_HAND_TYPE; i <= EQUIPMENT_STAT_SET3_LEFT_HAND_DEXTERITY_SCALE; i++)
+		{
+			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			// Shield stats
+			if (i == EQUIPMENT_STAT_SET3_LEFT_HAND_DAMAGE)
+				MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_SHIELD_DEFENSE], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			if (i == EQUIPMENT_STAT_SET3_LEFT_HAND_STRENGTH_SCALE)
+				MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_SHIELD_BLOCK_CHANCE], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
+		}
+
+		// Armour
+		x -= (SMALL_STAT_WIDTH + BIG_DISTANCE) / 2, y += SMALL_STAT_HEIGHT * 2 + BIG_DISTANCE;
+		MoveWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR], x, y - BIG_DISTANCE * 2 - SMALL_STAT_HEIGHT, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+		y += ITEM_HEIGHT;
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET3_ARMOUR], x + ITEM_WIDTH / 4, y - SMALL_DISTANCE * 4 - BIG_STAT_HEIGHT * 3, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		for (i = EQUIPMENT_STAT_SET3_ARMOUR_TYPE; i <= EQUIPMENT_STAT_SET3_ARMOUR_ABILITY; i++)
+		{
+			MoveWindow(hSubMenuItems[i], x, y, SMALL_STAT_WIDTH, SMALL_STAT_HEIGHT, TRUE);
+			y += SMALL_STAT_HEIGHT + BIG_DISTANCE;
+		}
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_SET3], x + SMALL_STAT_WIDTH / 4, y + SMALL_DISTANCE, SMALL_STAT_WIDTH / 2, BIG_STAT_HEIGHT, TRUE);
+
+		// Back
+		y = 680;
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_BACK], cx - BIG_STAT_WIDTH - BIG_DISTANCE, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		// Next
+		MoveWindow(hSubMenuItems[EQUIPMENT_BUT_NEXT], cx + BIG_DISTANCE, y, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
 	}
 	break;
 
@@ -391,15 +796,11 @@ void MainMenu::resizeMenu(int cx, int cy)
 	}
 }
 
-void MainMenu::updateLanguage()
-{
-	// TODO: Apply localization
-}
-
 void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	RECT windowRect;
 	GetWindowRect(hWnd, &windowRect);
+	int i;
 
 	switch (m)
 	{
@@ -434,7 +835,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(NewGameItem::NEW_GAME_ITEM_NUMBER);
 
-				// TODO: Apply localization
 				hSubItems[STAT_CHARACTER_CREATION] = CreateWindow("STATIC", l.getMessage(Localized::CHARACTER_CREATION).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[STAT_NAME] = CreateWindow("STATIC", l.getMessage(Localized::NAME).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[STAT_AGE] = CreateWindow("STATIC", l.getMessage(Localized::AGE).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -531,7 +931,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems.resize(SettingsItem::SETTINGS_ITEM_NUMBER);
 
 				hSubItems[SPECIALS_STAT_SPECIALS] = CreateWindow("STATIC", l.getMessage(Localized::SPECIALS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[SPECIALS_STAT_TEXT] = CreateWindow("STATIC", "Text", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SPECIALS_STAT_TEXT] = CreateWindow("STATIC", "Empty for now", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0); // TODO
 				hSubItems[SPECIALS_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				game.setBackground(Game::Background::MAIN_MENU_SPECIALS);
@@ -546,6 +946,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		case Game::Background::MAIN_MENU_NEW_GAME:
 		{
 			// Changing attributes
+			{
 			// Age
 			if ((HWND)lp == hSubItems[BUT_AGE_MINUS])
 			{
@@ -689,6 +1090,123 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
 				}
 			}
+			}
+
+			// Continue - choosing equipment
+			if ((HWND)lp == hSubItems[NEW_GAME_BUT_NEXT])
+			{
+				// Hiding previous windows
+				for (HWND hItem : hSubItems)
+					ShowWindow(hItem, SW_HIDE);
+
+				// Erasing previous sub menu items
+				hSubMenuItems.clear();
+
+				// Creating new sub menu items
+				hSubMenuItems.resize(EQUIPMENT_ITEM_NUMBER);
+
+				// Creating static windows
+				for (i = EQUIPMENT_STAT_CHOOSE; i <= EQUIPMENT_STAT_SET3_ARMOUR_ABILITY; i++)
+					hSubMenuItems[i] = CreateWindow("STATIC", "", WS_VISIBLE | WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				// Creating button windows
+				for (i = EQUIPMENT_BUT_SET1_RIGHT_HAND; i <= EQUIPMENT_BUT_NEXT; i++)
+					hSubMenuItems[i] = CreateWindow("BUTTON", "", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				for (i = EQUIPMENT_BUT_SET1; i <= EQUIPMENT_BUT_SET3; i++)
+					hSubMenuItems[i] = CreateWindow("BUTTON", "", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_OWNERDRAW | BS_AUTORADIOBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				auto& pLeftHand1 = se[0]->leftHand;
+				auto& pLeftHand2 = se[1]->leftHand;
+				auto& pLeftHand3 = se[2]->leftHand;
+
+				// Set 1
+				if (pLeftHand1)
+				{
+					if (pLeftHand1->getWeaponType() != Weapon::WeaponType::SHIELD)
+					{
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_SHIELD_DEFENSE], SW_HIDE);
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_SHIELD_BLOCK_CHANCE], SW_HIDE);
+					}
+					else
+					{
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_DAMAGE], SW_HIDE);
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_STRENGTH_SCALE], SW_HIDE);
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_DEXTERITY_SCALE], SW_HIDE);
+					}
+				}
+				else
+				{
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_DAMAGE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_STRENGTH_SCALE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_DEXTERITY_SCALE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_SHIELD_DEFENSE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_SHIELD_BLOCK_CHANCE], SW_HIDE);
+				}
+				// Set 2
+				if (pLeftHand2)
+				{
+					if (pLeftHand2->getWeaponType() != Weapon::WeaponType::SHIELD)
+					{
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_SHIELD_DEFENSE], SW_HIDE);
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_SHIELD_BLOCK_CHANCE], SW_HIDE);
+					}
+					else
+					{
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_DAMAGE], SW_HIDE);
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_STRENGTH_SCALE], SW_HIDE);
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_DEXTERITY_SCALE], SW_HIDE);
+					}
+				}
+				else
+				{
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_DAMAGE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_STRENGTH_SCALE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_DEXTERITY_SCALE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_SHIELD_DEFENSE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_SHIELD_BLOCK_CHANCE], SW_HIDE);
+				}
+				// Set 3
+				if (pLeftHand3)
+				{
+					if (pLeftHand3->getWeaponType() != Weapon::WeaponType::SHIELD)
+					{
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_SHIELD_DEFENSE], SW_HIDE);
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_SHIELD_BLOCK_CHANCE], SW_HIDE);
+					}
+					else
+					{
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_DAMAGE], SW_HIDE);
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_STRENGTH_SCALE], SW_HIDE);
+						ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_DEXTERITY_SCALE], SW_HIDE);
+					}
+				}
+				else
+				{
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_DAMAGE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_STRENGTH_SCALE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_DEXTERITY_SCALE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_SHIELD_DEFENSE], SW_HIDE);
+					ShowWindow(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_SHIELD_BLOCK_CHANCE], SW_HIDE);
+				}
+
+				// Update generated weapons' stats based on player's stats
+				for (i = 0; i < 3; i++)
+				{
+					if (se[i]->rightHand)
+						se[i]->rightHand->update(nms->strength, nms->dexterity);
+
+					if (se[i]->leftHand)
+						se[i]->leftHand->update(nms->strength, nms->dexterity);
+
+					if (se[i]->armour)
+						se[i]->armour->update(nms->strength, nms->dexterity);
+				}
+
+				game.setBackground(Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT);
+
+				updateWindow(hWnd);
+			}
 
 			// Return to main menu
 			if ((HWND)lp == hSubItems[NEW_GAME_BUT_BACK] || LOWORD(wp) == IDCANCEL)
@@ -710,53 +1228,57 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
+		}
+		break;
+
+		case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT:
+		{
+			// Set 1
+			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_SET1])
+			{
+				int n = selectedSet;
+				selectedSet = EQUIPMENT_BUT_SET1;
+				if (n != -1)
+				{
+					SetWindowText(hSubMenuItems[n], l.getMessage(Localized::SELECT).c_str());
+					updateWindow(hSubMenuItems[n]);
+				}
+				SetWindowText(hSubMenuItems[selectedSet], l.getMessage(Localized::SELECTED).c_str());
+				UpdateWindow(hSubMenuItems[selectedSet]);
+			}
+
+			// Set 2
+			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_SET2])
+			{
+				int n = selectedSet;
+				selectedSet = EQUIPMENT_BUT_SET2;
+				if (n != -1)
+				{
+					SetWindowText(hSubMenuItems[n], l.getMessage(Localized::SELECT).c_str());
+					updateWindow(hSubMenuItems[n]);
+				}
+				SetWindowText(hSubMenuItems[selectedSet], l.getMessage(Localized::SELECTED).c_str());
+				UpdateWindow(hSubMenuItems[selectedSet]);
+			}
+
+			// Set 3
+			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_SET3])
+			{
+				int n = selectedSet;
+				selectedSet = EQUIPMENT_BUT_SET3;
+				if (n != -1)
+				{
+					SetWindowText(hSubMenuItems[n], l.getMessage(Localized::SELECT).c_str());
+					updateWindow(hSubMenuItems[n]);
+				}
+				SetWindowText(hSubMenuItems[selectedSet], l.getMessage(Localized::SELECTED).c_str());
+				UpdateWindow(hSubMenuItems[selectedSet]);
+			}
 
 			// Entering game
-			if ((HWND)lp == hSubItems[NEW_GAME_BUT_NEXT])
+			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_NEXT] && selectedSet != -1)
 			{
 				// Player creation
-				// Weapons
-				unique_ptr<Weapon> rightHand = generateWeapon();
-				unique_ptr<Weapon> leftHand;
-				if (rightHand->getWeaponType() != Weapon::WeaponType::AXE && rightHand->getWeaponType() != Weapon::WeaponType::SPEAR)
-				{
-					leftHand = generateWeapon();
-					if (!rightHand->isCompatibleWith(leftHand->getWeaponType()))
-					{
-						if (rand() % 100 < 75)
-						{
-							if (leftHand)
-								leftHand.release();
-							leftHand = generateWeapon(MIN_WEAPON_TIER, Weapon::SHIELD);
-						}
-						else if (rand() % 100 < 75)
-							do
-							{
-								if (leftHand)
-									leftHand.release();
-								leftHand = generateWeapon();
-							} while (!rightHand->isCompatibleWith(leftHand->getWeaponType()));
-						else if (leftHand)
-						{
-							leftHand.release();
-							leftHand = nullptr;
-						}
-					}
-				}
-				else
-					leftHand = nullptr;
-
-				// Updating weapon damage depending on stat scale
-				rightHand->update(nms->strength, nms->dexterity);
-				if (leftHand)
-					leftHand->update(nms->strength, nms->dexterity);
-
-				// Armour
-				unique_ptr<Armour> armour = generateArmour();
-
-				// Updating armour defense depending on stat scale
-				armour->update(nms->strength, nms->dexterity);
-
 				if (SendMessage(hSubItems[EDIT_NAME], WM_GETTEXTLENGTH, 0, 0) > 0)
 					SendMessage(hSubItems[EDIT_NAME], WM_GETTEXT, 256, (LPARAM)str);
 				else
@@ -778,9 +1300,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 							BASIC_HP,
 							BASIC_HP,
 							make_unique<Inventory>(),
-							move(rightHand),
-							move(leftHand),
-							move(armour)
+							move(se[selectedSet - EQUIPMENT_BUT_SET1]->rightHand),
+							move(se[selectedSet - EQUIPMENT_BUT_SET1]->leftHand),
+							move(se[selectedSet - EQUIPMENT_BUT_SET1]->armour)
 						),
 						Leveling(
 							MIN_LEVEL,
@@ -872,6 +1394,32 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::CITY_MENU);
 
 				updateWindow(hWnd);
+				break;
+			}
+			else if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_NEXT] && selectedSet == -1)
+			{
+				MessageBox(hWnd, l.getMessage(Localized::SELECT_EQUIPMENT).c_str(), l.getMessage(Localized::EQUIPMENT_UNSELECTED).c_str(), MB_OK);
+			}
+
+			// Back to character creation
+			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_BACK] || LOWORD(wp) == IDCANCEL)
+			{
+				// Destroying all buttons
+				for (HWND hItem : hSubMenuItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubMenuItems.clear();
+
+				// Showing main menu buttons
+				for (HWND hItem : hSubItems)
+					ShowWindow(hItem, SW_SHOW);
+
+				selectedSet = -1;
+
+				game.setBackground(Game::Background::MAIN_MENU_NEW_GAME);
+
+				updateWindow(hWnd);
+				break;
 			}
 		}
 		break;
@@ -1057,8 +1605,196 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	{
 		case WM_DRAWITEM:
 		{
+			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
+			HDC hdc = item->hDC;
+
+			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
+			SetBkMode(hdc, TRANSPARENT);
+
+			// Get text
+			int len = GetWindowTextLength(item->hwndItem);
+			buf.resize(len + 1); // Resize buffer to contain button text
+			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+
+			SetTextColor(hdc, COLOR_WHITE); // Set basic text color
+
+			// Checking window type to draw it using correct styles
+			if (game.getBackground() == Game::Background::MAIN_MENU_NEW_GAME && item->hwndItem == hSubItems[STAT_CHARACTER_CREATION])
+			{
+				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+				SetBkMode(hdc, TRANSPARENT);
+
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
+				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+				return true;
+			}
+			if (game.getBackground() == Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT)
+			{
+				if (item->CtlType == ODT_STATIC)
+				{
+					// Select font size
+					if (item->hwndItem == hSubMenuItems[EQUIPMENT_STAT_CHOOSE])
+						SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+					else
+						SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+					SetBkMode(hdc, TRANSPARENT);
+
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+					return true;
+				}
+
+				// Check every item icon
+				for (int i = EQUIPMENT_BUT_SET1_RIGHT_HAND; i <= EQUIPMENT_BUT_SET3_ARMOUR; i++)
+				{
+					if (item->hwndItem == hSubMenuItems[i])
+					{
+						if (item->itemState & ODS_SELECTED) // Pushed
+							drawItem(hWnd, item, i, true);
+						else // Not pushed
+							drawItem(hWnd, item, i, false);
+						return true;
+					}
+				}
+
+				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET1] && selectedSet != -1 && selectedSet == EQUIPMENT_BUT_SET1)
+				{
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+					return true;
+				}
+
+				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET2] && selectedSet != -1 && selectedSet == EQUIPMENT_BUT_SET2)
+				{
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+					return true;
+				}
+
+				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET3] && selectedSet != -1 && selectedSet == EQUIPMENT_BUT_SET3)
+				{
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+					return true;
+				}
+			}
 			return false;
 		}
 		break;
 	}
+	return false;
+}
+
+void MainMenu::drawItem(HWND hWnd, LPDRAWITEMSTRUCT item, int buttonIndex, bool isPushed)
+{
+	// Selecting image for button based on item type
+	const string DIRECTORY = "Data/Image/Items/",
+		FORMAT = ".bmp";
+	string path = "";
+
+	// Getting item represented by button
+	unique_ptr<Item> pItem;
+	switch (buttonIndex)
+	{
+	case EQUIPMENT_BUT_SET1_RIGHT_HAND:
+		pItem = make_unique<Weapon>(*se[0]->rightHand);
+		break;
+	case EQUIPMENT_BUT_SET1_LEFT_HAND:
+		if (se[0]->leftHand)
+			pItem = make_unique<Weapon>(*se[0]->leftHand);
+		else
+			pItem = nullptr;
+		break;
+	case EQUIPMENT_BUT_SET1_ARMOUR:
+		pItem = make_unique<Armour>(*se[0]->armour);
+		break;
+	case EQUIPMENT_BUT_SET2_RIGHT_HAND:
+		pItem = make_unique<Weapon>(*se[1]->rightHand);
+		break;
+	case EQUIPMENT_BUT_SET2_LEFT_HAND:
+		if (se[1]->leftHand)
+			pItem = make_unique<Weapon>(*se[1]->leftHand);
+		else
+			pItem = nullptr;
+		break;
+	case EQUIPMENT_BUT_SET2_ARMOUR:
+		pItem = make_unique<Armour>(*se[1]->armour);
+		break;
+	case EQUIPMENT_BUT_SET3_RIGHT_HAND:
+		pItem = make_unique<Weapon>(*se[2]->rightHand);
+		break;
+	case EQUIPMENT_BUT_SET3_LEFT_HAND:
+		if (se[2]->leftHand)
+			pItem = make_unique<Weapon>(*se[2]->leftHand);
+		else
+			pItem = nullptr;
+		break;
+	case EQUIPMENT_BUT_SET3_ARMOUR:
+		pItem = make_unique<Armour>(*se[2]->armour);
+		break;
+	}
+
+	if (pItem)
+	{
+		switch (pItem->getItemType())
+		{
+		case Item::ItemType::WEAPON:
+			if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
+			{
+				switch (weapon->getWeaponType())
+				{
+				case Weapon::WeaponType::SWORD: path = DIRECTORY + "sword"; break;
+				case Weapon::WeaponType::SPEAR: path = DIRECTORY + "spear"; break;
+				case Weapon::WeaponType::DAGGER: path = DIRECTORY + "dagger"; break;
+				case Weapon::WeaponType::AXE: path = DIRECTORY + "axe"; break;
+				case Weapon::WeaponType::MACE: path = DIRECTORY + "mace"; break;
+				case Weapon::WeaponType::SHIELD: path = DIRECTORY + "shield"; break;
+				default: path = DIRECTORY + "error"; break;
+				}
+			}
+			else
+				path = DIRECTORY + "error";
+			break;
+
+		case Item::ItemType::ARMOUR:
+			if (auto armour = dynamic_cast<Armour*>(pItem.get()))
+			{
+				switch (armour->getArmourType())
+				{
+				case Armour::ArmourType::LIGHT: path = DIRECTORY + "lightArmour"; break;
+				case Armour::ArmourType::HEAVY: path = DIRECTORY + "heavyArmour"; break;
+				default: path = DIRECTORY + "error"; break;
+				}
+			}
+			else
+				path = DIRECTORY + "error";
+			break;
+
+		case Item::ItemType::GOLD: path = DIRECTORY + "gold"; break;
+		default: path = DIRECTORY + "error"; break;
+		}
+	}
+	else
+		path = DIRECTORY + "emptyHand";
+	
+
+	if (item->itemState & ODS_SELECTED || isPushed) // Pushed button
+		path += "Pushed" + FORMAT;
+	else // Unpushed button
+		path += FORMAT;
+
+	// Select image
+	hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	// Filling background with selected image
+	hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+	FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
+	// Drawing edge
+	DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
 }

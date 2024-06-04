@@ -111,6 +111,9 @@
     <ClInclude Include="PairRef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StartingEquipment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -192,6 +195,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Inventory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StartingEquipment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

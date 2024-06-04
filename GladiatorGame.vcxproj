@@ -172,6 +172,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAttributeStorage.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="StartingEquipment.h" />
     <ClInclude Include="Statistics.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Weapon.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAttributeStorage.cpp" />
+    <ClCompile Include="StartingEquipment.cpp" />
     <ClCompile Include="Statistics.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

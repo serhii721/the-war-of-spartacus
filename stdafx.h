@@ -27,7 +27,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <vector>
 #include <map> // `map` for inventory
 #include <exception>
-#include <memory>
+#include <memory> // 'unique_ptr'
 using namespace std;
 
 #include <Windows.h>
@@ -35,29 +35,37 @@ using namespace std;
 #include "resource.h"
 
 #include "LocalizationEnums.h"
+
 #include "NewMenuStorage.h"
+#include "StartingEquipment.h"
 #include "PlayerAttributeStorage.h"
 #include "IMenu.h"
 #include "MainMenu.h"
 #include "GameMenu.h"
+
 #include "Item.h"
 #include "PairRef.h"
 #include "Inventory.h"
 #include "CityMenu.h"
 #include "MenuManager.h"
+
 #include "Enums.h"
 #include "Statistics.h"
+
 #include "Weapon.h"
 #include "Armour.h"
+
 #include "Fighter.h"
 #include "Leveling.h"
 #include "Player.h"
 #include "NamedNPC.h"
 #include "HarmlessNPC.h"
 #include "NPC.h"
+
 #include "Converter.h"
 #include "Constants.h"
 #include "Fighting.h"
+
 #include "Arena.h"
 #include "City.h"
 #include "WorldMap.h"

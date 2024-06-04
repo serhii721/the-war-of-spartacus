@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "HarmlessNPC.h"
 
-HarmlessNPC::HarmlessNPC() : Statistics(), NamedNPC(), inventory() { }
+HarmlessNPC::HarmlessNPC() : level(MIN_TRADER_LEVEL), Statistics(), NamedNPC(), inventory() { }
 
-HarmlessNPC::HarmlessNPC(const Statistics& S, const NamedNPC& C, unique_ptr<Inventory> pInventory) : Statistics(S), NamedNPC(C), inventory(move(pInventory)) { }
+HarmlessNPC::HarmlessNPC(int llevel, const Statistics& S, const NamedNPC& C, unique_ptr<Inventory> pInventory) : level(llevel), Statistics(S), NamedNPC(C), inventory(move(pInventory)) { }
 
-HarmlessNPC::HarmlessNPC(const HarmlessNPC& C) : Statistics(C), NamedNPC(C)
+HarmlessNPC::HarmlessNPC(const HarmlessNPC& C) : level(C.level), Statistics(C), NamedNPC(C)
 {
 	if (C.inventory)
 		inventory = make_unique<Inventory>(*C.inventory);
@@ -16,6 +16,7 @@ HarmlessNPC::HarmlessNPC(const HarmlessNPC& C) : Statistics(C), NamedNPC(C)
 HarmlessNPC& HarmlessNPC::operator=(const HarmlessNPC& C)
 {
 	if (&C == this) return *this;
+	level = C.level;
 	Statistics::operator=(C);
 	NamedNPC::operator=(C);
 
@@ -33,5 +34,7 @@ HarmlessNPC& HarmlessNPC::operator=(const HarmlessNPC& C)
 }
 
 HarmlessNPC::~HarmlessNPC() { }
+
+int HarmlessNPC::getLevel() const { return level; }
 
 const unique_ptr<Inventory>& HarmlessNPC::getInventory() const { return inventory; }

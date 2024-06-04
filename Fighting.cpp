@@ -10,50 +10,50 @@ extern Localization l;
 extern Game game;
 
 Fighting::Fighting() :
-	hItems(Item::ITEM_NUMBER),
+	hItems(MenuItem::ITEM_NUMBER),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 { }
 
 Fighting::Fighting(HWND hWnd) :
-	hItems(Item::ITEM_NUMBER),
+	hItems(MenuItem::ITEM_NUMBER),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL)
 {
-	for (int i = Item::STATIC_START; i <= Item::STATIC_FIGHT_RESULT; i++)
+	for (int i = MenuItem::STATIC_START; i <= MenuItem::STATIC_FIGHT_RESULT; i++)
 		hItems[i] = CreateWindow("STATIC", "",
 			WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW,
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::EDIT_LOG_MESSAGES] = CreateWindow("EDIT", "",
+	hItems[MenuItem::EDIT_LOG_MESSAGES] = CreateWindow("EDIT", "",
 		WS_CHILD | WS_VISIBLE | ES_READONLY | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_SPARE_OPPONENT] = CreateWindow("BUTTON", l.getMessage(Localized::SPARE_OPPONENT).c_str(),
+	hItems[MenuItem::BUT_SPARE_OPPONENT] = CreateWindow("BUTTON", l.getMessage(Localized::SPARE_OPPONENT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_EXECUTE_OPPONENT] = CreateWindow("BUTTON", l.getMessage(Localized::EXECUTE_OPPONENT).c_str(),
+	hItems[MenuItem::BUT_EXECUTE_OPPONENT] = CreateWindow("BUTTON", l.getMessage(Localized::EXECUTE_OPPONENT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_SURRENDER] = CreateWindow("BUTTON", l.getMessage(Localized::SURRENDER).c_str(),
+	hItems[MenuItem::BUT_SURRENDER] = CreateWindow("BUTTON", l.getMessage(Localized::SURRENDER).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_CONTINUE] = CreateWindow("BUTTON", l.getMessage(Localized::CONTINUE_FIGHT).c_str(),
+	hItems[MenuItem::BUT_CONTINUE] = CreateWindow("BUTTON", l.getMessage(Localized::CONTINUE_FIGHT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	hItems[Item::BUT_END_FIGHT] = CreateWindow("BUTTON", l.getMessage(Localized::END_FIGHT).c_str(),
+	hItems[MenuItem::BUT_END_FIGHT] = CreateWindow("BUTTON", l.getMessage(Localized::END_FIGHT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-	ShowWindow(hItems[Item::BUT_SPARE_OPPONENT], SW_HIDE);
-	ShowWindow(hItems[Item::BUT_EXECUTE_OPPONENT], SW_HIDE);
-	ShowWindow(hItems[Item::BUT_SURRENDER], SW_HIDE);
-	ShowWindow(hItems[Item::BUT_CONTINUE], SW_HIDE);
-	ShowWindow(hItems[Item::BUT_END_FIGHT], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_SPARE_OPPONENT], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_EXECUTE_OPPONENT], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_SURRENDER], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_CONTINUE], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_END_FIGHT], SW_HIDE);
 }
 
 Fighting::Fighting(const Fighting& F) :
@@ -189,7 +189,7 @@ Fighting::~Fighting()
 		DeleteObject(hBackgroundBrush);
 }
 
-FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOpponent)
+FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 {
 	AttackResult result = AttackResult::WERE_DODGED;
 	FightStatus status = FightStatus::CONTINUE;
@@ -200,31 +200,31 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	for (HWND hItem : hItems)
 		ShowWindow(hItem, SW_SHOW);
 
-	ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_HIDE);
-	ShowWindow(hItems[Item::BUT_SPARE_OPPONENT], SW_HIDE);
-	ShowWindow(hItems[Item::BUT_EXECUTE_OPPONENT], SW_HIDE);
-	ShowWindow(hItems[Item::BUT_SURRENDER], SW_HIDE);
-	ShowWindow(hItems[Item::BUT_CONTINUE], SW_HIDE);
-	ShowWindow(hItems[Item::BUT_END_FIGHT], SW_HIDE);
+	ShowWindow(hItems[MenuItem::STATIC_FIGHT_RESULT], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_SPARE_OPPONENT], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_EXECUTE_OPPONENT], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_SURRENDER], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_CONTINUE], SW_HIDE);
+	ShowWindow(hItems[MenuItem::BUT_END_FIGHT], SW_HIDE);
 
 	game.updateBackground();
 
 	UpdateWindow(hWnd);
 
 	// Fight name
-	buf = rPlayer.getName() + " " + l.getMessage(Localized::VERSUS).c_str() + " " + l.getNPCName(*rOpponent);
-	SendMessage(hItems[Item::STATIC_START], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+	buf = rPlayer.getName() + " " + l.getMessage(Localized::VERSUS).c_str() + " " + l.getNPCName(rOpponent);
+	SendMessage(hItems[MenuItem::STATIC_START], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 	// Show Player and Opponent health
 	int playerHP = game.getPlayer().getHP(),
-		opponentHP = rOpponent->getHP();
+		opponentHP = rOpponent.getHP();
 
 	string pHP = l.getMessage(Localized::HEALTH) + ": " + to_string(playerHP),
 		oHP = l.getMessage(Localized::HEALTH) + ": " + to_string(opponentHP);
 
-	SendMessage(hItems[Item::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)pHP.c_str());
-	SendMessage(hItems[Item::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)oHP.c_str());
-	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)"");
+	SendMessage(hItems[MenuItem::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)pHP.c_str());
+	SendMessage(hItems[MenuItem::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)oHP.c_str());
+	SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)"");
 
 	// Show Player and Opponent damage
 	if (rPlayer.getRightHand())
@@ -232,60 +232,60 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	if (rPlayer.getLeftHand())
 		damage += rPlayer.getLeftHand()->getTotalDamage();
 	buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(damage);
-	SendMessage(hItems[Item::STATIC_PLAYER_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+	SendMessage(hItems[MenuItem::STATIC_PLAYER_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 	damage = 0;
 
-	if (rOpponent->getRightHand())
-		damage += rOpponent->getRightHand()->getTotalDamage();
-	if (rOpponent->getLeftHand())
-		damage += rOpponent->getLeftHand()->getTotalDamage();
+	if (rOpponent.getRightHand())
+		damage += rOpponent.getRightHand()->getTotalDamage();
+	if (rOpponent.getLeftHand())
+		damage += rOpponent.getLeftHand()->getTotalDamage();
 	buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(damage);
-	SendMessage(hItems[Item::STATIC_OPPONENT_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+	SendMessage(hItems[MenuItem::STATIC_OPPONENT_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 	damage = 0;
 
 	// Show Player and Opponent defense
 	if (rPlayer.getArmour())
 		defense = rPlayer.getArmour()->getTotalDefense();
 	buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(defense);
-	SendMessage(hItems[Item::STATIC_PLAYER_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+	SendMessage(hItems[MenuItem::STATIC_PLAYER_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 	defense = 0;
-	if (rOpponent->getArmour())
-		defense = rOpponent->getArmour()->getTotalDefense();
+	if (rOpponent.getArmour())
+		defense = rOpponent.getArmour()->getTotalDefense();
 	buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(defense);
-	SendMessage(hItems[Item::STATIC_OPPONENT_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+	SendMessage(hItems[MenuItem::STATIC_OPPONENT_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 	// # 1. Determining whether the opponent attacks first
-	if (rOpponent->getWisdom() > rPlayer.getWisdom())
+	if (rOpponent.getWisdom() > rPlayer.getWisdom())
 	{
 		buf = l.getMessage(Localized::OPPONENT_ATTACKS_FIRST) + "\r\n\r\n";
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
+		SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 		Sleep(SLEEP_TIME);
 
 		// Opponent's attack
-		rOpponent->attack(rPlayer, result, damage);
+		rOpponent.attack(rPlayer, result, damage);
 
-		getAttackResult(*rOpponent, Attacker::OPPONENT, result, damage);
+		getAttackResult(rOpponent, Attacker::OPPONENT, result, damage);
 		Sleep(SLEEP_TIME);
 
 		// Checking the status of the fighting
-		status = checkFightStatus(rPlayer, *rOpponent);
+		status = checkFightStatus(rPlayer, rOpponent);
 
 		if (status != FightStatus::CONTINUE)
 		{
 			if (status == FightStatus::PLAYER_LOST)
 				rPlayer.setHP(1);
-			getFightResult(status, rPlayer.getHP(), rOpponent->getHP());
-			ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
-			ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
+			getFightResult(status, rPlayer.getHP(), rOpponent.getHP());
+			ShowWindow(hItems[MenuItem::STATIC_FIGHT_RESULT], SW_SHOW);
+			ShowWindow(hItems[MenuItem::BUT_END_FIGHT], SW_SHOW);
 		}
 	}
 	else
 	{
 		buf = l.getMessage(Localized::PLAYER_ATTACKS_FIRST) + "\r\n\r\n";
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-		SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
+		SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 		Sleep(SLEEP_TIME);
 	}
 
@@ -296,20 +296,20 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 		if (result != AttackResult::STUNNED)
 		{
 			// Player's attack
-			rPlayer.attack(*rOpponent, result, damage);
+			rPlayer.attack(rOpponent, result, damage);
 
 			// Output of the result of player's attack
-			getAttackResult(*rOpponent, Attacker::PLAYER, result, damage);
+			getAttackResult(rOpponent, Attacker::PLAYER, result, damage);
 			Sleep(SLEEP_TIME);
 
 			// Checking the status of the fighting
-			status = checkFightStatus(rPlayer, *rOpponent);
+			status = checkFightStatus(rPlayer, rOpponent);
 
 			if (status != FightStatus::CONTINUE)
 			{
-				getFightResult(status, rPlayer.getHP(), rOpponent->getHP());
-				ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
-				ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
+				getFightResult(status, rPlayer.getHP(), rOpponent.getHP());
+				ShowWindow(hItems[MenuItem::STATIC_FIGHT_RESULT], SW_SHOW);
+				ShowWindow(hItems[MenuItem::BUT_END_FIGHT], SW_SHOW);
 				break;
 			}
 		}
@@ -321,29 +321,29 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 			continue; // Skip opponent's attack
 
 		// Opponent's attack
-		rOpponent->attack(rPlayer, result, damage);
+		rOpponent.attack(rPlayer, result, damage);
 
-		getAttackResult(*rOpponent, Attacker::OPPONENT, result, damage);
+		getAttackResult(rOpponent, Attacker::OPPONENT, result, damage);
 		Sleep(SLEEP_TIME);
 
 		// Checking the status of the fighting
-		status = checkFightStatus(rPlayer, *rOpponent);
+		status = checkFightStatus(rPlayer, rOpponent);
 
 		if (status != FightStatus::CONTINUE)
 		{
 			if (status == FightStatus::PLAYER_LOST)
 				rPlayer.setHP(1);
-			getFightResult(status, rPlayer.getHP(), rOpponent->getHP());
-			ShowWindow(hItems[Item::STATIC_FIGHT_RESULT], SW_SHOW);
-			ShowWindow(hItems[Item::BUT_END_FIGHT], SW_SHOW);
+			getFightResult(status, rPlayer.getHP(), rOpponent.getHP());
+			ShowWindow(hItems[MenuItem::STATIC_FIGHT_RESULT], SW_SHOW);
+			ShowWindow(hItems[MenuItem::BUT_END_FIGHT], SW_SHOW);
 			break;
 		}
 	}
 	// # 3. Fight rewards
-	// Gaining experience
+	// # 3.1 Experience reward
 	int experience = EXPERIENCE_PER_LEVEL;
 	int playerLevel = rPlayer.getLevel();
-	int opponentLevel = rOpponent->getLevel();
+	int opponentLevel = rOpponent.getLevel();
 
 	// # 3.1.1 Calculating experience based on opponent's power compared to player
 	double experienceMultiplier = 1.0;
@@ -365,7 +365,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	}
 	// # 3.1.2 Stats multiplier
 	int playerPhysStats = rPlayer.getStrength() + rPlayer.getConstitution() + rPlayer.getDexterity();
-	int opponentPhysStats = rOpponent->getStrength() + rOpponent->getConstitution() + rOpponent->getDexterity();
+	int opponentPhysStats = rOpponent.getStrength() + rOpponent.getConstitution() + rOpponent.getDexterity();
 	int statsDifference;
 	// Player gains 10% more or less experience for every 10 physical stats difference from opponent
 	if (playerPhysStats > opponentPhysStats)
@@ -390,7 +390,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	// # 3.1.3 Player dealt damage multiplier
 	// Player's experience gain will multiply by percentage of opponent's missing health
 	// For example player lost and opponent has 90% hp remaining -> player gets 10% of experience
-	experienceMultiplier *= (100 - ((double)rOpponent->getHP() * 100.0 / (double)rOpponent->getFullHP())) / 100;
+	experienceMultiplier *= (100 - ((double)rOpponent.getHP() * 100.0 / (double)rOpponent.getFullHP())) / 100;
 
 	// Minimum value
 	if (experienceMultiplier < MIN_EXPERIENCE_MULTIPLIER)
@@ -402,14 +402,14 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 	experience *= experienceMultiplier;
 	rPlayer.gainExperience(experience);
 
-	// # 3.2 Gaining fame
+	// # 3.2 Fame reward
 	// Fame number calculates based on experience multiplied by difference from opponent's fame
-	int fame = (experience + rOpponent->getFame()) / 10;
+	int fame = (experience + rOpponent.getFame()) / 10;
 	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
 	{
 		double fameMultiplier = 1.0;
 		int playerFame = rPlayer.getFame();
-		int opponentFame = rOpponent->getFame();
+		int opponentFame = rOpponent.getFame();
 		int fameDifference;
 		if (playerFame > opponentFame)
 		{
@@ -436,26 +436,130 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, unique_ptr<NPC>& rOppone
 
 	rPlayer.setFame(rPlayer.getFame() + fame);
 
+	// #3.3 Gold reward
+	// Calculate reward based on city
+	Inventory& rPlayerInventory = *rPlayer.getInventory();
+	int traderLevel = game.getWorldMap().getCurrentCity().getTrader().getLevel();
+	int gold;
+	switch (traderLevel)
+	{
+	case 1: gold = MIN_VALUE_ITEM_LEVEL1 / 2; break;
+	case 2: gold = MIN_VALUE_ITEM_LEVEL2 / 2; break;
+	case 3: gold = MIN_VALUE_ITEM_LEVEL3 / 2; break;
+	case 4: gold = MIN_VALUE_ITEM_LEVEL4 / 2; break;
+	case 5: gold = MIN_VALUE_ITEM_LEVEL5 / 2; break;
+	}
+
+	// If player lost reward is 10 times smaller
+	if (status == FightStatus::PLAYER_SURRENDERED || status == FightStatus::PLAYER_LOST)
+		gold /= 10;
+	// Give player gold
+	rPlayerInventory.addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), gold);
+
+	// #3.4 Loot reward
+	bool gainedLoot = false;
+	string itemStr;
+	// 30% chance to gain loot in case of victory
+	if (
+		rPlayerInventory.size() < MAX_INVENTORY_SIZE &&
+		rand() % 100 < VICTORY_LOOT_CHANCE &&
+		(status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
+		)
+	{
+		// 0 -- right hand
+		// 1 -- left hand
+		// 2 - armour
+		int itemIndex = rand() % 3;
+		int itemID, replacementItemID;
+		Weapon::WeaponType weaponType;
+		unique_ptr<Item> pItem;
+		unique_ptr<Weapon> pWeapon;
+		unique_ptr<Armour> pArmour;
+
+		switch (itemIndex)
+		{
+		case 0: // Right hand
+			// Get weapon type for replacement
+			weaponType = rOpponent.getRightHand()->getWeaponType();
+			itemID = rOpponent.getRightHand()->getID();
+			// Unequip opponent's item
+			rOpponent.unequipItem(itemID);
+
+			// Generate new random weapon with the same level and type
+			pWeapon = generateWeapon(traderLevel, weaponType);
+			replacementItemID = pWeapon->getID();
+			// Add new weapon to opponent's inventory
+			rOpponent.getInventory()->addItem(move(pWeapon));
+			// Equip weapon from inventory
+			rOpponent.equipItemFromInventory(replacementItemID);
+			break;
+
+		case 1: // Left hand
+			// Get weapon type for replacement
+			weaponType = rOpponent.getLeftHand()->getWeaponType();
+			itemID = rOpponent.getLeftHand()->getID();
+			// Unequip opponent's item
+			rOpponent.unequipItem(itemID);
+
+			// Generate new random weapon with the same level and type
+			pWeapon = generateWeapon(traderLevel, weaponType);
+			replacementItemID = pWeapon->getID();
+			// Add new weapon to opponent's inventory
+			rOpponent.getInventory()->addItem(move(pWeapon));
+			// Equip weapon from inventory
+			rOpponent.equipItemFromInventory(replacementItemID);
+			break;
+
+		case 2: // Armour
+			itemID = rOpponent.getArmour()->getID();
+			// Unequip opponent's item
+			rOpponent.unequipItem(itemID);
+
+			// Generate new random armour with the same level
+			pArmour = generateArmour(traderLevel);
+			replacementItemID = pArmour->getID();
+			// Add new armour to opponent's inventory
+			rOpponent.getInventory()->addItem(move(pArmour));
+			// Equip armour from inventory
+			rOpponent.equipItemFromInventory(replacementItemID);
+			break;
+		}
+		// Remove item from opponent's inventory
+		pItem = rOpponent.getInventory()->extractItem(itemID);
+		itemStr = l.getItemTypeName(*pItem);
+		// Give it to player
+		rPlayerInventory.addItem(move(pItem));
+		gainedLoot = true;
+	}
+
 	// Information for messages log
-	logStr += l.getMessage(Localized::YOU_HAVE_FOUGHT_WITH) + " " + l.getNPCName(*rOpponent);
+	// Fight info
+	logStr += l.getMessage(Localized::YOU_HAVE_FOUGHT_WITH) + " " + l.getNPCName(rOpponent);
 	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
 		logStr += ". " + l.getMessage(Localized::YOU_HAVE_WON) + "\r\n\r\n";
 	else
 		logStr += ". " + l.getMessage(Localized::YOU_HAVE_LOST) + "\r\n\r\n";
-	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(fame) + " " + l.getMessage(Localized::FAME_GENITIVE) + "\r\n\r\n"
-		+ l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(experience) + " " + l.getMessage(Localized::EXPERIENCE_GENITIVE) +"\r\n\r\n";
+	// Fame and experience
+	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(fame) + " " + l.getMessage(Localized::FAME_GENITIVE) + "\r\n\r\n" +
+		l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(experience) + " " + l.getMessage(Localized::EXPERIENCE_GENITIVE) +
+		" (" + to_string(rPlayer.getExperience()) + " / " + to_string(rPlayer.calculateExperienceForOneLevel(rPlayer.getLevel() + 1)) + ")\r\n\r\n";
+	// Level up
 	if (rPlayer.getLevel() > playerLevel)
 		logStr += l.getMessage(Localized::LEVELED_UP) + " " + to_string(rPlayer.getLevel()) +
 		" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ")\r\n\r\n";
+	// Gold
+	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(gold) + " " + l.getMessage(Localized::GOLD_GENITIVE) + "\r\n\r\n";
+	// Loot
+	if (gainedLoot)
+		logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + itemStr + "\r\n\r\n";
 
 	return status;
 }
 
 void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, const AttackResult rresult, const int ddamage)
 {
-	// TODO: Localize
 	char logText[1024];
-	GetWindowText(hItems[Item::EDIT_LOG_MESSAGES], logText, sizeof(logText));
+	GetWindowText(hItems[MenuItem::EDIT_LOG_MESSAGES], logText, sizeof(logText));
 
 	string result(logText);
 
@@ -516,8 +620,8 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 		break;
 	}
 	result += "\r\n\r\n";
-	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)result.c_str());
-	SendMessage(hItems[Item::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
+	SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)result.c_str());
+	SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
 
 	int playerHP = game.getPlayer().getHP(),
 		opponentHP = rOpponent.getHP();
@@ -525,8 +629,8 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 	string pHP = l.getMessage(Localized::HEALTH) + ": " + to_string(playerHP),
 		   oHP = l.getMessage(Localized::HEALTH) + ": " + to_string(opponentHP);
 
-	SendMessage(hItems[Item::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)pHP.c_str());
-	SendMessage(hItems[Item::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)oHP.c_str());
+	SendMessage(hItems[MenuItem::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)pHP.c_str());
+	SendMessage(hItems[MenuItem::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)oHP.c_str());
 }
 
 FightStatus Fighting::checkFightStatus(const Player & rPlayer, const NPC & rOpponent)
@@ -560,7 +664,6 @@ FightStatus Fighting::checkFightStatus(const Player & rPlayer, const NPC & rOppo
 
 void Fighting::getFightResult(const FightStatus sstatus, const int playerHP, const int opponentHP)
 {
-	// TODO: Localize
 	string result;
 	switch (sstatus)
 	{
@@ -582,7 +685,7 @@ void Fighting::getFightResult(const FightStatus sstatus, const int playerHP, con
 		// TODO: handle error
 		break;
 	}
-	SendMessage(hItems[Item::STATIC_FIGHT_RESULT], WM_SETTEXT, 0, (LPARAM)result.c_str());
+	SendMessage(hItems[MenuItem::STATIC_FIGHT_RESULT], WM_SETTEXT, 0, (LPARAM)result.c_str());
 }
 
 void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
@@ -602,7 +705,6 @@ void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		{
 		default:case Game::Background::FIGHTING_ARENA: path = DIRECTORY + "fightArenaBackground768" + FORMAT; break;
 		}
-
 		// Loading image
 		if (hBackgroundImage != NULL)
 			DeleteObject(hBackgroundImage);
@@ -710,7 +812,7 @@ bool Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
 
 			// Set text font and background
-			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
 			SetBkMode(hdc, TRANSPARENT);
 
 			// Get text
@@ -745,5 +847,5 @@ bool Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		}
 		break;
 	}
-
+	return false;
 }

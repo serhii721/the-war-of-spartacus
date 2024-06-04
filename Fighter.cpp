@@ -208,7 +208,6 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 	if (rand() % 2)
 		randomDamageSpread = -randomDamageSpread;
 
-	// TODO: dodged => evaded
 	// Is the attack evaded?
 	if (
 		rand() % 100 < rOpponent.dexterity * 3 / 10 +

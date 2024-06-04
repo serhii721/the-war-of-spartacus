@@ -251,12 +251,16 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		case Game::Background::CITY_MENU_MARKET: path = DIRECTORY + "marketBackground768" + FORMAT; break;
 		case Game::Background::CITY_MENU_CHARACTER: path = DIRECTORY + "characterInventoryBackground768" + FORMAT; break;
 		}
-
 		// Loading image
+		if (hBackgroundImage != NULL)
+			DeleteObject(hBackgroundImage);
 		hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 		// Filling background with selected image
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
 		hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
 		FillRect(hdc, &rect, hBackgroundBrush);
+		game.backgroundChangeCompleted();
 	}
 
 	// 2. Text
@@ -468,6 +472,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// 1. Player stats
 		Player& rPlayer = game.getPlayer();
 
+		SendMessage(hSubItems[CHARACTER_STAT_INFO], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::CHARACTER).c_str());
 		// Name
 		buf = rPlayer.getName();
 		SendMessage(hSubItems[CHARACTER_STAT_NAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
@@ -616,6 +621,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		}
 
 		// 2. Equipment
+		SendMessage(hSubItems[CHARACTER_STAT_EQUIPMENT], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EQUIPMENT).c_str());
 		// Right hand
 		SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::RIGHT_HAND).c_str());
 		if (rPlayer.getRightHand())
@@ -1009,6 +1015,7 @@ void CityMenu::resizeMenu(int cx, int cy)
 
 		// 1. Player's stats
 		x = 87, y = 68;
+		MoveWindow(hSubItems[CHARACTER_STAT_INFO], x, y - BIG_STAT_HEIGHT - (BIG_DISTANCE * 3), SMALL_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
 		// Name, level, experience
 		for (i = CHARACTER_STAT_NAME; i <= CHARACTER_STAT_EXPERIENCE; i++)
 		{
@@ -1058,8 +1065,9 @@ void CityMenu::resizeMenu(int cx, int cy)
 
 		// 2. Equipment
 		const int INVENTORY_BUT_WIDTH = 120, INVENTORY_BUT_HEIGHT = 97;
-		// Right hand
 		x = 364, y = 195;
+		MoveWindow(hSubItems[CHARACTER_STAT_EQUIPMENT], x, y - INVENTORY_BUT_HEIGHT - BIG_STAT_HEIGHT * 2 - BIG_DISTANCE * 3, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
+		// Right hand
 		MoveWindow(hSubItems[CHARACTER_STAT_RIGHT_HAND], x, y - INVENTORY_BUT_HEIGHT - BIG_STAT_HEIGHT - BIG_DISTANCE * 2, BIG_STAT_WIDTH, BIG_STAT_HEIGHT, TRUE);
 		MoveWindow(hSubItems[CHARACTER_BUT_RIGHT_HAND], x + 65, y - INVENTORY_BUT_HEIGHT - BIG_DISTANCE, INVENTORY_BUT_WIDTH, INVENTORY_BUT_HEIGHT, TRUE);
 		for (i = CHARACTER_STAT_RIGHT_HAND_TYPE; i <= CHARACTER_STAT_RIGHT_HAND_DEXTERITY_SCALE; i++)
@@ -1159,11 +1167,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 	}
 }
 
-void CityMenu::updateLanguage()
-{
-	// TODO: update localization
-}
-
 void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	RECT windowRect;
@@ -1194,7 +1197,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(ARENA_ITEM_NUMBER);
 
-				// TODO: Apply localization
 				hSubItems[ARENA_BUT_FIGHT] = CreateWindow("BUTTON", l.getMessage(Localized::FIGHT).c_str(),
 					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0
@@ -1266,7 +1268,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(CHARACTER_ITEM_NUMBER);
 
-				for (i = CHARACTER_STAT_NAME; i <= CHARACTER_STAT_INVENTORY_ITEM14_NAME; i++)
+				for (i = CHARACTER_STAT_INFO; i <= CHARACTER_STAT_INVENTORY_ITEM14_NAME; i++)
 					hSubItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_BACK; i++)
@@ -1533,11 +1535,14 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (!isExhausted)
 				{
 					Player& rPlayer = game.getPlayer();
-					int experience = rand() % 100 + 1;
+					// Experience is random number between 30 to 1/3 of experience needed for current lvlup
 					int level = rPlayer.getLevel();
+					int experience = rand() % (rPlayer.calculateExperienceForOneLevel(level + 1) / 3) + 30;
 
 					rPlayer.gainExperience(experience);
-					logStr += l.getMessage(Localized::TRAIN_GAIN) + " " + to_string(experience) + " " + l.getMessage(Localized::EXPERIENCE_GENITIVE) + "\r\n\r\n";
+					// Update log
+					logStr += l.getMessage(Localized::TRAIN_GAIN) + " " + to_string(experience) + " " + l.getMessage(Localized::EXPERIENCE_GENITIVE) +
+						" (" + to_string(rPlayer.getExperience()) + " / " + to_string(rPlayer.calculateExperienceForOneLevel(rPlayer.getLevel() + 1)) + ")\r\n\r\n";
 					if (level < rPlayer.getLevel())
 						logStr += l.getMessage(Localized::LEVELED_UP) + " " +
 						to_string(rPlayer.getLevel()) +
@@ -1604,7 +1609,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					FightStatus fightStatus = game.getFighting().fight(
 						hWnd,
 						game.getPlayer(),
-						currentArena.getGladiator(selectedOpponent)
+						*currentArena.getGladiator(selectedOpponent)
 					);
 
 					// Fight result
@@ -1745,7 +1750,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						// Get item ID
 						int id = rItem->getID();
 						// Make copy of item
-						unique_ptr<Item> itemCopy = rTraderInventory.getItem(id)->clone();
+						unique_ptr<Item> itemCopy = rTraderInventory.getItem(id)->clone(); // TODO: update item stats
 						// Remove item from trader
 						rTraderInventory.removeItem(id);
 						// Add item copy to player
@@ -2979,7 +2984,7 @@ bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
 
 			// Set text font and background
-			SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
+			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
 			SetBkMode(hdc, TRANSPARENT);
 
 			// Get text
@@ -2992,6 +2997,7 @@ bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Checking window type to draw it using correct styles
 			if (game.getBackground() == Game::Background::CITY_MENU && item->hwndItem == hItems[STAT_CITY_NAME])
 			{
+				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
 				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
@@ -3067,6 +3073,7 @@ bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		}
 		break;
 	}
+	return false;
 }
 
 void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity)
@@ -3477,6 +3484,8 @@ void CityMenu::inspectItem(HWND hWnd, unique_ptr<Item> pItem, int quantity)
 				MBDescription += l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(armour->getStunProbSubtraction()) + "%" + "\n";
 		}
 		break;
+	default:
+		MBName += l.getItemTypeName(*pItem);
 	}
 
 	MBDescription += l.getMessage(Localized::VALUE) + ": " + to_string(pItem->getValue()) + "\n";
