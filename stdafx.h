@@ -18,6 +18,7 @@
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
+// __________ Dependencies __________
 #include <array> // `array` for localization
 #include <cstdlib> // `rand()`, `srand()`
 #include <ctime> // `time()`
@@ -31,9 +32,13 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 using namespace std;
 
 #include <Windows.h>
+// Libraries for MCI (Media Control Interface) - sound effects, music
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
 
 #include "resource.h"
 
+// __________ User dependencies __________
 #include "LocalizationEnums.h"
 
 #include "NewMenuStorage.h"
@@ -77,35 +82,32 @@ const HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 extern Localization l;
 extern Game game;
 
+// __________ Functions __________
+
+// __________ Other __________
 void updateWindow(HWND);
 string toStringPrecision(double, int = 2);
-//void output(const string&, int = 15);
-//void outputError(const string&, int = 4);
 
+// __________ NPC __________
 unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);
 unique_ptr<HarmlessNPC> generateTrader(int level_ = MIN_TRADER_LEVEL);
-//void displayPlayer(const Player&);
-//void displayNPC(const NPC&);
-//void displayNPCBatch(const NPC*, int);
-//Player* createPlayer();
 
+// __________ Weapon and Armour __________
 int getWeaponScaleLimit(Weapon::WeaponType, Attribute, Limit);
 int getArmourScaleLimit(Armour::ArmourType, Armour::Stat, Limit);
 unique_ptr<Weapon> generateWeapon(int tier_ = MIN_WEAPON_TIER, Weapon::WeaponType = Weapon::NUMBER);
 unique_ptr<Armour> generateArmour(int tier_ = MIN_ARMOUR_TIER, Armour::ArmourType = Armour::NUMBER);
-//void displayWeapon(const Weapon&);
-//void displayArmour(const Armour&);
 
+// __________ Sound __________
+//void playSound(SoundEnum);
+
+// __________ Save and Load __________
 //bool saveGame(Player&, NPC*);
 //bool loadPlayer(Player&);
 //bool loadNPCs(NPC*);
 //bool loadGame(Player&, NPC*);
 
-//void skipDay(Player&, NPC*, int);
-
-//bool outputStartMenu(Player&, NPC*);
-//void outputGameMenu(Player&, NPC*);
-
+// __________ Game process __________
 LRESULT CALLBACK WFunc(HWND, UINT, WPARAM, LPARAM);
 
 //{{AFX_INSERT_LOCATION}}
