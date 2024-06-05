@@ -11,6 +11,9 @@ public:
 	Inventory& operator=(const Inventory&);
 	~Inventory();
 
+	friend ostream& operator<<(ostream&, const Inventory&);
+	friend istream& operator>>(istream&, Inventory&);
+
 	PairRef<unique_ptr<Item>&, int&> operator[](int id_);
 	PairRef<const unique_ptr<Item>&, const int&> operator[](int id_) const;
 

@@ -30,6 +30,10 @@ public:
 	Armour(const Armour&);
 	Armour& operator=(const Armour&);
 	virtual ~Armour();
+
+	friend ostream& operator<<(ostream&, const Armour&);
+	friend istream& operator>>(istream&, Armour&);
+
 	unique_ptr<Item> clone() const;
 
 	void update(int, int);

@@ -51,6 +51,9 @@ public:
 	WorldMap& operator=(const WorldMap&);
 	~WorldMap();
 
+	friend ostream& operator<<(ostream&, const WorldMap&);
+	friend istream& operator>>(istream&, WorldMap&);
+
 	City& getCurrentCity();
 	City& getCity(int);
 

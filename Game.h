@@ -46,6 +46,9 @@ public:
 	Game& operator=(const Game&);
 	~Game();
 
+	friend ostream& operator<<(ostream&, const Game&);
+	friend istream& operator>>(istream&, Game&);
+
 	void setPlayer(const Player&);
 	void setWorldMap(const WorldMap&);
 	void setFighting(const Fighting&);
