@@ -16,6 +16,9 @@ public:
 	HarmlessNPC& operator=(const HarmlessNPC&);
 	virtual ~HarmlessNPC();
 
+	friend ostream& operator<<(ostream&, const HarmlessNPC&);
+	friend istream& operator>>(istream&, HarmlessNPC&);
+
 	int getLevel() const;
 	const unique_ptr<Inventory>& getInventory() const;
 };

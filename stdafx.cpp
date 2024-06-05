@@ -644,6 +644,361 @@ unique_ptr<Armour> generateArmour(int tier, Armour::ArmourType ttype)
 //	}
 //}
 
+// __________ << Overload >> __________
+
+// Statistics
+ostream& operator<<(ostream& os, const Statistics& s)
+{
+	os << s.strength << " " << s.constitution << " " << s.dexterity << " "
+		<< s.intelligence << " " << s.wisdom << " " << s.charisma
+		<< s.age << " " << s.fame;
+	return os;
+}
+
+istream& operator>>(istream& is, Statistics& s)
+{
+	is >> s.strength >> s.constitution >> s.dexterity
+		>> s.intelligence >> s.wisdom >> s.charisma
+		>> s.age >> s.fame;
+	return is;
+}
+
+// ItemType
+istream& operator>>(istream& is, Item::ItemType& i)
+{
+	int itemType;
+	is >> itemType;
+	i = static_cast<Item::ItemType>(itemType);
+	return is;
+}
+
+// Item
+ostream& operator<<(ostream& os, const Item& i)
+{
+	static bool isCurrentIDWritten = false;
+	if (!isCurrentIDWritten)
+	{
+		os << Item::currentID << " ";
+		isCurrentIDWritten = true;
+	}
+	os << i.id << " " << i.itemType << " " << i.value;
+	return os;
+}
+
+istream& operator>>(istream& is, Item& i)
+{
+	static bool isCurrentIDRead = false;
+	if (!isCurrentIDRead)
+	{
+		is >> Item::currentID;
+		isCurrentIDRead = true;
+	}
+	is >> i.id >> i.itemType >> i.value;
+	return is;
+}
+
+// WeaponType
+istream& operator>>(istream& is, Weapon::WeaponType& w)
+{
+	int weaponType;
+	is >> weaponType;
+	w = static_cast<Weapon::WeaponType>(weaponType);
+	return is;
+}
+
+// Weapon
+ostream& operator<<(ostream& os, const Weapon& w)
+{
+	// Using base class operator
+	os << static_cast<const Item&>(w) << " "
+		<< w.tier << " " << w.damage << " "
+		<< w.type << " " << w.damageAddition << " "
+		<< w.strAdditionPerc << " " << w.dexAdditionPerc << " "
+		<< w.shieldProbAddition << " " << w.shieldDefPercentAddition << " "
+		<< w.name;
+	return os;
+}
+
+istream& operator>>(istream& is, Weapon& w)
+{
+	// Using base class operator
+	is >> static_cast<Item&>(w)
+		>> w.tier >> w.damage
+		>> w.type >> w.damageAddition
+		>> w.strAdditionPerc >> w.dexAdditionPerc
+		>> w.shieldProbAddition >> w.shieldDefPercentAddition
+		>> w.name;
+	return is;
+}
+
+// ArmourType
+istream& operator>>(istream& is, Armour::ArmourType& a)
+{
+	int armourType;
+	is >> armourType;
+	a = static_cast<Armour::ArmourType>(armourType);
+	return is;
+}
+
+// Armour
+ostream& operator<<(ostream& os, const Armour& a)
+{
+	// Using base class operator
+	os << static_cast<const Item&>(a) << " "
+		<< a.tier << " " << a.defense << " "
+		<< a.type << " " << a.defAddition << " "
+		<< a.strAdditionPerc << " " << a.dexAdditionPerc << " "
+		<< a.evasionProbAddition << " " << a.stunProbSubtraction;
+	return os;
+}
+
+istream& operator>>(istream& is, Armour& a)
+{
+	// Using base class operator
+	is >> static_cast<Item&>(a)
+		>> a.tier >> a.defense
+		>> a.type >> a.defAddition
+		>> a.strAdditionPerc >> a.dexAdditionPerc
+		>> a.evasionProbAddition >> a.stunProbSubtraction;
+	return is;
+}
+
+// Inventory
+ostream& operator<<(ostream& os, const Inventory& i)
+{
+	for (const auto& pair : i.items)
+		os << '\n' << *pair.second.first << " " << pair.second.second << '\n';
+	os << '\n';
+	return os;
+}
+
+istream& operator>>(istream& is, Inventory& i)
+{
+	Item item;
+	int quantity;
+
+	string line;
+	while (getline(is, line))
+	{
+		if (line.empty())
+			continue;
+
+		is >> item >> quantity;
+		unique_ptr<Item> pItem;
+
+		switch (item.getItemType())
+		{
+		case Item::ItemType::WEAPON:
+			pItem = make_unique<Weapon>(item);
+			break;
+
+		case Item::ItemType::ARMOUR:
+			pItem = make_unique<Armour>(item);
+			break;
+
+		default:
+			pItem = make_unique<Item>(item);
+			break;
+		}
+
+		i.addItem(move(pItem), quantity);
+	}
+	return is;
+}
+
+// Fighter
+ostream& operator<<(ostream& os, const Fighter& f)
+{
+	// Using base class operator
+	os << static_cast<const Statistics&>(f) << " "
+		<< f.hp << " " << f.fullHP << " "
+		<< f.inventory.get() << " "
+		<< f.rightHand.get() << " " << f.leftHand.get() << " "
+		<< f.armour.get();
+	return os;
+}
+
+istream& operator>>(istream& is, Fighter& f)
+{
+	// Using base class operator
+	is >> static_cast<Statistics&>(f)
+		>> f.hp >> f.fullHP
+		>> *f.inventory
+		>> *f.rightHand >> *f.leftHand
+		>> *f.armour;
+	return is;
+}
+
+// Leveling
+ostream& operator<<(ostream& os, const Leveling& l)
+{
+	os << l.level << " " << l.experience << " " << l.unnassignedAttributes;
+	return os;
+}
+
+istream& operator>>(istream& is, Leveling& l)
+{
+	is >> l.level >> l.experience >> l.unnassignedAttributes;
+	return is;
+}
+
+// Player
+ostream& operator<<(ostream& os, const Player& p)
+{
+	// Using base class operator
+	os << static_cast<const Fighter&>(p) << " "
+		<< static_cast<const Leveling&>(p) << " "
+		<< p.name;
+	return os;
+}
+
+istream& operator>>(istream& is, Player& p)
+{
+	// Using base class operator
+	is >> static_cast<Fighter&>(p)
+		>> static_cast<Leveling&>(p)
+		>> p.name;
+	return is;
+
+}
+
+// NamedNPC
+ostream& operator<<(ostream& os, const NamedNPC& n)
+{
+	os << n.firstNameIndex << " " << n.lastNameIndex;
+	return os;
+}
+
+istream& operator>>(istream& is, NamedNPC& n)
+{
+	is >> n.firstNameIndex >> n.lastNameIndex;
+	return is;
+}
+
+// NPC
+ostream& operator<<(ostream& os, const NPC& n)
+{
+	// Using base class operator
+	os << static_cast<const Fighter&>(n) << " "
+		<< static_cast<const NamedNPC&>(n) << " "
+		<< static_cast<const Leveling&>(n);
+	return os;
+}
+
+istream& operator>>(istream& is, NPC& n)
+{
+	// Using base class operator
+	is >> static_cast<Fighter&>(n)
+		>> static_cast<NamedNPC&>(n)
+		>> static_cast<Leveling&>(n);
+	return is;
+}
+
+// Arena
+ostream& operator<<(ostream& os, const Arena& a)
+{
+	os << a.gladiators.size() << '\n';
+	for (const auto& gladiator : a.gladiators)
+		if (gladiator)
+			os << *gladiator << '\n';
+	return os;
+}
+
+istream& operator>>(istream& is, Arena& a)
+{
+	size_t size;
+	is >> size;
+	a.gladiators.clear();
+	a.gladiators.reserve(size);
+	for (size_t i = 0; i < size; ++i)
+	{
+		auto npc = make_unique<NPC>();
+		if (is >> *npc)
+			a.gladiators.push_back(move(npc));
+	}
+	return is;
+}
+
+// HarmlessNPC
+ostream& operator<<(ostream& os, const HarmlessNPC& h)
+{
+	// Using base class operator
+	os << static_cast<const Statistics&>(h) << " "
+		<< static_cast<const NamedNPC&>(h) << " "
+		<< h.level << " "
+		<< h.inventory.get();
+	return os;
+}
+
+istream& operator>>(istream& is, HarmlessNPC& h)
+{
+	// Using base class operator
+	is >> static_cast<Statistics&>(h)
+		>> static_cast<NamedNPC&>(h)
+		>> h.level
+		>> *h.inventory;
+	return is;
+}
+
+// City
+ostream& operator<<(ostream& os, const City& c)
+{
+	os << c.nameIndex << " "
+		<< c.arena << " "
+		<< c.level << " "
+		<< c.trader;
+	return os;
+}
+
+istream& operator>>(istream& is, City& c)
+{
+	is >> c.nameIndex
+		>> c.arena
+		>> c.level
+		>> c.trader;
+	return is;
+}
+
+// WorldMap
+ostream& operator<<(ostream& os, const WorldMap& w)
+{
+	os << w.cities.size() << '\n';
+	for (const auto& city : w.cities)
+		os << city << '\n';
+	os << w.currentCity;
+	return os;
+}
+
+istream& operator>>(istream& is, WorldMap& w)
+{
+	size_t size;
+	is >> size;
+	w.cities.clear();
+	w.cities.reserve(size);
+	for (size_t i = 0; i < size; ++i)
+	{
+		City city;
+		if (is >> city)
+			w.cities.push_back(city);
+	}
+	return is;
+}
+
+// Game
+ostream& operator<<(ostream& os, const Game& g)
+{
+	os << g.pWorldMap.get()
+		<< g.pPlayer.get();
+	return os;
+}
+
+istream& operator>>(istream& is, Game& g)
+{
+	is >> *g.pWorldMap
+		>> *g.pPlayer;
+	return is;
+}
+
 // __________ Save and Load __________
 
 //bool saveGame(Player& player, NPC* npcs)
