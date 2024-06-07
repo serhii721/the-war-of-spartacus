@@ -34,9 +34,6 @@ public:
 	Weapon& operator=(const Weapon&);
 	virtual ~Weapon();
 
-	friend ostream& operator<<(ostream&, const Weapon&);
-	friend istream& operator>>(istream&, Weapon&);
-
 	unique_ptr<Item> clone() const;
 
 	void update(int, int);
@@ -54,6 +51,11 @@ public:
 	int getShieldProbAddition() const;
 	int getShieldDefPercentAddition() const;
 	const string& getName() const;
+
+	// Save and load
+	void saveToFile(const string&);
+	void loadFromFile(const string&);
+
 private:
 	int tier;
 	int damage;

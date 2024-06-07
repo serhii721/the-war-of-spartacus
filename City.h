@@ -15,9 +15,6 @@ public:
 	City& operator=(const City&);
 	~City();
 
-	friend ostream& operator<<(ostream&, const City&);
-	friend istream& operator>>(istream&, City&);
-
 	void setName(int);
 	void setLevel(int);
 

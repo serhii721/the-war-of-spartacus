@@ -31,9 +31,6 @@ public:
 	Armour& operator=(const Armour&);
 	virtual ~Armour();
 
-	friend ostream& operator<<(ostream&, const Armour&);
-	friend istream& operator>>(istream&, Armour&);
-
 	unique_ptr<Item> clone() const;
 
 	void update(int, int);
@@ -47,6 +44,11 @@ public:
 	int getDexterityAdditionPercentage() const;
 	int getEvasionProbAddition() const;
 	int getStunProbSubtraction() const;
+
+	// Save and load
+	void saveToFile(const string&);
+	void loadFromFile(const string&);
+
 private:
 	int tier;
 	int defense;

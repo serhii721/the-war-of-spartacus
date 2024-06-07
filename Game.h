@@ -46,9 +46,6 @@ public:
 	Game& operator=(const Game&);
 	~Game();
 
-	friend ostream& operator<<(ostream&, const Game&);
-	friend istream& operator>>(istream&, Game&);
-
 	void setPlayer(const Player&);
 	void setWorldMap(const WorldMap&);
 	void setFighting(const Fighting&);
@@ -70,9 +67,14 @@ private:
 	bool backgroundChanged;
 
 public:
+	// Background
 	void setBackground(Background);
 	void backgroundChangeCompleted();
 	void updateBackground();
 	Background getBackground() const;
 	bool isBackgroundChanged() const;
+
+	// Save and load
+	void saveToFile();
+	void loadFromFile(const string&);
 };

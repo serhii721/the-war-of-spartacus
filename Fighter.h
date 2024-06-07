@@ -21,9 +21,6 @@ public:
 	Fighter& operator=(const Fighter&);
 	virtual ~Fighter();
 
-	friend ostream& operator<<(ostream&, const Fighter&);
-	friend istream& operator>>(istream&, Fighter&);
-
 	void setHP(int);
 	void setFullHP(int);
 

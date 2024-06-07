@@ -22,9 +22,6 @@ public:
 	Statistics& operator=(const Statistics&);
 	virtual ~Statistics();
 
-	friend ostream& operator<<(ostream&, const Statistics&);
-	friend istream& operator>>(istream&, Statistics&);
-
 	void setFame(int);
 
 	bool isValid() const;

@@ -10,10 +10,10 @@ Fighter::Fighter() :
 	Statistics(),
 	hp(BASIC_HP),
 	fullHP(BASIC_HP),
-	inventory(),
-	rightHand(),
-	leftHand(),
-	armour()
+	inventory(make_unique<Inventory>()),
+	rightHand(make_unique<Weapon>()),
+	leftHand(make_unique<Weapon>()),
+	armour(make_unique<Armour>())
 { }
 
 Fighter::Fighter(

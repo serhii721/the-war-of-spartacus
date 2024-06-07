@@ -11,9 +11,6 @@ public:
 	NamedNPC& operator=(const NamedNPC&);
 	virtual ~NamedNPC();
 
-	friend ostream& operator<<(ostream&, const NamedNPC&);
-	friend istream& operator>>(istream&, NamedNPC&);
-
 	void rename(int, int);
 
 	int getFirstNameIndex() const;

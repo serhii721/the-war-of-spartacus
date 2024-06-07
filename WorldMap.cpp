@@ -190,9 +190,19 @@ City& WorldMap::getCurrentCity()
 	return cities[currentCity];
 }
 
+int WorldMap::getCurrentCityIndex() const
+{
+	return currentCity;
+}
+
 City& WorldMap::getCity(int i)
 {
 	return cities[i];
+}
+
+void WorldMap::setCurrentCityIndex(int n)
+{
+	currentCity = n;
 }
 
 void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)

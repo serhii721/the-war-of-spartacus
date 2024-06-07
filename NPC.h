@@ -15,8 +15,5 @@ public:
 	NPC& operator=(const NPC&);
 	virtual ~NPC();
 
-	friend ostream& operator<<(ostream&, const NPC&);
-	friend istream& operator>>(istream&, NPC&);
-
 	unique_ptr<NPC> clone() const;
 };

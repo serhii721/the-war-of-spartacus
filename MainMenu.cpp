@@ -557,6 +557,17 @@ void MainMenu::resizeMenu(int cx, int cy)
 	}
 	break;
 
+	case Game::Background::MAIN_MENU_LOAD:
+	{
+		const int ITEM_WIDTH = 300, ITEM_HEIGHT = 30, DISTANCE = 10;
+
+		MoveWindow(hSubItems[LOADING_STAT_LOAD], cx - ITEM_WIDTH / 2, DISTANCE * 2, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hSubItems[LOADING_BUT_BACK], cx - ITEM_WIDTH - DISTANCE, 670, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hSubItems[LOADING_BUT_LOAD], cx + DISTANCE, 670, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hSubItems[LOADING_LISTBOX_SAVES], cx - 250, DISTANCE * 4 + ITEM_HEIGHT, 500, 580, TRUE);
+	}
+	break;
+
 	case Game::Background::MAIN_MENU_NEW_GAME:
 	{
 		const int STAT_WIDTH = 125, EDIT_WIDTH = 40, BUT_WIDTH = 35, ITEM_HEIGHT = 25, DISTANCE = 5;
@@ -812,11 +823,135 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hItems[CONTINUE])
 			{
-				// TODO
+				// Get every available save
+				const string PATH = "Saves/";
+				vector<string> folderNames;
+				getFoldersInDirectory(PATH, folderNames);
+
+				// Choose last created save
+				string path = folderNames[folderNames.size() - 1] + "/";
+
+				// Load game
+				game.loadFromFile(path);
+
+				// Go to city menu
+				// Destroying all buttons
+				for (HWND hItem : hSubItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubItems.clear();
+
+				// TODO: save and load of world
+				// Right now only player and current city is saved. Everything else is generated randomly again
+				// World creation
+				unique_ptr<City> pCity;
+				vector<City> cities;
+
+				vector<unique_ptr<NPC>> gladiators;
+
+				for (int i = 0; i < MAX_CITIES; i++)
+				{
+					int cityLevel, traderLevel;
+					// Use predetermined parameters for different cities
+					switch (i)
+					{
+					case 0: // Rome
+						cityLevel = ROME_CITY_LEVEL;
+						traderLevel = ROME_TRADER_LEVEL;
+						break;
+					case 1: // Naples
+						cityLevel = NAPLES_CITY_LEVEL;
+						traderLevel = NAPLES_TRADER_LEVEL;
+						break;
+					case 2: // Metaponto
+						cityLevel = METAPONTO_CITY_LEVEL;
+						traderLevel = METAPONTO_TRADER_LEVEL;
+						break;
+					case 3: // Bojano
+						cityLevel = BOJANO_CITY_LEVEL;
+						traderLevel = BOJANO_TRADER_LEVEL;
+						break;
+					case 4: // Ancona
+						cityLevel = ANCONA_CITY_LEVEL;
+						traderLevel = ANCONA_TRADER_LEVEL;
+						break;
+					case 5: // Perugia
+						cityLevel = PERUGIA_CITY_LEVEL;
+						traderLevel = PERUGIA_TRADER_LEVEL;
+						break;
+					case 6: // Florence
+						cityLevel = FLORENCE_CITY_LEVEL;
+						traderLevel = FLORENCE_TRADER_LEVEL;
+						break;
+					case 7: // Bologna
+						cityLevel = BOLOGNA_CITY_LEVEL;
+						traderLevel = BOLOGNA_TRADER_LEVEL;
+						break;
+					case 8: // Genoa
+						cityLevel = GENOA_CITY_LEVEL;
+						traderLevel = GENOA_TRADER_LEVEL;
+						break;
+					case 9: // Aquileia
+						cityLevel = AQUILEIA_CITY_LEVEL;
+						traderLevel = AQUILEIA_TRADER_LEVEL;
+						break;
+					case 10: // Milan
+						cityLevel = MILAN_CITY_LEVEL;
+						traderLevel = MILAN_TRADER_LEVEL;
+						break;
+					}
+
+					// Creating opponents for arenas of different levels for different cities
+					for (int j = 0; j < OPPONENTS_NUMBER; j++)
+						gladiators.push_back(generateNPC(cityLevel));
+
+					// Creating cities
+					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators), cityLevel, *generateTrader(traderLevel));
+					cities.push_back(*pCity);
+					gladiators.clear();
+				}
+
+				game.setWorldMap(WorldMap(hWnd, cities, game.getWorldMap().getCurrentCityIndex()));
+				game.setFighting(Fighting(hWnd));
+
+				game.getMenuManager().setMenu(new CityMenu(hWnd));
+				game.setBackground(Game::Background::CITY_MENU);
+
+				updateWindow(hWnd);
+				break;
 			}
 			if ((HWND)lp == hItems[BUT_LOAD_GAME])
 			{
-				// TODO
+				// Hiding all buttons
+				for (HWND hItem : hItems)
+					ShowWindow(hItem, SW_HIDE);
+
+				// Erasing previous sub menu items
+				for (HWND hItem : hSubItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubItems.clear();
+
+				// Get every available save for display
+				const string PATH = "Saves/";
+				vector<string> folderNames;
+				getFoldersInDirectory(PATH, folderNames);
+
+				// Creating new sub menu items
+				hSubItems.resize(LOADING_ITEM_NUMBER);
+
+				hSubItems[LOADING_STAT_LOAD] = CreateWindow("STATIC", l.getMessage(Localized::CHOOSE_SAVE).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[LOADING_BUT_LOAD] = CreateWindow("BUTTON", l.getMessage(Localized::LOAD_GAME).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[LOADING_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[LOADING_LISTBOX_SAVES] = CreateWindow("LISTBOX", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_HASSTRINGS, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				// Add strings with saves in reverse order to display chronologicaly from newest to oldest
+				for (int i = folderNames.size() - 1; i >= 0; i--)
+					SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_ADDSTRING, 0, (LPARAM)folderNames[i].c_str());
+
+				game.setBackground(Game::Background::MAIN_MENU_LOAD);
+
+				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_NEW_GAME])
 			{
@@ -940,6 +1075,135 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_EXIT])
 				DestroyWindow(hWnd);
+		}
+		break;
+
+		case Game::Background::MAIN_MENU_LOAD:
+		{
+			if ((HWND)lp == hSubItems[LOADING_BUT_BACK])
+			{
+				// Destroying all buttons
+				for (HWND hItem : hSubItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubItems.clear();
+
+				// Showing main menu buttons
+				for (HWND hItem : hItems)
+					ShowWindow(hItem, SW_SHOW);
+
+				game.setBackground(Game::Background::MAIN_MENU);
+
+				updateWindow(hWnd);
+				break;
+			}
+
+			if ((HWND)lp == hSubItems[LOADING_BUT_LOAD])
+			{
+				// Get selected save
+				int index = SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETCURSEL, 0, 0);
+
+				// If save is unselected
+				if (index == -1)
+				{
+					MessageBox(hWnd, l.getMessage(Localized::CHOOSE_SAVE).c_str(), l.getMessage(Localized::SAVE_UNSELECTED).c_str(), MB_OK);
+					break;
+				}
+
+				// Get selected folder name
+				SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETTEXT, index, (LPARAM)str);
+				string path = str;
+				path += '/';
+
+				// Load game
+				game.loadFromFile(path);
+
+				// Go to city menu
+				// Destroying all buttons
+				for (HWND hItem : hSubItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubItems.clear();
+
+				// TODO: save and load of world
+				// Right now only player and current city is saved. Everything else is generated randomly again
+				// World creation
+				unique_ptr<City> pCity;
+				vector<City> cities;
+
+				vector<unique_ptr<NPC>> gladiators;
+
+				for (int i = 0; i < MAX_CITIES; i++)
+				{
+					int cityLevel, traderLevel;
+					// Use predetermined parameters for different cities
+					switch (i)
+					{
+					case 0: // Rome
+						cityLevel = ROME_CITY_LEVEL;
+						traderLevel = ROME_TRADER_LEVEL;
+						break;
+					case 1: // Naples
+						cityLevel = NAPLES_CITY_LEVEL;
+						traderLevel = NAPLES_TRADER_LEVEL;
+						break;
+					case 2: // Metaponto
+						cityLevel = METAPONTO_CITY_LEVEL;
+						traderLevel = METAPONTO_TRADER_LEVEL;
+						break;
+					case 3: // Bojano
+						cityLevel = BOJANO_CITY_LEVEL;
+						traderLevel = BOJANO_TRADER_LEVEL;
+						break;
+					case 4: // Ancona
+						cityLevel = ANCONA_CITY_LEVEL;
+						traderLevel = ANCONA_TRADER_LEVEL;
+						break;
+					case 5: // Perugia
+						cityLevel = PERUGIA_CITY_LEVEL;
+						traderLevel = PERUGIA_TRADER_LEVEL;
+						break;
+					case 6: // Florence
+						cityLevel = FLORENCE_CITY_LEVEL;
+						traderLevel = FLORENCE_TRADER_LEVEL;
+						break;
+					case 7: // Bologna
+						cityLevel = BOLOGNA_CITY_LEVEL;
+						traderLevel = BOLOGNA_TRADER_LEVEL;
+						break;
+					case 8: // Genoa
+						cityLevel = GENOA_CITY_LEVEL;
+						traderLevel = GENOA_TRADER_LEVEL;
+						break;
+					case 9: // Aquileia
+						cityLevel = AQUILEIA_CITY_LEVEL;
+						traderLevel = AQUILEIA_TRADER_LEVEL;
+						break;
+					case 10: // Milan
+						cityLevel = MILAN_CITY_LEVEL;
+						traderLevel = MILAN_TRADER_LEVEL;
+						break;
+					}
+
+					// Creating opponents for arenas of different levels for different cities
+					for (int j = 0; j < OPPONENTS_NUMBER; j++)
+						gladiators.push_back(generateNPC(cityLevel));
+
+					// Creating cities
+					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators), cityLevel, *generateTrader(traderLevel));
+					cities.push_back(*pCity);
+					gladiators.clear();
+				}
+
+				game.setWorldMap(WorldMap(hWnd, cities, game.getWorldMap().getCurrentCityIndex()));
+				game.setFighting(Fighting(hWnd));
+
+				game.getMenuManager().setMenu(new CityMenu(hWnd));
+				game.setBackground(Game::Background::CITY_MENU);
+
+				updateWindow(hWnd);
+				break;
+			}
 		}
 		break;
 
