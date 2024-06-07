@@ -373,8 +373,8 @@ void Game::saveToFile()
 	char buffer[256];
 	strftime(buffer, sizeof(buffer), "%d.%m.%y_%H-%M-%S", now_tm);
 	
-
-	path += FOLDER_SAVES + buffer + "/";
+	// Name for save folder -- Player's name + Player's level + current date and time
+	path += FOLDER_SAVES + game.getPlayer().getName() + " (" + to_string(game.getPlayer().getLevel()) + " lvl) -- " + buffer + "/";
 
 	success = CreateDirectory(path.c_str(), NULL);
 	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
