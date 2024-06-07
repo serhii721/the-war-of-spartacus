@@ -15,10 +15,11 @@ public:
 	Player& operator=(const Player&);
 	virtual ~Player();
 
-	friend ostream& operator<<(ostream&, const Player&);
-	friend istream& operator>>(istream&, Player&);
-
 	void setName(const string&);
 
 	const string& getName() const;
+
+	// Save and load
+	void saveToFile(const string&);
+	void loadFromFile(const string&);
 };

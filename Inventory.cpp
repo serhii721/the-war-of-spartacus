@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Inventory.h"
 
+extern string buf;
+
 Inventory::Inventory() : items() { }
 
 Inventory::Inventory(const map<int, pair<unique_ptr<Item>, int>>& iitems)
@@ -130,4 +132,103 @@ void Inventory::removeItem(int id, int quantity)
 		if (it->second.second == 0) // If there's 0 left - remove item
 			items.erase(it);
 	}
+}
+
+void Inventory::saveToFile(const string& path)
+{
+	const string FILE_INVENTORY = "Inventory",
+		FILE_ITEM = "_item",
+		FORMAT = ".sav";
+
+	// Opening file for save
+	ofstream foutInv(path + FILE_INVENTORY + FORMAT, ios::binary);
+
+	if (!foutInv)
+		throw new exception("Error: Couldn't open file for inventory's saving");
+
+	// Write inventory data
+	int invSize = items.size();
+	foutInv << invSize << " ";
+
+	for (int i = 0; i < invSize; i++)
+	{
+		// Use iterator to get item by index
+		auto it = items.begin();
+		advance(it, i);
+		foutInv << it->second.first->getItemType() << " " << it->second.second << " ";
+
+		// Compose path to item's data file
+		buf = path + FILE_INVENTORY + FILE_ITEM + to_string(i);
+		// Write item data
+		switch (it->second.first->getItemType())
+		{
+		case Item::ItemType::WEAPON:
+			if (auto weapon = dynamic_cast<Weapon*>(it->second.first.get()))
+				weapon->saveToFile(buf);
+			else
+				it->second.first->saveToFile(buf);
+			break;
+
+		case Item::ItemType::ARMOUR:
+			if (auto armour = dynamic_cast<Armour*>(it->second.first.get()))
+				armour->saveToFile(buf);
+			else
+				it->second.first->saveToFile(buf);
+			break;
+
+		default:
+			it->second.first->saveToFile(buf);
+			break;
+		}
+	}
+	foutInv.close();
+}
+
+void Inventory::loadFromFile(const string& path)
+{
+	unique_ptr<Weapon> pWeapon = make_unique<Weapon>();
+	unique_ptr<Armour> pArmour = make_unique<Armour>();
+	unique_ptr<Item> pItem = make_unique<Item>();
+	const string FILE_INVENTORY = "Inventory",
+		FILE_ITEM = "_item",
+		FORMAT = ".sav";
+
+	// Opening file for save
+	ifstream finInv(path + FILE_INVENTORY + FORMAT, ios::binary);
+
+	if (!finInv)
+		throw new exception("Error: Couldn't open file for inventory's loading");
+
+	// Load inventory size
+	int loadedInventorySize, itemType, itemQuantity;
+	finInv >> loadedInventorySize;
+
+	items.clear();
+	// Load inventory items
+	for (int i = 0; i < loadedInventorySize; i++)
+	{
+		finInv >> itemType >> itemQuantity;
+
+		// Compose path to item's data file
+		buf = path + FILE_INVENTORY + FILE_ITEM + to_string(i);
+		// Write item data
+		switch (itemType)
+		{
+		case Item::ItemType::WEAPON:
+			pWeapon->loadFromFile(buf);
+			this->addItem(move(pWeapon), itemQuantity);
+			break;
+
+		case Item::ItemType::ARMOUR:
+			pArmour->loadFromFile(buf);
+			this->addItem(move(pArmour), itemQuantity);
+			break;
+
+		default:
+			pItem->loadFromFile(buf);
+			this->addItem(move(pItem), itemQuantity);
+			break;
+		}
+	}
+	finInv.close();
 }

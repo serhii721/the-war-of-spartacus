@@ -13,9 +13,6 @@ public:
 	Leveling& operator=(const Leveling&);
 	virtual ~Leveling();
 
-	friend ostream& operator<<(ostream&, const Leveling&);
-	friend istream& operator>>(istream&, Leveling&);
-
 	int getLevel() const;
 	int getExperience() const;
 	int getUnnassignedAttributes();

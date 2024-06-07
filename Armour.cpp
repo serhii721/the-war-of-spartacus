@@ -99,3 +99,43 @@ int Armour::getDexterityAdditionPercentage() const
 int Armour::getEvasionProbAddition() const { return evasionProbAddition; }
 
 int Armour::getStunProbSubtraction() const { return stunProbSubtraction; }
+
+void Armour::saveToFile(const string& path)
+{
+	const string FORMAT = ".sav";
+	// Opening file for save
+	ofstream fout(path + FORMAT, ios::binary);
+
+	if (!fout)
+		throw new exception("Error: Couldn't open file for armour's saving");
+
+	// Write armour data
+	fout << id << " " << itemType << " " << value << " "
+		<< tier << " " << defense << " " << type << " "
+		<< defAddition << " " << strAdditionPerc << " " << dexAdditionPerc << " "
+		<< evasionProbAddition << " " << stunProbSubtraction + " ";
+
+	fout.close();
+}
+
+void Armour::loadFromFile(const string& path)
+{
+	const string FORMAT = ".sav";
+	// Opening file for load
+	ifstream fin(path + FORMAT, ios::binary);
+
+	if (!fin)
+		throw new exception("Error: Couldn't open file for armour's loading");
+
+	// Read armour data
+	int loadedItemType, loadedArmourType;
+	fin >> id >> loadedItemType >> value
+		>> tier >> defense >> loadedArmourType
+		>> defAddition >> strAdditionPerc >> dexAdditionPerc
+		>> evasionProbAddition >> stunProbSubtraction;
+
+	itemType = static_cast<Item::ItemType>(loadedItemType);
+	type = static_cast<Armour::ArmourType>(loadedArmourType);
+
+	fin.close();
+}

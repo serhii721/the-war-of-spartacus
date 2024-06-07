@@ -139,3 +139,61 @@ int Weapon::getShieldProbAddition() const { return shieldProbAddition; }
 int Weapon::getShieldDefPercentAddition() const { return shieldDefPercentAddition; }
 
 const string& Weapon::getName() const { return name; }
+
+void Weapon::saveToFile(const string& path)
+{
+	const string FILE_NAME = "_name", FORMAT = ".sav";
+	// Opening file for save
+	ofstream fout(path + FORMAT, ios::binary);
+
+	if (!fout)
+		throw new exception("Error: Couldn't open file for weapon's saving");
+
+	// Write weapon data
+	fout << id << " " << itemType << " " << value << " "
+		<< tier << " " << damage << " " << type << " "
+		<< damageAddition << " " << strAdditionPerc << " " << dexAdditionPerc << " "
+		<< shieldProbAddition << " " << shieldDefPercentAddition + " ";
+
+	fout.close();
+
+	// Write weapon namee
+	ofstream foutName(path + FILE_NAME + FORMAT, ios::binary);
+
+	if (!foutName)
+		throw new exception("Error: Couldn't open file for weapon's name saving");
+
+	foutName << name;
+
+	foutName.close();
+}
+
+void Weapon::loadFromFile(const string& path)
+{
+	const string FILE_NAME = "_name", FORMAT = ".sav";
+	// Opening file for load
+	ifstream fin(path + FORMAT, ios::binary);
+
+	if (!fin)
+		throw new exception("Error: Couldn't open file for weapon's loading");
+
+	// Read weapon data
+	int loadedItemType, loadedWeaponType;
+	fin >> id >> loadedItemType >> value;
+	fin >> tier >> damage >> loadedWeaponType;
+	fin >> damageAddition >> strAdditionPerc >> dexAdditionPerc;
+	fin	>> shieldProbAddition >> shieldDefPercentAddition;
+
+	itemType = static_cast<Item::ItemType>(loadedItemType);
+	type = static_cast<Weapon::WeaponType>(loadedWeaponType);
+
+	// Read weapon name
+	ifstream finName(path + FILE_NAME + FORMAT, ios::binary);
+
+	if (!finName)
+		throw new exception("Error: Couldn't open file for weapon's name loading");
+
+	finName >> name;
+
+	finName.close();
+}

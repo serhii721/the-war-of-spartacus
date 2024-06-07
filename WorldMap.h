@@ -51,11 +51,11 @@ public:
 	WorldMap& operator=(const WorldMap&);
 	~WorldMap();
 
-	friend ostream& operator<<(ostream&, const WorldMap&);
-	friend istream& operator>>(istream&, WorldMap&);
-
 	City& getCurrentCity();
+	int getCurrentCityIndex() const;
 	City& getCity(int);
+
+	void setCurrentCityIndex(int);
 
 	void drawWindow(HWND, HDC, int, int);
 	void resizeWindow(int, int);

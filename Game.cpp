@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Game.h"
 
+extern string buf;
+
 Game::Game() :
 	menuManager(),
 	pWorldMap(make_unique<WorldMap>()),
@@ -352,4 +354,67 @@ Game::Background Game::getBackground() const
 bool Game::isBackgroundChanged() const
 {
 	return backgroundChanged;
+}
+
+void Game::saveToFile()
+{
+	string path = "";
+	const string FOLDER_SAVES = "Saves/", PLAYER_FOLDER = "Player/", GAME_DATA_FILE = "Game", FORMAT = ".sav";
+	
+	// Creating the folder of saved games if it doesn't exist
+	BOOL success = CreateDirectory(FOLDER_SAVES.c_str(), NULL);
+	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+		throw new exception("Error: Couldn't create directory for saving");
+
+	// Creating the folder for current save
+	// Naming the folder using current time
+	auto now = time(nullptr);
+	tm* now_tm = localtime(&now);
+	char buffer[256];
+	strftime(buffer, sizeof(buffer), "%d.%m.%y_%H-%M-%S", now_tm);
+	
+
+	path += FOLDER_SAVES + buffer + "/";
+
+	success = CreateDirectory(path.c_str(), NULL);
+	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+		throw new exception("Error: Couldn't create directory for saving");
+
+	// Saving game data
+	ofstream fout(path + GAME_DATA_FILE + FORMAT, ios::binary);
+	if (!fout)
+		throw new exception("Error: Couldn't open file for game's saving");
+
+	fout << game.getWorldMap().getCurrentCityIndex();
+
+	fout.close();
+	// Saving player
+	buf = path + PLAYER_FOLDER;
+
+	success = CreateDirectory(buf.c_str(), NULL);
+	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+		throw new exception("Error: Couldn't create directory for player's saving");
+
+	pPlayer->saveToFile(buf);
+}
+
+void Game::loadFromFile(const string& saveFolderName)
+{
+	const string FOLDER_SAVES = "Saves/", PLAYER_FOLDER = "Player/", GAME_DATA_FILE = "Game", FORMAT = ".sav";
+	string path = FOLDER_SAVES + saveFolderName;
+
+	// Loading game data
+	ifstream fin(path + GAME_DATA_FILE + FORMAT, ios::binary);
+	if (!fin)
+		throw new exception("Error: Couldn't open file for game's loading");
+
+	int currentCityIndex;
+	fin >> currentCityIndex;
+	game.getWorldMap().setCurrentCityIndex(currentCityIndex);
+
+	fin.close();
+	// Loading player
+	buf = path + PLAYER_FOLDER;
+
+	pPlayer->loadFromFile(buf);
 }

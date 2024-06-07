@@ -251,14 +251,12 @@ const string& Localization::getItemTypeName(const Item& I) const
 	case Item::ItemType::WEAPON:
 		if (dynamic_cast<const Weapon*>(&I))
 			return getWeaponTypeName(*dynamic_cast<const Weapon*>(&I));
-
-		break;
+		return itemTypes[I.getItemType()];
 
 	case Item::ItemType::ARMOUR:
 		if (dynamic_cast<const Armour*>(&I))
 			return getArmourTypeName(*dynamic_cast<const Armour*>(&I));
-
-		break;
+		return itemTypes[I.getItemType()];
 
 	default: return itemTypes[I.getItemType()];
 	}

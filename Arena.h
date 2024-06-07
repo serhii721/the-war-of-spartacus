@@ -12,9 +12,6 @@ public:
 	Arena& operator=(const Arena&);
 	~Arena();
 
-	friend ostream& operator<<(ostream&, const Arena&);
-	friend istream& operator>>(istream&, Arena&);
-
 	vector<unique_ptr<NPC>>& getGladiators();
 	unique_ptr<NPC>& getGladiator(int);
 

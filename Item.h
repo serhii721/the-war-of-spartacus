@@ -20,13 +20,15 @@ public:
 	Item& operator=(const Item&);
 	virtual ~Item();
 
-	friend ostream& operator<<(ostream&, const Item&);
-	friend istream& operator>>(istream&, Item&);
-
 	virtual unique_ptr<Item> clone() const;
 
 	bool operator<(const Item&) const;
-private:
+
+	// Save and load
+	void saveToFile(const string&);
+	void loadFromFile(const string&);
+
+protected:
 	ItemType itemType;
 	int value;
 

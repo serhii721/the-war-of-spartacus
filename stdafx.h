@@ -29,6 +29,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <map> // `map` for inventory
 #include <exception>
 #include <memory> // 'unique_ptr'
+#include <filesystem> // for loading methods
 using namespace std;
 
 #include <Windows.h>
@@ -86,7 +87,8 @@ extern Game game;
 
 // __________ Other __________
 void updateWindow(HWND);
-string toStringPrecision(double, int = 2);
+string toStringPrecision(double number_, int decimalPlaces_ = 2);
+void getFoldersInDirectory(const string& directoryPath_, vector<string>& folderNames_);
 
 // __________ NPC __________
 unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);

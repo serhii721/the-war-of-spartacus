@@ -67,6 +67,39 @@ bool Item::operator<(const Item& other) const
 	return value < other.value;
 }
 
+void Item::saveToFile(const string& path)
+{
+	const string FORMAT = ".sav";
+	// Opening file for save
+	ofstream fout(path + FORMAT, ios::binary);
+
+	if (!fout)
+		throw new exception("Error: Couldn't open file for item's saving");
+
+	// Write item data
+	fout << id << " " << itemType << " " << value;
+
+	fout.close();
+}
+
+void Item::loadFromFile(const string& path)
+{
+	const string FORMAT = ".sav";
+	// Opening file for load
+	ifstream fin(path + FORMAT, ios::binary);
+
+	if (!fin)
+		throw new exception("Error: Couldn't open file for item's loading");
+
+	// Read item data
+	int loadedItemType;
+	fin >> id >> loadedItemType >> value;
+
+	itemType = static_cast<Item::ItemType>(loadedItemType);
+
+	fin.close();
+}
+
 int Item::getID() const
 {
 	return id;

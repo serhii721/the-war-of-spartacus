@@ -11,9 +11,6 @@ public:
 	Inventory& operator=(const Inventory&);
 	~Inventory();
 
-	friend ostream& operator<<(ostream&, const Inventory&);
-	friend istream& operator>>(istream&, Inventory&);
-
 	PairRef<unique_ptr<Item>&, int&> operator[](int id_);
 	PairRef<const unique_ptr<Item>&, const int&> operator[](int id_) const;
 
@@ -25,4 +22,8 @@ public:
 
 	void addItem(unique_ptr<Item>, int quantity_ = 1);
 	void removeItem(int id_, int quantity_ = 1);
+
+	// Save and load
+	void saveToFile(const string&);
+	void loadFromFile(const string&);
 };
