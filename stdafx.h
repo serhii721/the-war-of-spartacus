@@ -103,12 +103,6 @@ unique_ptr<Armour> generateArmour(int tier_ = MIN_ARMOUR_TIER, Armour::ArmourTyp
 // __________ Sound __________
 //void playSound(SoundEnum);
 
-// __________ Save and Load __________
-//bool saveGame(Player&, NPC*);
-//bool loadPlayer(Player&);
-//bool loadNPCs(NPC*);
-//bool loadGame(Player&, NPC*);
-
 // __________ Game process __________
 LRESULT CALLBACK WFunc(HWND, UINT, WPARAM, LPARAM);
 

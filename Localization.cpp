@@ -79,11 +79,17 @@ void Localization::setLanguage(Language llanguage)
 	}
 	// Opening files
 	string path = "Data/Language/";
-	const string FORMAT = ".lang";
+	const string SETTINGS_FILE = "Settings", SETTINGS_FORMAT = ".conf", FORMAT = ".lang";
+
+	// Saving selected language
+	ofstream fout(path + SETTINGS_FILE + SETTINGS_FORMAT, ios::binary);
+	fout << llanguage;
+	fout.close();
+
+	// Reading the file and filling the localization array
 	ifstream fin(path + fileName + FORMAT);
 	ifstream finEng(path + "English" + FORMAT);
 
-	// Reading the file and filling the localization array
 	string line, lineEng;
 	int lineIndex, i = 0;
 	for (; i < Localized::MESSAGE_NUMBER; i++)
