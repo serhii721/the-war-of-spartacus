@@ -399,3 +399,5 @@ FodyWeavers.xsd
 
 GladiatorGame/Saves/*
 GladiatorGame/Data/Settings.conf
+Saves/*
+Saves/
