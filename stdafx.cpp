@@ -210,7 +210,8 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 			randomFirstName,
 			randomLastName
 		),
-		leveling
+		leveling,
+		rand() % 3 + 1
 	);
 	npc.updateMaxHP();
 

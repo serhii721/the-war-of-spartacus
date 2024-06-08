@@ -8,12 +8,24 @@ class NPC :
 	public NamedNPC,
 	public Leveling
 {
+private:
+	int portraitIndex;
+
 public:
 	NPC();
-	NPC(const Fighter&, const NamedNPC&, const Leveling&);
+	NPC(const Fighter&, const NamedNPC&, const Leveling&, int portraitIndex_);
 	NPC(const NPC&);
 	NPC& operator=(const NPC&);
 	virtual ~NPC();
 
 	unique_ptr<NPC> clone() const;
+
+	void setPortraitIndex(int);
+
+	const int getPortraitIndex() const;
+
+	// Save and load
+	// TODO
+	// void saveToFile(const string&);
+	// void loadFromFile(const string&);
 };

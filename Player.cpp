@@ -8,7 +8,8 @@ extern Localization l;
 Player::Player() :
 	Fighter(),
 	Leveling(),
-	name(l.getMessage(Localized::GLADIATOR))
+	name(l.getMessage(Localized::GLADIATOR)),
+	portraitIndex(1)
 { }
 
 Player::Player(
@@ -18,10 +19,11 @@ Player::Player(
 ) :
 	Fighter(F),
 	Leveling(L),
-	name(rName)
+	name(rName),
+	portraitIndex(1)
 { }
 
-Player::Player(const Player& P) : Fighter(P), Leveling(P), name(P.name) { }
+Player::Player(const Player& P) : Fighter(P), Leveling(P), name(P.name), portraitIndex(P.portraitIndex) { }
 
 Player& Player::operator=(const Player& P)
 {
@@ -31,6 +33,7 @@ Player& Player::operator=(const Player& P)
 	Leveling::operator=(P);
 
 	name = P.name;
+	portraitIndex = P.portraitIndex;
 
 	return *this;
 }
@@ -40,7 +43,11 @@ Player::~Player() { }
 // TODO: think about regex
 void Player::setName(const string& rName) { name = rName; }
 
+void Player::setPortaitIndex(int i) { portraitIndex = i; }
+
 const string& Player::getName() const { return name; }
+
+const int Player::getPortaitIndex() const { return portraitIndex; }
 
 void Player::saveToFile(const string& directory)
 {
@@ -69,7 +76,7 @@ void Player::saveToFile(const string& directory)
 		<< age << " " << fame << " ";
 
 	// Fighter
-	fout << hp << " " << fullHP << " ";
+	fout << hp << " " << fullHP << " " << portraitIndex << " ";
 
 	// Inventory and equipment stored as pointers so they are saved in separate files
 	// Main file contains information whether there is equipment
@@ -155,7 +162,7 @@ void Player::loadFromFile(const string& directory)
 		>> age >> fame;
 
 	// Fighter
-	fin >> hp >> fullHP;
+	fin >> hp >> fullHP >> portraitIndex;
 
 	int hasInventory, hasRightHand, hasLeftHand, hasArmour;
 	// Inventory

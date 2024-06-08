@@ -8,6 +8,7 @@ class Player :
 {
 private:
 	string name;
+	int portraitIndex;
 public:
 	Player();
 	Player(const Fighter&, const Leveling&, const string&);
@@ -16,8 +17,10 @@ public:
 	virtual ~Player();
 
 	void setName(const string&);
+	void setPortaitIndex(int);
 
 	const string& getName() const;
+	const int getPortaitIndex() const;
 
 	// Save and load
 	void saveToFile(const string&);
