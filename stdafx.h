@@ -46,6 +46,7 @@ using namespace std;
 #include "StartingEquipment.h"
 #include "PlayerAttributeStorage.h"
 #include "IMenu.h"
+#include "StoryScreen.h"
 #include "MainMenu.h"
 #include "GameMenu.h"
 

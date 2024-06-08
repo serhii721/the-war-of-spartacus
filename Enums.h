@@ -51,7 +51,8 @@ enum DisplayState
 {
 	MENU,
 	WORLD_MAP,
-	FIGHTING
+	FIGHTING,
+	STORY_SCREEN
 };
 
 //enum SoundEnum
