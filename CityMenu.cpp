@@ -852,6 +852,11 @@ void CityMenu::resizeMenu(int cx, int cy)
 
 		MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEVEL], x, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
 
+		// Portrait
+
+		y += DISTANCE + ITEM_HEIGHT;
+		MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_PORTRAIT], x, y, 170, 143, TRUE);
+
 		// RightHand stats
 		y = cy - (ITEM_HEIGHT + DISTANCE) * 3;
 		x -= 120;
@@ -884,6 +889,10 @@ void CityMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_NAME], x, y - ITEM_HEIGHT - DISTANCE, STAT_WIDTH, ITEM_HEIGHT, TRUE);
 
 		MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_LEVEL], x, y, STAT_WIDTH, ITEM_HEIGHT, TRUE);
+
+		// Portrait
+		y += DISTANCE + ITEM_HEIGHT;
+		MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PORTRAIT], x, y, 170, 143, TRUE);
 
 		// RightHand stats
 		y = cy - (ITEM_HEIGHT + DISTANCE) * 3;
@@ -1035,6 +1044,13 @@ void CityMenu::resizeMenu(int cx, int cy)
 			y += BIG_STAT_HEIGHT + BIG_DISTANCE;
 		}
 
+		// Portrait
+		y -= BIG_STAT_HEIGHT;
+		y += BIG_DISTANCE * 5;
+
+		MoveWindow(hSubItems[CHARACTER_STAT_PORTRAIT], x, y, 180, 196, TRUE);
+
+		y += BIG_STAT_HEIGHT;
 		// Age, Fame, health
 		y += 205;
 		for (i = CHARACTER_STAT_AGE; i <= CHARACTER_STAT_HEALTH; i++)
@@ -3014,6 +3030,23 @@ bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			else if (game.getBackground() == Game::Background::CITY_MENU_CHARACTER)
 			{
+				// Portrait
+				if (item->hwndItem == hSubItems[CHARACTER_STAT_PORTRAIT])
+				{
+					// Selecting image for button based on item type
+					const string DIRECTORY = "Data/Image/Portrait/Player/",
+						FORMAT = ".bmp";
+					string path = DIRECTORY + to_string(game.getPlayer().getPortaitIndex()) + FORMAT;
+
+					// Select image
+					hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+					// Filling background with selected image
+					hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+					FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
+					// Drawing edge
+					DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
+					return true;
+				}
 				// Equipment
 				if (item->hwndItem == hSubItems[CHARACTER_BUT_RIGHT_HAND])
 				{
@@ -3040,14 +3073,50 @@ bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					}
 				}
 			}
-			else if (game.getBackground() == Game::Background::CITY_MENU_ARENA_FIGHT &&
-				selectedOpponent != -1 &&
-				item->hwndItem == hSubMenuItems[selectedOpponent])
+			else if (game.getBackground() == Game::Background::CITY_MENU_ARENA_FIGHT)
 			{
-				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-				return true;
+				if (selectedOpponent != -1)
+				{
+					if (item->hwndItem == hSubMenuItems[selectedOpponent])
+					{
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+						DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+						DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+						return true;
+					}
+					if (item->hwndItem == hSubMenuItems[ARENA_FIGHT_STATIC_PORTRAIT])
+					{
+						// Selecting image for button based on item type
+						const string DIRECTORY = "Data/Image/Portrait/Gladiator/",
+							FORMAT = ".bmp";
+						string path = DIRECTORY + to_string(game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent)->getPortraitIndex()) + FORMAT;
+
+						// Select image
+						hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+						// Filling background with selected image
+						hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+						FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
+						// Drawing edge
+						DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
+						return true;
+					}
+				}
+				if (item->hwndItem == hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_PORTRAIT])
+				{
+					// Selecting image for button based on item type
+					const string DIRECTORY = "Data/Image/Portrait/Player/",
+						FORMAT = ".bmp";
+					string path = DIRECTORY + to_string(game.getPlayer().getPortaitIndex()) + "_small" + FORMAT;
+
+					// Select image
+					hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+					// Filling background with selected image
+					hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+					FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
+					// Drawing edge
+					DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
+					return true;
+				}
 			}
 			else if (game.getBackground() == Game::Background::CITY_MENU_MARKET)
 			{
@@ -3210,6 +3279,9 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	GetWindowRect(hSubMenuItems[selectedOpponent], &rect);
 	MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
 	InvalidateRect(hWnd, &rect, 1);
+
+	// Update portrait
+	updateWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PORTRAIT]);
 
 	// Outputing opponent's information
 	NPC& rOpponent = *game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent);
