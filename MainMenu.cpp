@@ -1014,6 +1014,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				SetFocus(hSubItems[EDIT_NAME]);
 
+				// Display story
+				game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::WELCOME_SCREEN);
+
 				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_SETTINGS])
@@ -1655,6 +1658,11 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setFighting(Fighting(hWnd));
 
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
+
+				// Display story
+				game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::START_GAME_SCREEN);
+
+				// Display city
 				game.setBackground(Game::Background::CITY_MENU);
 
 				updateWindow(hWnd);

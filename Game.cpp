@@ -8,6 +8,7 @@ Game::Game() :
 	pWorldMap(make_unique<WorldMap>()),
 	pFighting(make_unique<Fighting>()),
 	pPlayer(make_unique<Player>()),
+	pStoryScreen(make_unique<StoryScreen>()),
 	displayState(DisplayState::MENU),
 	currentBackground(Background::MAIN_MENU),
 	backgroundChanged(true)
@@ -72,6 +73,7 @@ Game::Game(const Game& GAME) :
 	pWorldMap(make_unique<WorldMap>(*GAME.pWorldMap)),
 	pFighting(make_unique<Fighting>()),
 	pPlayer(make_unique<Player>(*GAME.pPlayer)),
+	pStoryScreen(make_unique<StoryScreen>(*GAME.pStoryScreen)),
 	displayState(GAME.displayState),
 	currentBackground(GAME.currentBackground),
 	backgroundChanged(GAME.backgroundChanged)
@@ -130,7 +132,18 @@ Game& Game::operator=(const Game& GAME)
 		else
 			*pPlayer = *GAME.pPlayer;
 	}
-	else pPlayer = nullptr;
+	else
+		pPlayer = nullptr;
+
+	if (GAME.pStoryScreen)
+	{
+		if (!pStoryScreen)
+			pStoryScreen = make_unique<StoryScreen>(*GAME.pStoryScreen);
+		else
+			*pStoryScreen = *GAME.pStoryScreen;
+	}
+	else
+		pStoryScreen = nullptr;
 
 	pFighting = make_unique<Fighting>();
 
@@ -223,6 +236,11 @@ void Game::setFighting(const Fighting& rFighting)
 	pFighting.reset(new Fighting(rFighting));
 }
 
+void Game::setStoryScreen(const StoryScreen& rStoryScreen)
+{
+	pStoryScreen.reset(new StoryScreen(rStoryScreen));
+}
+
 void Game::setDisplayState(DisplayState ds)
 {
 	displayState = ds;
@@ -238,9 +256,14 @@ WorldMap& Game::getWorldMap() const
 	return *pWorldMap;
 }
 
-Fighting & Game::getFighting() const
+Fighting& Game::getFighting() const
 {
 	return *pFighting;
+}
+
+StoryScreen& Game::getStoryScreen() const
+{
+	return *pStoryScreen;
 }
 
 MenuManager& Game::getMenuManager()
@@ -273,6 +296,9 @@ void Game::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 	case DisplayState::FIGHTING:
 		pFighting->drawWindow(hWnd, hdc, cx, cy);
 		break;
+
+	case DisplayState::STORY_SCREEN:
+		pStoryScreen->drawMenu(hWnd, hdc, cx, cy);
 	}
 }
 
@@ -291,6 +317,9 @@ void Game::resizeWindow(int cx, int cy)
 	case DisplayState::FIGHTING:
 		pFighting->resizeWindow(cx, cy);
 		break;
+
+	case DisplayState::STORY_SCREEN:
+		pStoryScreen->resizeMenu(cx, cy);
 	}
 }
 
@@ -309,6 +338,9 @@ void Game::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	case DisplayState::FIGHTING:
 		pFighting->handleInput(hWnd, m, wp, lp);
 		break;
+
+	case DisplayState::STORY_SCREEN:
+		pStoryScreen->handleInput(hWnd, m, wp, lp);
 	}
 }
 
@@ -327,6 +359,9 @@ bool Game::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	case DisplayState::FIGHTING:
 		return pFighting->stylizeWindow(hWnd, m, wp, lp);
 		break;
+
+	case DisplayState::STORY_SCREEN:
+		pStoryScreen->stylizeWindow(hWnd, m, wp, lp);
 	}
 }
 

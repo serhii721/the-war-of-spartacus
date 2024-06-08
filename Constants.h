@@ -98,7 +98,8 @@ const int WEAPON_MAX_RAND_DMG_SPREAD_PERCENT = 10; // 10.0%
 const int VICTORY_LOOT_CHANCE = 30; // 30.0%
 
 // Game settings
-const int SLEEP_TIME = 1000; // Delay between attacks in fight
+const int FIGHT_SLEEP_TIME = 1000; // Delay between attacks in fight
+const int STORY_SLEEP_TIME = 300; // Delay between story screen display
 const int STARTING_ADDITIONAL_ATTRIBUTES = 30;
 const int ATTRIBUTE_MAX_DIFFERENCE = 10; // How much a player can increase attributes relative to average attributes level
 

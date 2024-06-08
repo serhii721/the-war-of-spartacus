@@ -7,6 +7,7 @@ private:
 	unique_ptr<WorldMap> pWorldMap;
 	unique_ptr<Fighting> pFighting;
 	unique_ptr<Player> pPlayer;
+	unique_ptr<StoryScreen> pStoryScreen;
 
 	HFONT smallFont, mediumFont, largeFont;
 	
@@ -49,11 +50,13 @@ public:
 	void setPlayer(const Player&);
 	void setWorldMap(const WorldMap&);
 	void setFighting(const Fighting&);
+	void setStoryScreen(const StoryScreen&);
 	void setDisplayState(DisplayState);
 
 	Player& getPlayer();
 	WorldMap& getWorldMap() const;
 	Fighting& getFighting() const;
+	StoryScreen& getStoryScreen() const;
 	MenuManager& getMenuManager();
 	HFONT& getFont(FontSize);
 

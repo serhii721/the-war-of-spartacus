@@ -114,6 +114,9 @@
     <ClInclude Include="StartingEquipment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StoryScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -198,6 +201,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StartingEquipment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StoryScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

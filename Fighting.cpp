@@ -261,13 +261,13 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 		buf = l.getMessage(Localized::OPPONENT_ATTACKS_FIRST) + "\r\n\r\n";
 		SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
-		Sleep(SLEEP_TIME);
+		Sleep(FIGHT_SLEEP_TIME);
 
 		// Opponent's attack
 		rOpponent.attack(rPlayer, result, damage);
 
 		getAttackResult(rOpponent, Attacker::OPPONENT, result, damage);
-		Sleep(SLEEP_TIME);
+		Sleep(FIGHT_SLEEP_TIME);
 
 		// Checking the status of the fighting
 		status = checkFightStatus(rPlayer, rOpponent);
@@ -286,7 +286,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 		buf = l.getMessage(Localized::PLAYER_ATTACKS_FIRST) + "\r\n\r\n";
 		SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		SendMessage(hItems[MenuItem::EDIT_LOG_MESSAGES], EM_SCROLL, SB_BOTTOM, 0);
-		Sleep(SLEEP_TIME);
+		Sleep(FIGHT_SLEEP_TIME);
 	}
 
 	// # 2. Fighting
@@ -300,7 +300,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 
 			// Output of the result of player's attack
 			getAttackResult(rOpponent, Attacker::PLAYER, result, damage);
-			Sleep(SLEEP_TIME);
+			Sleep(FIGHT_SLEEP_TIME);
 
 			// Checking the status of the fighting
 			status = checkFightStatus(rPlayer, rOpponent);
@@ -324,7 +324,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 		rOpponent.attack(rPlayer, result, damage);
 
 		getAttackResult(rOpponent, Attacker::OPPONENT, result, damage);
-		Sleep(SLEEP_TIME);
+		Sleep(FIGHT_SLEEP_TIME);
 
 		// Checking the status of the fighting
 		status = checkFightStatus(rPlayer, rOpponent);
