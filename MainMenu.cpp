@@ -943,7 +943,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[LOADING_STAT_LOAD] = CreateWindow("STATIC", l.getMessage(Localized::CHOOSE_SAVE).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[LOADING_BUT_LOAD] = CreateWindow("BUTTON", l.getMessage(Localized::LOAD_GAME).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[LOADING_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[LOADING_LISTBOX_SAVES] = CreateWindow("LISTBOX", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_HASSTRINGS, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[LOADING_LISTBOX_SAVES] = CreateWindow("LISTBOX", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				// Add strings with saves in reverse order to display chronologicaly from newest to oldest
 				for (int i = folderNames.size() - 1; i >= 0; i--)
@@ -991,6 +991,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[EDIT_WISDOM] = CreateWindow("EDIT", to_string(nms->wisdom).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[EDIT_CHARISMA] = CreateWindow("EDIT", to_string(nms->charisma).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
+				for (i = EDIT_NAME; i <= EDIT_CHARISMA; i++)
+					SendMessage(hSubItems[i], WM_SETFONT, (WPARAM)game.getFont(Game::FontSize::MEDIUM), TRUE);
+
 				hSubItems[BUT_AGE_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[BUT_STRENGTH_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[BUT_CONSTITUTION_MINUS] = CreateWindow("BUTTON", "-", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -1037,7 +1040,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", l.getMessage(Localized::VIDEO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", l.getMessage(Localized::AUDIO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_LANGUAGE] = CreateWindow("STATIC", l.getMessage(Localized::LANGUAGE_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[SETTINGS_COMBOBOX_LANGUAGE] = CreateWindow("COMBOBOX", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_COMBOBOX_LANGUAGE] = CreateWindow("COMBOBOX", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_SOUND] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_APPLY_CHANGES] = CreateWindow("BUTTON", l.getMessage(Localized::APPLY_CHANGES).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -1047,6 +1050,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_ADDSTRING, 0, (LPARAM)"Українська");
 				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_ADDSTRING, 0, (LPARAM)"Русский");
 				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_ADDSTRING, 0, (LPARAM)"Latinus");
+				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_SETCURSEL, l.getLanguage(), 0);
 				ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_HIDE);
 
 				game.setBackground(Game::Background::MAIN_MENU_SETTINGS);

@@ -722,6 +722,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lParam;
 			HDC hdc = item->hDC;
+			RECT rect = item->rcItem;
 
 			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
 
@@ -739,31 +740,83 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (item->CtlType == ODT_STATIC) // Static windows
 			{
 				//SetTextColor(hdc, RGB(0,0,0)); // Set basic text color
-				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
-				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+				FillRect(hdc, &rect, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
+				DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+				DrawEdge(hdc, &rect, EDGE_SUNKEN, BF_RECT); // Draw edge
 			}
 			else if (strcmp(str, ("Edit")) == 0) // Edit windows
 			{
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT);
+				DrawEdge(hdc, &rect, EDGE_SUNKEN, BF_RECT);
 			}
 			else if (item->CtlType == ODT_BUTTON) // Button windows
 			{
+				// Fill background
 				if (item->itemState & ODS_SELECTED)
-				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
-				}
+					FillRect(hdc, &rect, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
 				else
-				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED)); // Fill background
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
-				}
+					FillRect(hdc, &rect, CreateSolidBrush(COLOR_ROMAN_RED));
+
+				DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+				DrawEdge(hdc, &rect, EDGE_RAISED, BF_RECT); // Draw edge
+			}
+			else if (item->CtlType == ODT_LISTBOX) // Listbox windows
+			{
+				// Get text
+				SendMessage(item->hwndItem, LB_GETTEXT, item->itemID, (LPARAM)str);
+
+				// Fill background
+				if (item->itemState & ODS_FOCUS)
+					SetBkColor(hdc, COLOR_ROMAN_RED_PUSHED);
+				else
+					SetBkColor(hdc, COLOR_ROMAN_RED);
+
+				// Text padding
+				RECT rectPadding = item->rcItem;
+				int padding = 5;
+				rectPadding.left += padding;
+				// Write text
+				ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rect, NULL, 0, NULL);
+				DrawText(hdc, str, -1, &rectPadding, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+				// Draw edge
+				DrawEdge(hdc, &rect, EDGE_RAISED, BF_RECT); 
+			}
+			else if (item->CtlType == ODT_COMBOBOX)
+			{
+				// Get text
+				SendMessage(item->hwndItem, CB_GETLBTEXT, item->itemID, (LPARAM)str);
+
+				// Fill background
+				if (item->itemState & ODS_FOCUS)
+					SetBkColor(hdc, COLOR_ROMAN_RED_PUSHED);
+				else
+					SetBkColor(hdc, COLOR_ROMAN_RED);
+
+				// Text padding
+				RECT rectPadding = item->rcItem;
+				int padding = 5;
+				rectPadding.left += padding;
+				// Write text
+				ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rect, NULL, 0, NULL);
+				DrawText(hdc, str, -1, &rectPadding, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+				// Draw edge
+				DrawEdge(hdc, &rect, EDGE_RAISED, BF_RECT);
 			}
 		}
 		return true;
+	}
+	break;
+
+	case WM_MEASUREITEM:
+	{
+		LPMEASUREITEMSTRUCT item = (LPMEASUREITEMSTRUCT)lParam;
+		if (item->CtlType == ODT_LISTBOX)
+		{
+			item->itemHeight = 30;
+		}
+		if (item->CtlType == ODT_COMBOBOX)
+		{
+			item->itemHeight = 35;
+		}
 	}
 	break;
 
