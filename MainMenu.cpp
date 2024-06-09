@@ -982,14 +982,14 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems[STAT_CHARISMA] = CreateWindow("STATIC", l.getMessage(Localized::CHARISMA).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				hSubItems[EDIT_NAME] = CreateWindow("EDIT", "", WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[EDIT_AGE] = CreateWindow("EDIT", to_string(nms->age).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES] = CreateWindow("EDIT", to_string(nms->unnassignedAttributes).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[EDIT_STRENGTH] = CreateWindow("EDIT", to_string(nms->strength).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[EDIT_CONSTITUTION] = CreateWindow("EDIT", to_string(nms->constitution).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[EDIT_DEXTERITY] = CreateWindow("EDIT", to_string(nms->dexterity).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[EDIT_INTELLIGENCE] = CreateWindow("EDIT", to_string(nms->intelligence).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[EDIT_WISDOM] = CreateWindow("EDIT", to_string(nms->wisdom).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[EDIT_CHARISMA] = CreateWindow("EDIT", to_string(nms->charisma).c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_AGE] = CreateWindow("EDIT", to_string(nms->age).c_str(), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES] = CreateWindow("EDIT", to_string(nms->unnassignedAttributes).c_str(), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_STRENGTH] = CreateWindow("EDIT", to_string(nms->strength).c_str(), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_CONSTITUTION] = CreateWindow("EDIT", to_string(nms->constitution).c_str(), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_DEXTERITY] = CreateWindow("EDIT", to_string(nms->dexterity).c_str(), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_INTELLIGENCE] = CreateWindow("EDIT", to_string(nms->intelligence).c_str(), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_WISDOM] = CreateWindow("EDIT", to_string(nms->wisdom).c_str(), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[EDIT_CHARISMA] = CreateWindow("EDIT", to_string(nms->charisma).c_str(), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				for (i = EDIT_NAME; i <= EDIT_CHARISMA; i++)
 					SendMessage(hSubItems[i], WM_SETFONT, (WPARAM)game.getFont(Game::FontSize::MEDIUM), TRUE);
@@ -1877,7 +1877,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	}
 }
 
-bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& result)
 {
 	switch (m)
 	{
@@ -1964,6 +1964,51 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 			}
 			return false;
+		}
+		break;
+
+		case WM_CTLCOLORSTATIC:
+		{
+			HDC hdc = (HDC)wp;
+			SetTextColor(hdc, COLOR_WHITE);
+			SetBkMode(hdc, TRANSPARENT);
+
+			if (hBackgroundBrush != NULL)
+				DeleteObject(hBackgroundBrush);
+			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+
+			result = (LRESULT)hBackgroundBrush;
+			return true;
+		}
+		break;
+
+		case WM_CTLCOLOREDIT:
+		{
+			HDC hdc = (HDC)wp;
+			SetTextColor(hdc, COLOR_WHITE);
+			SetBkMode(hdc, TRANSPARENT);
+
+			if (hBackgroundBrush != NULL)
+				DeleteObject(hBackgroundBrush);
+			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+
+			result = (LRESULT)hBackgroundBrush;
+			return true;
+		}
+		break;
+
+		case WM_CTLCOLORLISTBOX:
+		{
+			HDC hdc = (HDC)wp;
+			SetTextColor(hdc, COLOR_WHITE);
+			SetBkMode(hdc, TRANSPARENT);
+
+			if (hBackgroundBrush != NULL)
+				DeleteObject(hBackgroundBrush);
+			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+
+			result = (LRESULT)hBackgroundBrush;
+			return true;
 		}
 		break;
 	}

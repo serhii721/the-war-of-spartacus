@@ -292,7 +292,7 @@ public:
 	void drawMenu(HWND, HDC, int, int) override;
 	void resizeMenu(int, int) override;
 	void handleInput(HWND, UINT, WPARAM, LPARAM) override;
-	bool stylizeWindow(HWND, UINT, WPARAM, LPARAM) override;
+	bool stylizeWindow(HWND, UINT, WPARAM, LPARAM, LRESULT&) override;
 
 private:
 	void outputMarketItem(HWND, unique_ptr<Item>&, int quantity_ = 1);

@@ -376,7 +376,7 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	}
 }
 
-bool WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+bool WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& result)
 {
 	switch (m)
 	{

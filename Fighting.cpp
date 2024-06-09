@@ -801,7 +801,7 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	}
 }
 
-bool Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
+bool Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& result)
 {
 	switch (m)
 	{
@@ -849,6 +849,51 @@ bool Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		return false;
 		}
 		break;
+
+	case WM_CTLCOLORSTATIC:
+	{
+		HDC hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
+
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+
+		result = (LRESULT)hBackgroundBrush;
+		return true;
+	}
+	break;
+
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
+
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+
+		result = (LRESULT)hBackgroundBrush;
+		return true;
+	}
+	break;
+
+	case WM_CTLCOLORLISTBOX:
+	{
+		HDC hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
+
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+
+		result = (LRESULT)hBackgroundBrush;
+		return true;
+	}
+	break;
 	}
 	return false;
 }
