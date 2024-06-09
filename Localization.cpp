@@ -49,6 +49,7 @@ const string& Localization::operator[](int i) const { return messages[i]; }
 void Localization::setLanguage(Language llanguage)
 {
 	// Clear previous data
+	language = llanguage;
 	npcFirstNames.clear();
 	npcLastNames.clear();
 	gladiatorNicknames.clear();

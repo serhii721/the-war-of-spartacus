@@ -37,9 +37,11 @@ CityMenu::CityMenu(HWND hWnd) :
 	);
 
 	hItems[EDIT_MESSAGES_LOG] = CreateWindow("EDIT", logStr.c_str(),
-		WS_CHILD | WS_VISIBLE | ES_READONLY | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN,
+		WS_CHILD | WS_VISIBLE | ES_READONLY | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_BORDER,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
+
+	SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETFONT, (WPARAM)game.getFont(Game::FontSize::MEDIUM), TRUE);
 
 	char className[256] = "BUTTON";
 	hItems[BUT_ARENA] = CreateWindow(className, l.getMessage(Localized::ARENA).c_str(),
@@ -3020,10 +3022,19 @@ bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			SetTextColor(hdc, COLOR_WHITE); // Set basic text color
 
 			// Checking window type to draw it using correct styles
-			if (game.getBackground() == Game::Background::CITY_MENU && item->hwndItem == hItems[STAT_CITY_NAME])
+			if (game.getBackground() == Game::Background::CITY_MENU)
 			{
+				// Fill background
+				if (item->hwndItem == hItems[STAT_CITY_NAME])
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+				else
+				{
+					if (item->itemState & ODS_SELECTED)
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); 
+					else
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+				}
 				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
-				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
 				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 				return true;

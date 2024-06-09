@@ -26,8 +26,10 @@ Fighting::Fighting(HWND hWnd) :
 			0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 	hItems[MenuItem::EDIT_LOG_MESSAGES] = CreateWindow("EDIT", "",
-		WS_CHILD | WS_VISIBLE | ES_READONLY | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN,
+		WS_CHILD | WS_VISIBLE | ES_READONLY | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_BORDER,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+	SendMessage(hItems[EDIT_LOG_MESSAGES], WM_SETFONT, (WPARAM)game.getFont(Game::FontSize::MEDIUM), TRUE);
 
 	hItems[MenuItem::BUT_SPARE_OPPONENT] = CreateWindow("BUTTON", l.getMessage(Localized::SPARE_OPPONENT).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
@@ -191,6 +193,7 @@ Fighting::~Fighting()
 
 FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 {
+	SendMessage(hItems[EDIT_LOG_MESSAGES], WM_SETFONT, (WPARAM)game.getFont(Game::FontSize::MEDIUM), TRUE);
 	AttackResult result = AttackResult::WERE_DODGED;
 	FightStatus status = FightStatus::CONTINUE;
 
