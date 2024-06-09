@@ -189,7 +189,7 @@ public:
 	void drawMenu(HWND, HDC, int, int) override;
 	void resizeMenu(int, int) override;
 	void handleInput(HWND, UINT, WPARAM, LPARAM) override;
-	bool stylizeWindow(HWND, UINT, WPARAM, LPARAM) override;
+	bool stylizeWindow(HWND, UINT, WPARAM, LPARAM, LRESULT&) override;
 
 	void drawItem(HWND, LPDRAWITEMSTRUCT, int buttonIndex_, bool isPushed_ = false);
 };

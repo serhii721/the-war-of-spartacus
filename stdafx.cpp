@@ -694,6 +694,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_CREATE:
+
 		// Setting the random seed
 		srand((unsigned)time(0));
 
@@ -744,7 +745,8 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Drawing windows style accordingly to selected menu
 		// If item has a custom style it is drawn using stylizeWindow()
 		// Otherwise it is drawn using generic style
-		if (!game.stylizeWindow(hwnd, message, wParam, lParam))
+		LRESULT result = 0;
+		if (!game.stylizeWindow(hwnd, message, wParam, lParam, result))
 		{
 			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lParam;
 			HDC hdc = item->hDC;
@@ -846,15 +848,27 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 
+	case WM_CTLCOLORSTATIC:
+	{
+		LRESULT result = 0;
+		if (game.stylizeWindow(hwnd, message, wParam, lParam, result))
+			return result;
+	}
+	break;
+
 	case WM_CTLCOLOREDIT:
 	{
-		// Empty case for transparent background
+		LRESULT result = 0;
+		if (game.stylizeWindow(hwnd, message, wParam, lParam, result))
+			return result;
 	}
 	break;
 
 	case WM_CTLCOLORLISTBOX:
 	{
-		// Empty case for transparent background
+		LRESULT result = 0;
+		if (game.stylizeWindow(hwnd, message, wParam, lParam, result))
+			return result;
 	}
 	break;
 
@@ -877,6 +891,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_DESTROY:
+
 		PostQuitMessage(0);
 		break;
 
