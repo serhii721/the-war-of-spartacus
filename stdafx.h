@@ -90,6 +90,7 @@ extern Game game;
 void updateWindow(HWND);
 string toStringPrecision(double number_, int decimalPlaces_ = 2);
 void getFoldersInDirectory(const string& directoryPath_, vector<string>& folderNames_);
+void formatSaveName(string& input_);
 
 // __________ NPC __________
 unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);

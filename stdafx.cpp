@@ -45,6 +45,7 @@ string toStringPrecision(double n, int precision)
 
 void getFoldersInDirectory(const string& directoryPath, vector<string>& folderNames)
 {
+	string path;
 	// Create namespace for easy access to functions
 	namespace fs = std::experimental::filesystem;
 	if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath))
@@ -52,7 +53,37 @@ void getFoldersInDirectory(const string& directoryPath, vector<string>& folderNa
 
 	for (const auto& entry : fs::directory_iterator(directoryPath))
 		if (fs::is_directory(entry))
-			folderNames.push_back(entry.path().filename().string());
+		{
+			path = entry.path().filename().string();
+			formatSaveName(path);
+			folderNames.push_back(path);
+		}
+}
+
+void formatSaveName(string& input)
+{
+	// Function tranforms input string of save folder name to display to user
+	// For example string "w_1lvl_100624_002655" transfroms to "w | 1 level | 10.06.24 00:26:55"
+	// 1. Separate string into parts
+	int lastUnderscore = input.rfind('_');
+	int secondLastUnderscore = input.rfind('_', lastUnderscore - 1);
+	int thirdLastUnderscore = input.rfind('_', secondLastUnderscore - 1);
+	string dateTime = input.substr(secondLastUnderscore + 1);
+	string level = input.substr(thirdLastUnderscore + 1, secondLastUnderscore - thirdLastUnderscore - 1);
+	string name = input.substr(0, thirdLastUnderscore);
+
+	// 2. Format
+	string dateTimeFormatted = dateTime.substr(0, 2) + '.' + dateTime.substr(2, 2) + "." + dateTime.substr(4, 2)
+		+ ' ' + dateTime.substr(7, 2) + ':' + dateTime.substr(9, 2) + ':' + dateTime.substr(11, 2);
+
+	string levelFormatted = level;
+	int lvlPos = levelFormatted.find("lvl");
+	if (lvlPos != string::npos)
+		levelFormatted.replace(lvlPos, 3, " " + l.getMessage(Localized::LEVEL));
+
+	// 3. Compose string
+	string result = name + " | " + levelFormatted + " | " + dateTimeFormatted;
+	input = result;
 }
 
 // __________ NPC __________
@@ -545,7 +576,7 @@ unique_ptr<Weapon> generateWeapon(int tier, Weapon::WeaponType ttype)
 			0, // Damage addition
 			0, // Strength percent addition
 			0, // Dexterity percent addition
-			(MIN_SHIELD_PROB_ADDITION + rand() % SHIELD_RAND_PROB_ADDITION) * (tier * (100 / MAX_WEAPON_TIER)) / 100, // Shield's probability addition
+			MIN_SHIELD_PROB_ADDITION + rand() % SHIELD_RAND_PROB_ADDITION, // Shield's probability addition
 			(MIN_SHIELD_DEF_PERC_ADDITION + rand() % SHIELD_RAND_DEF_PERC_ADDITION) * (tier * (100 / MAX_WEAPON_TIER)) / 100, // Shield's defense percent addition
 			"" // Name
 		);
@@ -817,6 +848,18 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			item->itemHeight = 35;
 		}
+	}
+	break;
+
+	case WM_CTLCOLOREDIT:
+	{
+		// Empty case for transparent background
+	}
+	break;
+
+	case WM_CTLCOLORLISTBOX:
+	{
+		// Empty case for transparent background
 	}
 	break;
 
