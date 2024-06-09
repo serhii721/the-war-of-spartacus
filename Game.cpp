@@ -406,10 +406,10 @@ void Game::saveToFile()
 	auto now = time(nullptr);
 	tm* now_tm = localtime(&now);
 	char buffer[256];
-	strftime(buffer, sizeof(buffer), "%d.%m.%y_%H-%M-%S", now_tm);
+	strftime(buffer, sizeof(buffer), "%d%m%y_%H%M%S", now_tm);
 	
 	// Name for save folder -- Player's name + Player's level + current date and time
-	path += FOLDER_SAVES + game.getPlayer().getName() + " (" + to_string(game.getPlayer().getLevel()) + " lvl) -- " + buffer + "/";
+	path += FOLDER_SAVES + game.getPlayer().getName() + "_" + to_string(game.getPlayer().getLevel()) + "lvl_" + buffer + "/";
 
 	success = CreateDirectory(path.c_str(), NULL);
 	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)

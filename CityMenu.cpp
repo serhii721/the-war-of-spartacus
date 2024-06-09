@@ -1343,7 +1343,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					else
 					{
 						rPlayer.setHP(rPlayer.getHP() + regen);
-						logStr += l.getMessage(Localized::REST_REGEN) + " " + to_string(regen) + " " + l.getMessage(Localized::HEALTH_POINTS_GENITIVE) + " (" + to_string(rPlayer.getHP()) + l.getMessage(Localized::HP) + ")\r\n\r\n";
+						logStr += l.getMessage(Localized::REST_REGEN) + " " + to_string(regen) + " " + l.getMessage(Localized::HEALTH_POINTS_GENITIVE)
+							+ " (" + to_string(rPlayer.getHP()) + " / " + to_string(rPlayer.getFullHP()) + " " + l.getMessage(Localized::HP) + ")\r\n\r\n";
 					}
 
 					// Heal opponents across all arenas
@@ -1573,7 +1574,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					if (level < rPlayer.getLevel())
 						logStr += l.getMessage(Localized::LEVELED_UP) + " " +
 						to_string(rPlayer.getLevel()) +
-						" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ")\r\n\r\n";
+						" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES_GENITIVE) + ")\r\n\r\n";
 
 					isExhausted = true;
 				}

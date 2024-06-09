@@ -549,7 +549,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	// Level up
 	if (rPlayer.getLevel() > playerLevel)
 		logStr += l.getMessage(Localized::LEVELED_UP) + " " + to_string(rPlayer.getLevel()) +
-		" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ")\r\n\r\n";
+		" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES_GENITIVE) + ")\r\n\r\n";
 	// Gold
 	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(gold) + " " + l.getMessage(Localized::GOLD_GENITIVE) + "\r\n\r\n";
 	// Loot
