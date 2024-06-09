@@ -334,7 +334,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				// Add strings with saves in reverse order to display chronologicaly from newest to oldest
 				for (int i = folderNames.size() - 1; i >= 0; i--)
-					SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_ADDSTRING, 0, (LPARAM)folderNames[i].c_str());
+					SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_ADDSTRING, 0, (LPARAM)formatSaveName(folderNames[i]).c_str());
 
 				game.setBackground(Game::Background::GAME_MENU_LOAD);
 
@@ -408,8 +408,10 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Get selected folder name
-				SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETTEXT, index, (LPARAM)str);
-				string path = str;
+				const string PATH = "Saves/";
+				vector<string> folderNames;
+				getFoldersInDirectory(PATH, folderNames);
+				string path = folderNames[folderNames.size() - 1 - index];
 				path += '/';
 
 				// Load game
