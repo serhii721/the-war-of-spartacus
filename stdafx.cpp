@@ -53,14 +53,10 @@ void getFoldersInDirectory(const string& directoryPath, vector<string>& folderNa
 
 	for (const auto& entry : fs::directory_iterator(directoryPath))
 		if (fs::is_directory(entry))
-		{
-			path = entry.path().filename().string();
-			formatSaveName(path);
-			folderNames.push_back(path);
-		}
+			folderNames.push_back(entry.path().filename().string());
 }
 
-void formatSaveName(string& input)
+string formatSaveName(const string& input)
 {
 	// Function tranforms input string of save folder name to display to user
 	// For example string "w_1lvl_100624_002655" transfroms to "w | 1 level | 10.06.24 00:26:55"
@@ -82,8 +78,7 @@ void formatSaveName(string& input)
 		levelFormatted.replace(lvlPos, 3, " " + l.getMessage(Localized::LEVEL));
 
 	// 3. Compose string
-	string result = name + " | " + levelFormatted + " | " + dateTimeFormatted;
-	input = result;
+	return name + " | " + levelFormatted + " | " + dateTimeFormatted;
 }
 
 // __________ NPC __________
