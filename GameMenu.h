@@ -11,6 +11,8 @@ private:
 	HBITMAP hBackgroundImage;
 	HBRUSH hBackgroundBrush;
 
+	int selected;
+
 public:
 	enum Item
 	{

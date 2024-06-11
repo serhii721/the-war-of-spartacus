@@ -573,21 +573,27 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 		{
 		case AttackResult::DEALT_DAMAGE:
 			result += l.getMessage(Localized::YOU_HAVE_DEALT) + " " + to_string(ddamage) +  " " + l.getMessage(Localized::DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_HIT);
 			break;
 		case AttackResult::DEALT_CRIT_DAMAGE:
 			result += l.getMessage(Localized::YOU_HAVE_DEALT) + " " + to_string(ddamage) + " " + l.getMessage(Localized::CRITICAL_DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_CRIT);
 			break;
 		case AttackResult::STUNNED:
 			result += l.getMessage(Localized::YOU_HAVE_STUNNED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_STUNNED);
 			break;
 		case AttackResult::WERE_DODGED:
 			result += l.getMessage(Localized::YOU_MISSED);
+			playSound(SoundEnum::SOUND_FIGHT_DODGED);
 			break;
 		case AttackResult::WERE_BLOCKED:
 			result += l.getMessage(Localized::OPPONENT_BLOCKED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_BLOCKED);
 			break;
 		case AttackResult::WERE_COUNTERATTAKED:
 			result += l.getMessage(Localized::OPPONENT_COUNTERATTACKED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_COUNTERATTACKED);
 			break;
 		default:
 			// TODO: handle error
@@ -600,21 +606,27 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 		{
 		case AttackResult::DEALT_DAMAGE:
 			result += l.getMessage(Localized::OPPONENT_HAVE_DEALT) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_HIT);
 			break;
 		case AttackResult::DEALT_CRIT_DAMAGE:
 			result += l.getMessage(Localized::OPPONENT_HAVE_DEALT) + " " + to_string(ddamage) + " " + l.getMessage(Localized::CRITICAL_DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_CRIT);
 			break;
 		case AttackResult::STUNNED:
 			result += l.getMessage(Localized::OPPONENT_HAVE_STUNNED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_STUNNED);
 			break;
 		case AttackResult::WERE_DODGED:
 			result += l.getMessage(Localized::OPPONENT_MISSED);
+			playSound(SoundEnum::SOUND_FIGHT_DODGED);
 			break;
 		case AttackResult::WERE_BLOCKED:
 			result += l.getMessage(Localized::YOU_HAVE_BLOCKED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_BLOCKED);
 			break;
 		case AttackResult::WERE_COUNTERATTAKED:
 			result += l.getMessage(Localized::YOU_HAVE_COUNTERATTACKED) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
+			playSound(SoundEnum::SOUND_FIGHT_COUNTERATTACKED);
 			break;
 		default:
 			// TODO: handle error
@@ -786,6 +798,7 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hItems[BUT_END_FIGHT])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				game.setDisplayState(DisplayState::MENU);
 				game.setBackground(Game::Background::CITY_MENU);
 

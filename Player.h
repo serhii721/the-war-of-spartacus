@@ -9,6 +9,7 @@ class Player :
 private:
 	string name;
 	int portraitIndex;
+	bool isExhausted;
 public:
 	Player();
 	Player(const Fighter&, const Leveling&, const string&);
@@ -18,9 +19,11 @@ public:
 
 	void setName(const string&);
 	void setPortaitIndex(int);
+	void setExhaustion(bool);
 
 	const string& getName() const;
 	const int getPortaitIndex() const;
+	const bool getExhaustion() const;
 
 	// Save and load
 	void saveToFile(const string&);

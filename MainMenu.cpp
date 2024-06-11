@@ -17,7 +17,7 @@ MainMenu::MainMenu() :
 	hBackgroundBrush(NULL),
 	selectedLanguage(Language::ENGLISH),
 	changedSettings(false),
-	selectedSet(-1)
+	selected(-1)
 {
 	// Generate 3 sets of random starting equipment
 	se.push_back(make_unique<StartingEquipment>());
@@ -34,7 +34,7 @@ MainMenu::MainMenu(HWND hWnd) :
 	hBackgroundBrush(NULL),
 	selectedLanguage(Language::ENGLISH),
 	changedSettings(false),
-	selectedSet(-1)
+	selected(-1)
 {
 	// Create starting windows
 	char className[256] = "BUTTON";
@@ -130,7 +130,7 @@ MainMenu::MainMenu(const MainMenu& MM) : hSubItems(), hSubMenuItems()
 
 	selectedLanguage = MM.selectedLanguage;
 	changedSettings = MM.changedSettings;
-	selectedSet = MM.selectedSet;
+	selected = MM.selected;
 }
 
 MainMenu& MainMenu::operator=(const MainMenu& MM)
@@ -219,7 +219,7 @@ MainMenu& MainMenu::operator=(const MainMenu& MM)
 
 	selectedLanguage = MM.selectedLanguage;
 	changedSettings = MM.changedSettings;
-	selectedSet = MM.selectedSet;
+	selected = MM.selected;
 
 	return *this;
 }
@@ -823,6 +823,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hItems[CONTINUE])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Get every available save
 				const string PATH = "Saves/";
 				vector<string> folderNames;
@@ -922,6 +923,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_LOAD_GAME])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding all buttons
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
@@ -941,9 +943,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems.resize(LOADING_ITEM_NUMBER);
 
 				hSubItems[LOADING_STAT_LOAD] = CreateWindow("STATIC", l.getMessage(Localized::CHOOSE_SAVE).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[LOADING_BUT_LOAD] = CreateWindow("BUTTON", l.getMessage(Localized::LOAD_GAME).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[LOADING_BUT_LOAD] = CreateWindow("BUTTON", l.getMessage(Localized::LOAD_GAME).c_str(), WS_CHILD | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[LOADING_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[LOADING_LISTBOX_SAVES] = CreateWindow("LISTBOX", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[LOADING_LISTBOX_SAVES] = CreateWindow("LISTBOX", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_NOTIFY | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				// Add strings with saves in reverse order to display chronologicaly from newest to oldest
 				for (int i = folderNames.size() - 1; i >= 0; i--)
@@ -955,6 +957,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_NEW_GAME])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				nms = make_unique<NewMenuStorage>();
 
 				// Hiding all buttons
@@ -1024,6 +1027,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_SETTINGS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding all buttons
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
@@ -1059,6 +1063,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_SPECIALS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding all buttons
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
@@ -1081,14 +1086,28 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_EXIT])
+			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				DestroyWindow(hWnd);
+			}
 		}
 		break;
 
 		case Game::Background::MAIN_MENU_LOAD:
 		{
+			if (HIWORD(wp) == LBN_SELCHANGE)
+			{
+				if (selected != SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETCURSEL, 0, 0))
+				{
+					selected = SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETCURSEL, 0, 0);
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
+					ShowWindow(hSubItems[LOADING_BUT_LOAD], SW_SHOW);
+				}
+			}
+
 			if ((HWND)lp == hSubItems[LOADING_BUT_BACK])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
 					if (hItem != NULL)
@@ -1107,6 +1126,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[LOADING_BUT_LOAD])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Get selected save
 				int index = SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETCURSEL, 0, 0);
 
@@ -1225,6 +1245,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->age > MIN_AGE)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->age--;
 					SetWindowText(hSubItems[EDIT_AGE], to_string(nms->age).c_str());
 				}
@@ -1233,6 +1254,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->age < MAX_AGE)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->age++;
 					SetWindowText(hSubItems[EDIT_AGE], to_string(nms->age).c_str());
 				}
@@ -1242,6 +1264,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->strength > MIN_STRENGTH)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->strength--;
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_STRENGTH], to_string(nms->strength).c_str());
@@ -1252,6 +1275,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->unnassignedAttributes > 0)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->strength++;
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_STRENGTH], to_string(nms->strength).c_str());
@@ -1263,6 +1287,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->constitution > MIN_CONSTITUTION)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->constitution--;
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_CONSTITUTION], to_string(nms->constitution).c_str());
@@ -1273,6 +1298,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->unnassignedAttributes > 0)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->constitution++;
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_CONSTITUTION], to_string(nms->constitution).c_str());
@@ -1284,6 +1310,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->dexterity > MIN_DEXTERITY)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->dexterity--;
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_DEXTERITY], to_string(nms->dexterity).c_str());
@@ -1294,6 +1321,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->unnassignedAttributes > 0)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->dexterity++;
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_DEXTERITY], to_string(nms->dexterity).c_str());
@@ -1305,6 +1333,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->intelligence > MIN_INTELLIGENCE)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->intelligence--;
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_INTELLIGENCE], to_string(nms->intelligence).c_str());
@@ -1315,6 +1344,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->unnassignedAttributes > 0)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->intelligence++;
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_INTELLIGENCE], to_string(nms->intelligence).c_str());
@@ -1326,6 +1356,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->wisdom > MIN_WISDOM)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->wisdom--;
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_WISDOM], to_string(nms->wisdom).c_str());
@@ -1336,6 +1367,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->unnassignedAttributes > 0)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->wisdom++;
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_WISDOM], to_string(nms->wisdom).c_str());
@@ -1347,6 +1379,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->charisma > MIN_CHARISMA)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->charisma--;
 					nms->unnassignedAttributes++;
 					SetWindowText(hSubItems[EDIT_CHARISMA], to_string(nms->charisma).c_str());
@@ -1357,6 +1390,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (nms->unnassignedAttributes > 0)
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					nms->charisma++;
 					nms->unnassignedAttributes--;
 					SetWindowText(hSubItems[EDIT_CHARISMA], to_string(nms->charisma).c_str());
@@ -1368,6 +1402,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Continue - choosing equipment
 			if ((HWND)lp == hSubItems[NEW_GAME_BUT_NEXT])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding previous windows
 				for (HWND hItem : hSubItems)
 					ShowWindow(hItem, SW_HIDE);
@@ -1484,6 +1519,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Return to main menu
 			if ((HWND)lp == hSubItems[NEW_GAME_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				nms.reset();
 
 				// Destroying all buttons
@@ -1509,48 +1545,55 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Set 1
 			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_SET1])
 			{
-				int n = selectedSet;
-				selectedSet = EQUIPMENT_BUT_SET1;
+				int n = selected;
+				selected = EQUIPMENT_BUT_SET1;
+				if (n != selected)
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				if (n != -1)
 				{
 					SetWindowText(hSubMenuItems[n], l.getMessage(Localized::SELECT).c_str());
 					updateWindow(hSubMenuItems[n]);
 				}
-				SetWindowText(hSubMenuItems[selectedSet], l.getMessage(Localized::SELECTED).c_str());
-				UpdateWindow(hSubMenuItems[selectedSet]);
+				SetWindowText(hSubMenuItems[selected], l.getMessage(Localized::SELECTED).c_str());
+				UpdateWindow(hSubMenuItems[selected]);
 			}
 
 			// Set 2
 			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_SET2])
 			{
-				int n = selectedSet;
-				selectedSet = EQUIPMENT_BUT_SET2;
+				int n = selected;
+				selected = EQUIPMENT_BUT_SET2;
+				if (n != selected)
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				if (n != -1)
 				{
 					SetWindowText(hSubMenuItems[n], l.getMessage(Localized::SELECT).c_str());
 					updateWindow(hSubMenuItems[n]);
 				}
-				SetWindowText(hSubMenuItems[selectedSet], l.getMessage(Localized::SELECTED).c_str());
-				UpdateWindow(hSubMenuItems[selectedSet]);
+				SetWindowText(hSubMenuItems[selected], l.getMessage(Localized::SELECTED).c_str());
+				UpdateWindow(hSubMenuItems[selected]);
 			}
 
 			// Set 3
 			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_SET3])
 			{
-				int n = selectedSet;
-				selectedSet = EQUIPMENT_BUT_SET3;
+				int n = selected;
+				selected = EQUIPMENT_BUT_SET3;
+				if (n != selected)
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				if (n != -1)
 				{
 					SetWindowText(hSubMenuItems[n], l.getMessage(Localized::SELECT).c_str());
 					updateWindow(hSubMenuItems[n]);
 				}
-				SetWindowText(hSubMenuItems[selectedSet], l.getMessage(Localized::SELECTED).c_str());
-				UpdateWindow(hSubMenuItems[selectedSet]);
+				SetWindowText(hSubMenuItems[selected], l.getMessage(Localized::SELECTED).c_str());
+				UpdateWindow(hSubMenuItems[selected]);
 			}
 
 			// Entering game
-			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_NEXT] && selectedSet != -1)
+			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_NEXT] && selected != -1)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Player creation
 				if (SendMessage(hSubItems[EDIT_NAME], WM_GETTEXTLENGTH, 0, 0) > 0)
 					SendMessage(hSubItems[EDIT_NAME], WM_GETTEXT, 256, (LPARAM)str);
@@ -1573,9 +1616,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 							BASIC_HP,
 							BASIC_HP,
 							make_unique<Inventory>(),
-							move(se[selectedSet - EQUIPMENT_BUT_SET1]->rightHand),
-							move(se[selectedSet - EQUIPMENT_BUT_SET1]->leftHand),
-							move(se[selectedSet - EQUIPMENT_BUT_SET1]->armour)
+							move(se[selected - EQUIPMENT_BUT_SET1]->rightHand),
+							move(se[selected - EQUIPMENT_BUT_SET1]->leftHand),
+							move(se[selected - EQUIPMENT_BUT_SET1]->armour)
 						),
 						Leveling(
 							MIN_LEVEL,
@@ -1674,14 +1717,16 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
-			else if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_NEXT] && selectedSet == -1)
+			else if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_NEXT] && selected == -1)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				MessageBox(hWnd, l.getMessage(Localized::SELECT_EQUIPMENT).c_str(), l.getMessage(Localized::EQUIPMENT_UNSELECTED).c_str(), MB_OK);
 			}
 
 			// Back to character creation
 			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubMenuItems)
 					if (hItem != NULL)
@@ -1692,7 +1737,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND hItem : hSubItems)
 					ShowWindow(hItem, SW_SHOW);
 
-				selectedSet = -1;
+				selected = -1;
 
 				game.setBackground(Game::Background::MAIN_MENU_NEW_GAME);
 
@@ -1706,18 +1751,24 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_SOUND])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// TODO
 			}
 
 			if (HIWORD(wp) == CBN_SELCHANGE)
 			{
-				selectedLanguage = (Language)SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_GETCURSEL, 0, 0);
-				changedSettings = true;
-				ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_SHOW);
+				if (selectedLanguage != (Language)SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_GETCURSEL, 0, 0))
+				{
+					selectedLanguage != (Language)SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_GETCURSEL, 0, 0);
+					changedSettings = true;
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
+					ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_SHOW);
+				}
 			}
 
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_APPLY_CHANGES])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Update language
 				l.setLanguage(selectedLanguage);
 				SetWindowText(hItems[BUT_CONTINUE], l.getMessage(Localized::CONTINUE_GAME).c_str());
@@ -1741,6 +1792,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				changedSettings = false;
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
@@ -1764,6 +1816,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hSubItems[SPECIALS_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
 					if (hItem != NULL)
@@ -1939,7 +1992,7 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 					}
 				}
 
-				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET1] && selectedSet != -1 && selectedSet == EQUIPMENT_BUT_SET1)
+				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET1] && selected != -1 && selected == EQUIPMENT_BUT_SET1)
 				{
 					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
 					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
@@ -1947,7 +2000,7 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 					return true;
 				}
 
-				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET2] && selectedSet != -1 && selectedSet == EQUIPMENT_BUT_SET2)
+				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET2] && selected != -1 && selected == EQUIPMENT_BUT_SET2)
 				{
 					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
 					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
@@ -1955,7 +2008,7 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 					return true;
 				}
 
-				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET3] && selectedSet != -1 && selectedSet == EQUIPMENT_BUT_SET3)
+				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET3] && selected != -1 && selected == EQUIPMENT_BUT_SET3)
 				{
 					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
 					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
