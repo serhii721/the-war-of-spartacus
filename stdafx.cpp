@@ -659,10 +659,12 @@ void playSound(SoundEnum soundEnum)
 	case SoundEnum::SOUND_FIGHT_BLOCKED: path = DIRECTORY + "fightBlock" + FORMAT; break;
 	case SoundEnum::SOUND_FIGHT_CRIT: path = DIRECTORY + "fightCrit" + FORMAT; break;
 	case SoundEnum::SOUND_FIGHT_COUNTERATTACKED: path = DIRECTORY + "fightCounterattack" + FORMAT; break;
+	case SoundEnum::SOUND_GOLD: path = DIRECTORY + "gold" + FORMAT; break;
+	case SoundEnum::SOUND_LEVEL_UP: path = DIRECTORY + "levelUp" + FORMAT; break;
 	}
 
 	// 2. Play selected sound
-	PlaySound(path.c_str(), 0, SND_ASYNC);
+	PlaySound(path.c_str(), 0, SND_ASYNC | SND_NOSTOP);
 
 	// TODO: remake function using MCI
 	// 2. Compose full command string
@@ -704,7 +706,6 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_CREATE:
-
 		// Setting the random seed
 		srand((unsigned)time(0));
 

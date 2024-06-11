@@ -546,15 +546,20 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(fame) + " " + l.getMessage(Localized::FAME_GENITIVE) + "\r\n\r\n" +
 		l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(experience) + " " + l.getMessage(Localized::EXPERIENCE_GENITIVE) +
 		" (" + to_string(rPlayer.getExperience()) + " / " + to_string(rPlayer.calculateExperienceForOneLevel(rPlayer.getLevel() + 1)) + ")\r\n\r\n";
-	// Level up
-	if (rPlayer.getLevel() > playerLevel)
-		logStr += l.getMessage(Localized::LEVELED_UP) + " " + to_string(rPlayer.getLevel()) +
-		" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES_GENITIVE) + ")\r\n\r\n";
 	// Gold
 	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(gold) + " " + l.getMessage(Localized::GOLD_GENITIVE) + "\r\n\r\n";
+	playSound(SoundEnum::SOUND_GOLD);
 	// Loot
 	if (gainedLoot)
 		logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + itemStr + "\r\n\r\n";
+	// Level up
+	if (rPlayer.getLevel() > playerLevel)
+	{
+		Sleep(600);
+		logStr += l.getMessage(Localized::LEVELED_UP) + " " + to_string(rPlayer.getLevel()) +
+			" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES_GENITIVE) + ")\r\n\r\n";
+		playSound(SoundEnum::SOUND_LEVEL_UP);
+	}
 
 	return status;
 }

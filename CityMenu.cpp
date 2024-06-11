@@ -1568,7 +1568,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[ARENA_BUT_TRAIN])
 			{
-				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				Player& rPlayer = game.getPlayer();
 				if (!rPlayer.getExhaustion())
 				{
@@ -1581,9 +1580,12 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					logStr += l.getMessage(Localized::TRAIN_GAIN) + " " + to_string(experience) + " " + l.getMessage(Localized::EXPERIENCE_GENITIVE) +
 						" (" + to_string(rPlayer.getExperience()) + " / " + to_string(rPlayer.calculateExperienceForOneLevel(rPlayer.getLevel() + 1)) + ")\r\n\r\n";
 					if (level < rPlayer.getLevel())
+					{
 						logStr += l.getMessage(Localized::LEVELED_UP) + " " +
-						to_string(rPlayer.getLevel()) +
-						" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES_GENITIVE) + ")\r\n\r\n";
+							to_string(rPlayer.getLevel()) +
+							" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES_GENITIVE) + ")\r\n\r\n";
+						playSound(SoundEnum::SOUND_LEVEL_UP);
+					}
 
 					rPlayer.setExhaustion(true);
 				}
@@ -1591,6 +1593,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					logStr += l.getMessage(Localized::TRAIN_NEED_REST) + "\r\n\r\n";
 				SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
 				SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 			}
 
 			if ((HWND)lp == hSubItems[ARENA_BUT_BACK] || LOWORD(wp) == IDCANCEL)
@@ -1772,7 +1775,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[MARKET_BUT_BUY])
 			{
-				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				playSound(SoundEnum::SOUND_GOLD);
 				// Get inventories
 				Inventory& rPlayerInventory = *game.getPlayer().getInventory();
 				if (rPlayerInventory.size() < MAX_INVENTORY_SIZE)
@@ -1823,7 +1826,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[MARKET_BUT_SELL])
 			{
-				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				playSound(SoundEnum::SOUND_GOLD);
 				// Get inventories
 				Inventory& rPlayerInventory = *game.getPlayer().getInventory();
 				Inventory& rTraderInventory = *game.getWorldMap().getCurrentCity().getTrader().getInventory();
