@@ -1202,7 +1202,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	RECT windowRect;
 	GetWindowRect(hWnd, &windowRect);
 	int i, j;
-	static bool isExhausted = false;
 
 	switch (m)
 	{
@@ -1213,6 +1212,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hItems[BUT_ARENA])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding all windows except log
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
@@ -1250,10 +1250,12 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_QUEST])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// TODO
 			}
 			if ((HWND)lp == hItems[BUT_MARKET])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding all windows
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
@@ -1285,6 +1287,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_CHARACTER])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding all windows
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
@@ -1330,6 +1333,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				Player& rPlayer = game.getPlayer();
 				if (rPlayer.getHP() < rPlayer.getFullHP())
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					int regen = BASIC_REGEN * rPlayer.getFullHP() / 100;
 
 					// Heal player
@@ -1368,7 +1372,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 							}
 						}
 					}
-					isExhausted = false; // TODO: move into Player
+					rPlayer.setExhaustion(false);
 				}
 				else
 					logStr += l.getMessage(Localized::REST_FULL) + "\r\n\r\n";
@@ -1377,6 +1381,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_MAP])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubMenuItems)
 					if (hItem != NULL)
@@ -1393,6 +1398,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_MENU] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				game.getMenuManager().setMenu(new GameMenu(hWnd));
 				game.setBackground(Game::Background::GAME_MENU);
 				updateWindow(hWnd);
@@ -1405,6 +1411,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hSubItems[ARENA_BUT_FIGHT])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding all windows
 				ShowWindow(hItems[EDIT_MESSAGES_LOG], SW_HIDE);
 				for (HWND hItem : hSubItems)
@@ -1555,14 +1562,16 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hSubItems[ARENA_BUT_BET])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// TODO
 			}
 
 			if ((HWND)lp == hSubItems[ARENA_BUT_TRAIN])
 			{
-				if (!isExhausted)
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				Player& rPlayer = game.getPlayer();
+				if (!rPlayer.getExhaustion())
 				{
-					Player& rPlayer = game.getPlayer();
 					// Experience is random number between 30 to 1/3 of experience needed for current lvlup
 					int level = rPlayer.getLevel();
 					int experience = rand() % (rPlayer.calculateExperienceForOneLevel(level + 1) / 3) + 30;
@@ -1576,7 +1585,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						to_string(rPlayer.getLevel()) +
 						" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES_GENITIVE) + ")\r\n\r\n";
 
-					isExhausted = true;
+					rPlayer.setExhaustion(true);
 				}
 				else
 					logStr += l.getMessage(Localized::TRAIN_NEED_REST) + "\r\n\r\n";
@@ -1586,6 +1595,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[ARENA_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
 					if (hItem != NULL)
@@ -1618,6 +1628,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Starting fight
 			if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_FIGHT])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				if (selectedOpponent != -1 && game.getPlayer().getHP() > 30)
 				{
 					// Destroying all buttons
@@ -1668,6 +1679,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Return
 			if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubMenuItems)
 					if (hItem != NULL)
@@ -1700,7 +1712,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if ((HWND)lp == hSubItems[i])
 				{
-
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					if (selectedItem != -1)
 					{
 						int id = selectedItem;
@@ -1732,6 +1744,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if ((HWND)lp == hSubItems[i])
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					if (selectedItem != -1)
 					{
 						int id = selectedItem;
@@ -1759,6 +1772,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[MARKET_BUT_BUY])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Get inventories
 				Inventory& rPlayerInventory = *game.getPlayer().getInventory();
 				if (rPlayerInventory.size() < MAX_INVENTORY_SIZE)
@@ -1773,7 +1787,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Check if player has enough gold
 					int playerGold = rPlayerInventory.getItemQuantity(0); // 0 is ID for gold
 
-					if (cost < playerGold)
+					if (cost <= playerGold)
 					{
 						// Get item ID
 						int id = rItem->getID();
@@ -1809,6 +1823,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[MARKET_BUT_SELL])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Get inventories
 				Inventory& rPlayerInventory = *game.getPlayer().getInventory();
 				Inventory& rTraderInventory = *game.getWorldMap().getCurrentCity().getTrader().getInventory();
@@ -1821,7 +1836,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Check if trader has enough gold
 				int traderGold = rTraderInventory.getItemQuantity(0); // 0 is ID for gold
 
-				if (cost < traderGold)
+				if (cost <= traderGold)
 				{
 					// Remove item
 					rPlayerInventory.removeItem(rItem->getID());
@@ -1849,6 +1864,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Back button
 			if ((HWND)lp == hSubItems[MARKET_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
 					if (hItem != NULL)
@@ -1880,6 +1896,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Strength
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_STRENGTH_PLUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes--;
 				pas.strength++;
 				pas.updateMaxHP();
@@ -1955,6 +1972,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Constitution
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_CONSTITUTION_PLUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes--;
 				pas.constitution++;
 				pas.updateMaxHP();
@@ -2009,6 +2027,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Dexterity
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_DEXTERITY_PLUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes--;
 				pas.dexterity++;
 				average += pas.calculateAverage();
@@ -2081,6 +2100,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Intelligence
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INTELLIGENCE_PLUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes--;
 				pas.intelligence++;
 				average += pas.calculateAverage();
@@ -2132,6 +2152,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Wisdom
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_WISDOM_PLUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes--;
 				pas.wisdom++;
 				average += pas.calculateAverage();
@@ -2183,6 +2204,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Charisma
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_CHARISMA_PLUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes--;
 				pas.charisma++;
 				average += pas.calculateAverage();
@@ -2236,6 +2258,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Strength
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_STRENGTH_MINUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes++;
 				pas.strength--;
 				pas.updateMaxHP();
@@ -2321,6 +2344,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Constitution
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_CONSTITUTION_MINUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes++;
 				pas.constitution--;
 				pas.updateMaxHP();
@@ -2385,6 +2409,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Dexterity
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_DEXTERITY_MINUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes++;
 				pas.dexterity--;
 				average += pas.calculateAverage();
@@ -2467,6 +2492,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Intelligence
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INTELLIGENCE_MINUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes++;
 				pas.intelligence--;
 				average += pas.calculateAverage();
@@ -2528,6 +2554,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Wisdom
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_WISDOM_MINUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes++;
 				pas.wisdom--;
 				average += pas.calculateAverage();
@@ -2589,6 +2616,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Charisma
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_CHARISMA_MINUS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				pas.unnassignedAttributes++;
 				pas.charisma--;
 				average += pas.calculateAverage();
@@ -2651,6 +2679,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Reset changes
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_RESET_CHANGES])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Update stats
 				pas.unnassignedAttributes = rPlayer.getUnnassignedAttributes();
 				pas.strength = rPlayer.getStrength();
@@ -2745,6 +2774,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Apply changes
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_APPLY_CHANGES])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Update player stats
 				rPlayer.setUnnassignedAttributes(pas.unnassignedAttributes);
 				rPlayer.setStrength(pas.strength);
@@ -2771,6 +2801,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if ((HWND)lp == hSubItems[i])
 				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					selectedItem = i;
 					manageInventory(hWnd, i);
 					break;
@@ -2780,6 +2811,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Unequip item
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Adjust item index for button index
 				selectedItem -= CHARACTER_BUT_RIGHT_HAND;
 				/*
@@ -2837,6 +2869,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Equip item
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Adjust item index for button index
 				selectedItem -= CHARACTER_BUT_INVENTORY_ITEM1;
 
@@ -2868,6 +2901,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Inspect item
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE);
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE);
@@ -2920,6 +2954,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Destroy item
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Adjust item index for button index
 				selectedItem -= CHARACTER_BUT_INVENTORY_ITEM1;
 
@@ -2950,6 +2985,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			// Back button
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
 					if (hItem != NULL)
@@ -3330,7 +3366,10 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 		MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
 		InvalidateRect(hWnd, &rect, 1);
 	}
+	if (selectedOpponent == n)
+		return;
 
+	playSound(SoundEnum::SOUND_BUTTON_CLICK);
 	selectedOpponent = n;
 
 	GetWindowRect(hSubMenuItems[selectedOpponent], &rect);

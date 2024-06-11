@@ -103,7 +103,7 @@ unique_ptr<Weapon> generateWeapon(int tier_ = MIN_WEAPON_TIER, Weapon::WeaponTyp
 unique_ptr<Armour> generateArmour(int tier_ = MIN_ARMOUR_TIER, Armour::ArmourType = Armour::NUMBER);
 
 // __________ Sound __________
-//void playSound(SoundEnum);
+void playSound(SoundEnum);
 
 // __________ Game process __________
 LRESULT CALLBACK WFunc(HWND, UINT, WPARAM, LPARAM);

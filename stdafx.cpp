@@ -642,46 +642,56 @@ unique_ptr<Armour> generateArmour(int tier, Armour::ArmourType ttype)
 	);
 }
 
-//void playSound(SoundEnum soundEnum)
-//{
-//	 1. Open file
-//	 Compose path to sound based on enum
-//	const string DIRECTORY = "Data/Sound/";
-//	const string FORMAT = ".mp3";
-//	string path("");
-//
-//	switch (soundEnum)
-//	{
-//	default:case SoundEnum::SOUND_BUTTON_CLICK: path = DIRECTORY + "buttonClick" + FORMAT; break;
-//	}
-//
-//	 Compose full command string
-//	buf = "open \"" + path + "\" type mpegvideo alias sound";
-//	 Create command string
-//	const char* command = buf.c_str();
-//	MCIERROR error = mciSendString(command, NULL, 0, NULL);
-//
-//	 TODO: handle error
-//	if (error)
-//	{
-//		char errorText[128];
-//		mciGetErrorString(error, errorText, sizeof(errorText));
-//		return;
-//	}
-//
-//	 2. Play sound
-//	command = "play sound";
-//
-//	error = mciSendString(command, NULL, 0, NULL);
-//
-//	 TODO: jandle error
-//	if (error)
-//	{
-//		char errorText[128];
-//		mciGetErrorString(error, errorText, sizeof(errorText));
-//		return;
-//	}
-//}
+// __________ Sound __________
+void playSound(SoundEnum soundEnum)
+{
+	// 1. Open file
+	// Compose path to sound based on enum
+	const string DIRECTORY = "Data/Sound/";
+	const string FORMAT = ".wav";
+	string path("");
+
+	switch (soundEnum)
+	{
+	default:case SoundEnum::SOUND_BUTTON_CLICK: path = DIRECTORY + "buttonClick" + FORMAT; break;
+	case SoundEnum::SOUND_FIGHT_HIT: path = DIRECTORY + "fightHit" + FORMAT; break;
+	case SoundEnum::SOUND_FIGHT_DODGED: path = DIRECTORY + "fightDodge" + FORMAT; break;
+	case SoundEnum::SOUND_FIGHT_BLOCKED: path = DIRECTORY + "fightBlock" + FORMAT; break;
+	case SoundEnum::SOUND_FIGHT_CRIT: path = DIRECTORY + "fightCrit" + FORMAT; break;
+	case SoundEnum::SOUND_FIGHT_COUNTERATTACKED: path = DIRECTORY + "fightCounterattack" + FORMAT; break;
+	}
+
+	// 2. Play selected sound
+	PlaySound(path.c_str(), 0, SND_ASYNC);
+
+	// TODO: remake function using MCI
+	// 2. Compose full command string
+	//buf = "open \"" + path + "\" type mpegvideo alias sound";
+	//// Create command string
+	//const char* command = buf.c_str();
+	//MCIERROR error = mciSendString(command, NULL, 0, NULL);
+
+	//// TODO: handle error
+	//if (error)
+	//{
+	//	char errorText[128];
+	//	mciGetErrorString(error, errorText, sizeof(errorText));
+	//	return;
+	//}
+
+	//// 3. Play selected sound
+	//command = "play sound";
+
+	//error = mciSendString(command, NULL, 0, NULL);
+
+	//// TODO: jandle error
+	//if (error)
+	//{
+	//	char errorText[128];
+	//	mciGetErrorString(error, errorText, sizeof(errorText));
+	//	return;
+	//}
+}
 
 // __________ Game process __________
 

@@ -12,14 +12,16 @@ GameMenu::GameMenu() :
 	hItems(),
 	hSubItems(),
 	hBackgroundImage(NULL),
-	hBackgroundBrush(NULL)
+	hBackgroundBrush(NULL),
+	selected(-1)
 { }
 
 GameMenu::GameMenu(HWND hWnd) :
 	hItems(Item::ITEM_NUMBER),
 	hSubItems(),
 	hBackgroundImage(NULL),
-	hBackgroundBrush(NULL)
+	hBackgroundBrush(NULL),
+	selected(-1)
 {
 	char className[256] = "BUTTON";
 	hItems[BUT_RESUME] = CreateWindow(className, l.getMessage(Localized::RESUME_GAME).c_str(),
@@ -94,6 +96,8 @@ GameMenu::GameMenu(const GameMenu& GM) : hSubItems()
 	}
 	else
 		hBackgroundBrush = NULL;
+
+	selected = GM.selected;
 }
 
 GameMenu& GameMenu::operator=(const GameMenu& GM)
@@ -161,6 +165,8 @@ GameMenu& GameMenu::operator=(const GameMenu& GM)
 	}
 	else
 		hBackgroundBrush = NULL;
+
+	selected = GM.selected;
 
 	return *this;
 }
@@ -296,6 +302,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hItems[BUT_RESUME] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
 				game.setBackground(Game::Background::CITY_MENU);
 				updateWindow(hWnd);
@@ -303,12 +310,14 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_SAVE])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				game.saveToFile();
 				// TODO: Stylize
 				MessageBox(hWnd, l.getMessage(Localized::SAVE_SUCCESFUL).c_str(), "", MB_OK);
 			}
 			if ((HWND)lp == hItems[BUT_LOAD])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding all buttons
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
@@ -328,9 +337,9 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems.resize(LOADING_ITEM_NUMBER);
 
 				hSubItems[LOADING_STAT_LOAD] = CreateWindow("STATIC", l.getMessage(Localized::CHOOSE_SAVE).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[LOADING_BUT_LOAD] = CreateWindow("BUTTON", l.getMessage(Localized::LOAD_GAME).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[LOADING_BUT_LOAD] = CreateWindow("BUTTON", l.getMessage(Localized::LOAD_GAME).c_str(), WS_CHILD | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[LOADING_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[LOADING_LISTBOX_SAVES] = CreateWindow("LISTBOX", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[LOADING_LISTBOX_SAVES] = CreateWindow("LISTBOX", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_NOTIFY | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				// Add strings with saves in reverse order to display chronologicaly from newest to oldest
 				for (int i = folderNames.size() - 1; i >= 0; i--)
@@ -342,6 +351,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_SETTINGS])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Hiding all buttons
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
@@ -367,6 +377,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hItems[BUT_EXIT_MENU])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				game.getMenuManager().setMenu(new MainMenu(hWnd));
 				game.setBackground(Game::Background::MAIN_MENU);
 				updateWindow(hWnd);
@@ -377,8 +388,19 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 		case Game::Background::GAME_MENU_LOAD:
 		{
+			if (HIWORD(wp) == LBN_SELCHANGE)
+			{
+				if (selected != SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETCURSEL, 0, 0))
+				{
+					selected = SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETCURSEL, 0, 0);
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
+					ShowWindow(hSubItems[LOADING_BUT_LOAD], SW_SHOW);
+				}
+			}
+
 			if ((HWND)lp == hSubItems[LOADING_BUT_BACK])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
 					if (hItem != NULL)
@@ -397,6 +419,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[LOADING_BUT_LOAD])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Get selected save
 				int index = SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETCURSEL, 0, 0);
 
@@ -440,11 +463,13 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_SOUND])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// TODO
 			}
 
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
 					if (hItem != NULL)

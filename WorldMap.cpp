@@ -353,6 +353,7 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			}
 			if ((HWND)lp == hItems[BUT_TRAVEL_LIST])
 			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				if (currentCity != selectedCity)
 				{
 					currentCity = selectedCity;
@@ -438,6 +439,7 @@ bool WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 
 void WorldMap::selectCity(HWND hWnd, Item city)
 {
+	playSound(SoundEnum::SOUND_BUTTON_CLICK);
 	RECT rect;
 
 	selectedCity = city;

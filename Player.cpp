@@ -9,7 +9,8 @@ Player::Player() :
 	Fighter(),
 	Leveling(),
 	name(l.getMessage(Localized::GLADIATOR)),
-	portraitIndex(1)
+	portraitIndex(1),
+	isExhausted(false)
 { }
 
 Player::Player(
@@ -20,10 +21,11 @@ Player::Player(
 	Fighter(F),
 	Leveling(L),
 	name(rName),
-	portraitIndex(1)
+	portraitIndex(1),
+	isExhausted(false)
 { }
 
-Player::Player(const Player& P) : Fighter(P), Leveling(P), name(P.name), portraitIndex(P.portraitIndex) { }
+Player::Player(const Player& P) : Fighter(P), Leveling(P), name(P.name), portraitIndex(P.portraitIndex), isExhausted(P.isExhausted) { }
 
 Player& Player::operator=(const Player& P)
 {
@@ -34,6 +36,7 @@ Player& Player::operator=(const Player& P)
 
 	name = P.name;
 	portraitIndex = P.portraitIndex;
+	isExhausted = P.isExhausted;
 
 	return *this;
 }
@@ -45,9 +48,19 @@ void Player::setName(const string& rName) { name = rName; }
 
 void Player::setPortaitIndex(int i) { portraitIndex = i; }
 
+void Player::setExhaustion(bool exhaustion)
+{
+	isExhausted = exhaustion;
+}
+
 const string& Player::getName() const { return name; }
 
 const int Player::getPortaitIndex() const { return portraitIndex; }
+
+const bool Player::getExhaustion() const
+{
+	return isExhausted;
+}
 
 void Player::saveToFile(const string& directory)
 {
@@ -76,7 +89,7 @@ void Player::saveToFile(const string& directory)
 		<< age << " " << fame << " ";
 
 	// Fighter
-	fout << hp << " " << fullHP << " " << portraitIndex << " ";
+	fout << hp << " " << fullHP << " " << portraitIndex << " " << isExhausted << " ";
 
 	// Inventory and equipment stored as pointers so they are saved in separate files
 	// Main file contains information whether there is equipment
@@ -162,7 +175,7 @@ void Player::loadFromFile(const string& directory)
 		>> age >> fame;
 
 	// Fighter
-	fin >> hp >> fullHP >> portraitIndex;
+	fin >> hp >> fullHP >> portraitIndex >> isExhausted;
 
 	int hasInventory, hasRightHand, hasLeftHand, hasArmour;
 	// Inventory

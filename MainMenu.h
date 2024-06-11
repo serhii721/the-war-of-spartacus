@@ -17,7 +17,7 @@ private:
 
 	Language selectedLanguage;
 	bool changedSettings;
-	int selectedSet;
+	int selected;
 public:
 	enum MenuItem
 	{
