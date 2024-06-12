@@ -8,11 +8,11 @@ extern HINSTANCE hInst;
 extern Localization l;
 extern Game game;
 
-StoryScreen::StoryScreen() : hItems(), hBackgroundImage(NULL), hBackgroundBrush(NULL), currentScreen(SCREEN_NUMBER), isChoiceRequired(false) { }
+StoryScreen::StoryScreen() : hItems(), hBackgroundImage(NULL), hBackgroundBrush(NULL), currentScreen(SCREEN_NUMBER), isChoiceRequired(false), currentSubScreen(-1) { }
 
-StoryScreen::StoryScreen(HWND hWnd) : hItems(), hBackgroundImage(NULL), hBackgroundBrush(NULL), currentScreen(SCREEN_NUMBER), isChoiceRequired(false) { }
+StoryScreen::StoryScreen(HWND hWnd) : hItems(), hBackgroundImage(NULL), hBackgroundBrush(NULL), currentScreen(SCREEN_NUMBER), isChoiceRequired(false), currentSubScreen(-1) { }
 
-StoryScreen::StoryScreen(const StoryScreen& SC) : isChoiceRequired(false)
+StoryScreen::StoryScreen(const StoryScreen& SC) : isChoiceRequired(SC.isChoiceRequired), currentSubScreen(SC.currentSubScreen)
 {
 	// Resizing items' vector
 	int sz = SC.hItems.size();
@@ -130,6 +130,7 @@ StoryScreen& StoryScreen::operator=(const StoryScreen& SC)
 		hBackgroundBrush = NULL;
 
 	isChoiceRequired = SC.isChoiceRequired;
+	currentSubScreen = SC.currentSubScreen;
 
 	return *this;
 }
@@ -192,7 +193,7 @@ void StoryScreen::resizeMenu(int cx, int cy)
 
 	case STOLEN_MONEY:
 	{
-		const int ITEM_HEIGHT = 250, ITEM_WIDTH = 500, BUTTON_HEIGHT = 30, BUTTON_WIDTH = 150, DISTANCE = 10;
+		const int ITEM_HEIGHT = 280, ITEM_WIDTH = 500, BUTTON_HEIGHT = 30, BUTTON_WIDTH = 150, DISTANCE = 10;
 		// Static windows
 		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_1], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_2], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
@@ -203,6 +204,36 @@ void StoryScreen::resizeMenu(int cx, int cy)
 		// Buttons
 		MoveWindow(hItems[STOLEN_MONEY_SCREEN_BUT_ESCAPE], cx - BUTTON_WIDTH - DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
 		MoveWindow(hItems[STOLEN_MONEY_SCREEN_BUT_STAY], cx + DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+	}
+	break;
+
+	case CENTURION_OFFER:
+	{
+		const int ITEM_HEIGHT = 350, ITEM_WIDTH = 500, BUTTON_HEIGHT = 30, BUTTON_WIDTH = 200, DISTANCE = 10;
+		// Static windows
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_1], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_2], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_ACCEPT], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_DECLINE], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+
+		// Buttons
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_BUT_ACCEPT], cx - BUTTON_WIDTH - DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_BUT_DECLINE], cx + DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+	}
+	break;
+
+	case GAINED_FREEDOM:
+	{
+		const int ITEM_HEIGHT = 350, ITEM_WIDTH = 500, BUTTON_HEIGHT = 35, BUTTON_WIDTH = 250, DISTANCE = 20;
+		// Static windows
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_1], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_2], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+
+		// Buttons
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_REBELS], cx - BUTTON_WIDTH - DISTANCE, cy + 250, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_LEGION], cx + DISTANCE, cy + 250, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
 	}
 	break;
 	}
@@ -236,6 +267,63 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Player stays as gladiator on arena
 				game.setProgressionStage(Game::Progression::STAYED_AFTER_GLADIATOR_OFFER);
 				currentSubScreen = STOLEN_MONEY_SCREEN_STAT_STAY;
+				isChoiceRequired = false;
+
+				for (HWND item : hItems)
+					ShowWindow(item, SW_HIDE);
+				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+			}
+		}
+		break;
+
+		case CENTURION_OFFER:
+		{
+			if ((HWND)lp == hItems[CENTURION_OFFER_SCREEN_BUT_ACCEPT])
+			{
+				// Player joins legion
+				game.setProgressionStage(Game::Progression::CHOSE_LEGION);
+				game.getPlayer().setFreedom(true);
+				currentSubScreen = CENTURION_OFFER_SCREEN_STAT_ACCEPT;
+				isChoiceRequired = false;
+
+				for (HWND item : hItems)
+					ShowWindow(item, SW_HIDE);
+				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+			}
+
+			if ((HWND)lp == hItems[CENTURION_OFFER_SCREEN_BUT_DECLINE])
+			{
+				// Player stays as gladiator on arena
+				game.setProgressionStage(Game::Progression::STAYED_AFTER_CENTURION_OFFER);
+				currentSubScreen = CENTURION_OFFER_SCREEN_STAT_DECLINE;
+				isChoiceRequired = false;
+
+				for (HWND item : hItems)
+					ShowWindow(item, SW_HIDE);
+				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+			}
+		}
+		break;
+
+		case GAINED_FREEDOM:
+		{
+			if ((HWND)lp == hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_REBELS])
+			{
+				// Player joins rebels
+				game.setProgressionStage(Game::Progression::CHOSE_REBELLION_AS_FREE);
+				currentSubScreen = GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS;
+				isChoiceRequired = false;
+
+				for (HWND item : hItems)
+					ShowWindow(item, SW_HIDE);
+				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+			}
+
+			if ((HWND)lp == hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_LEGION])
+			{
+				// Player joins legion
+				game.setProgressionStage(Game::Progression::CHOSE_LEGION_AS_FREE);
+				currentSubScreen = GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION;
 				isChoiceRequired = false;
 
 				for (HWND item : hItems)
@@ -318,6 +406,62 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				ShowWindow(hItems[STOLEN_MONEY_SCREEN_BUT_ESCAPE], SW_SHOW);
 				ShowWindow(hItems[STOLEN_MONEY_SCREEN_BUT_STAY], SW_SHOW);
+			}
+			updateWindow(hWnd);
+		}
+		break;
+
+		case CENTURION_OFFER:
+		{
+			if (!isChoiceRequired)
+			{
+				// Destroying all windows
+				for (HWND hItem : hItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hItems.clear();
+
+				game.setDisplayState(DisplayState::MENU);
+			}
+			else if (currentSubScreen < CENTURION_OFFER_SCREEN_STAT_2)
+			{
+				currentSubScreen++;
+				for (HWND item : hItems)
+					ShowWindow(item, SW_HIDE);
+				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[CENTURION_OFFER_SCREEN_BUT_ACCEPT], SW_SHOW);
+				ShowWindow(hItems[CENTURION_OFFER_SCREEN_BUT_DECLINE], SW_SHOW);
+			}
+			updateWindow(hWnd);
+		}
+		break;
+
+		case GAINED_FREEDOM:
+		{
+			if (!isChoiceRequired)
+			{
+				// Destroying all windows
+				for (HWND hItem : hItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hItems.clear();
+
+				game.setDisplayState(DisplayState::MENU);
+			}
+			else if (currentSubScreen < GAINED_FREEDOM_SCREEN_STAT_2)
+			{
+				currentSubScreen++;
+				for (HWND item : hItems)
+					ShowWindow(item, SW_HIDE);
+				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_REBELS], SW_SHOW);
+				ShowWindow(hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_LEGION], SW_SHOW);
 			}
 			updateWindow(hWnd);
 		}
@@ -455,6 +599,58 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 			}
 		}
 		break;
+
+		case CENTURION_OFFER:
+		{
+			for (int i = CENTURION_OFFER_SCREEN_STAT_1; i <= CENTURION_OFFER_SCREEN_STAT_DECLINE; i++)
+			{
+				if (item->hwndItem == hItems[i])
+				{
+					SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+					SetBkMode(hdc, TRANSPARENT);
+
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
+					// Text padding
+					RECT rect = item->rcItem;
+					int padding = 10;
+					rect.left += padding;
+					rect.top += padding;
+					rect.right -= padding;
+					rect.bottom -= padding;
+
+					DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_VCENTER | DT_LEFT | DT_WORDBREAK); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+					return true;
+				}
+			}
+		}
+		break;
+
+		case GAINED_FREEDOM:
+		{
+			for (int i = GAINED_FREEDOM_SCREEN_STAT_1; i <= GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION; i++)
+			{
+				if (item->hwndItem == hItems[i])
+				{
+					SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+					SetBkMode(hdc, TRANSPARENT);
+
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
+					// Text padding
+					RECT rect = item->rcItem;
+					int padding = 10;
+					rect.left += padding;
+					rect.top += padding;
+					rect.right -= padding;
+					rect.bottom -= padding;
+
+					DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_VCENTER | DT_LEFT | DT_WORDBREAK); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+					return true;
+				}
+			}
+		}
+		break;
 		}
 	}
 	break;
@@ -471,6 +667,9 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 		if (hItem != NULL)
 			DestroyWindow(hItem);
 	hItems.clear();
+
+	isChoiceRequired = false;
+	currentSubScreen = -1;
 
 	// Create new windows
 	switch (screen)
@@ -514,6 +713,38 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 
 		isChoiceRequired = true;
 		currentSubScreen = STOLEN_MONEY_SCREEN_STAT_1;
+	}
+	break;
+
+	case CENTURION_OFFER:
+	{
+		hItems.resize(CENTURION_OFFER_SCREEN_ITEM_NUMBER);
+
+		hItems[CENTURION_OFFER_SCREEN_STAT_1] = CreateWindow("STATIC", l.getMessage(Localized::STORY_CENTURION_OFFER_TEXT1).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[CENTURION_OFFER_SCREEN_STAT_2] = CreateWindow("STATIC", l.getMessage(Localized::STORY_CENTURION_OFFER_TEXT2).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[CENTURION_OFFER_SCREEN_STAT_ACCEPT] = CreateWindow("STATIC", l.getMessage(Localized::STORY_CENTURION_OFFER_ACCEPT).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[CENTURION_OFFER_SCREEN_STAT_DECLINE] = CreateWindow("STATIC", l.getMessage(Localized::STORY_CENTURION_OFFER_DECLINE).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[CENTURION_OFFER_SCREEN_BUT_ACCEPT] = CreateWindow("BUTTON", l.getMessage(Localized::ACCEPT_OFFER).c_str(), WS_CHILD | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[CENTURION_OFFER_SCREEN_BUT_DECLINE] = CreateWindow("BUTTON", l.getMessage(Localized::DECLINE_OFFER).c_str(), WS_CHILD | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+		isChoiceRequired = true;
+		currentSubScreen = CENTURION_OFFER_SCREEN_STAT_1;
+	}
+	break;
+
+	case GAINED_FREEDOM:
+	{
+		hItems.resize(CENTURION_OFFER_SCREEN_ITEM_NUMBER);
+
+		hItems[GAINED_FREEDOM_SCREEN_STAT_1] = CreateWindow("STATIC", l.getMessage(Localized::STORY_GAINED_FREEDOM_TEXT1).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[GAINED_FREEDOM_SCREEN_STAT_2] = CreateWindow("STATIC", l.getMessage(Localized::STORY_GAINED_FREEDOM_TEXT2).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS] = CreateWindow("STATIC", l.getMessage(Localized::STORY_GAINED_FREEDOM_CHOSE_REBELS).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION] = CreateWindow("STATIC", l.getMessage(Localized::STORY_GAINED_FREEDOM_CHOSE_LEGION).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_REBELS] = CreateWindow("BUTTON", l.getMessage(Localized::CHOOSE_REBELS).c_str(), WS_CHILD | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_LEGION] = CreateWindow("BUTTON", l.getMessage(Localized::CHOOSE_LEGION).c_str(), WS_CHILD | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+		isChoiceRequired = true;
+		currentSubScreen = GAINED_FREEDOM_SCREEN_STAT_1;
 	}
 	break;
 	}

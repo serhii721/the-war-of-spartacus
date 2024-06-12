@@ -283,7 +283,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	// 2. Text
 	switch (game.getBackground())
 	{
-	default:case Game::Background::CITY_MENU:
+	case Game::Background::CITY_MENU:
 	{
 		for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_SHOW);
@@ -824,11 +824,44 @@ void CityMenu::resizeMenu(int cx, int cy)
 		y = cy;
 		x = cx - BUT_WIDTH * 2;
 
-		for (i = ARENA_BUT_FIGHT; i < 4; i++)
+		for (i = ARENA_BUT_FIGHT; i < ARENA_ITEM_NUMBER; i++)
 		{
 			y += ITEM_HEIGHT + DISTANCE;
 			MoveWindow(hSubItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
 		}
+		MoveWindow(hItems[EDIT_MESSAGES_LOG], 830, 510, 500, 200, TRUE);
+	}
+	break;
+
+	case Game::Background::CITY_MENU_QUEST:
+	{
+		const int STAT_WIDTH = 125, EDIT_WIDTH = 40, BUT_WIDTH = 300, ITEM_HEIGHT = 60, DISTANCE = 15;
+		cy -= 3 * (ITEM_HEIGHT + DISTANCE);
+		y = cy;
+		x = cx - BUT_WIDTH * 2;
+
+		for (i = QUEST_BUT_LANISTA; i < QUEST_ITEM_NUMBER; i++)
+		{
+			y += ITEM_HEIGHT + DISTANCE;
+			MoveWindow(hSubItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
+		}
+		MoveWindow(hItems[EDIT_MESSAGES_LOG], 830, 510, 500, 200, TRUE);
+	}
+	break;
+
+	case Game::Background::CITY_MENU_LANISTA:
+	{
+		const int STAT_WIDTH = 125, EDIT_WIDTH = 40, BUT_WIDTH = 300, ITEM_HEIGHT = 60, DISTANCE = 15;
+		cy -= 3 * (ITEM_HEIGHT + DISTANCE);
+		y = cy;
+		x = cx - BUT_WIDTH * 2;
+
+		for (i = LANISTA_BUT_BUY_FREEDOM; i < LANISTA_ITEM_NUMBER; i++)
+		{
+			y += ITEM_HEIGHT + DISTANCE;
+			MoveWindow(hSubMenuItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
+		}
+		MoveWindow(hItems[EDIT_MESSAGES_LOG], 830, 510, 500, 200, TRUE);
 	}
 	break;
 
@@ -933,12 +966,6 @@ void CityMenu::resizeMenu(int cx, int cy)
 	break;
 
 	case Game::Background::CITY_MENU_ARENA_BET:
-	{
-		// TODO
-	}
-	break;
-
-	case Game::Background::CITY_MENU_QUEST:
 	{
 		// TODO
 	}
@@ -1251,7 +1278,40 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hItems[BUT_QUEST])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
-				// TODO
+				// Hiding all windows except log
+				for (HWND hItem : hItems)
+					ShowWindow(hItem, SW_HIDE);
+				ShowWindow(hItems[EDIT_MESSAGES_LOG], SW_SHOW);
+
+				// Erasing previous sub menu items
+				for (HWND hItem : hSubItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubItems.clear();
+
+				// Creating new sub menu items
+				hSubItems.resize(QUEST_ITEM_NUMBER);
+
+				hSubItems[QUEST_BUT_LANISTA] = CreateWindow("BUTTON", l.getMessage(Localized::LANISTA).c_str(),
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+					0, 0, 0, 0, hWnd, 0, hInst, 0
+				);
+				hSubItems[QUEST_BUT_TAVERN] = CreateWindow("BUTTON", l.getMessage(Localized::TAVERN).c_str(),
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+					0, 0, 0, 0, hWnd, 0, hInst, 0
+				);
+				hSubItems[QUEST_BUT_TALK_TO_PEOPLE] = CreateWindow("BUTTON", l.getMessage(Localized::TALK_TO_PEOPLE).c_str(),
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+					0, 0, 0, 0, hWnd, 0, hInst, 0
+				);
+				hSubItems[ARENA_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(),
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+					0, 0, 0, 0, hWnd, 0, hInst, 0
+				);
+
+				game.setBackground(Game::Background::CITY_MENU_QUEST);
+
+				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_MARKET])
 			{
@@ -1613,6 +1673,149 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				updateWindow(hWnd);
 				break;
+			}
+		}
+		break;
+
+		case Game::Background::CITY_MENU_QUEST:
+		{
+			if ((HWND)lp == hSubItems[QUEST_BUT_LANISTA])
+			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				// Hiding all windows except messages log
+				for (HWND hItem : hSubItems)
+					ShowWindow(hItem, SW_HIDE);
+
+				// Erasing previous sub menu items
+				for (HWND hItem : hSubMenuItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubMenuItems.clear();
+
+				// Creating new sub menu items
+				hSubMenuItems.resize(LANISTA_ITEM_NUMBER);
+
+				buf = l.getMessage(Localized::BUY_FREEDOM) + " (" + to_string(game.getPlayer().getInventory()->getItemQuantity(0)) + " / " + to_string(MONEY_NEEDED_FOR_FREEDOM) + ")";
+				hSubMenuItems[LANISTA_BUT_BUY_FREEDOM] = CreateWindow("BUTTON", buf.c_str(),
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+					0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				hSubMenuItems[LANISTA_BUT_TAKE_QUEST] = CreateWindow("BUTTON", l.getMessage(Localized::TAKE_QUEST).c_str(),
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+					0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				hSubMenuItems[LANISTA_BUT_ASK_FOR_PROMOTION] = CreateWindow("BUTTON", l.getMessage(Localized::ASK_FOR_PROMOTION).c_str(),
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+					0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				hSubMenuItems[LANISTA_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(),
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+					0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+				// If player is free - hide button to but freedom
+				if (game.getPlayer().getFreedom())
+					ShowWindow(hSubMenuItems[LANISTA_BUT_BUY_FREEDOM], SW_HIDE);
+
+				game.setBackground(Game::Background::CITY_MENU_LANISTA);
+
+				updateWindow(hWnd);
+			}
+
+			if ((HWND)lp == hSubItems[QUEST_BUT_TAVERN])
+			{
+				// TODO
+			}
+
+			if ((HWND)lp == hSubItems[QUEST_BUT_TALK_TO_PEOPLE])
+			{
+				// TODO
+			}
+
+			if ((HWND)lp == hSubItems[QUEST_BUT_BACK] || LOWORD(wp) == IDCANCEL)
+			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				// Destroying all buttons
+				for (HWND hItem : hSubItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubItems.clear();
+
+				// Showing main menu buttons
+				for (HWND hItem : hItems)
+					ShowWindow(hItem, SW_SHOW);
+
+				game.setBackground(Game::Background::CITY_MENU);
+
+				updateWindow(hWnd);
+				break;
+			}
+		}
+		break;
+
+		case Game::Background::CITY_MENU_LANISTA:
+		{
+			if ((HWND)lp == hSubMenuItems[LANISTA_BUT_BUY_FREEDOM])
+			{
+				Player& rPlayer = game.getPlayer();
+				// If player has enough money - he becomes free
+				if (rPlayer.getInventory()->getItemQuantity(0) >= MONEY_NEEDED_FOR_FREEDOM)
+				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
+
+					rPlayer.setFreedom(true);
+					rPlayer.getInventory()->removeItem(0, MONEY_NEEDED_FOR_FREEDOM);
+
+					// Update log
+					logStr += l.getMessage(Localized::GAINED_FREEDOM) + "\r\n\r\n";
+					SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
+					SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
+
+					// Destroying all windows
+					for (HWND hItem : hSubMenuItems)
+						if (hItem != NULL)
+							DestroyWindow(hItem);
+					hSubMenuItems.clear();
+					for (HWND hItem : hSubItems)
+						if (hItem != NULL)
+							DestroyWindow(hItem);
+					hSubItems.clear();
+					ShowWindow(hItems[EDIT_MESSAGES_LOG], SW_HIDE);
+					game.setBackground(Game::Background::CITY_MENU);
+
+					// Display story
+					game.setProgressionStage(Game::Progression::GAINED_FREEDOM);
+					game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::GAINED_FREEDOM);
+					return;
+				}
+			}
+
+			if ((HWND)lp == hSubMenuItems[LANISTA_BUT_TAKE_QUEST])
+			{
+				// TODO
+			}
+
+			if ((HWND)lp == hSubMenuItems[LANISTA_BUT_ASK_FOR_PROMOTION])
+			{
+				// TODO
+			}
+
+			if ((HWND)lp == hSubMenuItems[LANISTA_BUT_BACK] || LOWORD(wp) == IDCANCEL)
+			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				// Destroying all buttons
+				for (HWND hItem : hSubMenuItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hSubMenuItems.clear();
+
+				// Showing menu buttons
+				for (HWND hItem : hSubItems)
+					ShowWindow(hItem, SW_SHOW);
+				ShowWindow(hItems[EDIT_MESSAGES_LOG], SW_SHOW);
+
+				game.setBackground(Game::Background::CITY_MENU_QUEST);
+
+				updateWindow(hWnd);
 			}
 		}
 		break;
