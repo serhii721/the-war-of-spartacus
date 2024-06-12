@@ -265,6 +265,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		case Game::Background::CITY_MENU_ARENA_FIGHT: path = DIRECTORY + "arenaFightBackground" + FORMAT; break;
 		case Game::Background::CITY_MENU_ARENA_BET: path = DIRECTORY + "arenaBetBackground" + FORMAT; break;
 		case Game::Background::CITY_MENU_QUEST: path = DIRECTORY + "questBackground" + FORMAT; break;
+		case Game::Background::CITY_MENU_LANISTA: path = DIRECTORY + "lanistaBackground" + FORMAT; break;
 		case Game::Background::CITY_MENU_MARKET: path = DIRECTORY + "marketBackground" + FORMAT; break;
 		case Game::Background::CITY_MENU_CHARACTER: path = DIRECTORY + "characterInventoryBackground" + FORMAT; break;
 		}
