@@ -12,13 +12,15 @@ extern Game game;
 Fighting::Fighting() :
 	hItems(MenuItem::ITEM_NUMBER),
 	hBackgroundImage(NULL),
-	hBackgroundBrush(NULL)
+	hBackgroundBrush(NULL),
+	isPlayerWon(false)
 { }
 
 Fighting::Fighting(HWND hWnd) :
 	hItems(MenuItem::ITEM_NUMBER),
 	hBackgroundImage(NULL),
-	hBackgroundBrush(NULL)
+	hBackgroundBrush(NULL),
+	isPlayerWon(false)
 {
 	for (int i = MenuItem::STATIC_START; i <= MenuItem::STATIC_FIGHT_RESULT; i++)
 		hItems[i] = CreateWindow("STATIC", "",
@@ -59,7 +61,8 @@ Fighting::Fighting(HWND hWnd) :
 }
 
 Fighting::Fighting(const Fighting& F) :
-	hItems()
+	hItems(),
+	isPlayerWon(false)
 {
 	// Resizing items' vector
 	int sz = F.hItems.size();
@@ -175,6 +178,8 @@ Fighting& Fighting::operator=(const Fighting& F)
 	else
 		hBackgroundBrush = NULL;
 
+	isPlayerWon = F.isPlayerWon;
+
 	return *this;
 }
 
@@ -196,6 +201,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	SendMessage(hItems[EDIT_LOG_MESSAGES], WM_SETFONT, (WPARAM)game.getFont(Game::FontSize::MEDIUM), TRUE);
 	AttackResult result = AttackResult::WERE_DODGED;
 	FightStatus status = FightStatus::CONTINUE;
+	isPlayerWon = false;
 
 	int damage = 0, defense = 0;
 
@@ -555,7 +561,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	// Level up
 	if (rPlayer.getLevel() > playerLevel)
 	{
-		Sleep(600);
+		Sleep(600); // Sleep so sound would have time to play
 		logStr += l.getMessage(Localized::LEVELED_UP) + " " + to_string(rPlayer.getLevel()) +
 			" (" + to_string(rPlayer.getUnnassignedAttributes()) + " " + l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES_GENITIVE) + ")\r\n\r\n";
 		playSound(SoundEnum::SOUND_LEVEL_UP);
@@ -658,7 +664,10 @@ FightStatus Fighting::checkFightStatus(const Player & rPlayer, const NPC & rOppo
 	if (rOpponent.getHP() < 10)
 	{
 		if (!rOpponent.isAlive())
+		{
+			isPlayerWon = true;
 			return FightStatus::OPPONENT_LOST;
+		}
 
 		// Offer to surrender to the opponent
 		// TODO: if (yes)
@@ -810,6 +819,20 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
 
+				// If it's player's first victory - display story screen
+				if (game.getProgressionStage() == Game::Progression::START && isPlayerWon)
+				{
+					game.setProgressionStage(Game::Progression::FIRST_VICTORY);
+					game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::FIRST_VICTORY);
+				}
+
+				if (game.getProgressionStage() == Game::Progression::FIRST_VICTORY && // If current story stage is that player's saving up money for freedom
+					game.getPlayer().getInventory()->getItemQuantity(0) >= MONEY_NEEDED_FOR_FREEDOM) // If player has enough money for freedom
+				{
+					game.setProgressionStage(Game::Progression::ENOUGH_MONEY_FOR_FREEDOM);
+					game.getPlayer().getInventory()->removeItem(0, MONEY_NEEDED_FOR_FREEDOM);
+					game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::STOLEN_MONEY);
+				}
 				updateWindow(hWnd);
 			}
 		}

@@ -246,6 +246,11 @@ void Game::setDisplayState(DisplayState ds)
 	displayState = ds;
 }
 
+void Game::setProgressionStage(Progression stage)
+{
+	progressionStage = stage;
+}
+
 Player& Game::getPlayer()
 {
 	return *pPlayer;
@@ -279,6 +284,11 @@ HFONT& Game::getFont(FontSize size)
 	case FontSize::MEDIUM: return mediumFont;
 	case FontSize::LARGE: return largeFont;
 	}
+}
+
+Game::Progression Game::getProgressionStage() const
+{
+	return progressionStage;
 }
 
 void Game::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
@@ -420,7 +430,7 @@ void Game::saveToFile()
 	if (!fout)
 		throw new exception("Error: Couldn't open file for game's saving");
 
-	fout << game.getWorldMap().getCurrentCityIndex();
+	fout << game.getWorldMap().getCurrentCityIndex() << " " << progressionStage;
 
 	fout.close();
 	// Saving player
@@ -443,9 +453,10 @@ void Game::loadFromFile(const string& saveFolderName)
 	if (!fin)
 		throw new exception("Error: Couldn't open file for game's loading");
 
-	int currentCityIndex;
-	fin >> currentCityIndex;
+	int currentCityIndex, currentProgressionStage;
+	fin >> currentCityIndex >> currentProgressionStage;
 	game.getWorldMap().setCurrentCityIndex(currentCityIndex);
+	progressionStage = static_cast<Progression>(currentProgressionStage);
 
 	fin.close();
 	// Loading player

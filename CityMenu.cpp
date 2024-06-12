@@ -1658,7 +1658,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					switch (fightStatus)
 					{
 					// In case of opponent's death he's replaced on arena with new gladiator
-					case FightStatus::OPPONENT_LOST: currentArena.changeGladiator(selectedOpponent, currentCity.getLevel());
+					case FightStatus::OPPONENT_LOST:
+						currentArena.changeGladiator(selectedOpponent, currentCity.getLevel());
 						break;
 					case FightStatus::OPPONNENT_SURRENDERED:
 						break;
@@ -1857,11 +1858,29 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + rPlayerInventory.size()], SW_HIDE);
 					ShowWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + rPlayerInventory.size()], SW_HIDE);
 					game.updateBackground();
+
+					if (game.getProgressionStage() == Game::Progression::FIRST_VICTORY && // If current story stage is that player's saving up money for freedom
+						game.getPlayer().getInventory()->getItemQuantity(0) >= MONEY_NEEDED_FOR_FREEDOM) // If player has enough money for freedom
+					{
+						// Destroying all buttons
+						for (HWND hItem : hSubItems)
+							if (hItem != NULL)
+								DestroyWindow(hItem);
+						hSubItems.clear();
+
+						game.setProgressionStage(Game::Progression::ENOUGH_MONEY_FOR_FREEDOM);
+						game.getPlayer().getInventory()->removeItem(0, MONEY_NEEDED_FOR_FREEDOM);
+						game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::STOLEN_MONEY);
+
+						game.setBackground(Game::Background::CITY_MENU);
+						selectedItem = -1;
+						return;
+					}
+
 					updateWindow(hWnd);
 				}
 				else
 					MessageBox(hWnd, l.getMessage(Localized::TRADER_DOESNT_HAVE_GOLD).c_str(), l.getMessage(Localized::CANT_SELL_ITEM).c_str(), MB_OK | MB_ICONINFORMATION);
-
 			}
 
 			// Back button

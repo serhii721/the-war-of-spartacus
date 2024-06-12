@@ -102,6 +102,7 @@ const int FIGHT_SLEEP_TIME = 1000; // Delay between attacks in fight
 const int STORY_SLEEP_TIME = 300; // Delay between story screen display
 const int STARTING_ADDITIONAL_ATTRIBUTES = 30;
 const int ATTRIBUTE_MAX_DIFFERENCE = 10; // How much a player can increase attributes relative to average attributes level
+const int MONEY_NEEDED_FOR_FREEDOM = 500;
 
 const COLORREF COLOR_WHITE = RGB(255, 255, 255),
 			   COLOR_STATIC_BROWN = RGB(119, 89, 59),
