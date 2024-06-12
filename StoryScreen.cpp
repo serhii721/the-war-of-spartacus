@@ -150,18 +150,61 @@ StoryScreen::~StoryScreen()
 
 void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 {
-	switch (currentScreen)
-	{
-	case WELCOME_SCREEN:
-	{
+	const string DIRECTORY = "Data/Image/Story/";
+	const string FORMAT = ".bmp";
+	string path("");
+	int i;
 
-	}
-	break;
+	RECT rect;
+	GetClientRect(hWnd, &rect);
 
-	case STOLEN_MONEY:
+	// TODO: different background
+	// 1. Background
+	if (game.isBackgroundChanged())
 	{
-	}
-	break;
+		switch (currentScreen)
+		{
+		case WELCOME_SCREEN:
+		{
+
+		}
+		break;
+
+		case STOLEN_MONEY:
+		{
+			switch (currentSubScreen)
+			{
+				// TODO
+			}
+		}
+		break;
+
+		case GAINED_FREEDOM:
+		{
+			switch (currentSubScreen)
+			{
+			case GAINED_FREEDOM_SCREEN_STAT_1: path = DIRECTORY + "gainedFreedom" + FORMAT; break;
+			//case GAINED_FREEDOM_SCREEN_STAT_2: break;
+			//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS: break;
+			//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION: break;
+			default: path = DIRECTORY + "blackScreen" + FORMAT; break;
+			}
+		}
+		break;
+
+		default: path = DIRECTORY + "blackScreen" + FORMAT; break;
+		break;
+		}
+		// Loading image
+		if (hBackgroundImage != NULL)
+			DeleteObject(hBackgroundImage);
+		hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		// Filling background with selected image
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+		FillRect(hdc, &rect, hBackgroundBrush);
+		game.backgroundChangeCompleted();
 	}
 }
 
@@ -260,6 +303,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND item : hItems)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+				game.updateBackground();
 			}
 
 			if ((HWND)lp == hItems[STOLEN_MONEY_SCREEN_BUT_STAY])
@@ -272,6 +316,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND item : hItems)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+				game.updateBackground();
 			}
 		}
 		break;
@@ -289,6 +334,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND item : hItems)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+				game.updateBackground();
 			}
 
 			if ((HWND)lp == hItems[CENTURION_OFFER_SCREEN_BUT_DECLINE])
@@ -301,6 +347,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND item : hItems)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+				game.updateBackground();
 			}
 		}
 		break;
@@ -317,6 +364,8 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND item : hItems)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+				game.updateBackground();
+				updateWindow(hWnd);
 			}
 
 			if ((HWND)lp == hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_LEGION])
@@ -329,6 +378,8 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND item : hItems)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+				game.updateBackground();
+				updateWindow(hWnd);
 			}
 		}
 		break;
@@ -394,6 +445,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hItems.clear();
 
 				game.setDisplayState(DisplayState::MENU);
+				game.updateBackground();
 			}
 			else if (currentSubScreen < STOLEN_MONEY_SCREEN_STAT_3)
 			{
@@ -422,6 +474,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hItems.clear();
 
 				game.setDisplayState(DisplayState::MENU);
+				game.updateBackground();
 			}
 			else if (currentSubScreen < CENTURION_OFFER_SCREEN_STAT_2)
 			{
@@ -450,6 +503,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hItems.clear();
 
 				game.setDisplayState(DisplayState::MENU);
+				game.updateBackground();
 			}
 			else if (currentSubScreen < GAINED_FREEDOM_SCREEN_STAT_2)
 			{
@@ -749,6 +803,7 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 	break;
 	}
 	currentScreen = screen;
+	game.updateBackground();
 	updateWindow(hWnd);
 }
 

@@ -2,6 +2,7 @@
 #include "Game.h"
 
 extern string buf;
+extern string logStr;
 
 Game::Game() :
 	menuManager(),
@@ -457,6 +458,8 @@ void Game::loadFromFile(const string& saveFolderName)
 	fin >> currentCityIndex >> currentProgressionStage;
 	game.getWorldMap().setCurrentCityIndex(currentCityIndex);
 	progressionStage = static_cast<Progression>(currentProgressionStage);
+
+	logStr = l.getMessage(Localized::MESSAGES_LOG) + ":\r\n\r\n";
 
 	fin.close();
 	// Loading player
