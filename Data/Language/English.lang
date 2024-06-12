@@ -18,6 +18,12 @@ Dexterity
 Intelligence
 Wisdom
 Charisma
+strength
+constitution
+dexterity
+intelligence
+wisdom
+charisma
 Back
 Next
 Video settings
@@ -162,4 +168,9 @@ Having made his final decision, the Gladiator left the city and headed east to A
 Join rebels
 Join legion
 You have became a free man
+Lanista agrees that you should be promoted. From now on your rewards on arena will be increased
+Lanista doesn't agree that you should be promoted. Your words haven't impressed him
+Stop it or you will be demoted
+You have already been promoted
+You have already been promoted. What, do you want to be a consul?
 MESSAGE_NUMBER

@@ -1714,7 +1714,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-				hSubMenuItems[LANISTA_BUT_ASK_FOR_PROMOTION] = CreateWindow("BUTTON", l.getMessage(Localized::ASK_FOR_PROMOTION).c_str(),
+				buf = l.getMessage(Localized::ASK_FOR_PROMOTION) + " (" + to_string(CHARISMA_FOR_PROMOTION) + " " + l.getMessage(Localized::CHARISMA_GENITIVE) + ")";
+				hSubMenuItems[LANISTA_BUT_ASK_FOR_PROMOTION] = CreateWindow("BUTTON", buf.c_str(),
 					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0);
 
@@ -1722,9 +1723,13 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 					0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-				// If player is free - hide button to but freedom
+				// If player is free - hide button to buy freedom
 				if (game.getPlayer().getFreedom())
 					ShowWindow(hSubMenuItems[LANISTA_BUT_BUY_FREEDOM], SW_HIDE);
+
+				// If player is already promoted - hide button to ask for promotion
+				if (game.getWorldMap().getCurrentCity().getPromotionStatus())
+					ShowWindow(hSubMenuItems[LANISTA_BUT_ASK_FOR_PROMOTION], SW_HIDE);
 
 				game.setBackground(Game::Background::CITY_MENU_LANISTA);
 
@@ -1806,7 +1811,63 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubMenuItems[LANISTA_BUT_ASK_FOR_PROMOTION])
 			{
-				// TODO
+				static int n = 0;
+				if (!game.getWorldMap().getCurrentCity().getPromotionStatus())
+				{
+					if (game.getPlayer().getCharisma() >= CHARISMA_FOR_PROMOTION)
+					{
+						game.getWorldMap().getCurrentCity().setPromotion(true);
+						// Update log
+						logStr += l.getMessage(Localized::YOU_HAVE_BEEN_PROMOTED) + "\r\n\r\n";
+						SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
+						SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
+						n = 0;
+					}
+					else if (n == 1)
+					{
+						// Update log
+						logStr += l.getMessage(Localized::NOT_ENOUGH_CHARISMA_FOR_PROMOTION_AGRESSIVELY) + "\r\n\r\n";
+						SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
+						SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
+						n++;
+					}
+					else if (n == 3)
+					{
+						ShowWindow(hSubMenuItems[LANISTA_BUT_ASK_FOR_PROMOTION], SW_HIDE);
+						game.updateBackground();
+						updateWindow(hWnd);
+					}
+					else
+					{
+						// Update log
+						logStr += l.getMessage(Localized::NOT_ENOUGH_CHARISMA_FOR_PROMOTION) + "\r\n\r\n";
+						SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
+						SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
+						n++;
+					}
+				}
+				else if (n == 1)
+				{
+					// Update log
+					logStr += l.getMessage(Localized::ALREADY_PROMOTED_AGRESSIVELY) + "\r\n\r\n";
+					SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
+					SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
+					n++;
+				}
+				else if (n == 3)
+				{
+					ShowWindow(hSubMenuItems[LANISTA_BUT_ASK_FOR_PROMOTION], SW_HIDE);
+					game.updateBackground();
+					updateWindow(hWnd);
+				}
+				else
+				{
+					// Update log
+					logStr += l.getMessage(Localized::ALREADY_PROMOTED) + "\r\n\r\n";
+					SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
+					SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
+					n++;
+				}
 			}
 
 			if ((HWND)lp == hSubMenuItems[LANISTA_BUT_BACK] || LOWORD(wp) == IDCANCEL)

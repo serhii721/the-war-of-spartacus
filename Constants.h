@@ -104,7 +104,8 @@ const int FIGHT_SLEEP_TIME = 1000; // Delay between attacks in fight
 const int STORY_SLEEP_TIME = 300; // Delay between story screen display
 const int STARTING_ADDITIONAL_ATTRIBUTES = 30;
 const int ATTRIBUTE_MAX_DIFFERENCE = 10; // How much a player can increase attributes relative to average attributes level
-const int MONEY_NEEDED_FOR_FREEDOM = 1500; // How much gold a player needs to progress story
+const int MONEY_NEEDED_FOR_FREEDOM = 1500; // How much gold player needs to progress story
+const int CHARISMA_FOR_PROMOTION = 30; // How much charisma player needs to gain promotion on arena from lanista
 
 const COLORREF COLOR_WHITE = RGB(255, 255, 255),
 			   COLOR_STATIC_BROWN = RGB(119, 89, 59),

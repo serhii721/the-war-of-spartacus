@@ -15,7 +15,6 @@ public:
 		SHIELD,
 		NUMBER
 	};
-	// TODO: Think about moving Attribute and Limit over here?
 
 	Weapon();
 	Weapon(
