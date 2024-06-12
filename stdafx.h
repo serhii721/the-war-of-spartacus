@@ -91,6 +91,8 @@ void updateWindow(HWND);
 string toStringPrecision(double number_, int decimalPlaces_ = 2);
 void getFoldersInDirectory(const string& directoryPath_, vector<string>& folderNames_);
 string formatSaveName(const string& input_);
+int normalize(int value_, int min_, int max_);
+int calculateWeightedAverageFactor(const vector<int>& values_, const vector<pair<int, int>>& ranges_, const vector<int>& weights_);
 
 // __________ NPC __________
 unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);

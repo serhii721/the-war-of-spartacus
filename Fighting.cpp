@@ -414,9 +414,9 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	// # 3.2 Fame reward
 	// Fame number calculates based on experience multiplied by difference from opponent's fame
 	int fame = (experience + rOpponent.getFame()) / 10;
+	double fameMultiplier = 1.0;
 	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
 	{
-		double fameMultiplier = 1.0;
 		int playerFame = rPlayer.getFame();
 		int opponentFame = rOpponent.getFame();
 		int fameDifference;
@@ -452,13 +452,14 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	int gold;
 	switch (traderLevel)
 	{
-	case 1: gold = MIN_VALUE_ITEM_LEVEL1 / 2; break;
-	case 2: gold = MIN_VALUE_ITEM_LEVEL2 / 2; break;
-	case 3: gold = MIN_VALUE_ITEM_LEVEL3 / 2; break;
-	case 4: gold = MIN_VALUE_ITEM_LEVEL4 / 2; break;
-	case 5: gold = MIN_VALUE_ITEM_LEVEL5 / 2; break;
+	case 1: gold = LOW_VALUE_ITEM_LEVEL1; break;
+	case 2: gold = LOW_VALUE_ITEM_LEVEL2; break;
+	case 3: gold = LOW_VALUE_ITEM_LEVEL3; break;
+	case 4: gold = LOW_VALUE_ITEM_LEVEL4; break;
+	case 5: gold = LOW_VALUE_ITEM_LEVEL5; break;
 	}
-
+	// Fame difference also influences gold reward
+	gold *= fameMultiplier;
 	// If player lost reward is 10 times smaller
 	if (status == FightStatus::PLAYER_SURRENDERED || status == FightStatus::PLAYER_LOST)
 		gold /= 10;
@@ -535,6 +536,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 		}
 		// Remove item from opponent's inventory
 		pItem = rOpponent.getInventory()->extractItem(itemID);
+		// Adjust price of the item based on player's charisma
+		pItem->calculatePrice(rPlayer.getCharisma(), true);
 		itemStr = l.getItemTypeName(*pItem);
 		// Give it to player
 		rPlayerInventory.addItem(move(pItem));

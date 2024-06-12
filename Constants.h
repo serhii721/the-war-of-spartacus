@@ -35,12 +35,14 @@ const int MAX_INVENTORY_SIZE = 14;
 
 // Item's statistics
 const int BASIC_ITEM_VALUE = 1;
+// Charisma of the player influences prices of item. At 0 charisma price is increased by 30%. At 100 charisma price is decrease by 30%.
+const int MAX_PRICE_MULTIPLIER = 30;
 // value for weapon and armour of different levels
-const int MIN_VALUE_ITEM_LEVEL1 = 100, MAX_VALUE_ITEM_LEVEL1 = 300,
-		  MIN_VALUE_ITEM_LEVEL2 = 300, MAX_VALUE_ITEM_LEVEL2 = 500,
-	  	  MIN_VALUE_ITEM_LEVEL3 = 500, MAX_VALUE_ITEM_LEVEL3 = 700,
-		  MIN_VALUE_ITEM_LEVEL4 = 700, MAX_VALUE_ITEM_LEVEL4 = 1000,
-		  MIN_VALUE_ITEM_LEVEL5 = 1000, MAX_VALUE_ITEM_LEVEL5 = 1500;
+const int LOW_VALUE_ITEM_LEVEL1 = 100, HIGH_VALUE_ITEM_LEVEL1 = 300,
+		  LOW_VALUE_ITEM_LEVEL2 = 300, HIGH_VALUE_ITEM_LEVEL2 = 500,
+	  	  LOW_VALUE_ITEM_LEVEL3 = 500, HIGH_VALUE_ITEM_LEVEL3 = 700,
+		  LOW_VALUE_ITEM_LEVEL4 = 700, HIGH_VALUE_ITEM_LEVEL4 = 1000,
+		  LOW_VALUE_ITEM_LEVEL5 = 1000, HIGH_VALUE_ITEM_LEVEL5 = 1500;
 
 // Weapon's statistics
 const int MIN_WEAPON_TIER = MIN_TRADER_LEVEL,
@@ -102,7 +104,7 @@ const int FIGHT_SLEEP_TIME = 1000; // Delay between attacks in fight
 const int STORY_SLEEP_TIME = 300; // Delay between story screen display
 const int STARTING_ADDITIONAL_ATTRIBUTES = 30;
 const int ATTRIBUTE_MAX_DIFFERENCE = 10; // How much a player can increase attributes relative to average attributes level
-const int MONEY_NEEDED_FOR_FREEDOM = 100; // How much gold a player needs to progress storyE
+const int MONEY_NEEDED_FOR_FREEDOM = 1500; // How much gold a player needs to progress story
 
 const COLORREF COLOR_WHITE = RGB(255, 255, 255),
 			   COLOR_STATIC_BROWN = RGB(119, 89, 59),

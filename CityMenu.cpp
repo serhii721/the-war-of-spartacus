@@ -1344,6 +1344,13 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				game.setBackground(Game::Background::CITY_MENU_MARKET);
 
+				// Update item's prices based on player's charisma
+				Inventory& rInventory = *game.getWorldMap().getCurrentCity().getTrader().getInventory();
+				int charisma = game.getPlayer().getCharisma();
+				for (i = 0; i < rInventory.size(); i++)
+					if (rInventory[i].first->getItemType() != Item::ItemType::GOLD)
+						rInventory[i].first->calculatePrice(charisma);
+
 				updateWindow(hWnd);
 			}
 			if ((HWND)lp == hItems[BUT_CHARACTER])
@@ -1990,7 +1997,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					auto itemPair = rTraderInventory[selectedItem - MARKET_BUT_TRADER_ITEM1];
 					unique_ptr<Item>& rItem = itemPair.first;
 					// Get cost
-					int cost = rItem->getValue();
+					int cost = rItem->getPrice();
 
 					// Check if player has enough gold
 					int playerGold = rPlayerInventory.getItemQuantity(0); // 0 is ID for gold
@@ -2001,6 +2008,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						int id = rItem->getID();
 						// Make copy of item
 						unique_ptr<Item> itemCopy = rTraderInventory.getItem(id)->clone(); // TODO: update item stats
+						itemCopy->calculatePrice(game.getPlayer().getCharisma(), true);
 						// Remove item from trader
 						rTraderInventory.removeItem(id);
 						// Add item copy to player
@@ -2039,7 +2047,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				auto itemPair = rPlayerInventory[selectedItem - MARKET_BUT_INVENTORY_ITEM1];
 				unique_ptr<Item>& rItem = itemPair.first;
 				// Get cost
-				int cost = rItem->getValue();
+				int cost = rItem->getPrice();
 
 				// Check if trader has enough gold
 				int traderGold = rTraderInventory.getItemQuantity(0); // 0 is ID for gold
@@ -2477,6 +2485,18 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(pas.charisma);
 				SendMessage(hSubItems[CHARACTER_STAT_CHARISMA], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
+				// Update item's price
+				if (rPlayer.getRightHand())
+					rPlayer.getRightHand()->calculatePrice(pas.charisma, true);
+				if (rPlayer.getLeftHand())
+					rPlayer.getLeftHand()->calculatePrice(pas.charisma, true);
+				if (rPlayer.getArmour())
+					rPlayer.getArmour()->calculatePrice(pas.charisma, true);
+				Inventory& rInventory = *rPlayer.getInventory();
+				for (i = 0; i < rInventory.size(); i++)
+					if (rInventory[i].first->getItemType() != Item::ItemType::GOLD)
+						rInventory[i].first->calculatePrice(pas.charisma, true);
+
 				game.updateBackground();
 			}
 
@@ -2900,6 +2920,18 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hSubItems[CHARACTER_STAT_UNNASSIGNED_ATTRIBUTES], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(pas.charisma);
 				SendMessage(hSubItems[CHARACTER_STAT_CHARISMA], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				// Update item's price
+				if (rPlayer.getRightHand())
+					rPlayer.getRightHand()->calculatePrice(pas.charisma, true);
+				if (rPlayer.getLeftHand())
+					rPlayer.getLeftHand()->calculatePrice(pas.charisma, true);
+				if (rPlayer.getArmour())
+					rPlayer.getArmour()->calculatePrice(pas.charisma, true);
+				Inventory& rInventory = *rPlayer.getInventory();
+				for (i = 0; i < rInventory.size(); i++)
+					if (rInventory[i].first->getItemType() != Item::ItemType::GOLD)
+						rInventory[i].first->calculatePrice(pas.charisma, true);
 			}
 
 			// Reset changes
@@ -2949,25 +2981,28 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				ShowWindow(hSubItems[CHARACTER_BUT_APPLY_CHANGES], SW_HIDE);
 
 				// Text
-				// Update weapon damage
+				// Update weapons stats
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
 					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					rPlayer.getRightHand()->calculatePrice(pas.charisma, true);
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
 					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					rPlayer.getLeftHand()->calculatePrice(pas.charisma, true);
 				}
-				// Update armour defense
+				// Update armour stats
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
 					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					rPlayer.getArmour()->calculatePrice(pas.charisma, true);
 				}
 				// Update stats
 				buf = l.getMessage(Localized::UNNASSIGNED_ATTRIBUTES) + ": " + to_string(pas.unnassignedAttributes);
@@ -3576,7 +3611,7 @@ void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity
 	SendMessage(hSubItems[MARKET_STAT_ITEM_QUANTITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 	ShowWindow(hSubItems[MARKET_STAT_ITEM_TOTAL_VALUE], SW_SHOW);
-	buf = l.getMessage(Localized::TOTAL_VALUE) + ": " + to_string(rItem->getValue() * quantity);
+	buf = l.getMessage(Localized::TOTAL_VALUE) + ": " + to_string(rItem->getPrice() * quantity);
 	SendMessage(hSubItems[MARKET_STAT_ITEM_TOTAL_VALUE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 }
 
@@ -3890,7 +3925,7 @@ void CityMenu::inspectItem(HWND hWnd, unique_ptr<Item> pItem, int quantity)
 
 	MBDescription += l.getMessage(Localized::VALUE) + ": " + to_string(pItem->getValue()) + "\n";
 	MBDescription += l.getMessage(Localized::QUANTITY) + ": " + to_string(quantity) + "\n";
-	MBDescription += l.getMessage(Localized::TOTAL_VALUE) + ": " + to_string(pItem->getValue() * quantity) + "\n";
+	MBDescription += l.getMessage(Localized::TOTAL_VALUE) + ": " + to_string(pItem->getPrice() * quantity) + "\n";
 
 	MessageBox(hWnd, MBDescription.c_str(), MBName.c_str(), MB_OK | MB_ICONINFORMATION);
 }

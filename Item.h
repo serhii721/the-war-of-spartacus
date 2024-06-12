@@ -31,11 +31,16 @@ public:
 protected:
 	ItemType itemType;
 	int value;
+	int price;
 
 public:
 	int getID() const;
 	ItemType getItemType() const;
 	int getValue() const;
+	int getPrice() const;
 
 	void setValue(int);
+	void setPrice(int);
+
+	void calculatePrice(int charisma_, bool isOwnedByPlayer_ = false);
 };

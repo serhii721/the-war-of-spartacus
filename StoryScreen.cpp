@@ -401,6 +401,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			hItems.clear();
 
 			game.setDisplayState(DisplayState::MENU);
+			game.updateBackground();
 
 			updateWindow(hWnd);
 		}
@@ -415,6 +416,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			hItems.clear();
 
 			game.setDisplayState(DisplayState::MENU);
+			game.updateBackground();
 
 			updateWindow(hWnd);
 		}
@@ -429,6 +431,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			hItems.clear();
 
 			game.setDisplayState(DisplayState::MENU);
+			game.updateBackground();
 
 			updateWindow(hWnd);
 		}
