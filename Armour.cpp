@@ -110,10 +110,10 @@ void Armour::saveToFile(const string& path)
 		throw new exception("Error: Couldn't open file for armour's saving");
 
 	// Write armour data
-	fout << id << " " << itemType << " " << value << " "
+	fout << id << " " << itemType << " " << value << " " << price << " "
 		<< tier << " " << defense << " " << type << " "
 		<< defAddition << " " << strAdditionPerc << " " << dexAdditionPerc << " "
-		<< evasionProbAddition << " " << stunProbSubtraction + " ";
+		<< evasionProbAddition << " " << stunProbSubtraction;
 
 	fout.close();
 }
@@ -129,7 +129,7 @@ void Armour::loadFromFile(const string& path)
 
 	// Read armour data
 	int loadedItemType, loadedArmourType;
-	fin >> id >> loadedItemType >> value
+	fin >> id >> loadedItemType >> value >> price
 		>> tier >> defense >> loadedArmourType
 		>> defAddition >> strAdditionPerc >> dexAdditionPerc
 		>> evasionProbAddition >> stunProbSubtraction;

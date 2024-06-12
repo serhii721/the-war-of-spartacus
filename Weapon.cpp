@@ -150,10 +150,10 @@ void Weapon::saveToFile(const string& path)
 		throw new exception("Error: Couldn't open file for weapon's saving");
 
 	// Write weapon data
-	fout << id << " " << itemType << " " << value << " "
+	fout << id << " " << itemType << " " << value << " " << price << " "
 		<< tier << " " << damage << " " << type << " "
 		<< damageAddition << " " << strAdditionPerc << " " << dexAdditionPerc << " "
-		<< shieldProbAddition << " " << shieldDefPercentAddition + " ";
+		<< shieldProbAddition << " " << shieldDefPercentAddition;
 
 	fout.close();
 
@@ -179,10 +179,10 @@ void Weapon::loadFromFile(const string& path)
 
 	// Read weapon data
 	int loadedItemType, loadedWeaponType;
-	fin >> id >> loadedItemType >> value;
-	fin >> tier >> damage >> loadedWeaponType;
-	fin >> damageAddition >> strAdditionPerc >> dexAdditionPerc;
-	fin	>> shieldProbAddition >> shieldDefPercentAddition;
+	fin >> id >> loadedItemType >> value >> price
+		>> tier >> damage >> loadedWeaponType
+		>> damageAddition >> strAdditionPerc >> dexAdditionPerc
+		>> shieldProbAddition >> shieldDefPercentAddition;
 
 	itemType = static_cast<Item::ItemType>(loadedItemType);
 	type = static_cast<Weapon::WeaponType>(loadedWeaponType);
