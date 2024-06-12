@@ -10,7 +10,8 @@ Player::Player() :
 	Leveling(),
 	name(l.getMessage(Localized::GLADIATOR)),
 	portraitIndex(1),
-	isExhausted(false)
+	isExhausted(false),
+	isFree(false)
 { }
 
 Player::Player(
@@ -22,10 +23,11 @@ Player::Player(
 	Leveling(L),
 	name(rName),
 	portraitIndex(1),
-	isExhausted(false)
+	isExhausted(false),
+	isFree(false)
 { }
 
-Player::Player(const Player& P) : Fighter(P), Leveling(P), name(P.name), portraitIndex(P.portraitIndex), isExhausted(P.isExhausted) { }
+Player::Player(const Player& P) : Fighter(P), Leveling(P), name(P.name), portraitIndex(P.portraitIndex), isExhausted(P.isExhausted), isFree(P.isFree) { }
 
 Player& Player::operator=(const Player& P)
 {
@@ -37,6 +39,7 @@ Player& Player::operator=(const Player& P)
 	name = P.name;
 	portraitIndex = P.portraitIndex;
 	isExhausted = P.isExhausted;
+	isFree = P.isFree;
 
 	return *this;
 }
@@ -53,6 +56,11 @@ void Player::setExhaustion(bool exhaustion)
 	isExhausted = exhaustion;
 }
 
+void Player::setFreedom(bool freedom)
+{
+	isFree = freedom;
+}
+
 const string& Player::getName() const { return name; }
 
 const int Player::getPortaitIndex() const { return portraitIndex; }
@@ -60,6 +68,11 @@ const int Player::getPortaitIndex() const { return portraitIndex; }
 const bool Player::getExhaustion() const
 {
 	return isExhausted;
+}
+
+const bool Player::getFreedom() const
+{
+	return isFree;
 }
 
 void Player::saveToFile(const string& directory)
@@ -89,7 +102,7 @@ void Player::saveToFile(const string& directory)
 		<< age << " " << fame << " ";
 
 	// Fighter
-	fout << hp << " " << fullHP << " " << portraitIndex << " " << isExhausted << " ";
+	fout << hp << " " << fullHP << " " << portraitIndex << " " << isExhausted << " " << isFree << " ";
 
 	// Inventory and equipment stored as pointers so they are saved in separate files
 	// Main file contains information whether there is equipment
@@ -175,7 +188,7 @@ void Player::loadFromFile(const string& directory)
 		>> age >> fame;
 
 	// Fighter
-	fin >> hp >> fullHP >> portraitIndex >> isExhausted;
+	fin >> hp >> fullHP >> portraitIndex >> isExhausted >> isFree;
 
 	int hasInventory, hasRightHand, hasLeftHand, hasArmour;
 	// Inventory

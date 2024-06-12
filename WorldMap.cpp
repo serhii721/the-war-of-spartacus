@@ -356,9 +356,14 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				if (currentCity != selectedCity)
 				{
-					currentCity = selectedCity;
-					SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
-					logStr += l.getMessage(Localized::YOU_HAVE_TRAVELED) + " " + l.getCityName(getCurrentCity()) + "\r\n\r\n";
+					if (game.getPlayer().getFreedom())
+					{
+						currentCity = selectedCity;
+						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
+						logStr += l.getMessage(Localized::YOU_HAVE_TRAVELED) + " " + l.getCityName(getCurrentCity()) + "\r\n\r\n";
+					}
+					else
+						MessageBox(hWnd, l.getMessage(Localized::PLAYER_IS_SLAVE).c_str(), l.getMessage(Localized::CANT_TRAVEL).c_str(), MB_OK);
 				}
 				else
 				{

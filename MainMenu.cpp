@@ -1631,7 +1631,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.getPlayer().updateMaxHP();
 
 				// Give player starting gold
-				game.getPlayer().getInventory()->addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), 200);
+				game.getPlayer().getInventory()->addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), 20);
 
 				nms.reset();
 

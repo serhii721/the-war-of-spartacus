@@ -8,11 +8,11 @@ extern HINSTANCE hInst;
 extern Localization l;
 extern Game game;
 
-StoryScreen::StoryScreen() : hItems(), hBackgroundImage(NULL), hBackgroundBrush(NULL), currentScreen(SCREEN_NUMBER) { }
+StoryScreen::StoryScreen() : hItems(), hBackgroundImage(NULL), hBackgroundBrush(NULL), currentScreen(SCREEN_NUMBER), isChoiceRequired(false) { }
 
-StoryScreen::StoryScreen(HWND hWnd) : hItems(), hBackgroundImage(NULL), hBackgroundBrush(NULL), currentScreen(SCREEN_NUMBER) { }
+StoryScreen::StoryScreen(HWND hWnd) : hItems(), hBackgroundImage(NULL), hBackgroundBrush(NULL), currentScreen(SCREEN_NUMBER), isChoiceRequired(false) { }
 
-StoryScreen::StoryScreen(const StoryScreen& SC)
+StoryScreen::StoryScreen(const StoryScreen& SC) : isChoiceRequired(false)
 {
 	// Resizing items' vector
 	int sz = SC.hItems.size();
@@ -129,6 +129,8 @@ StoryScreen& StoryScreen::operator=(const StoryScreen& SC)
 	else
 		hBackgroundBrush = NULL;
 
+	isChoiceRequired = SC.isChoiceRequired;
+
 	return *this;
 }
 
@@ -154,6 +156,11 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 	}
 	break;
+
+	case STOLEN_MONEY:
+	{
+	}
+	break;
 	}
 }
 
@@ -173,9 +180,29 @@ void StoryScreen::resizeMenu(int cx, int cy)
 
 	case START_GAME_SCREEN:
 	{
-		y = cy - 120;
-		const int ITEM_HEIGHT = 45, DISTANCE = 10, ITEM_WIDTH = 300;
-		MoveWindow(hItems[START_GAME_STAT_TEXT], cx - 250, y, 500, 220, TRUE);
+		MoveWindow(hItems[0], cx - 250, cy - 120, 500, 220, TRUE);
+	}
+	break;
+
+	case FIRST_VICTORY:
+	{
+		MoveWindow(hItems[0], cx - 250, cy - 120, 500, 150, TRUE);
+	}
+	break;
+
+	case STOLEN_MONEY:
+	{
+		const int ITEM_HEIGHT = 250, ITEM_WIDTH = 500, BUTTON_HEIGHT = 30, BUTTON_WIDTH = 150, DISTANCE = 10;
+		// Static windows
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_1], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_2], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_3], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_STAY], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_ESCAPE], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+
+		// Buttons
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_BUT_ESCAPE], cx - BUTTON_WIDTH - DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_BUT_STAY], cx + DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
 	}
 	break;
 	}
@@ -189,15 +216,32 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	{
 		switch (currentScreen)
 		{
-		case WELCOME_SCREEN:
+		case STOLEN_MONEY:
 		{
+			if ((HWND)lp == hItems[STOLEN_MONEY_SCREEN_BUT_ESCAPE])
+			{
+				// Player escapes and becomes free
+				game.setProgressionStage(Game::Progression::CHOSE_REBELLION);
+				game.getPlayer().setFreedom(true);
+				currentSubScreen = STOLEN_MONEY_SCREEN_STAT_ESCAPE;
+				isChoiceRequired = false;
 
-		}
-		break;
+				for (HWND item : hItems)
+					ShowWindow(item, SW_HIDE);
+				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+			}
 
-		case START_GAME_SCREEN:
-		{
+			if ((HWND)lp == hItems[STOLEN_MONEY_SCREEN_BUT_STAY])
+			{
+				// Player stays as gladiator on arena
+				game.setProgressionStage(Game::Progression::STAYED_AFTER_GLADIATOR_OFFER);
+				currentSubScreen = STOLEN_MONEY_SCREEN_STAT_STAY;
+				isChoiceRequired = false;
 
+				for (HWND item : hItems)
+					ShowWindow(item, SW_HIDE);
+				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+			}
 		}
 		break;
 		}
@@ -233,6 +277,48 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			game.setDisplayState(DisplayState::MENU);
 
+			updateWindow(hWnd);
+		}
+		break;
+
+		case FIRST_VICTORY:
+		{
+			// Destroying all windows
+			for (HWND hItem : hItems)
+				if (hItem != NULL)
+					DestroyWindow(hItem);
+			hItems.clear();
+
+			game.setDisplayState(DisplayState::MENU);
+
+			updateWindow(hWnd);
+		}
+		break;
+
+		case STOLEN_MONEY:
+		{
+			if (!isChoiceRequired)
+			{
+				// Destroying all windows
+				for (HWND hItem : hItems)
+					if (hItem != NULL)
+						DestroyWindow(hItem);
+				hItems.clear();
+
+				game.setDisplayState(DisplayState::MENU);
+			}
+			else if (currentSubScreen < STOLEN_MONEY_SCREEN_STAT_3)
+			{
+				currentSubScreen++;
+				for (HWND item : hItems)
+					ShowWindow(item, SW_HIDE);
+				ShowWindow(hItems[currentSubScreen], SW_SHOW);
+			}
+			else
+			{
+				ShowWindow(hItems[STOLEN_MONEY_SCREEN_BUT_ESCAPE], SW_SHOW);
+				ShowWindow(hItems[STOLEN_MONEY_SCREEN_BUT_STAY], SW_SHOW);
+			}
 			updateWindow(hWnd);
 		}
 		break;
@@ -300,7 +386,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 
 		case START_GAME_SCREEN:
 		{
-			if (item->hwndItem == hItems[START_GAME_STAT_TEXT])
+			if (item->hwndItem == hItems[0])
 			{
 				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
 				SetBkMode(hdc, TRANSPARENT);
@@ -317,6 +403,55 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 				DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_VCENTER | DT_LEFT | DT_WORDBREAK); // Display text
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 				return true;
+			}
+		}
+		break;
+
+		case FIRST_VICTORY:
+		{
+			if (item->hwndItem == hItems[0])
+			{
+				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+				SetBkMode(hdc, TRANSPARENT);
+
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
+				// Text padding
+				RECT rect = item->rcItem;
+				int padding = 10;
+				rect.left += padding;
+				rect.top += padding;
+				rect.right -= padding;
+				rect.bottom -= padding;
+
+				DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_VCENTER | DT_LEFT | DT_WORDBREAK); // Display text
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+				return true;
+			}
+		}
+		break;
+
+		case STOLEN_MONEY:
+		{
+			for (int i = STOLEN_MONEY_SCREEN_STAT_1; i <= STOLEN_MONEY_SCREEN_STAT_STAY; i++)
+			{
+				if (item->hwndItem == hItems[i])
+				{
+					SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+					SetBkMode(hdc, TRANSPARENT);
+
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
+					// Text padding
+					RECT rect = item->rcItem;
+					int padding = 10;
+					rect.left += padding;
+					rect.top += padding;
+					rect.right -= padding;
+					rect.bottom -= padding;
+
+					DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_VCENTER | DT_LEFT | DT_WORDBREAK); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+					return true;
+				}
 			}
 		}
 		break;
@@ -351,9 +486,34 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 
 	case START_GAME_SCREEN:
 	{
-		hItems.resize(START_GAME_SCREEN_ITEM_NUMBER);
+		hItems.resize(1);
 
-		hItems[START_GAME_STAT_TEXT] = CreateWindow("STATIC", l.getMessage(Localized::STORY_START_GAME_TEXT).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[0] = CreateWindow("STATIC", l.getMessage(Localized::STORY_START_GAME_TEXT).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+	}
+	break;
+
+	case FIRST_VICTORY:
+	{
+		hItems.resize(1);
+
+		hItems[0] = CreateWindow("STATIC", l.getMessage(Localized::STORY_FIRST_VICTORY_TEXT).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+	}
+	break;
+
+	case STOLEN_MONEY:
+	{
+		hItems.resize(STOLEN_MONEY_SCREEN_ITEM_NUMBER);
+
+		hItems[STOLEN_MONEY_SCREEN_STAT_1] = CreateWindow("STATIC", l.getMessage(Localized::STORY_STOLEN_MONEY_TEXT1).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[STOLEN_MONEY_SCREEN_STAT_2] = CreateWindow("STATIC", l.getMessage(Localized::STORY_STOLEN_MONEY_TEXT2).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[STOLEN_MONEY_SCREEN_STAT_3] = CreateWindow("STATIC", l.getMessage(Localized::STORY_STOLEN_MONEY_TEXT3).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[STOLEN_MONEY_SCREEN_STAT_ESCAPE] = CreateWindow("STATIC", l.getMessage(Localized::STORY_STOLEN_MONEY_ESCAPE).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[STOLEN_MONEY_SCREEN_STAT_STAY] = CreateWindow("STATIC", l.getMessage(Localized::STORY_STOLEN_MONEY_STAY).c_str(), WS_CHILD | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[STOLEN_MONEY_SCREEN_BUT_ESCAPE] = CreateWindow("BUTTON", l.getMessage(Localized::ESCAPE).c_str(), WS_CHILD | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+		hItems[STOLEN_MONEY_SCREEN_BUT_STAY] = CreateWindow("BUTTON", l.getMessage(Localized::STAY).c_str(), WS_CHILD | BS_OWNERDRAW | BS_PUSHBUTTON, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+		isChoiceRequired = true;
+		currentSubScreen = STOLEN_MONEY_SCREEN_STAT_1;
 	}
 	break;
 	}
@@ -363,4 +523,8 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 
 void StoryScreen::setCurrentScreen(Screen cs) { currentScreen = cs; }
 
+void StoryScreen::setCurrentSubScreen(int screen) { currentSubScreen = screen; }
+
 StoryScreen::Screen StoryScreen::getCurrentScreen() const { return currentScreen; }
+
+int StoryScreen::getCurrentSubScreen() const { return currentSubScreen; }

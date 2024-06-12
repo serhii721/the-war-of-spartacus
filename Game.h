@@ -42,6 +42,22 @@ public:
 		WORLD_MAP,
 		FIGHTING_ARENA
 	};
+	enum Progression
+	{
+		START,
+		FIRST_VICTORY,
+		ENOUGH_MONEY_FOR_FREEDOM,
+		STAYED_AFTER_GLADIATOR_OFFER,
+		STAYED_AFTER_CENTURION_OFFER,
+		GAINED_FREEDOM,
+		CHOSE_LEGION,
+		CHOSE_LEGION_AS_FREE,
+		JOINED_LEGION,
+		CHOSE_REBELLION,
+		CHOSE_REBELLION_AS_FREE,
+		JOINED_REBELLION,
+		PROGRESSION_ITEM_NUMBER
+	};
 	Game();
 	Game(const Game&);
 	Game& operator=(const Game&);
@@ -52,6 +68,7 @@ public:
 	void setFighting(const Fighting&);
 	void setStoryScreen(const StoryScreen&);
 	void setDisplayState(DisplayState);
+	void setProgressionStage(Progression);
 
 	Player& getPlayer();
 	WorldMap& getWorldMap() const;
@@ -59,6 +76,7 @@ public:
 	StoryScreen& getStoryScreen() const;
 	MenuManager& getMenuManager();
 	HFONT& getFont(FontSize);
+	Progression getProgressionStage() const;
 
 	void drawWindow(HWND, HDC, int, int);
 	void resizeWindow(int, int);
@@ -66,6 +84,7 @@ public:
 	bool stylizeWindow(HWND, UINT, WPARAM, LPARAM, LRESULT&);
 
 private:
+	Progression progressionStage;
 	Background currentBackground;
 	bool backgroundChanged;
 

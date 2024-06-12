@@ -7,6 +7,8 @@ private:
 
 	HBITMAP hBackgroundImage;
 	HBRUSH hBackgroundBrush;
+
+	bool isPlayerWon;
 public:
 	enum MenuItem
 	{

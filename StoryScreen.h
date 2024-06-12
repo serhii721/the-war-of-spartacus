@@ -10,11 +10,15 @@ private:
 	HBITMAP hBackgroundImage;
 	HBRUSH hBackgroundBrush;
 
+	bool isChoiceRequired;
+
 public:
 	enum Screen
 	{
 		WELCOME_SCREEN,
 		START_GAME_SCREEN,
+		FIRST_VICTORY,
+		STOLEN_MONEY,
 		SCREEN_NUMBER
 	};
 	enum WelcomeScreenItems
@@ -23,10 +27,16 @@ public:
 		WELCOME_SCREEN_STAT_TEXT,
 		WELCOME_SCREEN_ITEM_NUMBER
 	};
-	enum StartGameScreenItems
+	enum StolenMoneyScreenItems
 	{
-		START_GAME_STAT_TEXT,
-		START_GAME_SCREEN_ITEM_NUMBER
+		STOLEN_MONEY_SCREEN_STAT_1,
+		STOLEN_MONEY_SCREEN_STAT_2,
+		STOLEN_MONEY_SCREEN_STAT_3,
+		STOLEN_MONEY_SCREEN_STAT_ESCAPE,
+		STOLEN_MONEY_SCREEN_STAT_STAY,
+		STOLEN_MONEY_SCREEN_BUT_ESCAPE,
+		STOLEN_MONEY_SCREEN_BUT_STAY,
+		STOLEN_MONEY_SCREEN_ITEM_NUMBER
 	};
 
 	StoryScreen();
@@ -43,10 +53,13 @@ public:
 
 private:
 	Screen currentScreen;
+	int currentSubScreen;
 
 public:
 	void setCurrentScreen(Screen);
+	void setCurrentSubScreen(int);
 
 	Screen getCurrentScreen() const;
+	int getCurrentSubScreen() const;
 
 };
