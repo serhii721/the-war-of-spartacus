@@ -81,6 +81,26 @@ string formatSaveName(const string& input)
 	return name + " | " + levelFormatted + " | " + dateTimeFormatted;
 }
 
+int normalize(int value, int min, int max)
+{
+	return ((value - min) * 100 / (max - min + 1));
+}
+
+int calculateWeightedAverageFactor(const vector<int>& values, const vector<pair<int, int>>& ranges, const vector<int>& weights)
+{
+	int weightedSum = 0;
+	int totalWeight = 0;
+	int unusedValues = 0;
+	for (int i = 0; i < values.size(); i++)
+	{
+		int normalizedValue = normalize(values[i], ranges[i].first, ranges[i].second);
+		weightedSum += normalizedValue * weights[i];
+		totalWeight += weights[i];
+	}
+
+	return weightedSum / totalWeight;
+}
+
 // __________ NPC __________
 
 unique_ptr<NPC> generateNPC(int aproximateLevel)
@@ -499,82 +519,97 @@ int getArmourScaleLimit(Armour::ArmourType ttype, Armour::Stat sstat, Limit llim
 
 unique_ptr<Weapon> generateWeapon(int tier, Weapon::WeaponType ttype)
 {
+	Weapon::WeaponType type;
+	if (ttype == Weapon::WeaponType::NUMBER)
+		type = Weapon::WeaponType(rand() % (Weapon::NUMBER - 1));
+	else
+		type = ttype;
+
+	// Calculate aproximate cost for current tier
 	int minValue, maxValue;
 	switch (tier)
 	{
 	case 1:
-		minValue = MIN_VALUE_ITEM_LEVEL1;
-		maxValue = MAX_VALUE_ITEM_LEVEL1;
+		minValue = LOW_VALUE_ITEM_LEVEL1;
+		maxValue = HIGH_VALUE_ITEM_LEVEL1;
 		break;
 	case 2:
-		minValue = MIN_VALUE_ITEM_LEVEL2;
-		maxValue = MAX_VALUE_ITEM_LEVEL2;
+		minValue = LOW_VALUE_ITEM_LEVEL2;
+		maxValue = HIGH_VALUE_ITEM_LEVEL2;
 		break;
 	case 3:
-		minValue = MIN_VALUE_ITEM_LEVEL3;
-		maxValue = MAX_VALUE_ITEM_LEVEL3;
+		minValue = LOW_VALUE_ITEM_LEVEL3;
+		maxValue = HIGH_VALUE_ITEM_LEVEL3;
 		break;
 	case 4:
-		minValue = MIN_VALUE_ITEM_LEVEL4;
-		maxValue = MAX_VALUE_ITEM_LEVEL4;
+		minValue = LOW_VALUE_ITEM_LEVEL4;
+		maxValue = HIGH_VALUE_ITEM_LEVEL4;
 		break;
 	case 5:
-		minValue = MIN_VALUE_ITEM_LEVEL5;
-		maxValue = MAX_VALUE_ITEM_LEVEL5;
+		minValue = LOW_VALUE_ITEM_LEVEL5;
+		maxValue = HIGH_VALUE_ITEM_LEVEL5;
 		break;
 	default:
 		throw out_of_range("Invalid weapon level. Must be between 1 and 5");
 	}
-	int value = minValue + (rand() % (maxValue - minValue + 1));
 
-	if (ttype != Weapon::SHIELD)
+	// Range of values that weapons's statistics can acquire
+	vector<pair<int, int>> weaponStatsRanges = {
+		{MIN_WEAPON_DAMAGE, MIN_WEAPON_DAMAGE + WEAPON_RAND_DAM_ADDITION}, // Damage
+		{getWeaponScaleLimit(type, Attribute::STRENGTH, Limit::MIN), getWeaponScaleLimit(type, Attribute::STRENGTH, Limit::MAX)}, // Strength damage addition
+		{getWeaponScaleLimit(type, Attribute::DEXTERITY, Limit::MIN), getWeaponScaleLimit(type, Attribute::DEXTERITY, Limit::MAX)}, // Dexterity damage addition
+		{MIN_SHIELD_PROB_ADDITION, MIN_SHIELD_PROB_ADDITION + SHIELD_RAND_PROB_ADDITION}, // Shield block probability addition
+		{MIN_SHIELD_DEF_PERC_ADDITION, MIN_SHIELD_DEF_PERC_ADDITION + SHIELD_RAND_DEF_PERC_ADDITION}, // Shield block defense percent addition
+	};
+
+	// Weapon statistics, randomly generated in range
+	vector<int> weaponStatsValues;
+	for (int i = 0; i < weaponStatsRanges.size(); i++)
+		weaponStatsValues.push_back(weaponStatsRanges[i].first + rand() % (weaponStatsRanges[i].second - weaponStatsRanges[i].first + 1));
+
+	// Statistics weight
+	// Weapon values damage and scale
+	// Shield values defensife stats
+	vector<int> weights(weaponStatsValues.size(), 1);
+	if (type == Weapon::WeaponType::SHIELD)
 	{
-		Weapon::WeaponType newWeaponType = ttype != Weapon::NUMBER ? ttype : Weapon::WeaponType(rand() % (Weapon::NUMBER - 1));
-
-		int handsNeededForWeapon = 1;
-		// Axe and spear are two handed weapons, they have double the damage and value but occupy two weapon slots
-		if (newWeaponType == Weapon::WeaponType::AXE || newWeaponType == Weapon::WeaponType::SPEAR)
-		{
-			handsNeededForWeapon = 2;
-			value *= 2;
-		}
-
-		int maxStrAdditionPerc = getWeaponScaleLimit(newWeaponType, Attribute::STRENGTH, Limit::MAX),
-			maxDexAdditionPerc = getWeaponScaleLimit(newWeaponType, Attribute::DEXTERITY, Limit::MAX);
-
-		return make_unique<Weapon>(
-			Item(
-				Item::ItemType::WEAPON,
-				value
-			),
-			tier,
-			(MIN_WEAPON_DAMAGE + rand() % WEAPON_RAND_DAM_ADDITION) * handsNeededForWeapon, // Damage
-			// `Weapon::NUMBER - 1` is a shield
-			newWeaponType, // Type
-			0, // Damage addition
-			(maxStrAdditionPerc * 3 / 5 + (rand() % (maxStrAdditionPerc / 10 + 1))) * (tier * (100 / MAX_WEAPON_TIER)) / 100, // Strength damage addition
-			(maxDexAdditionPerc * 3 / 5 + (rand() % (maxDexAdditionPerc / 10 + 1))) * (tier * (100 / MAX_WEAPON_TIER)) / 100, // Dexterity damage addition
-			0, // Shield's probability addition
-			0, // Shield's defense percent addition
-			"" // Name
-		);
+		weights[0] = 0;
+		weights[1] = 0;
+		weights[2] = 0;
 	}
-	else // A shield only created manually
-		return make_unique<Weapon>(
-			Item(
-				Item::ItemType::WEAPON,
-				value
-			),
-			tier,
-			0, // Damage
-			Weapon::SHIELD,
-			0, // Damage addition
-			0, // Strength percent addition
-			0, // Dexterity percent addition
-			MIN_SHIELD_PROB_ADDITION + rand() % SHIELD_RAND_PROB_ADDITION, // Shield's probability addition
-			(MIN_SHIELD_DEF_PERC_ADDITION + rand() % SHIELD_RAND_DEF_PERC_ADDITION) * (tier * (100 / MAX_WEAPON_TIER)) / 100, // Shield's defense percent addition
-			"" // Name
-		);
+	else
+	{
+		weights[3] = 0;
+		weights[4] = 0;
+	}
+
+	// Average factor of all stats used to calculate value of weapon
+	int averageFactor = calculateWeightedAverageFactor(weaponStatsValues, weaponStatsRanges, weights);
+	int value;
+	// Axe and spear are two handed weapons, they have double the damage and greater value but occupy two weapon slots
+	if (type == Weapon::WeaponType::SPEAR || type == Weapon::WeaponType::AXE)
+	{
+		value = (100 + averageFactor) * maxValue / 100;
+		weaponStatsValues[0] *= 2;
+	}
+	else
+		value = (100 + averageFactor) * minValue / 100;
+
+	return make_unique<Weapon>(
+		Item(
+			Item::ItemType::WEAPON,
+			value
+		),
+		tier,
+		weaponStatsValues[0], // Damage
+		type,
+		0, // Damage addition
+		weaponStatsValues[1] * (tier * (100 / MAX_ARMOUR_TIER)) / 100, // Strength damage addition (adjusted for tier)
+		weaponStatsValues[2] * (tier * (100 / MAX_ARMOUR_TIER)) / 100, // Dexterity damage addition (adjusted for tier)
+		weaponStatsValues[3], // Shield's probability addition
+		weaponStatsValues[4] * (tier * (100 / MAX_ARMOUR_TIER)) / 100, // Shield's defense percent addition (adjusted for tier)
+		"" // Name
+	);
 }
 
 unique_ptr<Armour> generateArmour(int tier, Armour::ArmourType ttype)
@@ -598,33 +633,68 @@ unique_ptr<Armour> generateArmour(int tier, Armour::ArmourType ttype)
 		break;
 	}
 
+	// Calculating value
 	int minValue, maxValue;
 	switch (tier)
 	{
 	case 1:
-		minValue = MIN_VALUE_ITEM_LEVEL1;
-		maxValue = MAX_VALUE_ITEM_LEVEL1;
+		minValue = LOW_VALUE_ITEM_LEVEL1;
+		maxValue = HIGH_VALUE_ITEM_LEVEL1;
 		break;
 	case 2:
-		minValue = MIN_VALUE_ITEM_LEVEL2;
-		maxValue = MAX_VALUE_ITEM_LEVEL2;
+		minValue = LOW_VALUE_ITEM_LEVEL2;
+		maxValue = HIGH_VALUE_ITEM_LEVEL2;
 		break;
 	case 3:
-		minValue = MIN_VALUE_ITEM_LEVEL3;
-		maxValue = MAX_VALUE_ITEM_LEVEL3;
+		minValue = LOW_VALUE_ITEM_LEVEL3;
+		maxValue = HIGH_VALUE_ITEM_LEVEL3;
 		break;
 	case 4:
-		minValue = MIN_VALUE_ITEM_LEVEL4;
-		maxValue = MAX_VALUE_ITEM_LEVEL4;
+		minValue = LOW_VALUE_ITEM_LEVEL4;
+		maxValue = HIGH_VALUE_ITEM_LEVEL4;
 		break;
 	case 5:
-		minValue = MIN_VALUE_ITEM_LEVEL5;
-		maxValue = MAX_VALUE_ITEM_LEVEL5;
+		minValue = LOW_VALUE_ITEM_LEVEL5;
+		maxValue = HIGH_VALUE_ITEM_LEVEL5;
 		break;
 	default:
 		throw out_of_range("Invalid armour level. Must be between 1 and 5");
 	}
-	int value = minValue + (rand() % (maxValue - minValue + 1));
+	int medianValue = (minValue + maxValue) / 2;
+
+	// Range of values that armour's statistics can acquire
+	vector<pair<int, int>> armourStatsRanges = {
+		{MIN_ARMOUR_DEFENSE, MIN_ARMOUR_DEFENSE + ARMOUR_RAND_DEF_ADDITION}, // Defense
+		{getArmourScaleLimit(type, Armour::STR_ADDITION_PERC, Limit::MIN), getArmourScaleLimit(type, Armour::STR_ADDITION_PERC, Limit::MAX)}, // Strength defense addition
+		{getArmourScaleLimit(type, Armour::DEX_ADDITION_PERC, Limit::MIN), getArmourScaleLimit(type, Armour::DEX_ADDITION_PERC, Limit::MAX)}, // Dexterity defense addition
+		{getArmourScaleLimit(type, Armour::EVASION_PROB_ADDITION, Limit::MIN), getArmourScaleLimit(type, Armour::EVASION_PROB_ADDITION, Limit::MAX)}, // Evasion probability addition
+		{getArmourScaleLimit(type, Armour::STUN_PROB_SUBSTRACTION, Limit::MIN), getArmourScaleLimit(type, Armour::STUN_PROB_SUBSTRACTION, Limit::MAX)}, // Stun probability subtraction
+	};
+
+	// Armour statistics, randomly generated in range
+	vector<int> armourStatsValues;
+	for (int i = 0; i < armourStatsRanges.size(); i++)
+		armourStatsValues.push_back(armourStatsRanges[i].first + rand() % (armourStatsRanges[i].second - armourStatsRanges[i].first + 1));
+
+	// Statistics weight
+	// Light armour values dexterity scale and evasion chance more
+	// Heavy armour values strength scale and stun resistance more
+	vector<int> weights(armourStatsValues.size(), 1);
+	if (type == Armour::ArmourType::LIGHT)
+	{
+		weights[2] = 5;
+		weights[3] = 5;
+		weights[4] = 0;
+	}
+	else
+	{
+		weights[1] = 5;
+		weights[3] = 0;
+	}
+
+	// Average factor of all stats used to calculate value of armour
+	int averageFactor = calculateWeightedAverageFactor(armourStatsValues, armourStatsRanges, weights);
+	int value = (100 + averageFactor) * medianValue / 100;
 
 	return make_unique<Armour>(
 		Item(
@@ -632,13 +702,13 @@ unique_ptr<Armour> generateArmour(int tier, Armour::ArmourType ttype)
 			value
 		),
 		tier,
-		MIN_ARMOUR_DEFENSE + 5 + rand() % ARMOUR_RAND_DEF_ADDITION, // Defense
+		armourStatsValues[0], // Defense
 		type,
 		0, // Defense addition
-		(maxStrDefAddition * 3 / 5 + (rand() % maxStrDefAddition / 10 + 1)) * (tier * (100 / MAX_ARMOUR_TIER)) / 100, // Strength defense addition
-		(maxDexDefAddition * 3 / 5 + (rand() % maxDexDefAddition / 10 + 1)) * (tier * (100 / MAX_ARMOUR_TIER)) / 100, // Dexterity defense addition
-		evasionProbAddition,
-		stunProbSubstraction
+		armourStatsValues[1] * (tier * (100 / MAX_ARMOUR_TIER)) / 100, // Strength defense addition (adjusted for tier)
+		armourStatsValues[2] * (tier * (100 / MAX_ARMOUR_TIER)) / 100, // Dexterity defense addition (adjusted for tier)
+		armourStatsValues[3], // Evasion probability addition
+		armourStatsValues[4] // Stun probability subtraction
 	);
 }
 

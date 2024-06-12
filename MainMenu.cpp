@@ -1502,13 +1502,22 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (i = 0; i < 3; i++)
 				{
 					if (se[i]->rightHand)
+					{
 						se[i]->rightHand->update(nms->strength, nms->dexterity);
+						se[i]->rightHand->calculatePrice(nms->charisma, true);
+					}
 
 					if (se[i]->leftHand)
+					{
 						se[i]->leftHand->update(nms->strength, nms->dexterity);
+						se[i]->leftHand->calculatePrice(nms->charisma, true);
+					}
 
 					if (se[i]->armour)
+					{
 						se[i]->armour->update(nms->strength, nms->dexterity);
+						se[i]->armour->calculatePrice(nms->charisma, true);
+					}
 				}
 
 				game.setBackground(Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT);
