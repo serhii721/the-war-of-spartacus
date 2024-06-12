@@ -47,6 +47,14 @@ WorldMap::WorldMap(HWND hWnd, const vector<City>& C, int ccurrentCity) :
 	hItems[BUT_TRAVEL_LIST] = CreateWindow("BUTTON", l.getMessage(Localized::TRAVEL).c_str(),
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+	hItems[BUT_PLAYER_ICON_MAP] = CreateWindow("BUTTON", "",
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+	hItems[BUT_PLAYER_ICON_LIST] = CreateWindow("BUTTON", "",
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, 0, hInst, 0);
 }
 
 WorldMap::WorldMap(const WorldMap& WM) :
@@ -276,7 +284,7 @@ void WorldMap::resizeWindow(int cx, int cy)
 	{
 	default:case Game::Background::WORLD_MAP:
 	{
-		const int ITEM_HEIGHT = 40, ITEM_WIDTH = 300, BUT_WIDTH = 336, DISTANCE = 3;
+		const int ITEM_HEIGHT = 40, ITEM_WIDTH = 300, WINDOW_WIDTH = 336, BUT_WIDTH = 300, DISTANCE = 3;
 		const int FRAME_HEIGHT = 28, FRAME_WIDTH = 110;
 
 		MoveWindow(hItems[BUT_ROME_MAP], 417, 519, FRAME_WIDTH, FRAME_HEIGHT, TRUE);
@@ -294,13 +302,72 @@ void WorldMap::resizeWindow(int cx, int cy)
 		x = 982, y = 126;
 		for (i = BUT_ROME_LIST; i <= BUT_MILAN_LIST; i++)
 		{
-			MoveWindow(hItems[i], x, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
+			MoveWindow(hItems[i], x + 36, y, BUT_WIDTH, ITEM_HEIGHT, TRUE);
 			y += ITEM_HEIGHT + DISTANCE;
 		}
 
-		MoveWindow(hItems[STAT_MAP], x, 9, BUT_WIDTH, 72, TRUE);
+		MoveWindow(hItems[STAT_MAP], x, 9, WINDOW_WIDTH, 72, TRUE);
 
-		MoveWindow(hItems[BUT_TRAVEL_LIST], x, 644, BUT_WIDTH, 67, TRUE);
+		MoveWindow(hItems[BUT_TRAVEL_LIST], x, 644, WINDOW_WIDTH, 67, TRUE);
+
+		x = 982;
+		switch (currentCity)
+		{
+		case Cities::ROME:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 132, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 387, 519, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::NAPLES:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 175, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 512, 602, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::METAPONTO:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 218, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 699, 665, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::BOJANO:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 261, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 528, 528, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::ANCONA:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 304, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 428, 315, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::PERUGIA:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 347, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 365, 365, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::FLORENCE:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 390, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 266, 335, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::BOLOGNA:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 433, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 284, 238, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::GENOA:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 476, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 117, 207, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::AQUILEIA:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 519, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 321, 108, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+
+		case Cities::MILAN:
+			MoveWindow(hItems[BUT_PLAYER_ICON_LIST], x, 562, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 89, 91, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
+			break;
+		}
 	}
 	break;
 	}
@@ -317,6 +384,12 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			// Selecting city
 			{
+				if ((HWND)lp == hItems[BUT_PLAYER_ICON_LIST])
+					selectCity(hWnd, static_cast<WorldMap::Item>(currentCity));
+
+				if ((HWND)lp == hItems[BUT_PLAYER_ICON_MAP])
+					selectCity(hWnd, static_cast<WorldMap::Item>(currentCity));
+
 				if ((HWND)lp == hItems[BUT_ROME_LIST] || (HWND)lp == hItems[BUT_ROME_MAP])
 					selectCity(hWnd, BUT_ROME_MAP);
 
@@ -433,6 +506,17 @@ bool WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE));
 				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				return true;
+			}
+			if (item->hwndItem == hItems[BUT_PLAYER_ICON_LIST] || item->hwndItem == hItems[BUT_PLAYER_ICON_MAP])
+			{
+				// Select image
+				hBackgroundImage = (HBITMAP)LoadImage(0, "Data/Image/smallIcon.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+				// Filling background with selected image
+				hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+				FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
+				// Drawing edge
+				DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
 				return true;
 			}
 			return false;
