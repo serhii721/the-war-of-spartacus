@@ -819,20 +819,35 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				for (HWND hItem : hItems)
 					ShowWindow(hItem, SW_HIDE);
 
-				// If it's player's first victory - display story screen
-				if (game.getProgressionStage() == Game::Progression::START && isPlayerWon)
+				// Story progression
+				Game::Progression currentStage = game.getProgressionStage();
+				switch (currentStage)
 				{
-					game.setProgressionStage(Game::Progression::FIRST_VICTORY);
-					game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::FIRST_VICTORY);
+				case Game::Progression::START: // If it's player's first victory - display story screen
+					if (isPlayerWon)
+					{
+						game.setProgressionStage(Game::Progression::FIRST_VICTORY);
+						game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::FIRST_VICTORY);
+					}
+					break;
+
+				case Game::Progression::FIRST_VICTORY: // If current story stage is that player's saving up money for freedom
+					if (game.getPlayer().getInventory()->getItemQuantity(0) >= MONEY_NEEDED_FOR_FREEDOM) // If player has enough money
+					{
+						game.setProgressionStage(Game::Progression::ENOUGH_MONEY_FOR_FREEDOM);
+						game.getPlayer().getInventory()->removeItem(0, MONEY_NEEDED_FOR_FREEDOM);
+						game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::STOLEN_MONEY);
+					}
+					break;
+
+				case Game::Progression::STAYED_AFTER_GLADIATOR_OFFER: // If player didn't escape after losing money
+					if (isPlayerWon)
+					{
+						game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::CENTURION_OFFER);
+					}
+					break;
 				}
 
-				if (game.getProgressionStage() == Game::Progression::FIRST_VICTORY && // If current story stage is that player's saving up money for freedom
-					game.getPlayer().getInventory()->getItemQuantity(0) >= MONEY_NEEDED_FOR_FREEDOM) // If player has enough money for freedom
-				{
-					game.setProgressionStage(Game::Progression::ENOUGH_MONEY_FOR_FREEDOM);
-					game.getPlayer().getInventory()->removeItem(0, MONEY_NEEDED_FOR_FREEDOM);
-					game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::STOLEN_MONEY);
-				}
 				updateWindow(hWnd);
 			}
 		}

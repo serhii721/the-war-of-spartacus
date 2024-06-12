@@ -1759,7 +1759,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if (selectedLanguage != (Language)SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_GETCURSEL, 0, 0))
 				{
-					selectedLanguage != (Language)SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_GETCURSEL, 0, 0);
+					selectedLanguage = (Language)SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_GETCURSEL, 0, 0);
 					changedSettings = true;
 					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_SHOW);
