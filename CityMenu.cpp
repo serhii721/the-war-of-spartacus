@@ -873,6 +873,7 @@ void CityMenu::resizeMenu(int cx, int cy)
 		y = DISTANCE * 2 + ITEM_HEIGHT * 2;
 		x = cx - BUT_WIDTH * 2 - DISTANCE * 2;
 
+		MoveWindow(hSubMenuItems[ARENA_FIGHT_STATIC_OPPONENTS], x, ITEM_HEIGHT, BUT_WIDTH, ITEM_HEIGHT + DISTANCE, TRUE);
 		// Opponents list
 		for (i = ARENA_FIGHT_BUT_OPPONENT1; i <= ARENA_FIGHT_BUT_OPPONENT15; i++)
 		{
@@ -1493,6 +1494,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				// Creating new sub menu items
 				hSubMenuItems.resize(ARENA_FIGHT_ITEM_NUMBER);
+				hSubMenuItems[ARENA_FIGHT_STATIC_OPPONENTS] = CreateWindow("STATIC", l.getMessage(Localized::CHOOSE_OPPONENT).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				// Outputing player
 				{
@@ -3899,9 +3901,17 @@ void CityMenu::inspectItem(HWND hWnd, unique_ptr<Item> pItem, int quantity)
 		if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
 		{
 			MBName += l.getWeaponTypeName(*weapon) + " (" + l.getMessage(Localized::ITEM_TIER) + "  " + to_string(weapon->getTier()) + ")";
-			MBDescription += l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getTotalDamage()) + "\n";
-			MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(weapon->getStrengthAdditionPercentage()) + "%" + "\n";
-			MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(weapon->getDexterityAdditionPercentage()) + "%" + "\n";
+			if (weapon->getWeaponType() == Weapon::WeaponType::SHIELD)
+			{
+				MBDescription += l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(weapon->getShieldDefPercentAddition()) + "%" + "\n";
+				MBDescription += l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(weapon->getShieldProbAddition()) + "%" + "\n";
+			}
+			else
+			{
+				MBDescription += l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getTotalDamage()) + "\n";
+				MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(weapon->getStrengthAdditionPercentage()) + "%" + "\n";
+				MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(weapon->getDexterityAdditionPercentage()) + "%" + "\n";
+			}
 		}
 		break;
 
