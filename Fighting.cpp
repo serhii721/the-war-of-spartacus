@@ -463,6 +463,9 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	// If player lost reward is 10 times smaller
 	if (status == FightStatus::PLAYER_SURRENDERED || status == FightStatus::PLAYER_LOST)
 		gold /= 10;
+	// If player was promoted by lanista he gains another 20% gold
+	if (game.getWorldMap().getCurrentCity().getPromotionStatus())
+		gold = gold * 6 / 5;
 	// Give player gold
 	rPlayerInventory.addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), gold);
 

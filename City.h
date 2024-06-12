@@ -7,6 +7,7 @@ private:
 	Arena arena;
 	int level;
 	HarmlessNPC trader;
+	bool promotionAchieved;
 
 public:
 	City();
@@ -17,9 +18,11 @@ public:
 
 	void setName(int);
 	void setLevel(int);
+	void setPromotion(bool);
 
 	int getNameIndex() const;
 	Arena& getArena();
 	int getLevel() const;
 	HarmlessNPC& getTrader();
+	bool getPromotionStatus() const;
 };
