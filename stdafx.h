@@ -98,6 +98,9 @@ string formatSaveName(const string& input_);
 int normalize(int value_, int min_, int max_);
 int calculateWeightedAverageFactor(const vector<int>& values_, const vector<pair<int, int>>& ranges_, const vector<int>& weights_);
 
+// __________ Statistics __________
+int calculateFameForLevel(int level_);
+
 // __________ NPC __________
 unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);
 unique_ptr<HarmlessNPC> generateTrader(int level_ = MIN_TRADER_LEVEL);

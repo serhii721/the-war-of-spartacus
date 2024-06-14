@@ -155,6 +155,11 @@ int calculateWeightedAverageFactor(const vector<int>& values, const vector<pair<
 	return weightedSum / totalWeight;
 }
 
+int calculateFameForLevel(int level)
+{
+	return level * FAME_FOR_LEVEL_MULTIPLIER;
+}
+
 // __________ NPC __________
 
 unique_ptr<NPC> generateNPC(int aproximateLevel)
@@ -297,7 +302,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 				attributes[4], // Wisdom
 				attributes[5], // Charisma
 				rand() % (MAX_AGE - MIN_AGE) + MIN_AGE,
-				BASIC_FAME * level + rand() % 200
+				calculateFameForLevel(leveling.getLevel()) + (rand() % FAME_DISPERSION * leveling.getLevel() / 100)
 			),
 			BASIC_HP,
 			BASIC_HP,

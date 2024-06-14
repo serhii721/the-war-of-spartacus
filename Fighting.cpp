@@ -415,67 +415,78 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	rPlayer.gainExperience(experience);
 
 	// # 3.2 Fame reward
-	// Fame number calculates based on experience multiplied by difference from opponent's fame
-	int fame = (experience + rOpponent.getFame()) / 10;
-	double fameMultiplier = 1.0;
-	if (status == FightStatus::OPPONENT_LOST || status == FightStatus::OPPONNENT_SURRENDERED)
+	// Fame number calculates based on fame equilibrium for current level and opponent's fame
+	int currentFame = rPlayer.getFame();
+	int opponentFame = rOpponent.getFame();
+	int fameEquilibrium = calculateFameForLevel(rPlayer.getLevel());
+	int fameGainedForEquilibrium = 0;
+	int fameGainedFromOpponent = 0;
+	int gainedFame;
+
+	// If player's current fame is lower than it's supposed to be for current level - gain additional fame
+	if (currentFame < fameEquilibrium)
+		fameGainedForEquilibrium = ((currentFame + fameEquilibrium) / 2) - currentFame;
+
+	if (fameGainedForEquilibrium > MAX_FAME_GAINED_FOR_EQUILIBRIUM)
+		fameGainedForEquilibrium = MAX_FAME_GAINED_FOR_EQUILIBRIUM;
+
+	// Calculate fame gained from opponent's power based on winner
+	switch (status)
 	{
-		int playerFame = rPlayer.getFame();
-		int opponentFame = rOpponent.getFame();
-		int fameDifference;
-		if (playerFame > opponentFame)
-		{
-			fameDifference = playerFame - opponentFame;
-			do
-			{
-				fameMultiplier -= 0.1;
-				fameDifference -= 100;
-			} while (fameDifference > 0);
-		}
+	case OPPONENT_LOST:case OPPONNENT_SURRENDERED:
+		if (currentFame < opponentFame)
+			fameGainedFromOpponent = opponentFame / 5;
 		else
-		{
-			fameDifference = opponentFame - playerFame;
-			do
-			{
-				fameMultiplier += 0.1;
-				fameDifference -= 100;
-			} while (fameDifference > 0);
-		}
-		if (fameMultiplier < MIN_FAME_MULTIPLIER)
-			fameMultiplier = MIN_FAME_MULTIPLIER;
-		if (fameMultiplier > MAX_FAME_MULTIPLIER)
-			fameMultiplier = MAX_FAME_MULTIPLIER;
-		fame *= fameMultiplier;
+			fameGainedFromOpponent = opponentFame / 10;
+		break;
+	case PLAYER_LOST:case PLAYER_SURRENDERED:
+		if (currentFame < opponentFame)
+			fameGainedFromOpponent = opponentFame / 10;
+		break;
 	}
-	else
-		fame /= 10;
+	if (fameGainedFromOpponent > MAX_FAME_GAINED_FROM_OPPONENT)
+		fameGainedFromOpponent = MAX_FAME_GAINED_FROM_OPPONENT;
 
-
-	rPlayer.setFame(rPlayer.getFame() + fame);
+	// Total gained fame - fame for equilibrium + fame from opponent's fame + random number (0 - 200) adjusted for current level
+	gainedFame = fameGainedForEquilibrium + fameGainedFromOpponent + (rand() % FAME_DISPERSION * rPlayer.getLevel() / 100);
+	rPlayer.setFame(rPlayer.getFame() + gainedFame);
 
 	// #3.3 Gold reward
-	// Calculate reward based on city
 	Inventory& rPlayerInventory = *rPlayer.getInventory();
 	int traderLevel = game.getWorldMap().getCurrentCity().getTrader().getLevel();
-	int gold;
+	int goldForCity;
+	double goldForFameMultiplier = 1.0;
+	int gainedGold;
+	// Calculate reward based on city
 	switch (traderLevel)
 	{
-	case 1: gold = LOW_VALUE_ITEM_LEVEL1; break;
-	case 2: gold = LOW_VALUE_ITEM_LEVEL2; break;
-	case 3: gold = LOW_VALUE_ITEM_LEVEL3; break;
-	case 4: gold = LOW_VALUE_ITEM_LEVEL4; break;
-	case 5: gold = LOW_VALUE_ITEM_LEVEL5; break;
+	case 1: goldForCity = LOW_VALUE_ITEM_LEVEL1; break;
+	case 2: goldForCity = LOW_VALUE_ITEM_LEVEL2 / 2; break;
+	case 3: goldForCity = LOW_VALUE_ITEM_LEVEL3 / 2; break;
+	case 4: goldForCity = LOW_VALUE_ITEM_LEVEL4 / 2; break;
+	case 5: goldForCity = LOW_VALUE_ITEM_LEVEL5 / 2; break;
 	}
-	// Fame difference also influences gold reward
-	gold *= fameMultiplier;
+
+	// Calculate reward multiplier based on fame
+	currentFame = rPlayer.getFame();
+	while (currentFame > 0)
+	{
+		currentFame -= FAME_FOR_PERC_GOLD_MULTIPLIER;
+		goldForFameMultiplier += 0.01;
+	}
+
+	gainedGold = goldForCity * goldForFameMultiplier;
+
 	// If player lost reward is 10 times smaller
 	if (status == FightStatus::PLAYER_SURRENDERED || status == FightStatus::PLAYER_LOST)
-		gold /= 10;
+		gainedGold /= 10;
+
 	// If player was promoted by lanista he gains another 20% gold
 	if (game.getWorldMap().getCurrentCity().getPromotionStatus())
-		gold = gold * 6 / 5;
+		gainedGold = gainedGold * 6 / 5;
+
 	// Give player gold
-	rPlayerInventory.addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), gold);
+	rPlayerInventory.addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), gainedGold);
 
 	// #3.4 Loot reward
 	bool gainedLoot = false;
@@ -569,11 +580,11 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	else
 		logStr += ". " + l.getMessage(Localized::YOU_HAVE_LOST) + "\r\n\r\n";
 	// Fame and experience
-	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(fame) + " " + l.getMessage(Localized::FAME_GENITIVE) + "\r\n\r\n" +
+	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(gainedFame) + " " + l.getMessage(Localized::FAME_GENITIVE) + "\r\n\r\n" +
 		l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(experience) + " " + l.getMessage(Localized::EXPERIENCE_GENITIVE) +
 		" (" + to_string(rPlayer.getExperience()) + " / " + to_string(rPlayer.calculateExperienceForOneLevel(rPlayer.getLevel() + 1)) + ")\r\n\r\n";
 	// Gold
-	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(gold) + " " + l.getMessage(Localized::GOLD_GENITIVE) + "\r\n\r\n";
+	logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(gainedGold) + " " + l.getMessage(Localized::GOLD_GENITIVE) + "\r\n\r\n";
 	playSound(SoundEnum::SOUND_GOLD);
 	// Loot
 	if (gainedLoot)
