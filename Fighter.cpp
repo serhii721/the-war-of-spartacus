@@ -213,6 +213,7 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 	if (isRightHandOccupied() && rightHand->getWeaponType() != Weapon::SHIELD)
 		weaponDamage += rightHand->getTotalDamage();
 
+	// Increase damage by stats value
 	statsDamage = (strength + dexterity) * 2;
 	if (statsDamage > MAX_DAMAGE_FROM_STATS)
 		statsDamage = MAX_DAMAGE_FROM_STATS;
@@ -258,8 +259,15 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 				opponentsTotalDamage = rOpponent.leftHand->getTotalDamage();
 				break;
 			}
+			// Increase damage by stats value
+			int opponentsStatsDamage = (strength + dexterity) * 2;
+			if (opponentsStatsDamage > MAX_DAMAGE_FROM_STATS)
+				opponentsStatsDamage = MAX_DAMAGE_FROM_STATS;
+			// If fighter doesn't have any weapon equipped - use hard stats
 			if (opponentsTotalDamage == 0)
 				opponentsTotalDamage = (rOpponent.strength + rOpponent.dexterity) / 3;
+			else
+				opponentsTotalDamage += opponentsStatsDamage;
 
 			// (Opponent damage - Player defense) is reduced to prolong a fight
 			rDamage = opponentsTotalDamage * (100 - getDefense()) / 100 * // Basic damage formula
