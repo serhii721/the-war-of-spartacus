@@ -255,13 +255,13 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	// Show Player and Opponent defense
 	if (rPlayer.getArmour())
 		defense = rPlayer.getArmour()->getTotalDefense();
-	buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(defense);
+	buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(defense) + " %";
 	SendMessage(hItems[MenuItem::STATIC_PLAYER_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 	defense = 0;
 	if (rOpponent.getArmour())
 		defense = rOpponent.getArmour()->getTotalDefense();
-	buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(defense);
+	buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(defense) + " %";
 	SendMessage(hItems[MenuItem::STATIC_OPPONENT_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 	// # 1. Determining whether the opponent attacks first

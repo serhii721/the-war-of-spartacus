@@ -19,22 +19,17 @@ const int MIN_AGE = 20, MAX_AGE = 60;
 const int MIN_FAME = 0, BASIC_FAME = 100;
 // Fighter's statistics
 const int BASIC_HP = 100;
+const int MAX_ADDITIONAL_HP_STRENGTH = 30;
+const int MAX_ADDITIONAL_HP_CONSTITUTION = 70;
 // Leveling statistics
 const int MIN_LEVEL = 1;
 const int MAX_LEVEL = 100;
-const int EXPERIENCE_PER_LEVEL = 200;
+const int EXPERIENCE_PER_LEVEL = 200; // Experience needed for 1 level up (first level, then its increases by percentage)
 const int EXPERIENCE_PER_LEVEL_INCREASE_PERC = 2; // 2.0% more experience needed for every next level from 1
 const int ATTRIBUTES_PER_LEVEL = 5;
 const double MIN_EXPERIENCE_MULTIPLIER = 0.1;
 const double MAX_EXPERIENCE_MULTIPLIER = 2.5;
-const double MIN_FAME_MULTIPLIER = 0.1;
-const double MAX_FAME_MULTIPLIER = 2.5;
-const int FAME_FOR_LEVEL_MULTIPLIER = 100;
-const int FAME_DISPERSION = 200;
-const int FAME_GAIN_FROM_OPPONENT_PERC = 10; // 10.0%
-const int MAX_FAME_GAINED_FOR_EQUILIBRIUM = 200;
-const int MAX_FAME_GAINED_FROM_OPPONENT = 200;
-const int FAME_FOR_PERC_GOLD_MULTIPLIER = 150; // Every x fame increases player's gold reward by 1%
+
 // Trader's statistics
 const int MIN_TRADER_LEVEL = 1, MAX_TRADER_LEVEL = 5; // Trader level affects it's goods (weapon and armour level)
 
@@ -43,10 +38,8 @@ const int MAX_INVENTORY_SIZE = 14;
 
 // Item's statistics
 const int BASIC_ITEM_VALUE = 1;
-// Charisma of the player influences prices of item. At 0 charisma price is increased by 30%. At 100 charisma price is decrease by 30%.
-const int MAX_PRICE_MULTIPLIER = 30;
-// value for weapon and armour of different levels
-const int LOW_VALUE_ITEM_LEVEL1 = 100, HIGH_VALUE_ITEM_LEVEL1 = 300,
+const int MAX_PRICE_MULTIPLIER = 30; // Charisma of the player influences prices of item. At 0 charisma price is increased by 30%. At 100 charisma price is decrease by 30%.
+const int LOW_VALUE_ITEM_LEVEL1 = 100, HIGH_VALUE_ITEM_LEVEL1 = 300, // value for weapon and armour of different levels
 		  LOW_VALUE_ITEM_LEVEL2 = 300, HIGH_VALUE_ITEM_LEVEL2 = 500,
 	  	  LOW_VALUE_ITEM_LEVEL3 = 500, HIGH_VALUE_ITEM_LEVEL3 = 700,
 		  LOW_VALUE_ITEM_LEVEL4 = 700, HIGH_VALUE_ITEM_LEVEL4 = 1000,
@@ -59,15 +52,17 @@ const int MIN_WEAPON_DAMAGE = 20;
 const int WEAPON_RAND_DAM_ADDITION = 6;
 const Weapon::WeaponType BASIC_WEAPON_TYPE = Weapon::SWORD;
 const int MIN_SHIELD_PROB_ADDITION = 30;
-const int SHIELD_RAND_PROB_ADDITION = 30;
-const int MIN_SHIELD_DEF_PERC_ADDITION = 40;
-const int SHIELD_RAND_DEF_PERC_ADDITION = 45;
+const int SHIELD_RAND_PROB_ADDITION = 10;
+const int MIN_SHIELD_DEF_PERC_ADDITION = 30;
+const int SHIELD_RAND_DEF_PERC_ADDITION = 20;
 
 // Armour's statistics
 const int MIN_ARMOUR_TIER = MIN_TRADER_LEVEL,
 		  MAX_ARMOUR_TIER = MAX_TRADER_LEVEL;
 const Armour::ArmourType BASIC_ARMOUR_TYPE = Armour::LIGHT;
 /*
+ * OUTDATED
+ * TODO: UPDATE
  * Maximum values of the parameters are assumed.
  *
  * HP - (Damage - Defense).
@@ -103,15 +98,22 @@ const int ARMOUR_RAND_DEF_ADDITION = 6;
 
 // Fight's statistics
 const int ONE_HUNDRED_PERCENT = 1000; // 100.0%
-const int DAMAGE_REDUCTION_PERCENT = 375; // 37.5%
+const int DAMAGE_REDUCTION_PERCENT = 375; // 1000 = 100%
 const int WEAPON_MAX_RAND_DMG_SPREAD_PERCENT = 10; // 10.0%
+const int MAX_DAMAGE_FROM_STATS = 70; // Strength and dexterity
 const int VICTORY_LOOT_CHANCE = 30; // 30.0%
+const int FAME_FOR_LEVEL_MULTIPLIER = 100; // Used to calculateFameEquilibrium. Level * FAME_FOR_LEVEL_MULTIPLIER = fameEquilibrium
+const int FAME_DISPERSION = 200; // rand() % FAME_DISPERSION -- gained fame for fight (amongst other modifiers)
+const int FAME_GAIN_FROM_OPPONENT_PERC = 10; // 10.0%
+const int MAX_FAME_GAINED_FOR_EQUILIBRIUM = 200;
+const int MAX_FAME_GAINED_FROM_OPPONENT = 200;
+const int FAME_FOR_PERC_GOLD_MULTIPLIER = 150; // Every x fame increases player's gold reward by 1%
 
 // Game settings
 const int FIGHT_SLEEP_TIME = 1000; // Delay between attacks in fight
 const int STORY_SLEEP_TIME = 300; // Delay between story screen display
 const int STARTING_ADDITIONAL_ATTRIBUTES = 30;
-const int ATTRIBUTE_MAX_DIFFERENCE = 10; // How much a player can increase attributes relative to average attributes level
+const int ATTRIBUTE_MAX_DIFFERENCE = 20; // How much a player can increase attributes relative to average attributes level
 const int MONEY_NEEDED_FOR_FREEDOM = 1500; // How much gold player needs to progress story
 const int CHARISMA_FOR_PROMOTION = 30; // How much charisma player needs to gain promotion on arena from lanista
 

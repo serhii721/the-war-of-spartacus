@@ -44,9 +44,9 @@ PlayerAttributeStorage& PlayerAttributeStorage::operator=(const PlayerAttributeS
 void PlayerAttributeStorage::updateMaxHP()
 {
 	if (hp == fullHP)
-		hp = fullHP = 100 + (strength / 10) + (constitution * 3 / 10);
+		hp = fullHP = 100 + (MAX_ADDITIONAL_HP_STRENGTH * strength / 100) + (MAX_ADDITIONAL_HP_CONSTITUTION * constitution / 100);
 	else
-		fullHP = 100 + (strength / 10) + (constitution * 3 / 10);
+		fullHP = 100 + (MAX_ADDITIONAL_HP_STRENGTH * strength / 100) + (MAX_ADDITIONAL_HP_CONSTITUTION * constitution / 100);
 }
 
 double PlayerAttributeStorage::calculateAverage()
