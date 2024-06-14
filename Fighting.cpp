@@ -511,6 +511,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 		switch (itemIndex)
 		{
 		case 0: // Right hand
+			if (!rOpponent.getRightHand()) break;
+
 			// Update scales for player's stats
 			rOpponent.getRightHand()->update(rPlayer.getStrength(), rPlayer.getDexterity());
 			// Get weapon type for replacement
@@ -529,6 +531,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 			break;
 
 		case 1: // Left hand
+			if (!rOpponent.getLeftHand()) break;
+
 			// Update scales for player's stats
 			rOpponent.getLeftHand()->update(rPlayer.getStrength(), rPlayer.getDexterity());
 			// Get weapon type for replacement
@@ -547,6 +551,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 			break;
 
 		case 2: // Armour
+			if (!rOpponent.getArmour()) break;
+
 			// Update scales for player's stats
 			rOpponent.getArmour()->update(rPlayer.getStrength(), rPlayer.getDexterity());
 			itemID = rOpponent.getArmour()->getID();

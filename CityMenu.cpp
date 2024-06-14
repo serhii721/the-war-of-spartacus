@@ -448,7 +448,28 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			SendMessage(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		}
 
-		// 2. Trader inventory
+		// 2. Player equipment
+		SendMessage(hSubItems[MARKET_STAT_EQUIPMENT], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EQUIPMENT).c_str());
+		// Right hand
+		if (rPlayer.getRightHand())
+			buf = l.getWeaponTypeName(*rPlayer.getRightHand());
+		else
+			buf = l.getMessage(Localized::RIGHT_HAND);
+		SendMessage(hSubItems[MARKET_STAT_RIGHT_HAND], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		// Left hand
+		if (rPlayer.getLeftHand())
+			buf = l.getWeaponTypeName(*rPlayer.getLeftHand());
+		else
+			buf = l.getMessage(Localized::LEFT_HAND);
+		SendMessage(hSubItems[MARKET_STAT_LEFT_HAND], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+		// Armour
+		if (rPlayer.getArmour())
+			buf = l.getArmourTypeName(*rPlayer.getArmour());
+		else
+			buf = l.getMessage(Localized::ARMOUR);
+		SendMessage(hSubItems[MARKET_STAT_ARMOUR], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+		// 3. Trader inventory
 		HarmlessNPC& rTrader = game.getWorldMap().getCurrentCity().getTrader();
 		Inventory& rTraderInventory = *rTrader.getInventory();
 		inventorySize = rTraderInventory.size();
@@ -471,6 +492,11 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				buf += " (" + to_string(quantity) + ")";
 			SendMessage(hSubItems[MARKET_STAT_TRADER_ITEM1 + i], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		}
+
+		// Item interaction buttons
+		SendMessage(hSubItems[MARKET_BUT_UNEQUIP_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::UNEQUIP_ITEM).c_str());
+		SendMessage(hSubItems[MARKET_BUT_EQUIP_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EQUIP_ITEM).c_str());
+		SendMessage(hSubItems[MARKET_BUT_DESTROY_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::DESTROY_ITEM).c_str());
 
 		// 3. Other windows
 		SendMessage(hSubItems[MARKET_STAT_MARKET], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::MARKET).c_str());
@@ -975,16 +1001,17 @@ void CityMenu::resizeMenu(int cx, int cy)
 
 	case Game::Background::CITY_MENU_MARKET:
 	{
-		const int BIG_STAT_WIDTH = 505, STAT_HEIGHT = 30,
+		const int BIG_STAT_WIDTH = 478, STAT_HEIGHT = 30,
 				  STAT_WIDTH = 278,
 				  DISTANCE = 9,
+				  ITEMS_DISTANCE = 0,
 				  ITEM_BUT_WIDTH = 120, ITEM_BUT_HEIGHT = 97,
 				  ITEM_STAT_WIDTH = 120, ITEM_STAT_HEIGHT = 20;
 
-		MoveWindow(hSubItems[MARKET_STAT_MARKET], cx - BIG_STAT_WIDTH / 2, STAT_HEIGHT + DISTANCE, BIG_STAT_WIDTH, STAT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[MARKET_STAT_MARKET], cx - BIG_STAT_WIDTH / 2, DISTANCE, BIG_STAT_WIDTH, STAT_HEIGHT, TRUE);
 
 		// Player's inventory
-		x = DISTANCE * 2, y = ITEM_BUT_HEIGHT + DISTANCE * 2;
+		x = DISTANCE * 2, y = ITEM_BUT_HEIGHT;
 		MoveWindow(hSubItems[MARKET_STAT_INVENTORY], x, y - STAT_HEIGHT - DISTANCE, BIG_STAT_WIDTH, STAT_HEIGHT, TRUE);
 		Inventory& playerInventory = *game.getPlayer().getInventory();
 		int inventorySize = playerInventory.size();
@@ -993,16 +1020,29 @@ void CityMenu::resizeMenu(int cx, int cy)
 			MoveWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i], x, y, ITEM_BUT_WIDTH, ITEM_BUT_HEIGHT, TRUE);
 			MoveWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i], x, y + ITEM_BUT_HEIGHT, ITEM_STAT_WIDTH, ITEM_STAT_HEIGHT, TRUE);
 
-			x += ITEM_BUT_WIDTH + DISTANCE;
+			x += ITEM_BUT_WIDTH + ITEMS_DISTANCE;
 			if (i % 4 == 3)
 			{
-				x -= (ITEM_BUT_WIDTH + DISTANCE) * 4;
-				y += ITEM_BUT_WIDTH + DISTANCE;
+				x -= (ITEM_BUT_WIDTH + ITEMS_DISTANCE) * 4;
+				y += ITEM_BUT_WIDTH + ITEMS_DISTANCE;
 			}
 		}
 
+		// Player's equipment
+		x = 18, y = 576;
+		MoveWindow(hSubItems[MARKET_STAT_EQUIPMENT], x, y, 378, STAT_HEIGHT, TRUE);
+		y += STAT_HEIGHT + 2;
+		MoveWindow(hSubItems[MARKET_BUT_RIGHT_HAND], x, y, ITEM_BUT_WIDTH, ITEM_BUT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[MARKET_STAT_RIGHT_HAND], x, y + ITEM_BUT_HEIGHT, ITEM_STAT_WIDTH, ITEM_STAT_HEIGHT, TRUE);
+		x += ITEM_BUT_WIDTH + DISTANCE;
+		MoveWindow(hSubItems[MARKET_BUT_LEFT_HAND], x, y, ITEM_BUT_WIDTH, ITEM_BUT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[MARKET_STAT_LEFT_HAND], x, y + ITEM_BUT_HEIGHT, ITEM_STAT_WIDTH, ITEM_STAT_HEIGHT, TRUE);
+		x += ITEM_BUT_WIDTH + DISTANCE;
+		MoveWindow(hSubItems[MARKET_BUT_ARMOUR], x, y, ITEM_BUT_WIDTH, ITEM_BUT_HEIGHT, TRUE);
+		MoveWindow(hSubItems[MARKET_STAT_ARMOUR], x, y + ITEM_BUT_HEIGHT, ITEM_STAT_WIDTH, ITEM_STAT_HEIGHT, TRUE);
+
 		// Trader's inventory
-		x = cx + ITEM_BUT_WIDTH + DISTANCE * 2, y = ITEM_BUT_HEIGHT + DISTANCE * 2;
+		x = cx + ITEM_BUT_WIDTH + DISTANCE * 6, y = ITEM_BUT_HEIGHT;
 		MoveWindow(hSubItems[MARKET_STAT_TRADER_INVENTORY], x, y - STAT_HEIGHT - DISTANCE, BIG_STAT_WIDTH, STAT_HEIGHT, TRUE);
 		Inventory& traderInventory = *game.getWorldMap().getCurrentCity().getTrader().getInventory();
 		inventorySize = traderInventory.size();
@@ -1011,11 +1051,11 @@ void CityMenu::resizeMenu(int cx, int cy)
 			MoveWindow(hSubItems[MARKET_BUT_TRADER_ITEM1 + i], x, y, ITEM_BUT_WIDTH, ITEM_BUT_HEIGHT, TRUE);
 			MoveWindow(hSubItems[MARKET_STAT_TRADER_ITEM1 + i], x, y + ITEM_BUT_HEIGHT, ITEM_STAT_WIDTH, ITEM_STAT_HEIGHT, TRUE);
 
-			x += ITEM_BUT_WIDTH + DISTANCE;
+			x += ITEM_BUT_WIDTH + ITEMS_DISTANCE;
 			if (i % 4 == 3)
 			{
-				x -= (ITEM_BUT_WIDTH + DISTANCE) * 4;
-				y += ITEM_BUT_WIDTH + DISTANCE;
+				x -= (ITEM_BUT_WIDTH + ITEMS_DISTANCE) * 4;
+				y += ITEM_BUT_WIDTH + ITEMS_DISTANCE;
 			}
 		}
 
@@ -1050,6 +1090,11 @@ void CityMenu::resizeMenu(int cx, int cy)
 
 		MoveWindow(hSubItems[MARKET_STAT_ITEM_TOTAL_VALUE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
 		y += STAT_HEIGHT + DISTANCE;
+
+		// Interaction buttons
+		MoveWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], 0, 0, 100, 30, TRUE);
+		MoveWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], 0, 0, 100, 30, TRUE);
+		MoveWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], 0, 0, 100, 30, TRUE);
 
 		// Other buttons
 		MoveWindow(hSubItems[MARKET_BUT_SELL], cx - 100, 600, 200, 30, TRUE);
@@ -1342,6 +1387,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
 				ShowWindow(hSubItems[MARKET_BUT_BUY], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE);
 
 				game.setBackground(Game::Background::CITY_MENU_MARKET);
 
@@ -1990,6 +2038,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if ((HWND)lp == hSubItems[i])
 				{
+					if (i == selectedItem) return;
+
 					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					if (selectedItem != -1)
 					{
@@ -2014,6 +2064,58 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					}
 
 					outputMarketItem(hWnd, rItem, itemPair.second);
+					manageMarketItems(hWnd, i);
+				}
+			}
+
+			// Player's equipment buttons
+			for (i = MARKET_BUT_RIGHT_HAND; i <= MARKET_BUT_ARMOUR; i++)
+			{
+				if ((HWND)lp == hSubItems[i])
+				{
+					if (i == selectedItem) return;
+
+					Player& rPlayer = game.getPlayer();
+					if ((i == MARKET_BUT_RIGHT_HAND && !rPlayer.getRightHand()) ||
+						(i == MARKET_BUT_LEFT_HAND && !rPlayer.getLeftHand()) ||
+						(i == MARKET_BUT_ARMOUR && !rPlayer.getArmour()))
+						return;
+
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
+					if (selectedItem != -1)
+					{
+						int id = selectedItem;
+						selectedItem = i;
+						updateWindow(hSubItems[id]);
+					}
+					else
+						selectedItem = i;
+
+					unique_ptr<Weapon> pRightHand;
+					unique_ptr<Weapon> pLeftHand;
+					unique_ptr<Armour> pArmour;
+
+					if (rPlayer.getRightHand())
+						pRightHand = make_unique<Weapon>(Weapon(*rPlayer.getRightHand()));
+					if (rPlayer.getLeftHand())
+						pLeftHand = make_unique<Weapon>(Weapon(*rPlayer.getLeftHand()));
+					if (rPlayer.getArmour())
+						pArmour = make_unique<Armour>(Armour(*rPlayer.getArmour()));
+
+					unique_ptr<Item> pItem;
+
+					switch (i)
+					{
+					case MARKET_BUT_RIGHT_HAND: pItem = move(pRightHand); break;
+					case MARKET_BUT_LEFT_HAND: pItem = move(pLeftHand); break;
+					case MARKET_BUT_ARMOUR: pItem = move(pArmour); break;
+					}
+
+					ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_BUT_BUY], SW_HIDE);
+
+					outputMarketItem(hWnd, pItem);
+					manageMarketItems(hWnd, i);
 				}
 			}
 
@@ -2022,6 +2124,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				if ((HWND)lp == hSubItems[i])
 				{
+					if (i == selectedItem) return;
 					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					if (selectedItem != -1)
 					{
@@ -2048,6 +2151,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 			}
 
+			// Button buy
 			if ((HWND)lp == hSubItems[MARKET_BUT_BUY])
 			{
 				playSound(SoundEnum::SOUND_GOLD);
@@ -2100,6 +2204,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				
 			}
 
+			// Button sell
 			if ((HWND)lp == hSubItems[MARKET_BUT_SELL])
 			{
 				playSound(SoundEnum::SOUND_GOLD);
@@ -2130,6 +2235,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						ShowWindow(hSubItems[i], SW_HIDE);
 					ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
 					ShowWindow(hSubItems[MARKET_BUT_BUY], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE);
 					ShowWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + rPlayerInventory.size()], SW_HIDE);
 					ShowWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + rPlayerInventory.size()], SW_HIDE);
 					game.updateBackground();
@@ -2156,6 +2264,115 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 				else
 					MessageBox(hWnd, l.getMessage(Localized::TRADER_DOESNT_HAVE_GOLD).c_str(), l.getMessage(Localized::CANT_SELL_ITEM).c_str(), MB_OK | MB_ICONINFORMATION);
+			}
+
+			// Equip button
+			if ((HWND)lp == hSubItems[MARKET_BUT_EQUIP_ITEM])
+			{
+				Player& rPlayer = game.getPlayer();
+
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				// Adjust item index for button index
+				selectedItem -= MARKET_BUT_INVENTORY_ITEM1;
+
+				Inventory& rInventory = *rPlayer.getInventory();
+				int itemID = rInventory[selectedItem].first->getID();
+
+				rPlayer.equipItemFromInventory(itemID);
+
+				ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
+
+				int size = rInventory.size();
+				for (i = size; i < MAX_INVENTORY_SIZE; i++)
+				{
+					ShowWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i], SW_HIDE);
+				}
+				for (i = 0; i < size; i++)
+				{
+					updateWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i]);
+					updateWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i]);
+				}
+
+				game.updateBackground();
+				updateWindow(hWnd);
+			}
+
+			// Unequip button
+			if ((HWND)lp == hSubItems[MARKET_BUT_UNEQUIP_ITEM])
+			{
+				Player& rPlayer = game.getPlayer();
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				// Adjust item index for button index
+				selectedItem -= MARKET_BUT_RIGHT_HAND;
+				/*
+				selectedItem
+				0 -- rightHand
+				1 -- leftHand
+				2 -- armour
+				*/
+				int itemID;
+				switch (selectedItem)
+				{
+				case 0: itemID = rPlayer.getRightHand()->getID(); break; 
+				case 1: itemID = rPlayer.getLeftHand()->getID(); break; 
+				case 2: itemID = rPlayer.getArmour()->getID(); break; 
+				default: throw out_of_range("Wrong item ID"); break;
+				}
+
+				rPlayer.unequipItem(itemID);
+
+				ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_HIDE);
+
+				int size = rPlayer.getInventory()->size();
+				for (i = 0; i < size; i++)
+				{
+					ShowWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i], SW_SHOW);
+					updateWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i]);
+					ShowWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i], SW_SHOW);
+					updateWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i]);
+				}
+
+				game.updateBackground();
+				updateWindow(hWnd);
+			}
+
+			// Destroy button
+			if ((HWND)lp == hSubItems[MARKET_BUT_DESTROY_ITEM])
+			{
+				Player& rPlayer = game.getPlayer();
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				// Adjust item index for button index
+				selectedItem -= MARKET_BUT_INVENTORY_ITEM1;
+
+				Inventory& rInventory = *rPlayer.getInventory();
+				int itemID = rInventory[selectedItem].first->getID();
+				int quantity = rInventory.getItemQuantity(itemID);
+				rInventory.removeItem(itemID, quantity);
+
+				for (int i = MARKET_STAT_ITEM_TYPE; i <= MARKET_STAT_ITEM_TOTAL_VALUE; i++)
+					ShowWindow(hSubItems[i], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_SELL], SW_HIDE);
+
+				int size = rInventory.size();
+				for (i = size; i < MAX_INVENTORY_SIZE; i++)
+				{
+					ShowWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i], SW_HIDE);
+					ShowWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i], SW_HIDE);
+				}
+				for (i = 0; i < size; i++)
+				{
+					updateWindow(hSubItems[MARKET_BUT_INVENTORY_ITEM1 + i]);
+					updateWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + i]);
+				}
+
+				game.updateBackground();
 			}
 
 			// Back button
@@ -3180,9 +3397,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				int size = rPlayer.getInventory()->size();
 				for (i = 0; i < size; i++)
 				{
-					ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1], SW_SHOW);
+					ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1 + i], SW_SHOW);
 					updateWindow(hSubItems[CHARACTER_BUT_INVENTORY_ITEM1 + i]);
-					ShowWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME], SW_SHOW);
+					ShowWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME + i], SW_SHOW);
 					updateWindow(hSubItems[CHARACTER_STAT_INVENTORY_ITEM1_NAME + i]);
 				}
 
@@ -3356,6 +3573,20 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.updateBackground();
 			}
 		}
+		if (game.getBackground() == Game::Background::CITY_MENU_MARKET)
+		{
+			if (
+				ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_HIDE) ||
+				ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE) ||
+				ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE)
+				)
+			{
+				ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
+				ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE);
+				game.updateBackground();
+			}
+		}
 		break;
 	}	
 }
@@ -3503,6 +3734,18 @@ bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 							isPushed = true;
 
 						drawInventoryItem(hWnd, item, *game.getPlayer().getInventory(), i - MARKET_BUT_INVENTORY_ITEM1, isPushed);
+						return true;
+					}
+				}
+				// Equipment
+				for (i = MARKET_BUT_RIGHT_HAND; i <= MARKET_BUT_ARMOUR; i++)
+				{
+					if (item->hwndItem == hSubItems[i])
+					{
+						if (selectedItem != -1 && item->hwndItem == hSubItems[selectedItem])
+							isPushed = true;
+
+						drawEquippedItem(hWnd, item, i - MARKET_BUT_RIGHT_HAND, isPushed);
 						return true;
 					}
 				}
@@ -3877,7 +4120,7 @@ void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, Inventory& rI
 	DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
 }
 
-void CityMenu::drawEquippedItem(HWND hWnd, LPDRAWITEMSTRUCT item, int itemIndex)
+void CityMenu::drawEquippedItem(HWND hWnd, LPDRAWITEMSTRUCT item, int itemIndex, bool isPushed)
 {
 	/*
 	itemIndex
@@ -3943,7 +4186,7 @@ void CityMenu::drawEquippedItem(HWND hWnd, LPDRAWITEMSTRUCT item, int itemIndex)
 	default: path = DIRECTORY + "error"; break;
 	}
 
-	if (item->itemState & ODS_SELECTED) // Pushed button
+	if (item->itemState & ODS_SELECTED || isPushed) // Pushed button
 		path += "Pushed" + FORMAT;
 	else // Unpushed button
 		path += FORMAT;
@@ -4165,6 +4408,155 @@ void CityMenu::manageInventory(HWND hWnd, int selectedItemm)
 		else
 			RedrawWindow(hSubItems[CHARACTER_BUT_BACK], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
 		
+		game.updateBackground();
+	}
+}
+
+void CityMenu::manageMarketItems(HWND hWnd, int selectedItemm)
+{
+	// Get cursor position
+	POINT pt;
+	GetCursorPos(&pt);
+	ScreenToClient(hWnd, &pt);
+
+	Player& rPlayer = game.getPlayer();
+	if (selectedItemm == MARKET_BUT_RIGHT_HAND) // Right hand weapon
+	{
+		if (!rPlayer.getRightHand())
+			return;
+
+		// Hide unrelated buttons
+		ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
+		ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE);
+		// Show buttons near cursor
+		if (rPlayer.getInventory()->size() < MAX_INVENTORY_SIZE)
+		{
+			ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_SHOW);
+			SetWindowPos(hSubItems[MARKET_BUT_UNEQUIP_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+		}
+
+		RedrawWindow(hSubItems[MARKET_BUT_RIGHT_HAND], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[MARKET_STAT_RIGHT_HAND], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[MARKET_BUT_LEFT_HAND], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[MARKET_STAT_LEFT_HAND], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+		game.updateBackground();
+	}
+	else if (selectedItem == MARKET_BUT_LEFT_HAND) // Left hand weapon
+	{
+		if (!rPlayer.getLeftHand())
+			return;
+
+		// Hide unrelated buttons
+		ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
+		ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE);
+		// Show buttons near cursor
+		if (rPlayer.getInventory()->size() < MAX_INVENTORY_SIZE)
+		{
+			ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_SHOW);
+			SetWindowPos(hSubItems[MARKET_BUT_UNEQUIP_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+		}
+
+		RedrawWindow(hSubItems[MARKET_BUT_LEFT_HAND], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[MARKET_STAT_LEFT_HAND], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[MARKET_BUT_ARMOUR], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(hSubItems[MARKET_STAT_ARMOUR], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+		game.updateBackground();
+	}
+	else if (selectedItem == MARKET_BUT_ARMOUR) // Armour
+	{
+		if (!rPlayer.getArmour())
+			return;
+
+		// Hide unrelated buttons
+		ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
+		ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE);
+		// Show buttons near cursor
+		if (rPlayer.getInventory()->size() < MAX_INVENTORY_SIZE)
+		{
+			ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_SHOW);
+			SetWindowPos(hSubItems[MARKET_BUT_UNEQUIP_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+		}
+
+		RedrawWindow(hSubItems[MARKET_BUT_ARMOUR], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+		game.updateBackground();
+	}
+	else // Inventory
+	{
+		// Hide unrelated buttons
+		ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_HIDE);
+		ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
+
+		// Adjust for button id
+		selectedItemm -= MARKET_BUT_INVENTORY_ITEM1;
+
+		// Getting item represented by button
+		auto itemPair = (*game.getPlayer().getInventory())[selectedItemm];
+		unique_ptr<Item>& pItem = itemPair.first;
+
+		bool isEquippable = false;
+		switch (pItem->getItemType())
+		{
+		case Item::ItemType::WEAPON:
+			if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
+			{
+				switch (weapon->getWeaponType())
+				{
+				default:
+					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
+						isEquippable = true;
+					else if (rPlayer.getRightHand() && rPlayer.getRightHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getLeftHand())
+						isEquippable = true;
+					else if (rPlayer.getLeftHand() && rPlayer.getLeftHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getRightHand())
+						isEquippable = true;
+					break;
+
+				case Weapon::WeaponType::AXE:
+					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
+						isEquippable = true;
+					break;
+
+				case Weapon::WeaponType::SPEAR:
+					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
+						isEquippable = true;
+					break;
+				}
+			}
+			break;
+
+		case Item::ItemType::ARMOUR:
+			if (auto armour = dynamic_cast<Armour*>(pItem.get()))
+				if (!rPlayer.getArmour())
+					isEquippable = true;
+			break;
+
+		case Item::ItemType::GOLD: break;
+		default: break;
+		}
+
+		if (isEquippable)
+		{
+			ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_SHOW);
+			SetWindowPos(hSubItems[MARKET_BUT_EQUIP_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+			pt.y += 30;
+		}
+		ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_SHOW);
+		SetWindowPos(hSubItems[MARKET_BUT_DESTROY_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+
+		int i = MARKET_STAT_INVENTORY_ITEM1;
+		for (; i <= MARKET_STAT_INVENTORY_ITEM14; i++)
+			RedrawWindow(hSubItems[i], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+		for (i = MARKET_BUT_INVENTORY_ITEM1; i <= MARKET_BUT_INVENTORY_ITEM14; i++)
+			RedrawWindow(hSubItems[i], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+		RedrawWindow(hSubItems[MARKET_STAT_EQUIPMENT], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+		for (i = MARKET_STAT_ITEM_TYPE; i <= MARKET_STAT_ITEM_TOTAL_VALUE; i++)
+			RedrawWindow(hSubItems[i], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
 		game.updateBackground();
 	}
 }

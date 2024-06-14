@@ -465,9 +465,8 @@ void Game::loadFromFile(const string& saveFolderName)
 	if (!fin)
 		throw new exception("Error: Couldn't open file for game's loading");
 
-	int currentCityIndex, currentProgressionStage;
-	fin >> currentCityIndex >> currentProgressionStage;
-	game.getWorldMap().setCurrentCityIndex(currentCityIndex);
+	int currentProgressionStage;
+	fin >> currentProgressionStage;
 	progressionStage = static_cast<Progression>(currentProgressionStage);
 
 	logStr = l.getMessage(Localized::MESSAGES_LOG) + ":\r\n\r\n";
