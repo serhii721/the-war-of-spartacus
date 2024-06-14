@@ -121,6 +121,7 @@ public:
 	{
 		MARKET_STAT_MARKET,
 		MARKET_STAT_INVENTORY,
+		MARKET_STAT_EQUIPMENT,
 		MARKET_STAT_ITEM_TYPE,
 		MARKET_STAT_ITEM_TIER,
 		MARKET_STAT_ITEM_DAMAGE,
@@ -134,6 +135,9 @@ public:
 		MARKET_STAT_ITEM_QUANTITY,
 		MARKET_STAT_ITEM_TOTAL_VALUE,
 		MARKET_STAT_TRADER_INVENTORY,
+		MARKET_STAT_RIGHT_HAND,
+		MARKET_STAT_LEFT_HAND,
+		MARKET_STAT_ARMOUR,
 		MARKET_STAT_INVENTORY_ITEM1,
 		MARKET_STAT_INVENTORY_ITEM2,
 		MARKET_STAT_INVENTORY_ITEM3,
@@ -164,6 +168,9 @@ public:
 		MARKET_STAT_TRADER_ITEM14,
 		MARKET_BUT_SELL,
 		MARKET_BUT_BUY,
+		MARKET_BUT_RIGHT_HAND,
+		MARKET_BUT_LEFT_HAND,
+		MARKET_BUT_ARMOUR,
 		MARKET_BUT_INVENTORY_ITEM1,
 		MARKET_BUT_INVENTORY_ITEM2,
 		MARKET_BUT_INVENTORY_ITEM3,
@@ -192,6 +199,9 @@ public:
 		MARKET_BUT_TRADER_ITEM12,
 		MARKET_BUT_TRADER_ITEM13,
 		MARKET_BUT_TRADER_ITEM14,
+		MARKET_BUT_EQUIP_ITEM,
+		MARKET_BUT_UNEQUIP_ITEM,
+		MARKET_BUT_DESTROY_ITEM,
 		MARKET_BUT_BACK,
 		MARKET_ITEM_NUMBER
 	};
@@ -315,7 +325,8 @@ private:
 	void outputMarketItem(HWND, unique_ptr<Item>&, int quantity_ = 1);
 	void outputOpponent(HWND, int selectedOpponent_);
 	void drawInventoryItem(HWND, LPDRAWITEMSTRUCT, Inventory&, int buttonIndex_, bool isPushed_ = false);
-	void drawEquippedItem(HWND, LPDRAWITEMSTRUCT, int itemIndex_);
+	void drawEquippedItem(HWND, LPDRAWITEMSTRUCT, int itemIndex_, bool isPushed_ = false);
 	void inspectItem(HWND, unique_ptr<Item>, int quantity_ = 1);
 	void manageInventory(HWND, int selectedItem_);
+	void manageMarketItems(HWND, int selectedItem_);
 };

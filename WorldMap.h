@@ -48,6 +48,7 @@ public:
 		SCREEN_ITEM_NUMBER
 	};
 	WorldMap();
+	WorldMap(HWND);
 	WorldMap(HWND, const vector<City>& cities_, int currentCity_ = 0);
 	WorldMap(const WorldMap&);
 	WorldMap& operator=(const WorldMap&);

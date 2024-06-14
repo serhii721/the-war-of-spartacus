@@ -72,7 +72,7 @@ bool hasSubdirectory(const string& directoryPath)
 
 	// Exception if path is incorrect
 	if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath))
-		throw std::runtime_error("Error: Directory does not exist or is not a directory");
+		return false;
 
 	// Chech every file in directory, if it's subdirectory - return true
 	for (const auto& entry : fs::directory_iterator(directoryPath))
@@ -831,6 +831,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
+	RECT rect;
 	static int sx, sy;
 
 	switch (message)

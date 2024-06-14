@@ -855,6 +855,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Choose last created save
 				string path = folderNames[folderNames.size() - 1] + "/";
 
+				game.setWorldMap(WorldMap(hWnd));
+				game.setFighting(Fighting(hWnd));
 				// Load game
 				game.loadFromFile(path);
 
@@ -864,7 +866,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						DestroyWindow(hItem);
 				hSubItems.clear();
 
-				game.setFighting(Fighting(hWnd));
 
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
 				// Go to city menu
@@ -911,6 +912,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				nms = make_unique<NewMenuStorage>();
+				game.setProgressionStage(Game::Progression::START);
 
 				// Hiding all buttons
 				for (HWND hItem : hItems)

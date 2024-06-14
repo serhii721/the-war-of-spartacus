@@ -18,6 +18,44 @@ WorldMap::WorldMap() :
 	hBackgroundBrush(NULL)
 { }
 
+WorldMap::WorldMap(HWND hWnd) :
+	hItems(Item::ITEM_NUMBER),
+	cities(),
+	currentCity(0),
+	selectedCity(0),
+	hBackgroundImage(NULL),
+	hBackgroundBrush(NULL)
+{
+	hItems[STAT_MAP] = CreateWindow("STATIC", "",
+		WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+	int i = BUT_ROME_MAP;
+	for (; i <= BUT_MILAN_MAP; i++)
+		hItems[i] = CreateWindow("BUTTON", "",
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+			0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+	for (i = BUT_ROME_LIST; i <= BUT_MILAN_LIST; i++)
+	{
+		hItems[i] = CreateWindow("BUTTON", "",
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_AUTORADIOBUTTON | BS_OWNERDRAW | BS_LEFTTEXT,
+			0, 0, 0, 0, hWnd, 0, hInst, 0);
+	}
+
+	hItems[BUT_TRAVEL_LIST] = CreateWindow("BUTTON", "",
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+	hItems[BUT_PLAYER_ICON_MAP] = CreateWindow("BUTTON", "",
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, 0, hInst, 0);
+
+	hItems[BUT_PLAYER_ICON_LIST] = CreateWindow("BUTTON", "",
+		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, 0, hInst, 0);
+}
+
 WorldMap::WorldMap(HWND hWnd, const vector<City>& C, int ccurrentCity) :
 	hItems(Item::ITEM_NUMBER),
 	cities(C),
@@ -431,10 +469,16 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				{
 					if (game.getPlayer().getFreedom())
 					{
-						currentCity = selectedCity;
-						SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
-						logStr += l.getMessage(Localized::YOU_HAVE_TRAVELED) + " " + l.getCityName(getCurrentCity()) + "\r\n\r\n";
-						cities[currentCity].getTrader().updateInventory();
+						if (game.getPlayer().getInventory()->getItemQuantity(0) >= CITY_TRAVEL_COST)
+						{
+							currentCity = selectedCity;
+							SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
+							logStr += l.getMessage(Localized::YOU_HAVE_TRAVELED) + " " + l.getCityName(getCurrentCity()) + "\r\n\r\n";
+							cities[currentCity].getTrader().updateInventory();
+							game.getPlayer().getInventory()->removeItem(0, CITY_TRAVEL_COST);
+						}
+						else
+							MessageBox(hWnd, l.getMessage(Localized::NOT_ENOUGH_MONEY).c_str(), l.getMessage(Localized::CANT_TRAVEL).c_str(), MB_OK);
 					}
 					else
 						MessageBox(hWnd, l.getMessage(Localized::PLAYER_IS_SLAVE).c_str(), l.getMessage(Localized::CANT_TRAVEL).c_str(), MB_OK);

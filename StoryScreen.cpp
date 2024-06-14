@@ -166,7 +166,7 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		{
 		case WELCOME_SCREEN:
 		{
-
+			path = DIRECTORY + "blackScreen" + FORMAT; break;
 		}
 		break;
 
@@ -174,7 +174,7 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		{
 			switch (currentSubScreen)
 			{
-				// TODO
+			default: path = DIRECTORY + "blackScreen" + FORMAT; break;
 			}
 		}
 		break;
@@ -304,6 +304,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
 				game.updateBackground();
+				updateWindow(hWnd);
 			}
 
 			if ((HWND)lp == hItems[STOLEN_MONEY_SCREEN_BUT_STAY])
@@ -317,6 +318,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
 				game.updateBackground();
+				updateWindow(hWnd);
 			}
 		}
 		break;
@@ -335,6 +337,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
 				game.updateBackground();
+				updateWindow(hWnd);
 			}
 
 			if ((HWND)lp == hItems[CENTURION_OFFER_SCREEN_BUT_DECLINE])
@@ -348,6 +351,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(item, SW_HIDE);
 				ShowWindow(hItems[currentSubScreen], SW_SHOW);
 				game.updateBackground();
+				updateWindow(hWnd);
 			}
 		}
 		break;
