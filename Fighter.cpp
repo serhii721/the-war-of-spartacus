@@ -341,9 +341,6 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 		)
 		rResult = AttackResult::STUNNED;
 
-	// TODO: remove
-	rResult = AttackResult::STUNNED;
-
 	// (Player damage - Opponent defense) is reduced to prolong a fight
 	rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
 		(100 + randomDamageSpread) / 100 *

@@ -29,6 +29,12 @@ const double MIN_EXPERIENCE_MULTIPLIER = 0.1;
 const double MAX_EXPERIENCE_MULTIPLIER = 2.5;
 const double MIN_FAME_MULTIPLIER = 0.1;
 const double MAX_FAME_MULTIPLIER = 2.5;
+const int FAME_FOR_LEVEL_MULTIPLIER = 100;
+const int FAME_DISPERSION = 200;
+const int FAME_GAIN_FROM_OPPONENT_PERC = 10; // 10.0%
+const int MAX_FAME_GAINED_FOR_EQUILIBRIUM = 200;
+const int MAX_FAME_GAINED_FROM_OPPONENT = 200;
+const int FAME_FOR_PERC_GOLD_MULTIPLIER = 150; // Every x fame increases player's gold reward by 1%
 // Trader's statistics
 const int MIN_TRADER_LEVEL = 1, MAX_TRADER_LEVEL = 5; // Trader level affects it's goods (weapon and armour level)
 
