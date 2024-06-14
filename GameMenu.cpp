@@ -17,7 +17,7 @@ GameMenu::GameMenu() :
 { }
 
 GameMenu::GameMenu(HWND hWnd) :
-	hItems(Item::ITEM_NUMBER),
+	hItems(menuItem::ITEM_NUMBER),
 	hSubItems(),
 	hBackgroundImage(NULL),
 	hBackgroundBrush(NULL),
@@ -465,6 +465,19 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// TODO
+
+				// REMOVE
+				// DEVELOPER MODE FEATURE
+				Player& rPlayer = game.getPlayer();
+				Inventory& rInventory = *rPlayer.getInventory();
+				rInventory.addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), 100000);
+				rInventory.addItem(generateArmour());
+				rInventory.addItem(generateWeapon());
+				rInventory.addItem(generateArmour());
+				rInventory.addItem(generateWeapon());
+				rPlayer.setFreedom(true);
+				rPlayer.setUnnassignedAttributes(1000);
+				// REMOVE
 			}
 
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_BACK] || LOWORD(wp) == IDCANCEL)

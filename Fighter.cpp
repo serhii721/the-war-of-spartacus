@@ -246,6 +246,8 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 
 			// Attack
 			hp -= rDamage;
+			if (rOpponent.hp < 0)
+				rOpponent.hp = 0;
 			return;
 		}
 
@@ -338,6 +340,9 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 		(rOpponent.isArmourEquipped() ? rOpponent.armour->getStunProbSubtraction() : 0)
 		)
 		rResult = AttackResult::STUNNED;
+
+	// TODO: remove
+	rResult = AttackResult::STUNNED;
 
 	// (Player damage - Opponent defense) is reduced to prolong a fight
 	rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *

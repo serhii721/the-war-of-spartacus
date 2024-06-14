@@ -324,7 +324,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				{
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getRightHand()).c_str());
 
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				else
@@ -341,7 +341,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 					if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 					{
-						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 					}
 					else
@@ -368,7 +368,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				{
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
 
-					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
 					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 
@@ -428,7 +428,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		Player& rPlayer = game.getPlayer();
 		Inventory& rPlayerInventory = *rPlayer.getInventory();
 		int inventorySize = rPlayerInventory.size();
-		buf = l.getMessage(Localized::INVENTORY) + " of " + rPlayer.getName() + " (" + to_string(inventorySize) + " / " + to_string(MAX_INVENTORY_SIZE) + ")";
+		buf = l.getMessage(Localized::INVENTORY) + " " + rPlayer.getName() + " (" + to_string(inventorySize) + " / " + to_string(MAX_INVENTORY_SIZE) + ")";
 		SendMessage(hSubItems[MARKET_STAT_INVENTORY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		// Hide unused slots with no items
 		for (i = inventorySize; i < MAX_INVENTORY_SIZE; i++)
@@ -452,7 +452,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		HarmlessNPC& rTrader = game.getWorldMap().getCurrentCity().getTrader();
 		Inventory& rTraderInventory = *rTrader.getInventory();
 		inventorySize = rTraderInventory.size();
-		buf = l.getMessage(Localized::INVENTORY) + " of " + l.getNPCName(rTrader) + " (" + to_string(inventorySize) + " / " + to_string(MAX_INVENTORY_SIZE) + ")";
+		buf = l.getMessage(Localized::INVENTORY) + " " + l.getNPCName(rTrader) + " (" + to_string(inventorySize) + " / " + to_string(MAX_INVENTORY_SIZE) + ")";
 		SendMessage(hSubItems[MARKET_STAT_TRADER_INVENTORY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		// Hide unused slots with no items
 		for (i = inventorySize; i < MAX_INVENTORY_SIZE; i++)
@@ -648,7 +648,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			buf = l.getWeaponTypeName(rRightHand) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rRightHand.getTier()) + ")";
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
-			buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand.getTotalDamage());
+			buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand.getDamage()) + " (+" + to_string(rRightHand.getDamageAddition()) + ")";
 			SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 			buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rRightHand.getStrengthAdditionPercentage()) + "%";
@@ -679,7 +679,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_STRENGTH_SCALE], SW_SHOW);
 				ShowWindow(hSubItems[CHARACTER_STAT_LEFT_HAND_DEXTERITY_SCALE], SW_SHOW);
 
-				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rLeftHand.getTotalDamage());
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rLeftHand.getDamage()) + " (+" + to_string(rLeftHand.getDamageAddition()) + ")";
 				SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 				buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rLeftHand.getStrengthAdditionPercentage()) + "%";
@@ -730,7 +730,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			buf = l.getArmourTypeName(rArmour) + " (" + l.getMessage(Localized::ITEM_TIER) + " " + to_string(rArmour.getTier()) + ")";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
-			buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour.getTotalDefense());
+			buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour.getDefense()) + " (+" + to_string(rArmour.getDefAddition()) + ")";
 			SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 			buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rArmour.getStrengthAdditionPercentage()) + "%";
@@ -757,7 +757,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// 3. Inventory
 		Inventory& inventory = *rPlayer.getInventory();
 		int size = inventory.size();
-		buf = l.getMessage(Localized::INVENTORY) + " (" + to_string(size) + " / " + to_string(MAX_INVENTORY_SIZE) + ")";
+		buf = l.getMessage(Localized::INVENTORY) + " " + rPlayer.getName() + " (" + to_string(size) + " / " + to_string(MAX_INVENTORY_SIZE) + ")";
 		SendMessage(hSubItems[CHARACTER_STAT_INVENTORY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		// Hide unused slots with no items
 		for (i = size; i < MAX_INVENTORY_SIZE; i++)
@@ -1532,7 +1532,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					{
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getRightHand()).c_str());
 
-						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
+						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 					}
 					else
@@ -1549,7 +1549,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 						if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 						{
-							buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+							buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
 							SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 						}
 						else
@@ -1578,7 +1578,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					{
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
 
-						buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
+						buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
 						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 					}
 
@@ -2240,20 +2240,20 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				// Update armour defense
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				// Update stats
@@ -2370,20 +2370,20 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				// Update armour defense
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				// Update stats
@@ -2626,20 +2626,20 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				// Update armour defense
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				// Update stats
@@ -2776,20 +2776,20 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				// Update armour defense
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
 				// Update stats
@@ -3048,14 +3048,14 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getRightHand())
 				{
 					rPlayer.getRightHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 					rPlayer.getRightHand()->calculatePrice(pas.charisma, true);
 				}
 				if (rPlayer.getLeftHand())
 				{
 					rPlayer.getLeftHand()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getTotalDamage());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 					rPlayer.getLeftHand()->calculatePrice(pas.charisma, true);
 				}
@@ -3063,7 +3063,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				if (rPlayer.getArmour())
 				{
 					rPlayer.getArmour()->update(pas.strength, pas.dexterity);
-					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getTotalDefense());
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
 					SendMessage(hSubItems[CHARACTER_STAT_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 					rPlayer.getArmour()->calculatePrice(pas.charisma, true);
 				}
@@ -3573,6 +3573,7 @@ bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 
 void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity)
 {
+	Player& rPlayer = game.getPlayer();
 	for (int i = MARKET_STAT_ITEM_TYPE; i <= MARKET_STAT_ITEM_TOTAL_VALUE; i++)
 		ShowWindow(hSubItems[i], SW_HIDE);
 	game.updateBackground();
@@ -3585,6 +3586,8 @@ void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity
 	case Item::ItemType::WEAPON:
 		if (auto weapon = dynamic_cast<Weapon*>(rItem.get()))
 		{
+			// Update weapon for player's stats
+			weapon->update(rPlayer.getStrength(), rPlayer.getDexterity());
 			// Item tier
 			ShowWindow(hSubItems[MARKET_STAT_ITEM_TIER], SW_SHOW);
 			buf = l.getMessage(Localized::ITEM_TIER) + " " + to_string(weapon->getTier());
@@ -3595,7 +3598,7 @@ void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity
 			default: // Default for every weapon type except shield
 				// Damage
 				ShowWindow(hSubItems[MARKET_STAT_ITEM_DAMAGE], SW_SHOW);
-				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getDamage());
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getDamage()) + " (+" + to_string(weapon->getDamageAddition()) + ")";
 				SendMessage(hSubItems[MARKET_STAT_ITEM_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 				// Strength scale
@@ -3626,6 +3629,8 @@ void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity
 	case Item::ItemType::ARMOUR:
 		if (auto armour = dynamic_cast<Armour*>(rItem.get()))
 		{
+			// Update armour for player's stats
+			armour->update(rPlayer.getStrength(), rPlayer.getDexterity());
 			// Item tier
 			ShowWindow(hSubItems[MARKET_STAT_ITEM_TIER], SW_SHOW);
 			buf = l.getMessage(Localized::ITEM_TIER) + " " + to_string(armour->getTier());
@@ -3633,7 +3638,7 @@ void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity
 
 			// Defense
 			ShowWindow(hSubItems[MARKET_STAT_ITEM_DEFENSE], SW_SHOW);
-			buf = l.getMessage(Localized::ARMOUR_DEFENSE) + " " + to_string(armour->getDefense());
+			buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(armour->getDefense()) + " (+" + to_string(armour->getDefAddition()) + ")";
 			SendMessage(hSubItems[MARKET_STAT_ITEM_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 			// Strength scale
@@ -3734,7 +3739,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	{
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rOpponent.getRightHand()).c_str());
 
-		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rOpponent.getRightHand()->getTotalDamage());
+		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rOpponent.getRightHand()->getDamage()) + " (+" + to_string(rOpponent.getRightHand()->getDamageAddition()) + ")";
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 	}
 
@@ -3745,7 +3750,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 
 		if (rOpponent.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 		{
-			buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rOpponent.getLeftHand()->getTotalDamage());
+			buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rOpponent.getLeftHand()->getDamage()) + " (+" + to_string(rOpponent.getLeftHand()->getDamageAddition()) + ")";
 			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 			ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_SHIELD_DEFENSE], SW_HIDE);
@@ -3779,7 +3784,7 @@ void CityMenu::outputOpponent(HWND hWnd, int n)
 	{
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rOpponent.getArmour()).c_str());
 
-		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rOpponent.getArmour()->getTotalDefense());
+		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rOpponent.getArmour()->getDefense()) + " (+" + to_string(rOpponent.getArmour()->getDefAddition()) + ")";
 		SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 	}
 
@@ -3969,7 +3974,7 @@ void CityMenu::inspectItem(HWND hWnd, unique_ptr<Item> pItem, int quantity)
 			}
 			else
 			{
-				MBDescription += l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getTotalDamage()) + "\n";
+				MBDescription += l.getMessage(Localized::DAMAGE) + ": " + to_string(weapon->getDamage()) + " (+" + to_string(weapon->getDamageAddition()) + ")\n";
 				MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(weapon->getStrengthAdditionPercentage()) + "%" + "\n";
 				MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(weapon->getDexterityAdditionPercentage()) + "%" + "\n";
 			}
@@ -3980,7 +3985,7 @@ void CityMenu::inspectItem(HWND hWnd, unique_ptr<Item> pItem, int quantity)
 		if (auto armour = dynamic_cast<Armour*>(pItem.get()))
 		{
 			MBName += l.getArmourTypeName(*armour) + " (" + l.getMessage(Localized::ITEM_TIER) + "  " + to_string(armour->getTier()) + ")";
-			MBDescription += l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(armour->getTotalDefense()) + "\n";
+			MBDescription += l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(armour->getDefense()) + " (+" + to_string(armour->getDefAddition()) + ")\n";
 			MBDescription += l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(armour->getStrengthAdditionPercentage()) + "%" + "\n";
 			MBDescription += l.getMessage(Localized::DEXTERITY_SCALE) + ": " + to_string(armour->getDexterityAdditionPercentage()) + "%" + "\n";
 

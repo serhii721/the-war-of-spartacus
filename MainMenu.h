@@ -18,6 +18,7 @@ private:
 	Language selectedLanguage;
 	bool changedSettings;
 	int selected;
+	bool hasSavedGames;
 public:
 	enum MenuItem
 	{

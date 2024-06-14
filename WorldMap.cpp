@@ -546,3 +546,70 @@ void WorldMap::selectCity(HWND hWnd, Item city)
 	MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
 	InvalidateRect(hWnd, &rect, 1);
 }
+
+void WorldMap::saveToFile(const string& directory) const
+{
+	const string PATH = directory,
+		FILE_WORLD = "World",
+		FOLDER_CITIES = "Cities/",
+		FORMAT = ".sav";
+
+	// Opening file for saving
+	ofstream fout(PATH + FILE_WORLD + FORMAT, ios::binary);
+
+	if (!fout)
+		throw new exception("Error: Couldn't open file for world's saving");
+
+	fout << currentCity;
+
+	fout.close();
+
+	// Saving cities
+	// Creating the folder for cities if it doesn't exist
+	BOOL success = CreateDirectory((PATH + FOLDER_CITIES).c_str(), NULL);
+	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+		throw new exception("Error: Couldn't create directory for save");
+
+	ifstream finCityName("Data/Language/World/En_CityNames.lang");
+	string cityName;
+	for (int i = 0; i < Cities::CITIES_NUMBER; i++)
+	{
+		finCityName >> cityName;
+		cityName += '/';
+		// Creating the folder for city if it doesn't exist
+		BOOL success = CreateDirectory((PATH + FOLDER_CITIES + cityName).c_str(), NULL);
+		if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+			throw new exception("Error: Couldn't create directory for save");
+
+		cities[i].saveToFile(PATH + FOLDER_CITIES + cityName);
+	}
+}
+
+void WorldMap::loadFromFile(const string& directory)
+{
+	const string PATH = directory,
+		FILE_WORLD = "World",
+		FOLDER_CITIES = "Cities/",
+		FORMAT = ".sav";
+
+	// Opening file for loading
+	ifstream fin(PATH + FILE_WORLD + FORMAT, ios::binary);
+
+	if (!fin)
+		throw new exception("Error: Couldn't open file for world's loading");
+
+	fin >> currentCity;
+
+	fin.close();
+
+	// Loading cities
+	ifstream finCityName("Data/Language/World/En_CityNames.lang");
+	string cityName;
+	cities.resize(Cities::CITIES_NUMBER);
+	for (int i = 0; i < Cities::CITIES_NUMBER; i++)
+	{
+		finCityName >> cityName;
+		cityName += '/';
+		cities[i].loadFromFile(PATH + FOLDER_CITIES + cityName);
+	}
+}

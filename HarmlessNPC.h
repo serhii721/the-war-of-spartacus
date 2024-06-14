@@ -18,4 +18,8 @@ public:
 
 	int getLevel() const;
 	const unique_ptr<Inventory>& getInventory() const;
+
+	// Save and load
+	void saveToFile(const string&) const;
+	void loadFromFile(const string&);
 };

@@ -405,7 +405,7 @@ bool Game::isBackgroundChanged() const
 void Game::saveToFile()
 {
 	string path = "";
-	const string FOLDER_SAVES = "Saves/", PLAYER_FOLDER = "Player/", GAME_DATA_FILE = "Game", FORMAT = ".sav";
+	const string FOLDER_SAVES = "Saves/", PLAYER_FOLDER = "Player/", WORLD_FOLDER = "World/", GAME_DATA_FILE = "Game", FORMAT = ".sav";
 	
 	// Creating the folder of saved games if it doesn't exist
 	BOOL success = CreateDirectory(FOLDER_SAVES.c_str(), NULL);
@@ -420,7 +420,9 @@ void Game::saveToFile()
 	strftime(buffer, sizeof(buffer), "%d%m%y_%H%M%S", now_tm);
 	
 	// Name for save folder -- Player's name + Player's level + current date and time
-	path += FOLDER_SAVES + game.getPlayer().getName() + "_" + to_string(game.getPlayer().getLevel()) + "lvl_" + buffer + "/";
+	buf = game.getPlayer().getName();
+	buf.erase(remove(buf.begin(), buf.end(), ' '), buf.end());
+	path += FOLDER_SAVES + buf + "_" + to_string(game.getPlayer().getLevel()) + "lvl_" + buffer + "/";
 
 	success = CreateDirectory(path.c_str(), NULL);
 	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
@@ -431,7 +433,7 @@ void Game::saveToFile()
 	if (!fout)
 		throw new exception("Error: Couldn't open file for game's saving");
 
-	fout << game.getWorldMap().getCurrentCityIndex() << " " << progressionStage;
+	fout << progressionStage;
 
 	fout.close();
 	// Saving player
@@ -442,11 +444,20 @@ void Game::saveToFile()
 		throw new exception("Error: Couldn't create directory for player's saving");
 
 	pPlayer->saveToFile(buf);
+
+	// Saving world map (current city, traders, gladiators, promotion status, quest completion status)
+	buf = path + WORLD_FOLDER;
+
+	success = CreateDirectory(buf.c_str(), NULL);
+	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+		throw new exception("Error: Couldn't create directory for player's saving");
+
+	pWorldMap->saveToFile(buf);
 }
 
 void Game::loadFromFile(const string& saveFolderName)
 {
-	const string FOLDER_SAVES = "Saves/", PLAYER_FOLDER = "Player/", GAME_DATA_FILE = "Game", FORMAT = ".sav";
+	const string FOLDER_SAVES = "Saves/", PLAYER_FOLDER = "Player/", WORLD_FOLDER = "World/", GAME_DATA_FILE = "Game", FORMAT = ".sav";
 	string path = FOLDER_SAVES + saveFolderName;
 
 	// Loading game data
@@ -466,4 +477,9 @@ void Game::loadFromFile(const string& saveFolderName)
 	buf = path + PLAYER_FOLDER;
 
 	pPlayer->loadFromFile(buf);
+
+	// Loading world map
+	buf = path + WORLD_FOLDER;
+
+	pWorldMap->loadFromFile(buf);
 }

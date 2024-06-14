@@ -25,7 +25,6 @@ public:
 	const int getPortraitIndex() const;
 
 	// Save and load
-	// TODO
-	// void saveToFile(const string&);
-	// void loadFromFile(const string&);
+	void saveToFile(const string&) const;
+	void loadFromFile(const string&);
 };

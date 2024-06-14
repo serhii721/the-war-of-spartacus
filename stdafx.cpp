@@ -43,6 +43,45 @@ string toStringPrecision(double n, int precision)
 	return "";
 }
 
+tm parseDateTime(const string & folderName)
+{
+	regex rgx(R"(\d{2}\d{2}\d{2}_\d{2}\d{2}\d{2})");
+	smatch match;
+
+	if (regex_search(folderName, match, rgx)) {
+		string dateTimeStr = match.str();
+		tm dateTime = {};
+
+		// Parsing date and time from string
+		dateTime.tm_year = stoi(dateTimeStr.substr(0, 2)) + 100; // years since 1900
+		dateTime.tm_mon = std::stoi(dateTimeStr.substr(2, 2)) - 1; // months since January [0-11]
+		dateTime.tm_mday = std::stoi(dateTimeStr.substr(4, 2));
+		dateTime.tm_hour = std::stoi(dateTimeStr.substr(7, 2));
+		dateTime.tm_min = std::stoi(dateTimeStr.substr(9, 2));
+		dateTime.tm_sec = std::stoi(dateTimeStr.substr(11, 2));
+
+		return dateTime;
+	}
+	else
+		throw runtime_error("Invalid folder name format");
+}
+
+bool hasSubdirectory(const string& directoryPath)
+{
+	namespace fs = std::experimental::filesystem;
+
+	// Exception if path is incorrect
+	if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath))
+		throw std::runtime_error("Error: Directory does not exist or is not a directory");
+
+	// Chech every file in directory, if it's subdirectory - return true
+	for (const auto& entry : fs::directory_iterator(directoryPath))
+		if (fs::is_directory(entry))
+			return true;
+
+	return false;
+}
+
 void getFoldersInDirectory(const string& directoryPath, vector<string>& folderNames)
 {
 	string path;
@@ -51,9 +90,24 @@ void getFoldersInDirectory(const string& directoryPath, vector<string>& folderNa
 	if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath))
 		throw new exception("Error: Couldn't open folder for loading");
 
+	// Struct holds name and time of creation of folder
+	vector<FolderInfo> folderInfos;
+
+	// Get every folder
 	for (const auto& entry : fs::directory_iterator(directoryPath))
 		if (fs::is_directory(entry))
-			folderNames.push_back(entry.path().filename().string());
+		{
+			string folderName = entry.path().filename().string();
+			tm dateTime = parseDateTime(folderName);
+			folderInfos.push_back({ folderName, dateTime });
+		}
+
+	// Sort in time of creation
+	sort(folderInfos.begin(), folderInfos.end());
+
+	// Add sorted names to vector
+	for (const auto& folderInfo : folderInfos)
+		folderNames.push_back(folderInfo.name);
 }
 
 string formatSaveName(const string& input)
@@ -728,6 +782,7 @@ void playSound(SoundEnum soundEnum)
 	case SoundEnum::SOUND_FIGHT_DODGED: path = DIRECTORY + "fightDodge" + FORMAT; break;
 	case SoundEnum::SOUND_FIGHT_BLOCKED: path = DIRECTORY + "fightBlock" + FORMAT; break;
 	case SoundEnum::SOUND_FIGHT_CRIT: path = DIRECTORY + "fightCrit" + FORMAT; break;
+	case SoundEnum::SOUND_FIGHT_STUNNED: path = DIRECTORY + "fightBlock" + FORMAT; break; // TODO: unique sound
 	case SoundEnum::SOUND_FIGHT_COUNTERATTACKED: path = DIRECTORY + "fightCounterattack" + FORMAT; break;
 	case SoundEnum::SOUND_GOLD: path = DIRECTORY + "gold" + FORMAT; break;
 	case SoundEnum::SOUND_LEVEL_UP: path = DIRECTORY + "levelUp" + FORMAT; break;

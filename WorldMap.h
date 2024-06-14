@@ -65,4 +65,8 @@ public:
 	bool stylizeWindow(HWND, UINT, WPARAM, LPARAM, LRESULT&);
 
 	void selectCity(HWND, Item city_);
+
+	// Save and load
+	void saveToFile(const string&) const;
+	void loadFromFile(const string&);
 };

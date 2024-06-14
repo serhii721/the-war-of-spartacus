@@ -23,6 +23,8 @@ MainMenu::MainMenu() :
 	se.push_back(make_unique<StartingEquipment>());
 	se.push_back(make_unique<StartingEquipment>());
 	se.push_back(make_unique<StartingEquipment>());
+
+	hasSavedGames = hasSubdirectory("Saves/") ? true : false;
 }
 
 MainMenu::MainMenu(HWND hWnd) :
@@ -39,7 +41,7 @@ MainMenu::MainMenu(HWND hWnd) :
 	// Create starting windows
 	char className[256] = "BUTTON";
 	hItems[BUT_CONTINUE] = CreateWindow(className, l.getMessage(Localized::CONTINUE_GAME).c_str(),
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
+		WS_CHILD | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
 
@@ -63,6 +65,20 @@ MainMenu::MainMenu(HWND hWnd) :
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
+
+	// Check if at least one save is available
+	hasSavedGames = hasSubdirectory("Saves/") ? true : false;
+	// If yes - show 'Continue' button
+	if (hasSavedGames)
+	{
+		ShowWindow(hItems[BUT_CONTINUE], SW_SHOW);
+		ShowWindow(hItems[BUT_LOAD_GAME], SW_SHOW);
+	}
+	else
+	{
+		ShowWindow(hItems[BUT_CONTINUE], SW_HIDE);
+		ShowWindow(hItems[BUT_LOAD_GAME], SW_HIDE);
+	}
 
 	// Generate 3 sets of random starting equipment
 	se.push_back(make_unique<StartingEquipment>());
@@ -131,6 +147,7 @@ MainMenu::MainMenu(const MainMenu& MM) : hSubItems(), hSubMenuItems()
 	selectedLanguage = MM.selectedLanguage;
 	changedSettings = MM.changedSettings;
 	selected = MM.selected;
+	hasSavedGames = MM.hasSavedGames;
 }
 
 MainMenu& MainMenu::operator=(const MainMenu& MM)
@@ -220,6 +237,7 @@ MainMenu& MainMenu::operator=(const MainMenu& MM)
 	selectedLanguage = MM.selectedLanguage;
 	changedSettings = MM.changedSettings;
 	selected = MM.selected;
+	hasSavedGames = MM.hasSavedGames;
 
 	return *this;
 }
@@ -264,6 +282,11 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			path = DIRECTORY + "menuBackground" + FORMAT;
 			for (HWND hItem : hItems)
 				ShowWindow(hItem, SW_SHOW);
+			if (!hasSavedGames)
+			{
+				ShowWindow(hItems[BUT_CONTINUE], SW_HIDE);
+				ShowWindow(hItems[BUT_LOAD_GAME], SW_HIDE);
+			}
 			break;
 		case Game::Background::MAIN_MENU_LOAD: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
 		case Game::Background::MAIN_MENU_NEW_GAME: path = DIRECTORY + "characterCreationBackground" + FORMAT; break;
@@ -333,7 +356,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Right hand
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(rRightHand1).c_str());
 
-		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand1.getTotalDamage());
+		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand1.getDamage()) + " (+" + to_string(rRightHand1.getDamageAddition()) + ")";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rRightHand1.getStrengthAdditionPercentage()) + "%";
@@ -349,7 +372,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 			if (pLeftHand1->getWeaponType() != Weapon::WeaponType::SHIELD)
 			{
-				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(pLeftHand1->getTotalDamage());
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(pLeftHand1->getDamage()) + " (+" + to_string(pLeftHand1->getDamageAddition()) + ")";
 				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 				buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(pLeftHand1->getStrengthAdditionPercentage()) + "%";
@@ -373,7 +396,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Armour
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(rArmour1).c_str());
 
-		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour1.getTotalDefense());
+		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour1.getDefense()) + " (+" + to_string(rArmour1.getDefAddition()) + ")";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rArmour1.getStrengthAdditionPercentage()) + "%";
@@ -397,7 +420,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Right hand
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(rRightHand2).c_str());
 
-		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand2.getTotalDamage());
+		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand2.getDamage()) + " (+" + to_string(rRightHand2.getDamageAddition()) + ")";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rRightHand2.getStrengthAdditionPercentage()) + "%";
@@ -413,7 +436,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 			if (pLeftHand2->getWeaponType() != Weapon::WeaponType::SHIELD)
 			{
-				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(pLeftHand2->getTotalDamage());
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(pLeftHand2->getDamage()) + " (+" + to_string(pLeftHand2->getDamageAddition()) + ")";
 				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 				buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(pLeftHand2->getStrengthAdditionPercentage()) + "%";
@@ -437,7 +460,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Armour
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(rArmour2).c_str());
 
-		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour2.getTotalDefense());
+		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour2.getDefense()) + " (+" + to_string(rArmour2.getDefAddition()) + ")";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rArmour2.getStrengthAdditionPercentage()) + "%";
@@ -461,7 +484,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Right hand
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(rRightHand3).c_str());
 
-		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand3.getTotalDamage());
+		buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rRightHand3.getDamage()) + " (+" + to_string(rRightHand3.getDamageAddition()) + ")";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rRightHand3.getStrengthAdditionPercentage()) + "%";
@@ -477,7 +500,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 			if (pLeftHand3->getWeaponType() != Weapon::WeaponType::SHIELD)
 			{
-				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(pLeftHand3->getTotalDamage());
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(pLeftHand3->getDamage()) + " (+" + to_string(pLeftHand3->getDamageAddition()) + ")";
 				SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 				buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(pLeftHand3->getStrengthAdditionPercentage()) + "%";
@@ -501,7 +524,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Armour
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(rArmour3).c_str());
 
-		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour3.getTotalDefense());
+		buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rArmour3.getDefense()) + " (+" + to_string(rArmour3.getDefAddition()) + ")";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 		buf = l.getMessage(Localized::STRENGTH_SCALE) + ": " + to_string(rArmour3.getStrengthAdditionPercentage()) + "%";
@@ -821,7 +844,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 		case Game::Background::MAIN_MENU:
 		{
-			if ((HWND)lp == hItems[CONTINUE])
+			if ((HWND)lp == hItems[BUT_CONTINUE])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				// Get every available save
@@ -835,87 +858,16 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Load game
 				game.loadFromFile(path);
 
-				// Go to city menu
 				// Destroying all buttons
 				for (HWND hItem : hSubItems)
 					if (hItem != NULL)
 						DestroyWindow(hItem);
 				hSubItems.clear();
 
-				// TODO: save and load of world
-				// Right now only player and current city is saved. Everything else is generated randomly again
-				// World creation
-				unique_ptr<City> pCity;
-				vector<City> cities;
-
-				vector<unique_ptr<NPC>> gladiators;
-
-				for (int i = 0; i < MAX_CITIES; i++)
-				{
-					int cityLevel, traderLevel;
-					// Use predetermined parameters for different cities
-					switch (i)
-					{
-					case 0: // Rome
-						cityLevel = ROME_CITY_LEVEL;
-						traderLevel = ROME_TRADER_LEVEL;
-						break;
-					case 1: // Naples
-						cityLevel = NAPLES_CITY_LEVEL;
-						traderLevel = NAPLES_TRADER_LEVEL;
-						break;
-					case 2: // Metaponto
-						cityLevel = METAPONTO_CITY_LEVEL;
-						traderLevel = METAPONTO_TRADER_LEVEL;
-						break;
-					case 3: // Bojano
-						cityLevel = BOJANO_CITY_LEVEL;
-						traderLevel = BOJANO_TRADER_LEVEL;
-						break;
-					case 4: // Ancona
-						cityLevel = ANCONA_CITY_LEVEL;
-						traderLevel = ANCONA_TRADER_LEVEL;
-						break;
-					case 5: // Perugia
-						cityLevel = PERUGIA_CITY_LEVEL;
-						traderLevel = PERUGIA_TRADER_LEVEL;
-						break;
-					case 6: // Florence
-						cityLevel = FLORENCE_CITY_LEVEL;
-						traderLevel = FLORENCE_TRADER_LEVEL;
-						break;
-					case 7: // Bologna
-						cityLevel = BOLOGNA_CITY_LEVEL;
-						traderLevel = BOLOGNA_TRADER_LEVEL;
-						break;
-					case 8: // Genoa
-						cityLevel = GENOA_CITY_LEVEL;
-						traderLevel = GENOA_TRADER_LEVEL;
-						break;
-					case 9: // Aquileia
-						cityLevel = AQUILEIA_CITY_LEVEL;
-						traderLevel = AQUILEIA_TRADER_LEVEL;
-						break;
-					case 10: // Milan
-						cityLevel = MILAN_CITY_LEVEL;
-						traderLevel = MILAN_TRADER_LEVEL;
-						break;
-					}
-
-					// Creating opponents for arenas of different levels for different cities
-					for (int j = 0; j < OPPONENTS_NUMBER; j++)
-						gladiators.push_back(generateNPC(cityLevel));
-
-					// Creating cities
-					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators), cityLevel, *generateTrader(traderLevel));
-					cities.push_back(*pCity);
-					gladiators.clear();
-				}
-
-				game.setWorldMap(WorldMap(hWnd, cities, game.getWorldMap().getCurrentCityIndex()));
 				game.setFighting(Fighting(hWnd));
 
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
+				// Go to city menu
 				game.setBackground(Game::Background::CITY_MENU);
 
 				updateWindow(hWnd);
@@ -1154,77 +1106,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						DestroyWindow(hItem);
 				hSubItems.clear();
 
-				// TODO: save and load of world
-				// Right now only player and current city is saved. Everything else is generated randomly again
-				// World creation
-				unique_ptr<City> pCity;
-				vector<City> cities;
-
-				vector<unique_ptr<NPC>> gladiators;
-
-				for (int i = 0; i < MAX_CITIES; i++)
-				{
-					int cityLevel, traderLevel;
-					// Use predetermined parameters for different cities
-					switch (i)
-					{
-					case 0: // Rome
-						cityLevel = ROME_CITY_LEVEL;
-						traderLevel = ROME_TRADER_LEVEL;
-						break;
-					case 1: // Naples
-						cityLevel = NAPLES_CITY_LEVEL;
-						traderLevel = NAPLES_TRADER_LEVEL;
-						break;
-					case 2: // Metaponto
-						cityLevel = METAPONTO_CITY_LEVEL;
-						traderLevel = METAPONTO_TRADER_LEVEL;
-						break;
-					case 3: // Bojano
-						cityLevel = BOJANO_CITY_LEVEL;
-						traderLevel = BOJANO_TRADER_LEVEL;
-						break;
-					case 4: // Ancona
-						cityLevel = ANCONA_CITY_LEVEL;
-						traderLevel = ANCONA_TRADER_LEVEL;
-						break;
-					case 5: // Perugia
-						cityLevel = PERUGIA_CITY_LEVEL;
-						traderLevel = PERUGIA_TRADER_LEVEL;
-						break;
-					case 6: // Florence
-						cityLevel = FLORENCE_CITY_LEVEL;
-						traderLevel = FLORENCE_TRADER_LEVEL;
-						break;
-					case 7: // Bologna
-						cityLevel = BOLOGNA_CITY_LEVEL;
-						traderLevel = BOLOGNA_TRADER_LEVEL;
-						break;
-					case 8: // Genoa
-						cityLevel = GENOA_CITY_LEVEL;
-						traderLevel = GENOA_TRADER_LEVEL;
-						break;
-					case 9: // Aquileia
-						cityLevel = AQUILEIA_CITY_LEVEL;
-						traderLevel = AQUILEIA_TRADER_LEVEL;
-						break;
-					case 10: // Milan
-						cityLevel = MILAN_CITY_LEVEL;
-						traderLevel = MILAN_TRADER_LEVEL;
-						break;
-					}
-
-					// Creating opponents for arenas of different levels for different cities
-					for (int j = 0; j < OPPONENTS_NUMBER; j++)
-						gladiators.push_back(generateNPC(cityLevel));
-
-					// Creating cities
-					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators), cityLevel, *generateTrader(traderLevel));
-					cities.push_back(*pCity);
-					gladiators.clear();
-				}
-
-				game.setWorldMap(WorldMap(hWnd, cities, game.getWorldMap().getCurrentCityIndex()));
 				game.setFighting(Fighting(hWnd));
 
 				game.getMenuManager().setMenu(new CityMenu(hWnd));
@@ -1847,95 +1728,95 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	}
 	break;
 
-	case WM_MOUSEMOVE:
-	{
-		static int i;
-		// First method
-		RECT rect;
-		POINT pt;
-		// Get cursor position
-		GetCursorPos(&pt);
-		ScreenToClient(hWnd, &pt);
+	//case WM_MOUSEMOVE:
+	//{
+	//	static int i;
+	//	// First method
+	//	RECT rect;
+	//	POINT pt;
+	//	// Get cursor position
+	//	GetCursorPos(&pt);
+	//	ScreenToClient(hWnd, &pt);
 
-		// Test
-		HDC hdc;
-		PAINTSTRUCT ps;
-		buf = to_string(pt.x) + " " + to_string(pt.y);
-		for (HWND hItem : hItems)
-			if ((HWND)lp == hItem)
-				SetWindowText(hWnd, buf.c_str());
+	//	// Test
+	//	HDC hdc;
+	//	PAINTSTRUCT ps;
+	//	buf = to_string(pt.x) + " " + to_string(pt.y);
+	//	for (HWND hItem : hItems)
+	//		if ((HWND)lp == hItem)
+	//			SetWindowText(hWnd, buf.c_str());
 
-		// Second method
-		// Get cursor position
-		TRACKMOUSEEVENT tme;
-		tme.cbSize = sizeof(TRACKMOUSEEVENT);
-		tme.dwFlags = TME_HOVER | TME_LEAVE;
-		tme.dwHoverTime = HOVER_DEFAULT;
+	//	// Second method
+	//	// Get cursor position
+	//	TRACKMOUSEEVENT tme;
+	//	tme.cbSize = sizeof(TRACKMOUSEEVENT);
+	//	tme.dwFlags = TME_HOVER | TME_LEAVE;
+	//	tme.dwHoverTime = HOVER_DEFAULT;
 
-		switch (game.getBackground())
-		{
-		case Game::Background::MAIN_MENU:
-		{
-			for (HWND hItem : hItems)
-			{
-				// Get button position
-				GetWindowRect(hItem, &rect);
-				MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-				//InvalidateRect(hWnd, &rect, 1);
+	//	switch (game.getBackground())
+	//	{
+	//	case Game::Background::MAIN_MENU:
+	//	{
+	//		for (HWND hItem : hItems)
+	//		{
+	//			// Get button position
+	//			GetWindowRect(hItem, &rect);
+	//			MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+	//			//InvalidateRect(hWnd, &rect, 1);
 
-				if (PtInRect(&rect, pt))
-				{
-					HBRUSH hBrush = CreateSolidBrush(COLOR_ROMAN_RED);
-					SetWindowText(hItem, to_string(i).c_str());
-					i++;
-					hdc = BeginPaint(hWnd, &ps);
-					DrawText(hdc, "Test", -1, &rect, DT_LEFT);
-					FillRect(hdc, &rect, hBrush);
-					EndPaint(hWnd, &ps);
-					DeleteObject(hBrush);
-				}
-			}
-		}
-		break;
+	//			if (PtInRect(&rect, pt))
+	//			{
+	//				HBRUSH hBrush = CreateSolidBrush(COLOR_ROMAN_RED);
+	//				SetWindowText(hItem, to_string(i).c_str());
+	//				i++;
+	//				hdc = BeginPaint(hWnd, &ps);
+	//				DrawText(hdc, "Test", -1, &rect, DT_LEFT);
+	//				FillRect(hdc, &rect, hBrush);
+	//				EndPaint(hWnd, &ps);
+	//				DeleteObject(hBrush);
+	//			}
+	//		}
+	//	}
+	//	break;
 
-		case Game::Background::MAIN_MENU_LOAD:
-		{
-			// TODO
-		}
-		break;
+	//	case Game::Background::MAIN_MENU_LOAD:
+	//	{
+	//		// TODO
+	//	}
+	//	break;
 
-		case Game::Background::MAIN_MENU_NEW_GAME:
-		{
-			// TODO
-		}
-		break;
+	//	case Game::Background::MAIN_MENU_NEW_GAME:
+	//	{
+	//		// TODO
+	//	}
+	//	break;
 
-		case Game::Background::MAIN_MENU_SETTINGS:
-		{
-			// TODO
-		}
-		break;
+	//	case Game::Background::MAIN_MENU_SETTINGS:
+	//	{
+	//		// TODO
+	//	}
+	//	break;
 
-		case Game::Background::MAIN_MENU_SPECIALS:
-		{
-			// TODO
-		}
-		break;
-		}
-	}
-	break;
+	//	case Game::Background::MAIN_MENU_SPECIALS:
+	//	{
+	//		// TODO
+	//	}
+	//	break;
+	//	}
+	//}
+	//break;
 
-	case WM_MOUSEHOVER:
-	{
-		SetWindowText(hWnd, "First stage succesful");
-	}
-	break;
+	//case WM_MOUSEHOVER:
+	//{
+	//	SetWindowText(hWnd, "First stage succesful");
+	//}
+	//break;
 
-	case WM_MOUSELEAVE:
-	{
-		SetWindowText(hWnd, "Second stage succesful");
-	}
-	break;
+	//case WM_MOUSELEAVE:
+	//{
+	//	SetWindowText(hWnd, "Second stage succesful");
+	//}
+	//break;
 	}
 }
 

@@ -25,4 +25,8 @@ public:
 	int getLevel() const;
 	HarmlessNPC& getTrader();
 	bool getPromotionStatus() const;
+
+	// Save and load
+	void saveToFile(const string&) const;
+	void loadFromFile(const string&);
 };

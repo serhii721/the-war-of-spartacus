@@ -30,6 +30,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include <exception>
 #include <memory> // 'unique_ptr'
 #include <filesystem> // for loading methods
+#include <regex> // for 'parseDateTime()'
 using namespace std;
 
 #include <Windows.h>
@@ -45,6 +46,7 @@ using namespace std;
 #include "NewMenuStorage.h"
 #include "StartingEquipment.h"
 #include "PlayerAttributeStorage.h"
+#include "FolderInfo.h"
 #include "IMenu.h"
 #include "StoryScreen.h"
 #include "MainMenu.h"
@@ -89,6 +91,8 @@ extern Game game;
 // __________ Other __________
 void updateWindow(HWND);
 string toStringPrecision(double number_, int decimalPlaces_ = 2);
+tm parseDateTime(const string& folderName_);
+bool hasSubdirectory(const string& directoryPath_);
 void getFoldersInDirectory(const string& directoryPath_, vector<string>& folderNames_);
 string formatSaveName(const string& input_);
 int normalize(int value_, int min_, int max_);
