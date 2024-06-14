@@ -476,7 +476,14 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				rInventory.addItem(generateArmour());
 				rInventory.addItem(generateWeapon());
 				rPlayer.setFreedom(true);
-				rPlayer.setUnnassignedAttributes(1000);
+				rPlayer.setUnnassignedAttributes(120);
+				rPlayer.setStrength(80);
+				rPlayer.setConstitution(80);
+				rPlayer.setDexterity(80);
+				rPlayer.setIntelligence(80);
+				rPlayer.setWisdom(80);
+				rPlayer.setCharisma(80);
+				rPlayer.updateMaxHP();
 				// REMOVE
 			}
 

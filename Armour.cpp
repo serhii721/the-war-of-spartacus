@@ -76,7 +76,20 @@ void Armour::update(int sstrength, int ddexterity)
 	defAddition = ddexterity * dexAdditionPerc / 100 + sstrength * strAdditionPerc / 100;
 }
 
-int Armour::getTotalDefense() const { return defense + defAddition; }
+int Armour::convertDefenseToPercentage(int defense) const
+{
+	// Using linear interpolation to convert value of defense (30 - 136) to percent of defense (30 - 70)
+	// Value range
+	int a = 30;
+	int b = 136;
+	// Percentage range
+	int c = 30;
+	int d = 70;
+
+	return c + ((defense - a) * (d - c)) / (b - a);
+}
+
+int Armour::getTotalDefense() const { return convertDefenseToPercentage(defense + defAddition); }
 
 int Armour::getTier() const { return tier; }
 

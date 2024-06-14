@@ -34,6 +34,7 @@ public:
 	unique_ptr<Item> clone() const;
 
 	void update(int, int);
+	int convertDefenseToPercentage(int) const;
 	int getTotalDefense() const;
 
 	int getTier() const;

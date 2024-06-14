@@ -123,7 +123,7 @@ void Fighter::setFullHP(int n) { fullHP = n; }
 void Fighter::updateMaxHP()
 {
 	double multiplier = (hp * 100 / fullHP) / 100;
-	fullHP = 100 + (strength / 10) + (constitution * 3 / 10);
+	fullHP = 100 + (MAX_ADDITIONAL_HP_STRENGTH * strength / 100) + (MAX_ADDITIONAL_HP_CONSTITUTION * constitution / 100);
 	hp = fullHP * multiplier;
 }
 
@@ -203,6 +203,26 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 	else if (rOpponent.isRightHandOccupied() && rOpponent.rightHand->getWeaponType() == Weapon::SHIELD)
 		whereShield = 2;
 
+	// Calculate total weapon damage
+	int weaponDamage = 0;
+	int statsDamage = 0;
+	int totalDamage = 0;
+
+	if (isLeftHandOccupied() && leftHand->getWeaponType() != Weapon::SHIELD)
+		weaponDamage += leftHand->getTotalDamage();
+	if (isRightHandOccupied() && rightHand->getWeaponType() != Weapon::SHIELD)
+		weaponDamage += rightHand->getTotalDamage();
+
+	statsDamage = (strength + dexterity) * 2;
+	if (statsDamage > MAX_DAMAGE_FROM_STATS)
+		statsDamage = MAX_DAMAGE_FROM_STATS;
+
+	// If fighter doesn't have any weapon equipped - use hard stats
+	if (weaponDamage == 0)
+		totalDamage = (strength + dexterity) / 3;
+	else
+		totalDamage = weaponDamage + statsDamage;
+
 	// Determining random damage spread - up to 10% less or more:
 	int randomDamageSpread = rand() % WEAPON_MAX_RAND_DMG_SPREAD_PERCENT;
 	if (rand() % 2)
@@ -219,28 +239,30 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 		{
 			rResult = AttackResult::WERE_COUNTERATTAKED;
 
-			// Determining the opponent's weapon damage
-			int opponentWeaponDamage = 0;
+			// Determining the opponent's damage
+			int opponentsTotalDamage = 0;
 			switch (whereShield)
 			{
 			case 0: // No shield
 				if (rOpponent.isRightHandOccupied())
-					opponentWeaponDamage += rOpponent.rightHand->getTotalDamage();
+					opponentsTotalDamage += rOpponent.rightHand->getTotalDamage();
 				// The left hand is checked when determining whether a shield
-				opponentWeaponDamage += rOpponent.leftHand->getTotalDamage();
+				opponentsTotalDamage += rOpponent.leftHand->getTotalDamage();
 				break;
 			case 1: // Left hand
 				if (rOpponent.isRightHandOccupied())
-					opponentWeaponDamage = rOpponent.rightHand->getTotalDamage();
+					opponentsTotalDamage = rOpponent.rightHand->getTotalDamage();
 				break;
 			case 2: // Right hand
 				// The left hand is checked when determining whether a shield
-				opponentWeaponDamage = rOpponent.leftHand->getTotalDamage();
+				opponentsTotalDamage = rOpponent.leftHand->getTotalDamage();
 				break;
 			}
+			if (opponentsTotalDamage == 0)
+				opponentsTotalDamage = (rOpponent.strength + rOpponent.dexterity) / 3;
 
 			// (Opponent damage - Player defense) is reduced to prolong a fight
-			rDamage = (opponentWeaponDamage + rOpponent.strength + rOpponent.dexterity - getDefense()) * // Basic damage formula
+			rDamage = opponentsTotalDamage * (100 - getDefense()) / 100 * // Basic damage formula
 				(100 + randomDamageSpread) / 100 * // Random spread
 				(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT; // Damage reduction to prolong a fight
 
@@ -272,13 +294,6 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 		break;
 	}
 
-	// Determining the weapon damage
-	int weaponDamage = 0;
-	if (isLeftHandOccupied() && leftHand->getWeaponType() != Weapon::SHIELD)
-		weaponDamage += leftHand->getTotalDamage();
-	if (isRightHandOccupied() && rightHand->getWeaponType() != Weapon::SHIELD)
-		weaponDamage += rightHand->getTotalDamage();
-
 	/*
 	 * Is the attack blocked?
 	 *
@@ -289,8 +304,8 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 	{
 		rResult = AttackResult::WERE_BLOCKED;
 		// (Damage - Defense) is reduced by the block defense and by the percent to prolong fight
-		rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
-			(100 - (rOpponent.constitution * 3 / 10 + blockDefPercentAddition)) / 100 *
+		rDamage = totalDamage * (100 - (rOpponent.constitution * 3 / 10 + blockDefPercentAddition)) / 100 * // Block defense
+			(100 - rOpponent.getDefense()) / 100 * // Armour defense
 			(100 + randomDamageSpread) / 100 *
 			(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
 
@@ -314,8 +329,8 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 		 * (Player damage - Opponent defense) is increased by the crit (30% + <=40% from the dexterity) and
 		 * reduced to prolong fight.
 		 */
-		rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
-			(130 + dexterity * 4 / 10) / 100 *
+		rDamage = totalDamage * (100 - rOpponent.getDefense()) / 100 *
+			(120 + dexterity * 3 / 10) / 100 *
 			(100 + randomDamageSpread) / 100 *
 			(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
 
@@ -342,7 +357,7 @@ void Fighter::attack(Fighter& rOpponent, AttackResult& rResult, int& rDamage)
 		rResult = AttackResult::STUNNED;
 
 	// (Player damage - Opponent defense) is reduced to prolong a fight
-	rDamage = (weaponDamage + strength + dexterity - rOpponent.getDefense()) *
+	rDamage = totalDamage * (100 - rOpponent.getDefense()) / 100 *
 		(100 + randomDamageSpread) / 100 *
 		(ONE_HUNDRED_PERCENT - DAMAGE_REDUCTION_PERCENT) / ONE_HUNDRED_PERCENT;
 
