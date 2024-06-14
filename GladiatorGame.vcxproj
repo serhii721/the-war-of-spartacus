@@ -157,6 +157,7 @@
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Fighter.h" />
     <ClInclude Include="Fighting.h" />
+    <ClInclude Include="FolderInfo.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GladiatorGame.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="Fighter.cpp" />
     <ClCompile Include="Fighting.cpp" />
+    <ClCompile Include="FolderInfo.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GladiatorGame.cpp" />
@@ -224,7 +226,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Data\Image\Icon.ico" />
-    <Image Include="Data\Image\ItemColor.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

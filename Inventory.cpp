@@ -186,9 +186,9 @@ void Inventory::saveToFile(const string& path)
 
 void Inventory::loadFromFile(const string& path)
 {
-	unique_ptr<Weapon> pWeapon = make_unique<Weapon>();
-	unique_ptr<Armour> pArmour = make_unique<Armour>();
-	unique_ptr<Item> pItem = make_unique<Item>();
+	unique_ptr<Weapon> pWeapon;
+	unique_ptr<Armour> pArmour;
+	unique_ptr<Item> pItem;
 	const string FILE_INVENTORY = "Inventory",
 		FILE_ITEM = "_item",
 		FORMAT = ".sav";
@@ -215,18 +215,23 @@ void Inventory::loadFromFile(const string& path)
 		switch (itemType)
 		{
 		case Item::ItemType::WEAPON:
+			pWeapon = make_unique<Weapon>();
 			pWeapon->loadFromFile(buf);
 			this->addItem(move(pWeapon), itemQuantity);
 			break;
 
 		case Item::ItemType::ARMOUR:
+			pArmour = make_unique<Armour>();
 			pArmour->loadFromFile(buf);
 			this->addItem(move(pArmour), itemQuantity);
+			pArmour.reset();
 			break;
 
 		default:
+			pItem = make_unique<Item>();
 			pItem->loadFromFile(buf);
 			this->addItem(move(pItem), itemQuantity);
+			pItem.reset();
 			break;
 		}
 	}

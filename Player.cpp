@@ -75,7 +75,7 @@ const bool Player::getFreedom() const
 	return isFree;
 }
 
-void Player::saveToFile(const string& directory)
+void Player::saveToFile(const string& directory) const
 {
 	const string PATH = directory,
 		FILE_PLAYER = "Player",
@@ -87,8 +87,8 @@ void Player::saveToFile(const string& directory)
 		FILE_NAME = "_name",
 		FORMAT = ".sav";
 
-	// Opening file for save
-	ofstream fout(directory + FILE_PLAYER + FORMAT, ios::binary);
+	// Opening file for saving
+	ofstream fout(PATH + FILE_PLAYER + FORMAT, ios::binary);
 
 	if (!fout)
 		throw new exception("Error: Couldn't open file for player's saving");
@@ -102,7 +102,10 @@ void Player::saveToFile(const string& directory)
 		<< age << " " << fame << " ";
 
 	// Fighter
-	fout << hp << " " << fullHP << " " << portraitIndex << " " << isExhausted << " " << isFree << " ";
+	fout << hp << " " << fullHP << " ";
+
+	// Player
+	fout << portraitIndex << " " << isExhausted << " " << isFree << " ";
 
 	// Inventory and equipment stored as pointers so they are saved in separate files
 	// Main file contains information whether there is equipment
@@ -173,8 +176,8 @@ void Player::loadFromFile(const string& directory)
 		FILE_NAME = "_name",
 		FORMAT = ".sav";
 
-	// Opening file for save
-	ifstream fin(directory + FILE_PLAYER + FORMAT, ios::binary);
+	// Opening file for loading
+	ifstream fin(PATH + FILE_PLAYER + FORMAT, ios::binary);
 
 	if (!fin)
 		throw new exception("Error: Couldn't open file for player's loading");
@@ -188,28 +191,39 @@ void Player::loadFromFile(const string& directory)
 		>> age >> fame;
 
 	// Fighter
-	fin >> hp >> fullHP >> portraitIndex >> isExhausted >> isFree;
+	fin >> hp >> fullHP;
+
+	//Player
+	fin >> portraitIndex >> isExhausted >> isFree;
 
 	int hasInventory, hasRightHand, hasLeftHand, hasArmour;
 	// Inventory
 	fin >> hasInventory;
 	if (hasInventory)
 		inventory->loadFromFile(PATH + FOLDER_INVENTORY);
+	else
+		inventory.reset();
 
 	// Right hand weapon
 	fin >> hasRightHand;
 	if (hasRightHand)
 		rightHand->loadFromFile(PATH + FILE_PLAYER + FILE_RIGHT_HAND);
+	else
+		rightHand.reset();
 
 	// Left hand weapon
 	fin >> hasLeftHand;
 	if (hasLeftHand)
 		leftHand->loadFromFile(PATH + FILE_PLAYER + FILE_LEFT_HAND);
+	else
+		leftHand.reset();
 
 	// Armour
 	fin >> hasArmour;
 	if (hasArmour)
 		armour->loadFromFile(PATH + FILE_PLAYER + FILE_ARMOUR);
+	else
+		armour.reset();
 
 	fin.close();
 
@@ -219,7 +233,7 @@ void Player::loadFromFile(const string& directory)
 	if (!fin)
 		throw new exception("Error: Couldn't open file for player's name loading");
 
-	finName >> name;
+	getline(finName, name);
 
 	finName.close();
 }

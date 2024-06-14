@@ -117,6 +117,9 @@
     <ClInclude Include="StoryScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FolderInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -206,6 +209,9 @@
     <ClCompile Include="StoryScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FolderInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GladiatorGame.rc">
@@ -214,9 +220,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Data\Image\Icon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Data\Image\ItemColor.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

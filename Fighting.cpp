@@ -327,7 +327,10 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 
 		// Checking whether the opponent is stunned
 		if (result == AttackResult::STUNNED)
+		{
+			result = AttackResult::DEALT_DAMAGE;
 			continue; // Skip opponent's attack
+		}
 
 		// Opponent's attack
 		rOpponent.attack(rPlayer, result, damage);
@@ -438,10 +441,15 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 				fameDifference -= 100;
 			} while (fameDifference > 0);
 		}
+		if (fameMultiplier < MIN_FAME_MULTIPLIER)
+			fameMultiplier = MIN_FAME_MULTIPLIER;
+		if (fameMultiplier > MAX_FAME_MULTIPLIER)
+			fameMultiplier = MAX_FAME_MULTIPLIER;
 		fame *= fameMultiplier;
 	}
 	else
 		fame /= 10;
+
 
 	rPlayer.setFame(rPlayer.getFame() + fame);
 
@@ -492,6 +500,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 		switch (itemIndex)
 		{
 		case 0: // Right hand
+			// Update scales for player's stats
+			rOpponent.getRightHand()->update(rPlayer.getStrength(), rPlayer.getDexterity());
 			// Get weapon type for replacement
 			weaponType = rOpponent.getRightHand()->getWeaponType();
 			itemID = rOpponent.getRightHand()->getID();
@@ -508,6 +518,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 			break;
 
 		case 1: // Left hand
+			// Update scales for player's stats
+			rOpponent.getLeftHand()->update(rPlayer.getStrength(), rPlayer.getDexterity());
 			// Get weapon type for replacement
 			weaponType = rOpponent.getLeftHand()->getWeaponType();
 			itemID = rOpponent.getLeftHand()->getID();
@@ -524,6 +536,8 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 			break;
 
 		case 2: // Armour
+			// Update scales for player's stats
+			rOpponent.getArmour()->update(rPlayer.getStrength(), rPlayer.getDexterity());
 			itemID = rOpponent.getArmour()->getID();
 			// Unequip opponent's item
 			rOpponent.unequipItem(itemID);

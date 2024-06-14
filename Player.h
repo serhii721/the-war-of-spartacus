@@ -29,6 +29,6 @@ public:
 	const bool getFreedom() const;
 
 	// Save and load
-	void saveToFile(const string&);
+	void saveToFile(const string&) const;
 	void loadFromFile(const string&);
 };

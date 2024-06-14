@@ -27,6 +27,8 @@ const int EXPERIENCE_PER_LEVEL_INCREASE_PERC = 2; // 2.0% more experience needed
 const int ATTRIBUTES_PER_LEVEL = 5;
 const double MIN_EXPERIENCE_MULTIPLIER = 0.1;
 const double MAX_EXPERIENCE_MULTIPLIER = 2.5;
+const double MIN_FAME_MULTIPLIER = 0.1;
+const double MAX_FAME_MULTIPLIER = 2.5;
 // Trader's statistics
 const int MIN_TRADER_LEVEL = 1, MAX_TRADER_LEVEL = 5; // Trader level affects it's goods (weapon and armour level)
 

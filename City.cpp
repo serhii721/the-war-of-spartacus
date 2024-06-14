@@ -49,3 +49,61 @@ int City::getLevel() const { return level; }
 HarmlessNPC & City::getTrader() { return trader; }
 
 bool City::getPromotionStatus() const { return promotionAchieved; }
+
+void City::saveToFile(const string& directory) const
+{
+	const string PATH = directory,
+		FILE_CITY = "City",
+		FOLDER_ARENA = "Arena/",
+		FOLDER_TRADER = "Trader/",
+		FORMAT = ".sav";
+
+	// Opening file for saving
+	ofstream fout(PATH + FILE_CITY + FORMAT, ios::binary);
+
+	if (!fout)
+		throw new exception("Error: Couldn't open file for city's saving");
+
+	fout << nameIndex << " " << level << " " << promotionAchieved;
+
+	fout.close();
+
+	// Saving arena
+	// Creating the folder for arena if it doesn't exist
+	BOOL success = CreateDirectory((PATH + FOLDER_ARENA).c_str(), NULL);
+	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+		throw new exception("Error: Couldn't create directory for save");
+	arena.saveToFile(PATH + FOLDER_ARENA);
+
+	// Saving trader
+	// Creating the folder for trader if it doesn't exist
+	success = CreateDirectory((PATH + FOLDER_TRADER).c_str(), NULL);
+	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
+		throw new exception("Error: Couldn't create directory for save");
+	trader.saveToFile(PATH + FOLDER_TRADER);
+}
+
+void City::loadFromFile(const string& directory)
+{
+	const string PATH = directory,
+		FILE_CITY = "City",
+		FOLDER_ARENA = "Arena/",
+		FOLDER_TRADER = "Trader/",
+		FORMAT = ".sav";
+
+	// Opening file for loading
+	ifstream fin(PATH + FILE_CITY + FORMAT, ios::binary);
+
+	if (!fin)
+		throw new exception("Error: Couldn't open file for city's saving");
+
+	fin >> nameIndex >> level >> promotionAchieved;
+
+	fin.close();
+
+	// Saving arena
+	arena.loadFromFile(PATH + FOLDER_ARENA);
+
+	// Saving trader
+	trader.loadFromFile(PATH + FOLDER_TRADER);
+}

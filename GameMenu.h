@@ -14,7 +14,7 @@ private:
 	int selected;
 
 public:
-	enum Item
+	enum menuItem
 	{
 		BUT_RESUME,
 		BUT_SAVE,
