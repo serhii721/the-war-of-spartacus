@@ -467,18 +467,22 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				if (currentCity != selectedCity)
 				{
+					Player& rPlayer = game.getPlayer();
 					if (game.getPlayer().getFreedom())
 					{
-						if (game.getPlayer().getInventory()->getItemQuantity(0) >= CITY_TRAVEL_COST)
+						if (rPlayer.getInventory()->getItemQuantity(0) >= CITY_TRAVEL_COST)
 						{
 							currentCity = selectedCity;
 							SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
 							logStr += l.getMessage(Localized::YOU_HAVE_TRAVELED) + " " + l.getCityName(getCurrentCity()) + "\r\n\r\n";
 							cities[currentCity].getTrader().updateInventory();
-							game.getPlayer().getInventory()->removeItem(0, CITY_TRAVEL_COST);
+							rPlayer.getInventory()->removeItem(0, CITY_TRAVEL_COST);
 						}
 						else
-							MessageBox(hWnd, l.getMessage(Localized::NOT_ENOUGH_MONEY).c_str(), l.getMessage(Localized::CANT_TRAVEL).c_str(), MB_OK);
+						{
+							buf = l.getMessage(Localized::NOT_ENOUGH_MONEY_FOR_TRAVEL) + " (" + to_string(rPlayer.getInventory()->getItemQuantity(0)) + " / " + to_string(CITY_TRAVEL_COST) + ")";
+							MessageBox(hWnd, buf.c_str(), l.getMessage(Localized::CANT_TRAVEL).c_str(), MB_OK);
+						}
 					}
 					else
 						MessageBox(hWnd, l.getMessage(Localized::PLAYER_IS_SLAVE).c_str(), l.getMessage(Localized::CANT_TRAVEL).c_str(), MB_OK);

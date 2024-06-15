@@ -475,7 +475,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				rInventory.addItem(generateWeapon());
 				rInventory.addItem(generateArmour());
 				rInventory.addItem(generateWeapon());
-				//rPlayer.setFreedom(true);
+				rPlayer.setFreedom(true);
 				rPlayer.setUnnassignedAttributes(120);
 				rPlayer.setStrength(80);
 				rPlayer.setConstitution(80);
