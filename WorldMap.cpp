@@ -474,7 +474,8 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						{
 							currentCity = selectedCity;
 							SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
-							logStr += l.getMessage(Localized::YOU_HAVE_TRAVELED) + " " + l.getCityName(getCurrentCity()) + "\r\n\r\n";
+							logStr += l.getMessage(Localized::YOU_HAVE_TRAVELED) + " " + l.getCityName(getCurrentCity()) + "\r\n" +
+								l.getMessage(Localized::SPENT_MONEY_ON_TRAVEL) + ": " + to_string(CITY_TRAVEL_COST) + "\r\n\r\n";
 							cities[currentCity].getTrader().updateInventory();
 							rPlayer.getInventory()->removeItem(0, CITY_TRAVEL_COST);
 						}
