@@ -1098,6 +1098,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				string path = folderNames[folderNames.size() - 1 - index];
 				path += '/';
 
+				game.setWorldMap(WorldMap(hWnd));
+				game.setFighting(Fighting(hWnd));
 				// Load game
 				game.loadFromFile(path);
 
