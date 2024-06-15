@@ -166,7 +166,7 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		{
 		case WELCOME_SCREEN:
 		{
-			path = DIRECTORY + "blackScreen" + FORMAT; break;
+			path = DIRECTORY + "blackScreen" + FORMAT; break; // TODO
 		}
 		break;
 
