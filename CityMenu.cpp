@@ -4542,8 +4542,11 @@ void CityMenu::manageMarketItems(HWND hWnd, int selectedItemm)
 			SetWindowPos(hSubItems[MARKET_BUT_EQUIP_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
 			pt.y += 30;
 		}
-		ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_SHOW);
-		SetWindowPos(hSubItems[MARKET_BUT_DESTROY_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+		if (pItem->getItemType() != Item::ItemType::GOLD)
+		{
+			ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_SHOW);
+			SetWindowPos(hSubItems[MARKET_BUT_DESTROY_ITEM], HWND_TOP, pt.x, pt.y, 0, 0, SWP_NOSIZE);
+		}
 
 		int i = MARKET_STAT_INVENTORY_ITEM1;
 		for (; i <= MARKET_STAT_INVENTORY_ITEM14; i++)
