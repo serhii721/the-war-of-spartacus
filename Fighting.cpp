@@ -502,7 +502,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 		// 1 -- left hand
 		// 2 - armour
 		int itemIndex = rand() % 3;
-		int itemID, replacementItemID;
+		int itemID = -1, replacementItemID;
 		Weapon::WeaponType weaponType;
 		unique_ptr<Item> pItem;
 		unique_ptr<Weapon> pWeapon;
@@ -568,14 +568,17 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 			rOpponent.equipItemFromInventory(replacementItemID);
 			break;
 		}
-		// Remove item from opponent's inventory
-		pItem = rOpponent.getInventory()->extractItem(itemID);
-		// Adjust price of the item based on player's charisma
-		pItem->calculatePrice(rPlayer.getCharisma(), true);
-		itemStr = l.getItemTypeName(*pItem);
-		// Give it to player
-		rPlayerInventory.addItem(move(pItem));
-		gainedLoot = true;
+		if (itemID != -1)
+		{
+			// Remove item from opponent's inventory
+			pItem = rOpponent.getInventory()->extractItem(itemID);
+			// Adjust price of the item based on player's charisma
+			pItem->calculatePrice(rPlayer.getCharisma(), true);
+			itemStr = l.getItemTypeName(*pItem);
+			// Give it to player
+			rPlayerInventory.addItem(move(pItem));
+			gainedLoot = true;
+		}
 	}
 
 	// Information for messages log
