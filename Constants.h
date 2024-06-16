@@ -118,11 +118,17 @@ const int MONEY_NEEDED_FOR_FREEDOM = 1500; // How much gold player needs to prog
 const int CHARISMA_FOR_PROMOTION = 30; // How much charisma player needs to gain promotion on arena from lanista
 const int CITY_TRAVEL_COST = 100; // Gold needed to travel to another city
 
+// Quest settings
+// Perugia
+// Shandar and Abhilasha
+const int ATTRIBUTES_NEEDED = 20; // How much of a certain attribute a player needs to pass attribute check
+
 const COLORREF COLOR_WHITE = RGB(255, 255, 255),
 			   COLOR_STATIC_BROWN = RGB(119, 89, 59),
 			   COLOR_ROMAN_RED = RGB(80, 0, 0),
 			   COLOR_ROMAN_RED_PUSHED = RGB(50, 0, 0),
-			   COLOR_DARK_BLUE = RGB(15, 15, 30);
+			   COLOR_DARK_BLUE = RGB(15, 15, 30),
+			   COLOR_ORANGE = RGB(140, 40, 0);
 
 const int ROME_CITY_LEVEL = 80,
 		  NAPLES_CITY_LEVEL = 70,

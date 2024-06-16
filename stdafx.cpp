@@ -32,6 +32,30 @@ void updateWindow(HWND hWnd)
 	//RedrawWindow(hWnd, 0, 0, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN);
 }
 
+//void adjustStaticControlHeight(HWND hStatic, const string& text)
+//{
+//	HDC hdc = GetDC(hStatic);
+//
+//	// Get current size and position for window
+//	RECT staticRect;
+//	GetWindowRect(hStatic, &staticRect);
+//
+//	// Calculate new height for text
+//	DrawText(hdc, text.c_str(), -1, &staticRect, DT_CALCRECT | DT_WORDBREAK);
+//
+//	ReleaseDC(hStatic, hdc);
+//
+//	// Apply padding
+//	int padding = 10;
+//	staticRect.left -= padding;
+//	staticRect.top -= padding;
+//	staticRect.right += padding;
+//	staticRect.bottom += padding;
+//
+//	// Set new window height
+//	SetWindowPos(hStatic, nullptr, 0, 0, staticRect.right - staticRect.left, staticRect.bottom - staticRect.top, SWP_NOMOVE | SWP_NOZORDER);
+//}
+
 // TODO: think about move to Converter
 string toStringPrecision(double n, int precision)
 {

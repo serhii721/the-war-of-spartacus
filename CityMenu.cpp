@@ -1791,7 +1791,21 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[QUEST_BUT_TALK_TO_PEOPLE])
 			{
-				// TODO
+				// If player has high enough level - start Shandar and Abhilasha quest
+				if (game.getPlayer().getLevel() >= game.getWorldMap().getCurrentCity().getLevel())
+				{
+					playSound(SoundEnum::SOUND_BUTTON_CLICK);
+					// Destroying all windows
+					for (HWND hItem : hSubItems)
+						if (hItem != NULL)
+							DestroyWindow(hItem);
+					hSubItems.clear();
+					ShowWindow(hItems[EDIT_MESSAGES_LOG], SW_HIDE);
+
+					game.setBackground(Game::Background::CITY_MENU);
+					game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::QUEST_PERUGIA_SHANDAR);
+					return;
+				}
 			}
 
 			if ((HWND)lp == hSubItems[QUEST_BUT_BACK] || LOWORD(wp) == IDCANCEL)

@@ -649,6 +649,7 @@ void WorldMap::loadFromFile(const string& directory)
 		throw new exception("Error: Couldn't open file for world's loading");
 
 	fin >> currentCity;
+	selectedCity = currentCity;
 
 	fin.close();
 
