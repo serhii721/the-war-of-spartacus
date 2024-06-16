@@ -1414,6 +1414,11 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItems[SHANDAR_BUT_CHOICE6_EXTORT], SW_HIDE);
 					ShowWindow(hItems[SHANDAR_BUT_CHOICE6_EXILE], SW_HIDE);
 
+					// Give player gold
+					game.getPlayer().getInventory()->addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), HIGH_VALUE_ITEM_LEVEL2);
+					logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(HIGH_VALUE_ITEM_LEVEL2) + " " + l.getMessage(Localized::GOLD_GENITIVE) + "\r\n\r\n";
+					playSound(SoundEnum::SOUND_GOLD);
+
 					// Show new windows
 					ShowWindow(hItems[SHANDAR_STAT_CHOICE6_EXTORT], SW_SHOW);
 					ShowWindow(hItems[SHANDAR_BUT_CHOICE6_EXTORT_EXECUTE], SW_SHOW);
@@ -1581,7 +1586,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hItems[SHANDAR_STAT_RETURNED_DAUGHTER], SW_HIDE);
 					ShowWindow(hItems[SHANDAR_BUT_ASK_REWARD], SW_HIDE);
 
-					// Give gold
+					// Give player gold
 					game.getPlayer().getInventory()->addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), HIGH_VALUE_ITEM_LEVEL1);
 					logStr += l.getMessage(Localized::YOU_HAVE_GAINED) + " " + to_string(HIGH_VALUE_ITEM_LEVEL1) + " " + l.getMessage(Localized::GOLD_GENITIVE) + "\r\n\r\n";
 					playSound(SoundEnum::SOUND_GOLD);
