@@ -485,6 +485,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				rPlayer.setWisdom(80);
 				rPlayer.setCharisma(80);
 				rPlayer.updateMaxHP();
+				game.setProgressionStage(Game::Progression::JOINED_REBELLION);
 				// REMOVE
 			}
 

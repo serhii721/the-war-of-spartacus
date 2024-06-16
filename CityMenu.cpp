@@ -1791,8 +1791,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			if ((HWND)lp == hSubItems[QUEST_BUT_TALK_TO_PEOPLE])
 			{
-				// If player has high enough level - start Shandar and Abhilasha quest
-				if (game.getPlayer().getLevel() >= game.getWorldMap().getCurrentCity().getLevel())
+				// If quest wasn completed before and player has high enough level - start Shandar and Abhilasha quest
+				if (!game.getWorldMap().getCurrentCity().getQuestCompletion() &&
+					game.getPlayer().getLevel() >= game.getWorldMap().getCurrentCity().getLevel())
 				{
 					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					// Destroying all windows
@@ -1802,9 +1803,20 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					hSubItems.clear();
 					ShowWindow(hItems[EDIT_MESSAGES_LOG], SW_HIDE);
 
+					// Quest can only be started once
+					game.getWorldMap().getCurrentCity().setQuestCompletion(true);
+
+					// Display quest
 					game.setBackground(Game::Background::CITY_MENU);
 					game.getStoryScreen().displayScreen(hWnd, StoryScreen::Screen::QUEST_PERUGIA_SHANDAR);
 					return;
+				}
+				else
+				{
+					// Update log
+					logStr += l.getMessage(Localized::WALK_STREETS_NOTHING) + "\r\n\r\n";
+					SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
+					SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
 				}
 			}
 
