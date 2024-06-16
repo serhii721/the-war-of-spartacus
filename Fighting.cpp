@@ -762,7 +762,7 @@ void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 	if (game.isBackgroundChanged())
 	{
 		// 1. Background
-		const string DIRECTORY = "Data/Image/Background/";
+		const string DIRECTORY = "Data/Image/";
 		const string FORMAT = ".bmp";
 		string path("");
 		RECT rect;
@@ -772,7 +772,9 @@ void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		// Composing path based on current menu
 		switch (game.getBackground())
 		{
-		default:case Game::Background::FIGHTING_ARENA: path = DIRECTORY + "fightArenaBackground" + FORMAT; break;
+		default:case Game::Background::FIGHTING_ARENA: path = DIRECTORY + "Background/fightArenaBackground" + FORMAT; break;
+		case Game::Background::FIGHTING_QUEST_PERUGIA_SHANDAR_STREET: path = DIRECTORY + "Quest/Perugia/Shandar/fightStreet" + FORMAT; break;
+		case Game::Background::FIGHTING_QUEST_PERUGIA_SHANDAR_HOUSE: path = DIRECTORY + "Quest/Perugia/Shandar/fightHouse" + FORMAT; break;
 		}
 		// Loading image
 		if (hBackgroundImage != NULL)

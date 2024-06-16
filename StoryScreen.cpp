@@ -175,7 +175,7 @@ StoryScreen::~StoryScreen()
 
 void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 {
-	const string DIRECTORY = "Data/Image/Story/";
+	const string DIRECTORY = "Data/Image/";
 	const string FORMAT = ".bmp";
 	string path("");
 	int i;
@@ -191,7 +191,7 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		{
 		case WELCOME_SCREEN:
 		{
-			path = DIRECTORY + "blackScreen" + FORMAT; break; // TODO
+			path = DIRECTORY + "Story/blackScreen" + FORMAT; break; // TODO
 		}
 		break;
 
@@ -199,7 +199,7 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		{
 			switch (currentSubScreen)
 			{
-			default: path = DIRECTORY + "blackScreen" + FORMAT; break;
+			default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
 			}
 		}
 		break;
@@ -208,22 +208,60 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		{
 			switch (currentSubScreen)
 			{
-			case GAINED_FREEDOM_SCREEN_STAT_1: path = DIRECTORY + "gainedFreedom" + FORMAT; break;
+			case GAINED_FREEDOM_SCREEN_STAT_1: path = DIRECTORY + "Story/gainedFreedom" + FORMAT; break;
 			//case GAINED_FREEDOM_SCREEN_STAT_2: break;
 			//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS: break;
 			//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION: break;
-			default: path = DIRECTORY + "blackScreen" + FORMAT; break;
+			default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
 			}
 		}
 		break;
 
 		case QUEST_PERUGIA_SHANDAR:
 		{
-			path = DIRECTORY + "blackScreen" + FORMAT; break;
+			switch (currentSubScreen)
+			{
+			case SHANDAR_STAT_INTRO: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break; 
+			case SHANDAR_STAT_INTRO2: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE1_ANSWER_WHO: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE1_ANSWER_WHY: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE1_ANSWER_WHERE: path = DIRECTORY + "Quest/Perugia/Shandar/choice1" + FORMAT; break; 
+			case SHANDAR_BUT_COMEBACK_NIGHT: path = DIRECTORY + "Quest/Perugia/Shandar/lostQuest" + FORMAT; break; 
+			case SHANDAR_STAT_COMEBACK_NIGHT: path = DIRECTORY + "Quest/Perugia/Shandar/comebackNight" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE2_ANSWER_TALK: path = DIRECTORY + "Quest/Perugia/Shandar/choice1" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE3_STRENGTH_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/choice3Lose" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE3_CHARISMA_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/choice3Lose" + FORMAT; break;
+			case SHANDAR_STAT_ENTER_HOUSE: path = DIRECTORY + "Quest/Perugia/Shandar/enterHouse" + FORMAT; break;
+			case SHANDAR_STAT_ENTER_HOUSE2: path = DIRECTORY + "Quest/Perugia/Shandar/enterHouse" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE5_FIGHT_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/fightWin" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE6_EXTORT: path = DIRECTORY + "Quest/Perugia/Shandar/fightWin" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE6_EXILE: path = DIRECTORY + "Quest/Perugia/Shandar/fightWin" + FORMAT; break;
+			case SHANDAR_STAT_FOUND_GIRL: path = DIRECTORY + "Quest/Perugia/Shandar/foundGirl" + FORMAT; break;
+			case SHANDAR_STAT_GREET_GIRL: path = DIRECTORY + "Quest/Perugia/Shandar/foundGirl" + FORMAT; break;
+			case SHANDAR_STAT_RETURNED_DAUGHTER: path = DIRECTORY + "Quest/Perugia/Shandar/reward" + FORMAT; break;
+			case SHANDAR_STAT_REWARD: path = DIRECTORY + "Quest/Perugia/Shandar/reward" + FORMAT; break;
+			case SHANDAR_STAT_GOODBYE: path = DIRECTORY + "Quest/Perugia/Shandar/reward" + FORMAT; break;
+
+			case SHANDAR_STAT_CHOICE3_STRENGTH_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/choice3Win" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE3_CHARISMA_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/choice3Win" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/comebackNight" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/comebackNight" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE5_CHARISMA_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/choice5Charisma" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE5_CHARISMA_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/choice5Charisma" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE6_EXECUTED: path = DIRECTORY + "Quest/Perugia/Shandar/leaveLoud" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE5_FIGHT_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/lostQuest" + FORMAT; break; 
+			case SHANDAR_STAT_LOST_QUEST: path = DIRECTORY + "Quest/Perugia/Shandar/lostQuest" + FORMAT; break; 
+			case SHANDAR_STAT_LEAVE_QUIET: path = DIRECTORY + "Quest/Perugia/Shandar/enterHouse" + FORMAT; break; 
+			case SHANDAR_STAT_LEAVE_LOUD: path = DIRECTORY + "Quest/Perugia/Shandar/leaveLoud" + FORMAT; break; 
+			case SHANDAR_STAT_THANKS: path = DIRECTORY + "Quest/Perugia/Shandar/thanks" + FORMAT; break; 
+			case SHANDAR_STAT_END: path = DIRECTORY + "Quest/Perugia/Shandar/thanks" + FORMAT; break; 
+
+			default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
+			}
 		}
 		break;
 
-		default: path = DIRECTORY + "blackScreen" + FORMAT; break;
+		default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
 		break;
 		}
 		// Loading image
@@ -322,11 +360,11 @@ void StoryScreen::resizeMenu(int cx, int cy)
 		butX = cx + BUTTON_WIDTH / 2, butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
 
 		// Intro
-		MoveWindow(hItems[SHANDAR_STAT_INTRO], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_INTRO], x, y + ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		MoveWindow(hItems[SHANDAR_BUT_INTRO], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
 
 		// Choice 1 - talk with Shandar
-		MoveWindow(hItems[SHANDAR_STAT_INTRO2], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_INTRO2], x, y + ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		for (i = SHANDAR_BUT_CHOICE1_QUESTION_WHERE; i <= SHANDAR_BUT_CHOICE1_LEAVE; i++)
 		{
 			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
@@ -334,9 +372,9 @@ void StoryScreen::resizeMenu(int cx, int cy)
 		}
 		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
 		
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHO], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHO], x, y + ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHY], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHY], x, y + ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
 		// Choice 2 - guards at entrance
 		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHERE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
@@ -381,11 +419,11 @@ void StoryScreen::resizeMenu(int cx, int cy)
 		MoveWindow(hItems[SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_LOSE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
 		// Enter house
-		MoveWindow(hItems[SHANDAR_STAT_ENTER_HOUSE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_ENTER_HOUSE], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		MoveWindow(hItems[SHANDAR_BUT_ENTER_HOUSE], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
 
 		// Choice 5 - speak with Lucilius
-		MoveWindow(hItems[SHANDAR_STAT_ENTER_HOUSE2], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_ENTER_HOUSE2], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		for (i = SHANDAR_BUT_CHOICE5_FIGHT; i <= SHANDAR_BUT_CHOICE5_CHARISMA; i++)
 		{
 			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
@@ -397,9 +435,9 @@ void StoryScreen::resizeMenu(int cx, int cy)
 
 		MoveWindow(hItems[SHANDAR_STAT_LOST_QUEST], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_CHARISMA_WIN], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_CHARISMA_WIN], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_CHARISMA_LOSE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_CHARISMA_LOSE], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
 		// Choice 6 - kill or spare Lucilius
 		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_WIN], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
@@ -424,18 +462,18 @@ void StoryScreen::resizeMenu(int cx, int cy)
 		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
 
 		// Found girl
-		MoveWindow(hItems[SHANDAR_STAT_FOUND_GIRL], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_FOUND_GIRL], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		MoveWindow(hItems[SHANDAR_BUT_GREET_GIRL], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_GREET_GIRL], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_GREET_GIRL], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		MoveWindow(hItems[SHANDAR_BUT_LETS_LEAVE], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_LEAVE_QUIET], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_LEAVE_QUIET], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_LEAVE_LOUD], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_LEAVE_LOUD], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 
 		// Returned girl
-		MoveWindow(hItems[SHANDAR_STAT_RETURNED_DAUGHTER], x - ITEM_HEIGHT / 2, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_RETURNED_DAUGHTER], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		for (i = SHANDAR_BUT_ASK_REWARD; i <= SHANDAR_BUT_GOODBYE; i++)
 		{
 			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
@@ -1274,9 +1312,6 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					case FightStatus::PLAYER_SURRENDERED:
 					{
-						// Show new windows
-						ShowWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_LOSE], SW_SHOW);
-
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_LOSE;
 						isChoiceRequired = true;
@@ -1285,9 +1320,6 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					case FightStatus::PLAYER_LOST:
 					{
-						// Show new windows
-						ShowWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_LOSE], SW_SHOW);
-
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_LOSE;
 						isChoiceRequired = true;
@@ -1935,9 +1967,6 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				case FightStatus::PLAYER_SURRENDERED:
 				{
-					// Show new windows
-					ShowWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_LOSE], SW_SHOW);
-
 					// Update subscreen
 					currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_LOSE;
 					isChoiceRequired = true;
@@ -1946,9 +1975,6 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				case FightStatus::PLAYER_LOST:
 				{
-					// Show new windows
-					ShowWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_LOSE], SW_SHOW);
-
 					// Update subscreen
 					currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_LOSE;
 					isChoiceRequired = true;

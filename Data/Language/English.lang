@@ -175,4 +175,64 @@ You have already been promoted
 You have already been promoted. What, do you want to be a consul?
 Not enough gold
 You have spent gold on the road
+A gladiator walked through the streets of the Roman city of Perugia, enjoying a rare moment of peace. He noticed an Indian spice merchant sitting outside his stall. The merchant's face was exhausted and sad, and his eyes were full of pain and despair. The gladiator stopped nearby, listening to his whispered prayers.
+What happened, old man? Why are you so sad?
+The merchant looked up and, seeing the Gladiator, did not immediately dare to speak. But then, as if finding strength, he answered: “My name is Shandar.” My daughter, Abhilasha, was kidnapped by Lucilius' men. They took her away and I couldn't do anything. Nobody wants to help me. Please help me get her back.
+Who is this Lucilius?
+Why do I need it?
+Show me where this Lucilius lives.
+(Leave) Sorry, I have other things to do right now.
+- This is a terrible person. A local patrician who decided he could do whatever he wanted. He liked my daughter and took her to serve him.
+“I’m not very rich, but my daughter is the most precious thing to me.” If you help me, I won't be in debt.
+Shandar showed the way, and the Gladiator went to the patrician's house. Approaching the gate, he met guards. One of them rudely stopped him: “Who are you?” This is private territory. Leave while you're still alive.
+I have come for the girl your master is illegally detaining. Give it up and no one will get hurt.
+Ok, I will go.
+The guards laughed: “It’s been a long time since I beat the crap out of some scum.”
+(Fight) Well, let's see who wins
+(Strength) I'm a gladiator and I eat people like you for breakfast
+(Charisma) In the name of the law I order you to retreat, otherwise you will have to deal with the magistrate
+(Success) Come on, we're just kidding. Come on in
+(Failure) The only thing you'll have for breakfast is your teeth.
+(Success) Calm down, we don't need problems. Come on in, just hurry up
+(Failure) So I believed that you knew the magistrate
+(Return at night)
+Returning at night, Gladiator discovered that there were no guards at the entrance
+Enter the house
+(Dexterity) Try to get inside unnoticed
+(Success) The gladiator climbs over the fence, walks across the back yard and enters the unlocked door.
+(Failure) Gladiator was not silent enough
+Entering the house, the Gladiator found Lucilius sitting in a luxurious hall. The patrician stood up when he saw the Gladiator and asked with contempt: “Who are you that you dare to break into my house?”
+I have come for a girl named Abhilasha, whom you are illegally detaining. Give it back and I'll leave
+Lucilius grinned and clapped his hands, calling the guards: “Your naivety amazes me.”
+(Fight) When will it come to you
+(Charisma) Only you are naive if you think that my people outside are not waiting for the command to begin the assault on this place
+- Please do not kill me! You can take her!
+The guards beat Gladitor and threw him out into the street.
+(Failure) Unfortunately, the Gladiator was also unable to help good people. One could only guess what awaited Abhilasha and how her father Shandar would cope with the loss of his daughter.
+(Success) Well, I propose to show prudence and avoid bloodshed in the name of the common good. I'm tired of the girl anyway. You can pick her up
+(Failure) How will you give the command if you are dead?
+(Spare) I will spare your life. But if I find out that you are ruining the lives of good people again, then I will come back
+(Execute) So that you continue to cause pain and suffering? well, I do not
+How much would you value your life?
+You have only one option to stay alive. Leave the city and never return
+Passing by the lifeless body of Lucilius, the Gladiator went in search of the girl
+Lucilius begged: “Please, take the gold you want, but leave me.” He opened a chest with a key that stood nearby. The gladiator took out a golden statue from there and put it in his bag.
+(Execute) And you said I was naive?
+So be it, I'll leave. It's a crazy town anyway
+Now where is the girl?
+The gladiator found Abhilasha locked in one of the rooms of the spacious house. He approached her carefully.
+I have come to free you. Your father Shandar sent me
+Her eyes filled with tears, and she quietly replied: “I’m so glad.” I was afraid that something terrible might happen to me
+Go here
+They quietly left Lucilius's house the same way.
+They left the house of Lucilius, leaving chaos and destruction behind
+Returning to Shandar, the Gladiator saw the merchant's face lit up with joy. Father and daughter hugged each other and tears streamed down their faces. Shandar looked at the Gladiator and said: “Thank you, kind man.” You saved our family. We will never forget this.
+(Ask for a reward) I'm happy for you, but I don't work for free
+- Yes, of course, you deserve a reward. Keep this bag of gold. I would give more if I could. May the gods bless you.
+Take care of each other
+At parting, Abhilasha looked at the Gladiator with gratitude and asked: - What is your name, warrior?
+My name is
+- Thank you,
+With these words, the Gladiator left. Perugia has returned to its normal life, but for one family, everything has changed forever.
+You walk the streets but nothing happens
 MESSAGE_NUMBER

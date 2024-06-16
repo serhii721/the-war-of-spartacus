@@ -1,14 +1,15 @@
 #include "stdafx.h"
 #include "City.h"
 
-City::City() : nameIndex(Cities::ROME), arena(), level(0), trader(), promotionAchieved(false) { }
+City::City() : nameIndex(Cities::ROME), arena(), level(0), trader(), isPromotionAchieved(false), isQuestCompleted(false) { }
 
 City::City(int nnameIndex, const Arena& A, int llevel, const HarmlessNPC& ttrader) :
 	nameIndex(nnameIndex),
 	arena(A),
 	level(llevel),
 	trader(ttrader),
-	promotionAchieved(false)
+	isPromotionAchieved(false),
+	isQuestCompleted(false)
 { }
 
 City::City(const City& C) :
@@ -16,7 +17,8 @@ City::City(const City& C) :
 	arena(C.arena),
 	level(C.level),
 	trader(C.trader),
-	promotionAchieved(false)
+	isPromotionAchieved(C.isPromotionAchieved),
+	isQuestCompleted(C.isQuestCompleted)
 { }
 
 City& City::operator=(const City& C)
@@ -27,7 +29,8 @@ City& City::operator=(const City& C)
 	arena = C.arena;
 	level = C.level;
 	trader = C.trader;
-	promotionAchieved = C.promotionAchieved;
+	isPromotionAchieved = C.isPromotionAchieved;
+	isQuestCompleted = C.isQuestCompleted;
 
 	return *this;
 }
@@ -38,7 +41,9 @@ void City::setName(int s) { nameIndex = s; }
 
 void City::setLevel(int l) { level = l; }
 
-void City::setPromotion(bool b) { promotionAchieved = b; }
+void City::setPromotion(bool b) { isPromotionAchieved = b; }
+
+void City::setQuestCompletion(bool completion) { isQuestCompleted = completion; }
 
 int City::getNameIndex() const { return nameIndex; }
 
@@ -48,7 +53,9 @@ int City::getLevel() const { return level; }
 
 HarmlessNPC & City::getTrader() { return trader; }
 
-bool City::getPromotionStatus() const { return promotionAchieved; }
+bool City::getPromotionStatus() const { return isPromotionAchieved; }
+
+bool City::getQuestCompletion() const { return isQuestCompleted; }
 
 void City::saveToFile(const string& directory) const
 {
@@ -64,7 +71,7 @@ void City::saveToFile(const string& directory) const
 	if (!fout)
 		throw new exception("Error: Couldn't open file for city's saving");
 
-	fout << nameIndex << " " << level << " " << promotionAchieved;
+	fout << nameIndex << " " << level << " " << isPromotionAchieved << " " << isQuestCompleted;
 
 	fout.close();
 
@@ -97,7 +104,7 @@ void City::loadFromFile(const string& directory)
 	if (!fin)
 		throw new exception("Error: Couldn't open file for city's saving");
 
-	fin >> nameIndex >> level >> promotionAchieved;
+	fin >> nameIndex >> level >> isPromotionAchieved >> isQuestCompleted;
 
 	fin.close();
 

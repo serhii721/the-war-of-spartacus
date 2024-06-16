@@ -7,7 +7,8 @@ private:
 	Arena arena;
 	int level;
 	HarmlessNPC trader;
-	bool promotionAchieved;
+	bool isPromotionAchieved;
+	bool isQuestCompleted;
 
 public:
 	City();
@@ -19,12 +20,14 @@ public:
 	void setName(int);
 	void setLevel(int);
 	void setPromotion(bool);
+	void setQuestCompletion(bool);
 
 	int getNameIndex() const;
 	Arena& getArena();
 	int getLevel() const;
 	HarmlessNPC& getTrader();
 	bool getPromotionStatus() const;
+	bool getQuestCompletion() const;
 
 	// Save and load
 	void saveToFile(const string&) const;
