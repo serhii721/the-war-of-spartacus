@@ -887,6 +887,37 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					}
 					break;
 				}
+				updateWindow(hWnd);
+			}
+		}
+		break;
+
+		case Game::Background::FIGHTING_QUEST_PERUGIA_SHANDAR_STREET:
+		{
+			if ((HWND)lp == hItems[BUT_END_FIGHT])
+			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				game.setDisplayState(DisplayState::STORY_SCREEN);
+				game.setBackground(Game::Background::CITY_MENU);
+
+				for (HWND hItem : hItems)
+					ShowWindow(hItem, SW_HIDE);
+
+				updateWindow(hWnd);
+			}
+		}
+		break;
+
+		case Game::Background::FIGHTING_QUEST_PERUGIA_SHANDAR_HOUSE:
+		{
+			if ((HWND)lp == hItems[BUT_END_FIGHT])
+			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				game.setDisplayState(DisplayState::STORY_SCREEN);
+				game.setBackground(Game::Background::CITY_MENU);
+
+				for (HWND hItem : hItems)
+					ShowWindow(hItem, SW_HIDE);
 
 				updateWindow(hWnd);
 			}

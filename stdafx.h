@@ -90,6 +90,7 @@ extern Game game;
 
 // __________ Other __________
 void updateWindow(HWND);
+//void adjustStaticControlHeight(HWND hStatic_, const string& text_);
 string toStringPrecision(double number_, int decimalPlaces_ = 2);
 tm parseDateTime(const string& folderName_);
 bool hasSubdirectory(const string& directoryPath_);
