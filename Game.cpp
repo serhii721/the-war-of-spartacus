@@ -12,7 +12,9 @@ Game::Game() :
 	pStoryScreen(make_unique<StoryScreen>()),
 	displayState(DisplayState::MENU),
 	currentBackground(Background::MAIN_MENU),
-	backgroundChanged(true)
+	backgroundChanged(true),
+	isSoundEnabled(true),
+	isAutoSaveEnabled(true)
 {
 	smallFont = CreateFont(
 		15,						// Size
@@ -77,7 +79,9 @@ Game::Game(const Game& GAME) :
 	pStoryScreen(make_unique<StoryScreen>(*GAME.pStoryScreen)),
 	displayState(GAME.displayState),
 	currentBackground(GAME.currentBackground),
-	backgroundChanged(GAME.backgroundChanged)
+	backgroundChanged(GAME.backgroundChanged),
+	isSoundEnabled(GAME.isSoundEnabled),
+	isAutoSaveEnabled(GAME.isAutoSaveEnabled)
 {
 	// Small font
 	if (GAME.smallFont != NULL)
@@ -199,6 +203,8 @@ Game& Game::operator=(const Game& GAME)
 
 	currentBackground = GAME.currentBackground;
 	backgroundChanged = GAME.backgroundChanged;
+	isSoundEnabled = GAME.isSoundEnabled;
+	isAutoSaveEnabled = GAME.isAutoSaveEnabled;
 
 	return *this;
 }
@@ -252,6 +258,16 @@ void Game::setProgressionStage(Progression stage)
 	progressionStage = stage;
 }
 
+void Game::setSoundStatus(bool sound)
+{
+	isSoundEnabled = sound;
+}
+
+void Game::setAutoSaveStatus(bool autosave)
+{
+	isAutoSaveEnabled = autosave;
+}
+
 Player& Game::getPlayer()
 {
 	return *pPlayer;
@@ -290,6 +306,16 @@ HFONT& Game::getFont(FontSize size)
 Game::Progression Game::getProgressionStage() const
 {
 	return progressionStage;
+}
+
+bool Game::getSoundStatus() const
+{
+	return isSoundEnabled;
+}
+
+bool Game::getAutoSaveStatus() const
+{
+	return isAutoSaveEnabled;
 }
 
 void Game::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
@@ -402,7 +428,7 @@ bool Game::isBackgroundChanged() const
 	return backgroundChanged;
 }
 
-void Game::saveToFile()
+void Game::saveToFile(bool isAutoSave)
 {
 	string path = "";
 	const string FOLDER_SAVES = "Saves/", PLAYER_FOLDER = "Player/", WORLD_FOLDER = "World/", GAME_DATA_FILE = "Game", FORMAT = ".sav";
@@ -420,8 +446,16 @@ void Game::saveToFile()
 	strftime(buffer, sizeof(buffer), "%d%m%y_%H%M%S", now_tm);
 	
 	// Name for save folder -- Player's name + Player's level + current date and time
-	buf = game.getPlayer().getName();
-	buf.erase(remove(buf.begin(), buf.end(), ' '), buf.end());
+	if (isAutoSave)
+	{
+		buf = "AutoSave_" + game.getPlayer().getName();
+		buf.erase(remove(buf.begin(), buf.end(), ' '), buf.end());
+	}
+	else
+	{
+		buf = game.getPlayer().getName();
+		buf.erase(remove(buf.begin(), buf.end(), ' '), buf.end());
+	}
 	path += FOLDER_SAVES + buf + "_" + to_string(game.getPlayer().getLevel()) + "lvl_" + buffer + "/";
 
 	success = CreateDirectory(path.c_str(), NULL);

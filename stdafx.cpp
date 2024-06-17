@@ -826,6 +826,8 @@ unique_ptr<Armour> generateArmour(int tier, Armour::ArmourType ttype)
 // __________ Sound __________
 void playSound(SoundEnum soundEnum)
 {
+	if (!game.getSoundStatus())
+		return;
 	// 1. Open file
 	// Compose path to sound based on enum
 	const string DIRECTORY = "Data/Sound/";
@@ -892,16 +894,18 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Setting the random seed
 		srand((unsigned)time(0));
 
-		// Setting language (default = English)
-		buf = "Data/Language/Settings.conf";
+		// Setting language (default = English) and other settings
+		buf = "Data/Settings.conf";
 		if (std::experimental::filesystem::exists(buf))
 		{
 			ifstream fin(buf, ios::binary);
-			int savedLanguage;
-			fin >> savedLanguage;
+			int savedLanguage, soundStatus, autoSaveStatus;
+			fin >> savedLanguage >> soundStatus >> autoSaveStatus;
 			fin.close();
 
 			l.setLanguage(static_cast<Language>(savedLanguage));
+			game.setSoundStatus(soundStatus);
+			game.setAutoSaveStatus(autoSaveStatus);
 		}
 		else
 			l.setLanguage();

@@ -82,9 +82,9 @@ void Localization::setLanguage(Language llanguage)
 	string path = "Data/Language/";
 	const string SETTINGS_FILE = "Settings", SETTINGS_FORMAT = ".conf", FORMAT = ".lang";
 
-	// Saving selected language
-	ofstream fout(path + SETTINGS_FILE + SETTINGS_FORMAT, ios::binary);
-	fout << llanguage;
+	// Saving selected language (and other settings)
+	ofstream fout("Data/" + SETTINGS_FILE + SETTINGS_FORMAT, ios::binary);
+	fout << llanguage << " " << game.getSoundStatus() << " " << game.getAutoSaveStatus();
 	fout.close();
 
 	// Reading the file and filling the localization array

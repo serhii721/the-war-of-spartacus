@@ -72,6 +72,8 @@ public:
 	void setStoryScreen(const StoryScreen&);
 	void setDisplayState(DisplayState);
 	void setProgressionStage(Progression);
+	void setSoundStatus(bool);
+	void setAutoSaveStatus(bool);
 
 	Player& getPlayer();
 	WorldMap& getWorldMap() const;
@@ -80,6 +82,8 @@ public:
 	MenuManager& getMenuManager();
 	HFONT& getFont(FontSize);
 	Progression getProgressionStage() const;
+	bool getSoundStatus() const;
+	bool getAutoSaveStatus() const;
 
 	void drawWindow(HWND, HDC, int, int);
 	void resizeWindow(int, int);
@@ -90,6 +94,8 @@ private:
 	Progression progressionStage;
 	Background currentBackground;
 	bool backgroundChanged;
+	bool isSoundEnabled;
+	bool isAutoSaveEnabled;
 
 public:
 	// Background
@@ -100,6 +106,6 @@ public:
 	bool isBackgroundChanged() const;
 
 	// Save and load
-	void saveToFile();
+	void saveToFile(bool isAutoSave_ = false);
 	void loadFromFile(const string&);
 };

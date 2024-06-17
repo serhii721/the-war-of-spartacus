@@ -2022,6 +2022,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Return to city
 					game.setBackground(Game::Background::CITY_MENU);
 					selectedOpponent = -1;
+
+					// If autosave is enabled - save game
+					game.saveToFile(game.getAutoSaveStatus());
 					break;
 				}
 				else if (selectedOpponent == -1)

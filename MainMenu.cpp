@@ -796,6 +796,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
 
+
 		// Sound settings
 		MoveWindow(hSubItems[SETTINGS_STAT_SOUND], x, y, ITEM_WIDTH - BUT_SIZE - DISTANCE, ITEM_HEIGHT, TRUE);
 
@@ -803,11 +804,21 @@ void MainMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubItems[SETTINGS_BUT_SOUND], x + ITEM_WIDTH - BUT_SIZE, y, BUT_SIZE, BUT_SIZE, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
 
+
+		// Autosave settings
+		MoveWindow(hSubItems[SETTINGS_STAT_AUTOSAVE], x, y, ITEM_WIDTH - BUT_SIZE - DISTANCE, ITEM_HEIGHT, TRUE);
+
+		// Autosave checkbox
+		MoveWindow(hSubItems[SETTINGS_BUT_AUTOSAVE], x + ITEM_WIDTH - BUT_SIZE, y, BUT_SIZE, BUT_SIZE, TRUE);
+		y += ITEM_HEIGHT + DISTANCE;
+		
+
 		// Language settings
 		MoveWindow(hSubItems[SETTINGS_STAT_LANGUAGE], x, y, (ITEM_WIDTH - DISTANCE) / 2, ITEM_HEIGHT, TRUE);
 
 		MoveWindow(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], x + ITEM_WIDTH / 2 + DISTANCE, y, ITEM_WIDTH / 2 - DISTANCE, ITEM_HEIGHT, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
+
 
 		// Back and apply changes
 		MoveWindow(hSubItems[SETTINGS_BUT_BACK], x, y, (ITEM_WIDTH - DISTANCE) / 2, ITEM_HEIGHT, TRUE);
@@ -997,9 +1008,11 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", l.getMessage(Localized::VIDEO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", l.getMessage(Localized::AUDIO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_STAT_AUTOSAVE] = CreateWindow("STATIC", l.getMessage(Localized::AUTOSAVE_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_LANGUAGE] = CreateWindow("STATIC", l.getMessage(Localized::LANGUAGE_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_COMBOBOX_LANGUAGE] = CreateWindow("COMBOBOX", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_SOUND] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_BUT_AUTOSAVE] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_APPLY_CHANGES] = CreateWindow("BUTTON", l.getMessage(Localized::APPLY_CHANGES).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
@@ -1010,6 +1023,10 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_ADDSTRING, 0, (LPARAM)"Latinus");
 				SendMessage(hSubItems[SETTINGS_COMBOBOX_LANGUAGE], CB_SETCURSEL, l.getLanguage(), 0);
 				ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_HIDE);
+
+				// Check buttons according to settings
+				SendMessage(hSubItems[SETTINGS_BUT_SOUND], BM_SETCHECK, 0, game.getSoundStatus());
+				SendMessage(hSubItems[SETTINGS_BUT_AUTOSAVE], BM_SETCHECK, 0, game.getAutoSaveStatus());
 
 				game.setBackground(Game::Background::MAIN_MENU_SETTINGS);
 
@@ -1648,7 +1665,31 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_SOUND])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
-				// TODO
+				game.setSoundStatus(!game.getSoundStatus());
+
+				// Write data in file
+				// Opening file
+				string path = "Data/Settings.conf";
+				// Saving settings
+				ofstream fout(path, ios::binary);
+				// TODO: handle error
+				fout << l.getLanguage() << " " << game.getSoundStatus() << " " << game.getAutoSaveStatus();
+				fout.close();
+			}
+
+			if ((HWND)lp == hSubItems[SETTINGS_BUT_AUTOSAVE])
+			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				game.setAutoSaveStatus(!game.getAutoSaveStatus());
+
+				// Write data in file
+				// Opening file
+				string path = "Data/Settings.conf";
+				// Saving settings
+				ofstream fout(path, ios::binary);
+				// TODO: handle error
+				fout << l.getLanguage() << " " << game.getSoundStatus() << " " << game.getAutoSaveStatus();
+				fout.close();
 			}
 
 			if (HIWORD(wp) == CBN_SELCHANGE)
@@ -1909,6 +1950,43 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
 					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
 					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+					return true;
+				}
+			}
+			if (game.getBackground() == Game::Background::MAIN_MENU_SETTINGS)
+			{
+				if (item->hwndItem == hSubItems[SETTINGS_BUT_SOUND])
+				{
+					RECT rect = item->rcItem;
+					bool isChecked = game.getSoundStatus();
+
+					if (isChecked)
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+					else
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+					// Draw checkbox
+					RECT checkboxRect = { rect.left + 10, rect.top + 10, rect.left + 30, rect.top + 30 };
+					DrawFrameControl(hdc, &checkboxRect, DFC_BUTTON, isChecked ? DFCS_BUTTONCHECK | DFCS_CHECKED : DFCS_BUTTONCHECK);
+
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+					return true;
+				}
+				if (item->hwndItem == hSubItems[SETTINGS_BUT_AUTOSAVE])
+				{
+					RECT rect = item->rcItem;
+					bool isChecked = game.getAutoSaveStatus();
+
+					if (isChecked)
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+					else
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+					// Draw checkbox
+					RECT checkboxRect = { rect.left + 10, rect.top + 10, rect.left + 30, rect.top + 30 };
+					DrawFrameControl(hdc, &checkboxRect, DFC_BUTTON, isChecked ? DFCS_BUTTONCHECK | DFCS_CHECKED : DFCS_BUTTONCHECK);
+
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
 					return true;
 				}
 			}
