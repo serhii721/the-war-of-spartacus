@@ -1590,6 +1590,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Creating opponents for arenas of different levels for different cities
 					for (int j = 0; j < OPPONENTS_NUMBER; j++)
 						gladiators.push_back(generateNPC(cityLevel));
+					// Sort NPCs by level and fame
+					sort(gladiators.begin(), gladiators.end(), compareNPC);
 
 					// Creating cities
 					pCity = make_unique<City>(Cities::ROME + i, Arena(gladiators), cityLevel, *generateTrader(traderLevel));

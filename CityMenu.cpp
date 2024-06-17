@@ -2008,6 +2008,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// In case of opponent's death he's replaced on arena with new gladiator
 					case FightStatus::OPPONENT_LOST:
 						currentArena.changeGladiator(selectedOpponent, currentCity.getLevel());
+						// Sort NPCs by level and fame
+						sort(currentArena.getGladiators().begin(), currentArena.getGladiators().end(), compareNPC);
 						break;
 					case FightStatus::OPPONNENT_SURRENDERED:
 						break;
