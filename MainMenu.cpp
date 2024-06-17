@@ -1664,15 +1664,16 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		{
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_SOUND])
 			{
-				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				game.setSoundStatus(!game.getSoundStatus());
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 
 				// Write data in file
 				// Opening file
 				string path = "Data/Settings.conf";
 				// Saving settings
 				ofstream fout(path, ios::binary);
-				// TODO: handle error
+				if (!fout)
+					throw new exception("Error: Couldn't open file for game settings");
 				fout << l.getLanguage() << " " << game.getSoundStatus() << " " << game.getAutoSaveStatus();
 				fout.close();
 			}
@@ -1687,7 +1688,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				string path = "Data/Settings.conf";
 				// Saving settings
 				ofstream fout(path, ios::binary);
-				// TODO: handle error
+				if (!fout)
+					throw new exception("Error: Couldn't open file for game settings");
 				fout << l.getLanguage() << " " << game.getSoundStatus() << " " << game.getAutoSaveStatus();
 				fout.close();
 			}
@@ -1957,34 +1959,20 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 			{
 				if (item->hwndItem == hSubItems[SETTINGS_BUT_SOUND])
 				{
-					RECT rect = item->rcItem;
-					bool isChecked = game.getSoundStatus();
-
-					if (isChecked)
+					if (game.getSoundStatus())
 						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
 					else
 						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-					// Draw checkbox
-					RECT checkboxRect = { rect.left + 10, rect.top + 10, rect.left + 30, rect.top + 30 };
-					DrawFrameControl(hdc, &checkboxRect, DFC_BUTTON, isChecked ? DFCS_BUTTONCHECK | DFCS_CHECKED : DFCS_BUTTONCHECK);
 
 					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
 					return true;
 				}
 				if (item->hwndItem == hSubItems[SETTINGS_BUT_AUTOSAVE])
 				{
-					RECT rect = item->rcItem;
-					bool isChecked = game.getAutoSaveStatus();
-
-					if (isChecked)
+					if (game.getAutoSaveStatus())
 						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
 					else
 						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-					// Draw checkbox
-					RECT checkboxRect = { rect.left + 10, rect.top + 10, rect.left + 30, rect.top + 30 };
-					DrawFrameControl(hdc, &checkboxRect, DFC_BUTTON, isChecked ? DFCS_BUTTONCHECK | DFCS_CHECKED : DFCS_BUTTONCHECK);
 
 					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
 					return true;
