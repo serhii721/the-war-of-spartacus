@@ -188,6 +188,7 @@ int calculateFameForLevel(int level)
 
 unique_ptr<NPC> generateNPC(int aproximateLevel)
 {
+	int i;
 	// 1. Generating name
 	const string PATH_BASE = "Data/Language/Names/", FORMAT = ".lang";
 	ifstream fin;
@@ -224,45 +225,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 	int randomLastName = rand() % count; // Choose random line
 	fin.close();
 
-	// 2. Generating weapons
-	int itemTier = 0, n = aproximateLevel;
-	// For every 16 levels of NPC increasing it's equipment tier by 1
-	while (n > 0)
-	{
-		itemTier++;
-		n -= 16;
-	}
-	unique_ptr<Weapon> rightHand = generateWeapon(itemTier);
-	unique_ptr<Weapon> leftHand;
-	if (rightHand->getWeaponType() != Weapon::WeaponType::AXE && rightHand->getWeaponType() != Weapon::WeaponType::SPEAR)
-	{
-		leftHand = generateWeapon(itemTier);
-		if (!rightHand->isCompatibleWith(leftHand->getWeaponType()))
-		{
-			if (rand() % 100 < 75)
-			{
-				if (leftHand)
-					leftHand.release();
-				leftHand = generateWeapon(itemTier, Weapon::SHIELD);
-			}
-			else if (rand() % 100 < 75)
-				do
-				{
-					if (leftHand)
-						leftHand.release();
-					leftHand = generateWeapon(itemTier);
-				} while (!rightHand->isCompatibleWith(leftHand->getWeaponType()));
-			else if (leftHand)
-			{
-				leftHand.release();
-				leftHand = nullptr;
-			}
-		}
-	}
-	else
-		leftHand = nullptr;
-
-	// 3. Generating stats
+	// 2. Generating stats
 	// Generating level in range (aproximate level - 5) to (aproximate level + 5)
 	int level = rand() % 11 + aproximateLevel - 5;
 
@@ -287,7 +250,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 	int points;
 	while (unnassignedAttributes > 0)
 	{
-		for (int i = 0; i < 6; i++)
+		for (i = 0; i < 6; i++)
 		{
 			if (unnassignedAttributes > MAX_ATTRIBUTE - BASIC_ATTRIBUTES)
 				points = rand() % (MAX_ATTRIBUTE - BASIC_ATTRIBUTES + 1);
@@ -305,13 +268,71 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 		}
 	}
 
+	// 3. Generating weapons
+	int itemTier = 0, n = aproximateLevel;
+	// For every 16 levels of NPC increasing it's equipment tier by 1
+	while (n > 0)
+	{
+		itemTier++;
+		n -= 16;
+	}
+
+	// Generating type. Fill vector with every type
+	vector<Weapon::WeaponType> weaponTypes;
+	for (i = 0; i < Weapon::WeaponType::SHIELD; i++)
+		weaponTypes.push_back(static_cast<Weapon::WeaponType>(i));
+
+	// Choose possible types based on NPC's stats
+	if (attributes[0] >= attributes[2])
+	{
+		weaponTypes.erase(weaponTypes.begin() + 1);
+		weaponTypes.erase(weaponTypes.begin() + 1);
+	}
+	else
+	{
+		weaponTypes.erase(weaponTypes.begin() + 3);
+		weaponTypes.erase(weaponTypes.begin() + 3);
+	}
+
+	unique_ptr<Weapon> rightHand = generateWeapon(itemTier, weaponTypes[rand() % 3]);
+	unique_ptr<Weapon> leftHand;
+	if (rightHand->getWeaponType() != Weapon::WeaponType::AXE && rightHand->getWeaponType() != Weapon::WeaponType::SPEAR)
+	{
+		leftHand = generateWeapon(itemTier, weaponTypes[rand() % 3]);
+		if (!rightHand->isCompatibleWith(leftHand->getWeaponType()))
+		{
+			if (rand() % 100 < 75)
+			{
+				if (leftHand)
+					leftHand.release();
+				leftHand = generateWeapon(itemTier, Weapon::SHIELD);
+			}
+			else if (rand() % 100 < 75)
+				do
+				{
+					if (leftHand)
+						leftHand.release();
+					leftHand = generateWeapon(itemTier, weaponTypes[rand() % 3]);
+				} while (!rightHand->isCompatibleWith(leftHand->getWeaponType()));
+			else if (leftHand)
+			{
+				leftHand.release();
+				leftHand = nullptr;
+			}
+		}
+	}
+	else
+		leftHand = nullptr;
+
 	// Updating weapon damage depending on stat scale
 	rightHand->update(attributes[0], attributes[2]);
 	if (leftHand)
 		leftHand->update(attributes[0], attributes[2]);
 
-	// Armour
-	unique_ptr<Armour> armour = generateArmour(itemTier);
+	// Generate armour
+	// Choose armour type based on NPC's stats
+	Armour::ArmourType armourType = attributes[0] >= attributes[2] ? Armour::ArmourType::HEAVY : Armour::ArmourType::LIGHT;
+	unique_ptr<Armour> armour = generateArmour(itemTier, armourType);
 
 	// Updating armour defense depending on stat scale
 	armour->update(attributes[0], attributes[2]);
