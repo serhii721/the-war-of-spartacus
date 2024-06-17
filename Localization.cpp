@@ -84,6 +84,8 @@ void Localization::setLanguage(Language llanguage)
 
 	// Saving selected language (and other settings)
 	ofstream fout("Data/" + SETTINGS_FILE + SETTINGS_FORMAT, ios::binary);
+	if (!fout)
+		throw new exception("Error: Couldn't open file for game settings");
 	fout << llanguage << " " << game.getSoundStatus() << " " << game.getAutoSaveStatus();
 	fout.close();
 
