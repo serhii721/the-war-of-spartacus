@@ -294,11 +294,11 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 		weaponTypes.erase(weaponTypes.begin() + 3);
 	}
 
-	unique_ptr<Weapon> rightHand = generateWeapon(itemTier, weaponTypes[rand() % 3]);
+	unique_ptr<Weapon> rightHand = generateWeapon(itemTier, weaponTypes[rand() % weaponTypes.size()]);
 	unique_ptr<Weapon> leftHand;
 	if (rightHand->getWeaponType() != Weapon::WeaponType::AXE && rightHand->getWeaponType() != Weapon::WeaponType::SPEAR)
 	{
-		leftHand = generateWeapon(itemTier, weaponTypes[rand() % 3]);
+		leftHand = generateWeapon(itemTier, weaponTypes[rand() % weaponTypes.size()]);
 		if (!rightHand->isCompatibleWith(leftHand->getWeaponType()))
 		{
 			if (rand() % 100 < 75)
@@ -312,7 +312,7 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 				{
 					if (leftHand)
 						leftHand.release();
-					leftHand = generateWeapon(itemTier, weaponTypes[rand() % 3]);
+					leftHand = generateWeapon(itemTier, weaponTypes[rand() % weaponTypes.size()]);
 				} while (!rightHand->isCompatibleWith(leftHand->getWeaponType()));
 			else if (leftHand)
 			{
@@ -346,26 +346,33 @@ unique_ptr<NPC> generateNPC(int aproximateLevel)
 				attributes[3], // Intelligence
 				attributes[4], // Wisdom
 				attributes[5], // Charisma
-				rand() % (MAX_AGE - MIN_AGE) + MIN_AGE,
-				calculateFameForLevel(leveling.getLevel()) + (rand() % FAME_DISPERSION * leveling.getLevel() / 100)
+				rand() % (MAX_AGE - MIN_AGE) + MIN_AGE, // Age
+				calculateFameForLevel(leveling.getLevel()) + (rand() % FAME_DISPERSION * leveling.getLevel() / 100) // Fame
 			),
-			BASIC_HP,
-			BASIC_HP,
-			make_unique<Inventory>(),
-			move(rightHand),
-			move(leftHand),
-			move(armour)
+			BASIC_HP, // HP
+			BASIC_HP, // FullHP
+			make_unique<Inventory>(), // Inventory
+			move(rightHand), // Weapon (right hand)
+			move(leftHand), // Weapon (left hand)
+			move(armour) // Armour
 		),
 		NamedNPC(
-			randomFirstName,
-			randomLastName
+			randomFirstName, // First name
+			randomLastName // Last name
 		),
-		leveling,
-		rand() % 3 + 1
+		leveling, // Levelling (level, experience, unnassigned attributes)
+		rand() % 3 + 1 // Portrait index
 	);
 	npc.updateMaxHP();
 
 	return make_unique<NPC>(npc);
+}
+
+bool compareNPC(const unique_ptr<NPC>& a, const unique_ptr<NPC>& b)
+{
+	if (a->getLevel() == b->getLevel())
+		return a->getFame() > b->getFame();
+	return a->getLevel() > b->getLevel();
 }
 
 unique_ptr<HarmlessNPC> generateTrader(int level)

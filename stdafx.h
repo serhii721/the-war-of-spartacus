@@ -104,6 +104,7 @@ int calculateFameForLevel(int level_);
 
 // __________ NPC __________
 unique_ptr<NPC> generateNPC(int aproximateLevel_ = 6);
+bool compareNPC(const unique_ptr<NPC>&, const unique_ptr<NPC>&);
 unique_ptr<HarmlessNPC> generateTrader(int level_ = MIN_TRADER_LEVEL);
 
 // __________ Weapon and Armour __________
