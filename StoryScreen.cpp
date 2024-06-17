@@ -2158,6 +2158,8 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setDisplayState(DisplayState::MENU);
 				game.updateBackground();
 				updateWindow(hWnd);
+				// If autosave is enabled - save game
+				game.saveToFile(game.getAutoSaveStatus());
 			}
 			break;
 			}

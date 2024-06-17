@@ -271,8 +271,9 @@ void GameMenu::resizeMenu(int cx, int cy)
 		y = cy - sz / 2 * (ITEM_HEIGHT + DISTANCE);
 
 		// Video settings
-		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH / 3, ITEM_HEIGHT, TRUE);
+		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
+
 
 		// Sound settings
 		MoveWindow(hSubItems[SETTINGS_STAT_SOUND], x, y, ITEM_WIDTH - BUT_SIZE - DISTANCE, ITEM_HEIGHT, TRUE);
@@ -280,6 +281,15 @@ void GameMenu::resizeMenu(int cx, int cy)
 		// Sound checkbox
 		MoveWindow(hSubItems[SETTINGS_BUT_SOUND], x + ITEM_WIDTH - BUT_SIZE, y, BUT_SIZE, BUT_SIZE, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
+
+
+		// Autosave settings
+		MoveWindow(hSubItems[SETTINGS_STAT_AUTOSAVE], x, y, ITEM_WIDTH - BUT_SIZE - DISTANCE, ITEM_HEIGHT, TRUE);
+
+		// Autosave checkbox
+		MoveWindow(hSubItems[SETTINGS_BUT_AUTOSAVE], x + ITEM_WIDTH - BUT_SIZE, y, BUT_SIZE, BUT_SIZE, TRUE);
+		y += ITEM_HEIGHT + DISTANCE;
+
 
 		// Back
 		MoveWindow(hSubItems[SETTINGS_BUT_BACK], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
@@ -367,7 +377,9 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", l.getMessage(Localized::VIDEO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", l.getMessage(Localized::AUDIO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_STAT_AUTOSAVE] = CreateWindow("STATIC", l.getMessage(Localized::AUTOSAVE_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_SOUND] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				hSubItems[SETTINGS_BUT_AUTOSAVE] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				game.setBackground(Game::Background::GAME_MENU_SETTINGS);
@@ -464,29 +476,31 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_SOUND])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
-				// TODO
+				game.setSoundStatus(!game.getSoundStatus());
 
-				// REMOVE
-				// DEVELOPER MODE FEATURE
-				Player& rPlayer = game.getPlayer();
-				Inventory& rInventory = *rPlayer.getInventory();
-				rInventory.addItem(make_unique<Item>(Item(Item::ItemType::GOLD)), 100000);
-				rInventory.addItem(generateArmour());
-				rInventory.addItem(generateWeapon());
-				rInventory.addItem(generateArmour());
-				rInventory.addItem(generateWeapon());
-				rPlayer.setFreedom(true);
-				rPlayer.gainExperience(20000);
-				rPlayer.setUnnassignedAttributes(120);
-				rPlayer.setStrength(80);
-				rPlayer.setConstitution(80);
-				rPlayer.setDexterity(80);
-				rPlayer.setIntelligence(80);
-				rPlayer.setWisdom(80);
-				rPlayer.setCharisma(80);
-				rPlayer.updateMaxHP();
-				game.setProgressionStage(Game::Progression::JOINED_REBELLION);
-				// REMOVE
+				// Write data in file
+				// Opening file
+				string path = "Data/Settings.conf";
+				// Saving settings
+				ofstream fout(path, ios::binary);
+				// TODO: handle error
+				fout << l.getLanguage() << " " << game.getSoundStatus() << " " << game.getAutoSaveStatus();
+				fout.close();
+			}
+
+			if ((HWND)lp == hSubItems[SETTINGS_BUT_AUTOSAVE])
+			{
+				playSound(SoundEnum::SOUND_BUTTON_CLICK);
+				game.setAutoSaveStatus(!game.getAutoSaveStatus());
+
+				// Write data in file
+				// Opening file
+				string path = "Data/Settings.conf";
+				// Saving settings
+				ofstream fout(path, ios::binary);
+				// TODO: handle error
+				fout << l.getLanguage() << " " << game.getSoundStatus() << " " << game.getAutoSaveStatus();
+				fout.close();
 			}
 
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_BACK] || LOWORD(wp) == IDCANCEL)
@@ -520,6 +534,57 @@ bool GameMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 	{
 		case WM_DRAWITEM:
 		{
+			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
+			HDC hdc = item->hDC;
+
+			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
+			SetBkMode(hdc, TRANSPARENT);
+
+			// Get text
+			int len = GetWindowTextLength(item->hwndItem);
+			buf.resize(len + 1); // Resize buffer to contain button text
+			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+
+			SetTextColor(hdc, COLOR_WHITE); // Set basic text color
+			if (game.getBackground() == Game::Background::GAME_MENU_SETTINGS)
+			{
+				if (item->hwndItem == hSubItems[SETTINGS_BUT_SOUND])
+				{
+					RECT rect = item->rcItem;
+					bool isChecked = game.getSoundStatus();
+
+					if (isChecked)
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+					else
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+					// Draw checkbox
+					RECT checkboxRect = { rect.left + 10, rect.top + 10, rect.left + 30, rect.top + 30 };
+					DrawFrameControl(hdc, &checkboxRect, DFC_BUTTON, isChecked ? DFCS_BUTTONCHECK | DFCS_CHECKED : DFCS_BUTTONCHECK);
+
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+					return true;
+				}
+				if (item->hwndItem == hSubItems[SETTINGS_BUT_AUTOSAVE])
+				{
+					RECT rect = item->rcItem;
+					bool isChecked = game.getAutoSaveStatus();
+
+					if (isChecked)
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+					else
+						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+					// Draw checkbox
+					RECT checkboxRect = { rect.left + 10, rect.top + 10, rect.left + 30, rect.top + 30 };
+					DrawFrameControl(hdc, &checkboxRect, DFC_BUTTON, isChecked ? DFCS_BUTTONCHECK | DFCS_CHECKED : DFCS_BUTTONCHECK);
+
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+					return true;
+				}
+			}
 			return false;
 		}
 		break;
