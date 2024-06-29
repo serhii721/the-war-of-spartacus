@@ -1049,7 +1049,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubItems.resize(SettingsItem::SETTINGS_ITEM_NUMBER);
 
 				hSubItems[SPECIALS_STAT_SPECIALS] = CreateWindow("STATIC", l.getMessage(Localized::SPECIALS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				hSubItems[SPECIALS_STAT_TEXT] = CreateWindow("STATIC", "Empty for now", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0); // TODO
+				hSubItems[SPECIALS_STAT_TEXT] = CreateWindow("STATIC", l.getMessage(Localized::SPECIALS_TEXT).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0); // TODO
 				hSubItems[SPECIALS_BUT_BACK] = CreateWindow("BUTTON", l.getMessage(Localized::BACK).c_str(), WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				game.setBackground(Game::Background::MAIN_MENU_SPECIALS);
@@ -1976,6 +1976,29 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
 
 					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+					return true;
+				}
+			}
+			if (game.getBackground() == Game::Background::MAIN_MENU_SPECIALS)
+			{
+				if (item->hwndItem == hSubItems[SPECIALS_STAT_TEXT])
+				{
+					SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+					SetBkMode(hdc, TRANSPARENT);
+
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
+
+					// Text padding
+					RECT rect = item->rcItem;
+					int padding = 10;
+					rect.left += padding;
+					rect.top += padding;
+					rect.right -= padding;
+					rect.bottom -= padding;
+
+					DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_VCENTER | DT_LEFT | DT_WORDBREAK); // Display text
+					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+
 					return true;
 				}
 			}
