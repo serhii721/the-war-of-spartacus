@@ -31,7 +31,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdS
 
 	// 3. Создание окна.
 	HWND hwnd;
-	hwnd = CreateWindow(name, "Gladiator Game",
+	hwnd = CreateWindow(name, "The War of Spartacus",
 						WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX | WS_VISIBLE,
 						50, 50, 1366, 768, HWND_DESKTOP, NULL, hInstance, NULL);
 

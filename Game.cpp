@@ -448,7 +448,20 @@ void Game::saveToFile(bool isAutoSave)
 	// Name for save folder -- Player's name + Player's level + current date and time
 	if (isAutoSave)
 	{
-		buf = "AutoSave_" + game.getPlayer().getName();
+		namespace fs = std::experimental::filesystem;
+		string autoSave = "AutoSave_", folderName;
+
+		// Check every available save folder. If it's an autosave - delete it
+		for (const auto& entry : fs::directory_iterator(FOLDER_SAVES))
+			if (fs::is_directory(entry))
+			{
+				folderName = entry.path().filename().string();
+				if (folderName.find(autoSave) != string::npos)
+					fs::remove_all(entry.path());
+			}
+
+		// Add "AutoSave_" to save folder's name
+		buf = autoSave + game.getPlayer().getName();
 		buf.erase(remove(buf.begin(), buf.end(), ' '), buf.end());
 	}
 	else
