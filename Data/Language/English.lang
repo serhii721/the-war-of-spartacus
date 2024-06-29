@@ -6,6 +6,7 @@ Load game
 Start new game
 Settings
 Specials
+This game was made by a student at the Center for Computer Education (c.Dnipro, Ukraine). This is an educational project created as part of training and as a personal hobby. The idea for the game was suggested by a friend of mine who was inspired by another game about gladiators. It was originally a console game, but as I learned it was remade using WinAPI. It demonstrates my programming skills. At the moment, the functions of character leveling, moving around the map, inventory, trading, battle, saving and loading, as well as localization are implemented here. The game's plot is still in development, but the first act is already available, as well as a small quest in the first city. Over time it will be improved.
 Exit to main menu
 Exit
 Character creation
