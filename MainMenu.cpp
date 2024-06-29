@@ -1720,6 +1720,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SetWindowText(hSubItems[SETTINGS_STAT_VIDEO], l.getMessage(Localized::VIDEO_SETTINGS).c_str());
 				SetWindowText(hSubItems[SETTINGS_STAT_SOUND], l.getMessage(Localized::AUDIO_SETTINGS).c_str());
 				SetWindowText(hSubItems[SETTINGS_STAT_LANGUAGE], l.getMessage(Localized::LANGUAGE_SETTINGS).c_str());
+				SetWindowText(hSubItems[SETTINGS_STAT_AUTOSAVE], l.getMessage(Localized::AUTOSAVE_SETTINGS).c_str());
 				SetWindowText(hSubItems[SETTINGS_BUT_APPLY_CHANGES], l.getMessage(Localized::APPLY_CHANGES).c_str());
 				SetWindowText(hSubItems[SETTINGS_BUT_BACK], l.getMessage(Localized::BACK).c_str());
 
