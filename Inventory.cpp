@@ -45,7 +45,8 @@ Inventory::~Inventory() { }
 
 PairRef<unique_ptr<Item>&, int&> Inventory::operator[](int index)
 {
-	if (index >= items.size())
+	int size = items.size();
+	if (index >= size)
 		throw out_of_range("Index out of range");
 
 	auto it = items.begin();
@@ -55,7 +56,8 @@ PairRef<unique_ptr<Item>&, int&> Inventory::operator[](int index)
 
 PairRef<const unique_ptr<Item>&, const int&> Inventory::operator[](int index) const
 {
-	if (index >= items.size())
+	int size = items.size();
+	if (index >= size)
 		throw out_of_range("Index out of range");
 
 	auto it = items.begin();
@@ -80,11 +82,11 @@ unique_ptr<Item> Inventory::extractItem(int id)
 	return nullptr;
 }
 
-const unique_ptr<Item>& Inventory::getItem(int id) const
+const Item* Inventory::getItem(int id) const
 {
 	auto it = items.find(id);
 	if (it != items.end())
-		return it->second.first; // Return item
+		return it->second.first.get(); // Return item
 	return nullptr; // Item not found - return nullptr
 }
 

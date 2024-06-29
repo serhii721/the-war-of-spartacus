@@ -1475,7 +1475,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 						vector<unique_ptr<NPC>>& opponents = game.getWorldMap().getCity(i).getArena().getGladiators();
 
 						// Check every opponent
-						for (j = 0; j < opponents.size(); j++)
+						int size = opponents.size();
+						for (j = 0; j < size; j++)
 						{
 							NPC& opponent = *opponents[j];
 							int hp = opponent.getHP();
