@@ -16,7 +16,7 @@ public:
 
 	int size() const;
 	unique_ptr<Item> extractItem(int id_);
-	const unique_ptr<Item>& getItem(int id_) const;
+	const Item* getItem(int id_) const;
 	int getItemQuantity(int id_) const;
 	Item::ItemType getItemType(int id_) const;
 

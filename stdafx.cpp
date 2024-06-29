@@ -169,7 +169,8 @@ int calculateWeightedAverageFactor(const vector<int>& values, const vector<pair<
 	int weightedSum = 0;
 	int totalWeight = 0;
 	int unusedValues = 0;
-	for (int i = 0; i < values.size(); i++)
+	int size = values.size();
+	for (int i = 0; i < size; i++)
 	{
 		int normalizedValue = normalize(values[i], ranges[i].first, ranges[i].second);
 		weightedSum += normalizedValue * weights[i];
@@ -675,13 +676,15 @@ unique_ptr<Weapon> generateWeapon(int tier, Weapon::WeaponType ttype)
 
 	// Weapon statistics, randomly generated in range
 	vector<int> weaponStatsValues;
-	for (int i = 0; i < weaponStatsRanges.size(); i++)
+	int size = weaponStatsRanges.size();
+	for (int i = 0; i < size; i++)
 		weaponStatsValues.push_back(weaponStatsRanges[i].first + rand() % (weaponStatsRanges[i].second - weaponStatsRanges[i].first + 1));
 
 	// Statistics weight
 	// Weapon values damage and scale
 	// Shield values defensife stats
-	vector<int> weights(weaponStatsValues.size(), 1);
+	size = weaponStatsValues.size();
+	vector<int> weights(size, 1);
 	if (type == Weapon::WeaponType::SHIELD)
 	{
 		weights[0] = 0;
@@ -784,13 +787,15 @@ unique_ptr<Armour> generateArmour(int tier, Armour::ArmourType ttype)
 
 	// Armour statistics, randomly generated in range
 	vector<int> armourStatsValues;
-	for (int i = 0; i < armourStatsRanges.size(); i++)
+	int size = armourStatsRanges.size();
+	for (int i = 0; i < size; i++)
 		armourStatsValues.push_back(armourStatsRanges[i].first + rand() % (armourStatsRanges[i].second - armourStatsRanges[i].first + 1));
 
 	// Statistics weight
 	// Light armour values dexterity scale and evasion chance more
 	// Heavy armour values strength scale and stun resistance more
-	vector<int> weights(armourStatsValues.size(), 1);
+	size = armourStatsValues.size();
+	vector<int> weights(size, 1);
 	if (type == Armour::ArmourType::LIGHT)
 	{
 		weights[2] = 5;
@@ -885,7 +890,6 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
-	RECT rect;
 	static int sx, sy;
 
 	switch (message)

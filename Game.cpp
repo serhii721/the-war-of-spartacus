@@ -385,20 +385,10 @@ bool Game::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& resul
 {
 	switch (displayState)
 	{
-	default:case DisplayState::MENU:
-		return menuManager.stylizeWindow(hWnd, m, wp, lp, result);
-		break;
-
-	case DisplayState::WORLD_MAP:
-		return pWorldMap->stylizeWindow(hWnd, m, wp, lp, result);
-		break;
-
-	case DisplayState::FIGHTING:
-		return pFighting->stylizeWindow(hWnd, m, wp, lp, result);
-		break;
-
-	case DisplayState::STORY_SCREEN:
-		pStoryScreen->stylizeWindow(hWnd, m, wp, lp, result);
+	default:case DisplayState::MENU: return menuManager.stylizeWindow(hWnd, m, wp, lp, result); 
+	case DisplayState::WORLD_MAP: return pWorldMap->stylizeWindow(hWnd, m, wp, lp, result); 
+	case DisplayState::FIGHTING: return pFighting->stylizeWindow(hWnd, m, wp, lp, result); 
+	case DisplayState::STORY_SCREEN: return pStoryScreen->stylizeWindow(hWnd, m, wp, lp, result);
 	}
 }
 

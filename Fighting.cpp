@@ -411,7 +411,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 	if (experienceMultiplier > MAX_EXPERIENCE_MULTIPLIER)
 		experienceMultiplier = MAX_EXPERIENCE_MULTIPLIER;
 
-	experience *= experienceMultiplier;
+	experience = (int)(experience * experienceMultiplier);
 	rPlayer.gainExperience(experience);
 
 	// # 3.2 Fame reward
@@ -475,7 +475,7 @@ FightStatus Fighting::fight(HWND hWnd, Player& rPlayer, NPC& rOpponent)
 		goldForFameMultiplier += 0.01;
 	}
 
-	gainedGold = goldForCity * goldForFameMultiplier;
+	gainedGold = (int)(goldForCity * goldForFameMultiplier);
 
 	// If player lost reward is 10 times smaller
 	if (status == FightStatus::PLAYER_SURRENDERED || status == FightStatus::PLAYER_LOST)

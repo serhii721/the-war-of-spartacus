@@ -124,7 +124,7 @@ void Fighter::updateMaxHP()
 {
 	double multiplier = (hp * 100 / fullHP) / 100;
 	fullHP = 100 + (MAX_ADDITIONAL_HP_STRENGTH * strength / 100) + (MAX_ADDITIONAL_HP_CONSTITUTION * constitution / 100);
-	hp = fullHP * multiplier;
+	hp = (int)(fullHP * multiplier);
 }
 
 void Fighter::unequipItem(int id)
@@ -158,7 +158,7 @@ void Fighter::equipItemFromInventory(int id)
 	switch (inventory->getItemType(id))
 	{
 	case Item::ItemType::WEAPON:
-		pWeapon = dynamic_cast<Weapon*>(rItem.get());
+		pWeapon = dynamic_cast<Weapon*>(const_cast<Item*>(rItem));
 		if (pWeapon) // If retrieved item is a weapon
 		{
 			if (!isRightHandOccupied() && pWeapon->getWeaponType() != Weapon::WeaponType::SHIELD) // If right hand is empty and retrieved weapon is not a shield
@@ -177,7 +177,7 @@ void Fighter::equipItemFromInventory(int id)
 		break;
 
 	case Item::ItemType::ARMOUR:
-		pArmour = dynamic_cast<Armour*>(rItem.get());
+		pArmour = dynamic_cast<Armour*>(const_cast<Item*>(rItem));
 		if (pArmour && !isArmourEquipped()) // If retrieved item is an armour and armour is not already equipped
 		{
 			armour = make_unique<Armour>(*pArmour);
