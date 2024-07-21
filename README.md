@@ -1,24 +1,40 @@
-This is a game about gladiators in Ancient Rome. It is written as an educational project on C++ and WinAPI using OOP principles. Game's features are:
-- Interesting story.
-Player starts as a slaved gladiator on arena. He can progress, gain his freedom and later support his fellow gladiators in their fight for freedom or join the Roman legion to supress rebels.
-- Character progression.
-Player has level and experience which he gains by fighting and training. Every level he gains additional attributes which he can distribute between his stats.
-- Inventory system.
-It is possible to store different items in inventory such as weapons, armours, etc, inspect them from inventory, equip or unequip.
-- Trading with NPCs on the market.
-Player can gain gold by fighting on arenas and use this gold to buy items from market.
-- Fighting with different opponents on different arenas.
-Fight is a complex semiautomatic process. Result of the fight is influenced by player's and opponent's stats and equipment.
-- Ability to travel on map.
-There are 11 different ancient Roman cities which player can visit.
-- Save & load.
-Player can save game at almost any time and come back later to load his previous save to continue playing.
+# The War of Spartacus
 
-Also game supports localization on 3 different languages. Currently there are:
-- English
-- Ukrainian
-- Russian
+This is a game about gladiators in Ancient Rome. It is set in the time of Spartacus and his rebellion for the freedom of slaves. In the story, the player begins as a gladiator slave and must earn his freedom by fighting in the arena. Eventually the player meets Spartacus and can either join him in his war or oppose him and join the Roman legion.
 
-Player can choose language in settings and every text in the game (including NPCs' names) will be translated to selected language. Selected language is stored in file so upon restarting the game it will already be in this language.
+__Features:__
 
-To run the application it is necessary to install Visual C++ 2017 Redistributable.
+- _Interesting story_: the player starts as a gladiator slave in the arena. He can advance, gain freedom and later support his fellow gladiators in the fight for freedom or join the Roman legion to suppress the rebels.
+- _Fighting with different opponents_ in different arenas: combat is a complex semi-automatic process. Stats and equipment of the player and the opponent influence the outcome of the battle.
+- _Character development_: the player has a level and experience, which he gains by fighting and training. With each level he gains additional attributes that he can distribute among his stats.
+- _Inventory system_: different items such as weapons, armour, etc. can be stored in the inventory, they can be viewed in the inventory and equipped.
+- _Trading with NPCs_ in the marketplace: the player can gain gold by fighting in arenas and use it to buy items in the marketplace.
+- _Ability to travel_ around the map: the game has 11 different ancient Roman cities that the player can visit.
+- _Saving and loading_: the player can save the game at almost any time and come back later to load a previous save and continue the game.
+- _Side quests_: there is one quest in the starting town to deal with an arrogant patrician who has taken a young girl away from her father.
+
+The game is localized in three languages: English, Ukrainian, Russian.
+
+_It is written as an educational project in C++ and WinAPI using OOP principles._
+
+## Installation
+
+Download and install [the latest release](https://github.com/serhii721/the-war-of-spartacus/releases/).
+
+## Prerequisites
+
+To run the application it is necessary to install [Microsoft Visual C++ 2017 Redistributable packages (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe).
+
+## Configuration
+
+In the settings, a user can:
+
+- Switch the language to translate all texts in the game, including NPCs' names. _The selected language is saved when the game is restarted._
+- Toggle sounds.
+- Toggle autosaving of game progress.
+
+## Development notes
+
+_Microsoft Visual Studio 2017 (15.9.59) is used for development._
+
+[The leveling table](./Docs/Leveling%20table.ods) can be used to calculate the experience required for each player level.
