@@ -10,7 +10,7 @@ private:
 	unique_ptr<StoryScreen> pStoryScreen;
 
 	HFONT smallFont, mediumFont, largeFont;
-	
+
 	DisplayState displayState;
 
 public:

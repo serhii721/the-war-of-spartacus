@@ -623,7 +623,7 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 		switch (rresult)
 		{
 		case AttackResult::DEALT_DAMAGE:
-			result += l.getMessage(Localized::YOU_HAVE_DEALT) + " " + to_string(ddamage) +  " " + l.getMessage(Localized::DAMAGE_GENITIVE);
+			result += l.getMessage(Localized::YOU_HAVE_DEALT) + " " + to_string(ddamage) + " " + l.getMessage(Localized::DAMAGE_GENITIVE);
 			playSound(SoundEnum::SOUND_FIGHT_HIT);
 			break;
 		case AttackResult::DEALT_CRIT_DAMAGE:
@@ -693,7 +693,7 @@ void Fighting::getAttackResult(const NPC& rOpponent, const Attacker attacker, co
 		opponentHP = rOpponent.getHP();
 
 	string pHP = l.getMessage(Localized::HEALTH) + ": " + to_string(playerHP),
-		   oHP = l.getMessage(Localized::HEALTH) + ": " + to_string(opponentHP);
+		oHP = l.getMessage(Localized::HEALTH) + ": " + to_string(opponentHP);
 
 	SendMessage(hItems[MenuItem::STATIC_PLAYER_HP], WM_SETTEXT, 0, (LPARAM)pHP.c_str());
 	SendMessage(hItems[MenuItem::STATIC_OPPONENT_HP], WM_SETTEXT, 0, (LPARAM)oHP.c_str());
@@ -772,7 +772,7 @@ void Fighting::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		// Composing path based on current menu
 		switch (game.getBackground())
 		{
-		default:case Game::Background::FIGHTING_ARENA: path = DIRECTORY + "Background/fightArenaBackground" + FORMAT; break;
+		default: case Game::Background::FIGHTING_ARENA: path = DIRECTORY + "Background/fightArenaBackground" + FORMAT; break;
 		case Game::Background::FIGHTING_QUEST_PERUGIA_SHANDAR_STREET: path = DIRECTORY + "Quest/Perugia/Shandar/fightStreet" + FORMAT; break;
 		case Game::Background::FIGHTING_QUEST_PERUGIA_SHANDAR_HOUSE: path = DIRECTORY + "Quest/Perugia/Shandar/fightHouse" + FORMAT; break;
 		}
@@ -801,7 +801,7 @@ void Fighting::resizeWindow(int cx, int cy)
 
 	switch (game.getBackground())
 	{
-	default:case Game::Background::FIGHTING_ARENA:
+	default: case Game::Background::FIGHTING_ARENA:
 	{
 		const int ITEM_HEIGHT = 30, ITEM_WIDTH = 300, DISTANCE = 15;
 		// Start
@@ -850,7 +850,7 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	case WM_COMMAND:
 		switch (game.getBackground())
 		{
-		default:case Game::Background::FIGHTING_ARENA:
+		default: case Game::Background::FIGHTING_ARENA:
 		{
 			if ((HWND)lp == hItems[BUT_END_FIGHT])
 			{
@@ -926,7 +926,7 @@ void Fighting::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 		}
 		break;
 		}
-	break;
+		break;
 	}
 }
 
@@ -935,7 +935,7 @@ bool Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 	switch (m)
 	{
 	case WM_DRAWITEM:
-		{
+	{
 		if (game.getBackground() == Game::Background::FIGHTING_ARENA)
 		{
 			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
@@ -976,8 +976,8 @@ bool Fighting::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 			return true;
 		}
 		return false;
-		}
-		break;
+	}
+	break;
 
 	case WM_CTLCOLORSTATIC:
 	{

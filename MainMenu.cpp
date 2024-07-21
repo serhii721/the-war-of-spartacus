@@ -278,7 +278,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Composing path based on current menu
 		switch (game.getBackground())
 		{
-		default:case Game::Background::MAIN_MENU:
+		default: case Game::Background::MAIN_MENU:
 			path = DIRECTORY + "menuBackground" + FORMAT;
 			for (HWND hItem : hItems)
 				ShowWindow(hItem, SW_SHOW);
@@ -288,11 +288,26 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 				ShowWindow(hItems[BUT_LOAD_GAME], SW_HIDE);
 			}
 			break;
-		case Game::Background::MAIN_MENU_LOAD: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
-		case Game::Background::MAIN_MENU_NEW_GAME: path = DIRECTORY + "characterCreationBackground" + FORMAT; break;
-		case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT: path = DIRECTORY + "startingEquipmentBackground" + FORMAT; break;
-		case Game::Background::MAIN_MENU_SETTINGS: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
-		case Game::Background::MAIN_MENU_SPECIALS: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
+
+		case Game::Background::MAIN_MENU_LOAD:
+			path = DIRECTORY + "menuBackground" + FORMAT;
+			break; // TODO: background
+
+		case Game::Background::MAIN_MENU_NEW_GAME:
+			path = DIRECTORY + "characterCreationBackground" + FORMAT;
+			break;
+
+		case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT:
+			path = DIRECTORY + "startingEquipmentBackground" + FORMAT;
+			break;
+
+		case Game::Background::MAIN_MENU_SETTINGS:
+			path = DIRECTORY + "menuBackground" + FORMAT;
+			break; // TODO: background
+
+		case Game::Background::MAIN_MENU_SPECIALS:
+			path = DIRECTORY + "menuBackground" + FORMAT;
+			break; // TODO: background
 		}
 		// Loading image
 		if (hBackgroundImage != NULL)
@@ -309,9 +324,15 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	// 2. Text
 	switch (game.getBackground())
 	{
-	default:case Game::Background::MAIN_MENU: break;
-	case Game::Background::MAIN_MENU_LOAD: break;
-	case Game::Background::MAIN_MENU_NEW_GAME: break;
+	default: case Game::Background::MAIN_MENU:
+		break;
+
+	case Game::Background::MAIN_MENU_LOAD:
+		break;
+
+	case Game::Background::MAIN_MENU_NEW_GAME:
+		break;
+
 	case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT:
 	{
 		// General
@@ -349,7 +370,6 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		Armour& rArmour3 = *se[2]->armour;
 
 		// Set 1
-		{
 		buf = l.getMessage(Localized::SET) + " 1";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
@@ -410,10 +430,8 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		else
 			buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(rArmour1.getStunProbSubtraction()) + "%";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET1_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-		}
 
 		// Set 2
-		{
 		buf = l.getMessage(Localized::SET) + " 2";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
@@ -456,7 +474,7 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		}
 		else
 			SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
-		
+
 		// Armour
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(rArmour2).c_str());
 
@@ -474,10 +492,8 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		else
 			buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(rArmour2.getStunProbSubtraction()) + "%";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET2_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-		}
 
 		// Set 3
-		{
 		buf = l.getMessage(Localized::SET) + " 3";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
@@ -538,20 +554,18 @@ void MainMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		else
 			buf = l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(rArmour3.getStunProbSubtraction()) + "%";
 		SendMessage(hSubMenuItems[EQUIPMENT_STAT_SET3_ARMOUR_ABILITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-		}
 	}
 	break;
 
 	case Game::Background::MAIN_MENU_SETTINGS:
-	{
 		if (changedSettings)
 			ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_SHOW);
 		else
 			ShowWindow(hSubItems[SETTINGS_BUT_APPLY_CHANGES], SW_HIDE);
-	}
-	break;
+		break;
 
-	case Game::Background::MAIN_MENU_SPECIALS: break;
+	case Game::Background::MAIN_MENU_SPECIALS:
+		break;
 	}
 	game.backgroundChangeCompleted();
 }
@@ -563,10 +577,9 @@ void MainMenu::resizeMenu(int cx, int cy)
 		return;
 
 	int sz, x, y, i;
-
 	switch (game.getBackground())
 	{
-	default:case Game::Background::MAIN_MENU:
+	default: case Game::Background::MAIN_MENU:
 	{
 		const int ITEM_HEIGHT = 45, DISTANCE = 10, ITEM_WIDTH = 300;
 		sz = hItems.size();
@@ -811,7 +824,7 @@ void MainMenu::resizeMenu(int cx, int cy)
 		// Autosave checkbox
 		MoveWindow(hSubItems[SETTINGS_BUT_AUTOSAVE], x + ITEM_WIDTH - BUT_SIZE, y, BUT_SIZE, BUT_SIZE, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
-		
+
 
 		// Language settings
 		MoveWindow(hSubItems[SETTINGS_STAT_LANGUAGE], x, y, (ITEM_WIDTH - DISTANCE) / 2, ITEM_HEIGHT, TRUE);
@@ -850,11 +863,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	switch (m)
 	{
 	case WM_COMMAND:
-	{
 		switch (game.getBackground())
 		{
 		case Game::Background::MAIN_MENU:
-		{
 			if ((HWND)lp == hItems[BUT_CONTINUE])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -883,7 +894,8 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::CITY_MENU);
 
 				updateWindow(hWnd);
-				break;
+
+				return;
 			}
 			if ((HWND)lp == hItems[BUT_LOAD_GAME])
 			{
@@ -1061,11 +1073,9 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
 				DestroyWindow(hWnd);
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::MAIN_MENU_LOAD:
-		{
 			if (HIWORD(wp) == LBN_SELCHANGE)
 			{
 				if (selected != SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETCURSEL, 0, 0))
@@ -1092,7 +1102,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::MAIN_MENU);
 
 				updateWindow(hWnd);
-				break;
 			}
 
 			if ((HWND)lp == hSubItems[LOADING_BUT_LOAD])
@@ -1133,15 +1142,11 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::CITY_MENU);
 
 				updateWindow(hWnd);
-				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::MAIN_MENU_NEW_GAME:
-		{
 			// Changing attributes
-			{
 			// Age
 			if ((HWND)lp == hSubItems[BUT_AGE_MINUS])
 			{
@@ -1299,7 +1304,6 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					SetWindowText(hSubItems[EDIT_UNNASSIGNED_ATTRIBUTES], to_string(nms->unnassignedAttributes).c_str());
 				}
 			}
-			}
 
 			// Continue - choosing equipment
 			if ((HWND)lp == hSubItems[NEW_GAME_BUT_NEXT])
@@ -1446,13 +1450,10 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::MAIN_MENU);
 
 				updateWindow(hWnd);
-				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT:
-		{
 			// Set 1
 			if ((HWND)lp == hSubMenuItems[EQUIPMENT_BUT_SET1])
 			{
@@ -1655,13 +1656,10 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::MAIN_MENU_NEW_GAME);
 
 				updateWindow(hWnd);
-				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::MAIN_MENU_SETTINGS:
-		{
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_SOUND])
 			{
 				game.setSoundStatus(!game.getSoundStatus());
@@ -1747,13 +1745,10 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::MAIN_MENU);
 
 				updateWindow(hWnd);
-				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::MAIN_MENU_SPECIALS:
-		{
 			if ((HWND)lp == hSubItems[SPECIALS_BUT_BACK] || LOWORD(wp) == IDCANCEL)
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1770,103 +1765,100 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::MAIN_MENU);
 
 				updateWindow(hWnd);
-				break;
 			}
+			break;
 		}
 		break;
-		}
-	}
-	break;
 
-	//case WM_MOUSEMOVE:
-	//{
-	//	static int i;
-	//	// First method
-	//	RECT rect;
-	//	POINT pt;
-	//	// Get cursor position
-	//	GetCursorPos(&pt);
-	//	ScreenToClient(hWnd, &pt);
+		//case WM_MOUSEMOVE:
+		//{
+		//	static int i;
+		//	// First method
+		//	RECT rect;
+		//	POINT pt;
+		//	// Get cursor position
+		//	GetCursorPos(&pt);
+		//	ScreenToClient(hWnd, &pt);
 
-	//	// Test
-	//	HDC hdc;
-	//	PAINTSTRUCT ps;
-	//	buf = to_string(pt.x) + " " + to_string(pt.y);
-	//	for (HWND hItem : hItems)
-	//		if ((HWND)lp == hItem)
-	//			SetWindowText(hWnd, buf.c_str());
+		//	// Test
+		//	HDC hdc;
+		//	PAINTSTRUCT ps;
+		//	buf = to_string(pt.x) + " " + to_string(pt.y);
+		//	for (HWND hItem : hItems)
+		//		if ((HWND)lp == hItem)
+		//			SetWindowText(hWnd, buf.c_str());
 
-	//	// Second method
-	//	// Get cursor position
-	//	TRACKMOUSEEVENT tme;
-	//	tme.cbSize = sizeof(TRACKMOUSEEVENT);
-	//	tme.dwFlags = TME_HOVER | TME_LEAVE;
-	//	tme.dwHoverTime = HOVER_DEFAULT;
+		//	// Second method
+		//	// Get cursor position
+		//	TRACKMOUSEEVENT tme;
+		//	tme.cbSize = sizeof(TRACKMOUSEEVENT);
+		//	tme.dwFlags = TME_HOVER | TME_LEAVE;
+		//	tme.dwHoverTime = HOVER_DEFAULT;
 
-	//	switch (game.getBackground())
-	//	{
-	//	case Game::Background::MAIN_MENU:
-	//	{
-	//		for (HWND hItem : hItems)
-	//		{
-	//			// Get button position
-	//			GetWindowRect(hItem, &rect);
-	//			MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
-	//			//InvalidateRect(hWnd, &rect, 1);
+		//	switch (game.getBackground())
+		//	{
+		//	case Game::Background::MAIN_MENU:
+		//	{
+		//		for (HWND hItem : hItems)
+		//		{
+		//			// Get button position
+		//			GetWindowRect(hItem, &rect);
+		//			MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+		//			//InvalidateRect(hWnd, &rect, 1);
 
-	//			if (PtInRect(&rect, pt))
-	//			{
-	//				HBRUSH hBrush = CreateSolidBrush(COLOR_ROMAN_RED);
-	//				SetWindowText(hItem, to_string(i).c_str());
-	//				i++;
-	//				hdc = BeginPaint(hWnd, &ps);
-	//				DrawText(hdc, "Test", -1, &rect, DT_LEFT);
-	//				FillRect(hdc, &rect, hBrush);
-	//				EndPaint(hWnd, &ps);
-	//				DeleteObject(hBrush);
-	//			}
-	//		}
-	//	}
-	//	break;
+		//			if (PtInRect(&rect, pt))
+		//			{
+		//				HBRUSH hBrush = CreateSolidBrush(COLOR_ROMAN_RED);
+		//				SetWindowText(hItem, to_string(i).c_str());
+		//				i++;
+		//				hdc = BeginPaint(hWnd, &ps);
+		//				DrawText(hdc, "Test", -1, &rect, DT_LEFT);
+		//				FillRect(hdc, &rect, hBrush);
+		//				EndPaint(hWnd, &ps);
+		//				DeleteObject(hBrush);
+		//			}
+		//		}
+		//	}
+		//	break;
 
-	//	case Game::Background::MAIN_MENU_LOAD:
-	//	{
-	//		// TODO
-	//	}
-	//	break;
+		//	case Game::Background::MAIN_MENU_LOAD:
+		//	{
+		//		// TODO
+		//	}
+		//	break;
 
-	//	case Game::Background::MAIN_MENU_NEW_GAME:
-	//	{
-	//		// TODO
-	//	}
-	//	break;
+		//	case Game::Background::MAIN_MENU_NEW_GAME:
+		//	{
+		//		// TODO
+		//	}
+		//	break;
 
-	//	case Game::Background::MAIN_MENU_SETTINGS:
-	//	{
-	//		// TODO
-	//	}
-	//	break;
+		//	case Game::Background::MAIN_MENU_SETTINGS:
+		//	{
+		//		// TODO
+		//	}
+		//	break;
 
-	//	case Game::Background::MAIN_MENU_SPECIALS:
-	//	{
-	//		// TODO
-	//	}
-	//	break;
-	//	}
-	//}
-	//break;
+		//	case Game::Background::MAIN_MENU_SPECIALS:
+		//	{
+		//		// TODO
+		//	}
+		//	break;
+		//	}
+		//}
+		//break;
 
-	//case WM_MOUSEHOVER:
-	//{
-	//	SetWindowText(hWnd, "First stage succesful");
-	//}
-	//break;
+		//case WM_MOUSEHOVER:
+		//{
+		//	SetWindowText(hWnd, "First stage succesful");
+		//}
+		//break;
 
-	//case WM_MOUSELEAVE:
-	//{
-	//	SetWindowText(hWnd, "Second stage succesful");
-	//}
-	//break;
+		//case WM_MOUSELEAVE:
+		//{
+		//	SetWindowText(hWnd, "Second stage succesful");
+		//}
+		//break;
 	}
 }
 
@@ -1874,27 +1866,43 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 {
 	switch (m)
 	{
-		case WM_DRAWITEM:
+	case WM_DRAWITEM:
+	{
+		LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
+		HDC hdc = item->hDC;
+
+		GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+		SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
+		SetBkMode(hdc, TRANSPARENT);
+
+		// Get text
+		int len = GetWindowTextLength(item->hwndItem);
+		buf.resize(len + 1); // Resize buffer to contain button text
+		GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+
+		SetTextColor(hdc, COLOR_WHITE); // Set basic text color
+
+		// Checking window type to draw it using correct styles
+		if (game.getBackground() == Game::Background::MAIN_MENU_NEW_GAME && item->hwndItem == hSubItems[STAT_CHARACTER_CREATION])
 		{
-			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
-			HDC hdc = item->hDC;
-
-			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
-
-			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
+			SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
 			SetBkMode(hdc, TRANSPARENT);
 
-			// Get text
-			int len = GetWindowTextLength(item->hwndItem);
-			buf.resize(len + 1); // Resize buffer to contain button text
-			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-
-			SetTextColor(hdc, COLOR_WHITE); // Set basic text color
-
-			// Checking window type to draw it using correct styles
-			if (game.getBackground() == Game::Background::MAIN_MENU_NEW_GAME && item->hwndItem == hSubItems[STAT_CHARACTER_CREATION])
+			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
+			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+			return true;
+		}
+		if (game.getBackground() == Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT)
+		{
+			if (item->CtlType == ODT_STATIC)
 			{
-				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+				// Select font size
+				if (item->hwndItem == hSubMenuItems[EQUIPMENT_STAT_CHOOSE])
+					SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+				else
+					SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
 				SetBkMode(hdc, TRANSPARENT);
 
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
@@ -1902,154 +1910,138 @@ bool MainMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 				return true;
 			}
-			if (game.getBackground() == Game::Background::MAIN_MENU_NEW_GAME_EQUIPMENT)
+
+			// Check every item icon
+			for (int i = EQUIPMENT_BUT_SET1_RIGHT_HAND; i <= EQUIPMENT_BUT_SET3_ARMOUR; i++)
 			{
-				if (item->CtlType == ODT_STATIC)
+				if (item->hwndItem == hSubMenuItems[i])
 				{
-					// Select font size
-					if (item->hwndItem == hSubMenuItems[EQUIPMENT_STAT_CHOOSE])
-						SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
-					else
-						SelectObject(hdc, game.getFont(Game::FontSize::SMALL));
-					SetBkMode(hdc, TRANSPARENT);
-
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
-					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
-					return true;
-				}
-
-				// Check every item icon
-				for (int i = EQUIPMENT_BUT_SET1_RIGHT_HAND; i <= EQUIPMENT_BUT_SET3_ARMOUR; i++)
-				{
-					if (item->hwndItem == hSubMenuItems[i])
-					{
-						if (item->itemState & ODS_SELECTED) // Pushed
-							drawItem(hWnd, item, i, true);
-						else // Not pushed
-							drawItem(hWnd, item, i, false);
-						return true;
-					}
-				}
-
-				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET1] && selected != -1 && selected == EQUIPMENT_BUT_SET1)
-				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
-					return true;
-				}
-
-				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET2] && selected != -1 && selected == EQUIPMENT_BUT_SET2)
-				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
-					return true;
-				}
-
-				if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET3] && selected != -1 && selected == EQUIPMENT_BUT_SET3)
-				{
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
-					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+					if (item->itemState & ODS_SELECTED) // Pushed
+						drawItem(hWnd, item, i, true);
+					else // Not pushed
+						drawItem(hWnd, item, i, false);
 					return true;
 				}
 			}
-			if (game.getBackground() == Game::Background::MAIN_MENU_SETTINGS)
+
+			if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET1] && selected != -1 && selected == EQUIPMENT_BUT_SET1)
 			{
-				if (item->hwndItem == hSubItems[SETTINGS_BUT_SOUND])
-				{
-					if (game.getSoundStatus())
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-					else
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-					return true;
-				}
-				if (item->hwndItem == hSubItems[SETTINGS_BUT_AUTOSAVE])
-				{
-					if (game.getAutoSaveStatus())
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-					else
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-					return true;
-				}
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
+				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+				return true;
 			}
-			if (game.getBackground() == Game::Background::MAIN_MENU_SPECIALS)
+
+			if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET2] && selected != -1 && selected == EQUIPMENT_BUT_SET2)
 			{
-				if (item->hwndItem == hSubItems[SPECIALS_STAT_TEXT])
-				{
-					SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
-					SetBkMode(hdc, TRANSPARENT);
-
-					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
-
-					// Text padding
-					RECT rect = item->rcItem;
-					int padding = 10;
-					rect.left += padding;
-					rect.top += padding;
-					rect.right -= padding;
-					rect.bottom -= padding;
-
-					DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_VCENTER | DT_LEFT | DT_WORDBREAK); // Display text
-					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
-
-					return true;
-				}
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
+				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+				return true;
 			}
-			return false;
-		}
-		break;
 
-		case WM_CTLCOLORSTATIC:
+			if (item->hwndItem == hSubMenuItems[EQUIPMENT_BUT_SET3] && selected != -1 && selected == EQUIPMENT_BUT_SET3)
+			{
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); // Fill background
+				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT); // Draw edge
+				return true;
+			}
+		}
+		if (game.getBackground() == Game::Background::MAIN_MENU_SETTINGS)
 		{
-			HDC hdc = (HDC)wp;
-			SetTextColor(hdc, COLOR_WHITE);
-			SetBkMode(hdc, TRANSPARENT);
+			if (item->hwndItem == hSubItems[SETTINGS_BUT_SOUND])
+			{
+				if (game.getSoundStatus())
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+				else
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
 
-			if (hBackgroundBrush != NULL)
-				DeleteObject(hBackgroundBrush);
-			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				return true;
+			}
+			if (item->hwndItem == hSubItems[SETTINGS_BUT_AUTOSAVE])
+			{
+				if (game.getAutoSaveStatus())
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+				else
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
 
-			result = (LRESULT)hBackgroundBrush;
-			return true;
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				return true;
+			}
 		}
-		break;
-
-		case WM_CTLCOLOREDIT:
+		if (game.getBackground() == Game::Background::MAIN_MENU_SPECIALS)
 		{
-			HDC hdc = (HDC)wp;
-			SetTextColor(hdc, COLOR_WHITE);
-			SetBkMode(hdc, TRANSPARENT);
+			if (item->hwndItem == hSubItems[SPECIALS_STAT_TEXT])
+			{
+				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+				SetBkMode(hdc, TRANSPARENT);
 
-			if (hBackgroundBrush != NULL)
-				DeleteObject(hBackgroundBrush);
-			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
 
-			result = (LRESULT)hBackgroundBrush;
-			return true;
+				// Text padding
+				RECT rect = item->rcItem;
+				int padding = 10;
+				rect.left += padding;
+				rect.top += padding;
+				rect.right -= padding;
+				rect.bottom -= padding;
+
+				DrawTextA(item->hDC, buf.c_str(), len, &rect, DT_VCENTER | DT_LEFT | DT_WORDBREAK); // Display text
+				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+
+				return true;
+			}
 		}
-		break;
+		return false;
+	}
+	break;
 
-		case WM_CTLCOLORLISTBOX:
-		{
-			HDC hdc = (HDC)wp;
-			SetTextColor(hdc, COLOR_WHITE);
-			SetBkMode(hdc, TRANSPARENT);
+	case WM_CTLCOLORSTATIC:
+	{
+		HDC hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
 
-			if (hBackgroundBrush != NULL)
-				DeleteObject(hBackgroundBrush);
-			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
 
-			result = (LRESULT)hBackgroundBrush;
-			return true;
-		}
-		break;
+		result = (LRESULT)hBackgroundBrush;
+		return true;
+	}
+	break;
+
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
+
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+
+		result = (LRESULT)hBackgroundBrush;
+		return true;
+	}
+	break;
+
+	case WM_CTLCOLORLISTBOX:
+	{
+		HDC hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
+
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+
+		result = (LRESULT)hBackgroundBrush;
+		return true;
+	}
+	break;
 	}
 	return false;
 }
@@ -2145,7 +2137,6 @@ void MainMenu::drawItem(HWND hWnd, LPDRAWITEMSTRUCT item, int buttonIndex, bool 
 	}
 	else
 		path = DIRECTORY + "emptyHand";
-	
 
 	if (item->itemState & ODS_SELECTED || isPushed) // Pushed button
 		path += "Pushed" + FORMAT;

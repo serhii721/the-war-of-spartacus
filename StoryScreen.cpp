@@ -189,13 +189,10 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		switch (currentScreen)
 		{
 		case WELCOME_SCREEN:
-		{
-			path = DIRECTORY + "Story/blackScreen" + FORMAT; break; // TODO
-		}
-		break;
+			path = DIRECTORY + "Story/blackScreen" + FORMAT;
+			break; // TODO
 
 		case STOLEN_MONEY:
-		{
 			switch (currentSubScreen)
 			{
 			case STOLEN_MONEY_SCREEN_STAT_1: path = DIRECTORY + "Story/blackScreen" + FORMAT; break; // TODO
@@ -205,32 +202,28 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			//case STOLEN_MONEY_SCREEN_STAT_STAY: break; TODO
 			default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
 			}
-		}
-		break;
+			break;
 
 		case GAINED_FREEDOM:
-		{
 			switch (currentSubScreen)
 			{
 			case GAINED_FREEDOM_SCREEN_STAT_1: path = DIRECTORY + "Story/gainedFreedom" + FORMAT; break;
-			//case GAINED_FREEDOM_SCREEN_STAT_2: break; TODO
-			//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS: break; TODO 
-			//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION: break; TODO
+				//case GAINED_FREEDOM_SCREEN_STAT_2: break; TODO
+				//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS: break; TODO 
+				//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION: break; TODO
 			default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
 			}
-		}
-		break;
+			break;
 
 		case QUEST_PERUGIA_SHANDAR:
-		{
 			switch (currentSubScreen)
 			{
-			case SHANDAR_STAT_INTRO: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break; 
-			case SHANDAR_STAT_INTRO2: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE1_ANSWER_WHO: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE1_ANSWER_WHY: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE1_ANSWER_WHERE: path = DIRECTORY + "Quest/Perugia/Shandar/choice1" + FORMAT; break; 
-			case SHANDAR_BUT_COMEBACK_NIGHT: path = DIRECTORY + "Quest/Perugia/Shandar/lostQuest" + FORMAT; break; 
+			case SHANDAR_STAT_INTRO: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break;
+			case SHANDAR_STAT_INTRO2: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE1_ANSWER_WHO: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE1_ANSWER_WHY: path = DIRECTORY + "Quest/Perugia/Shandar/intro" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE1_ANSWER_WHERE: path = DIRECTORY + "Quest/Perugia/Shandar/choice1" + FORMAT; break;
+			case SHANDAR_BUT_COMEBACK_NIGHT: path = DIRECTORY + "Quest/Perugia/Shandar/lostQuest" + FORMAT; break;
 			case SHANDAR_STAT_COMEBACK_NIGHT: path = DIRECTORY + "Quest/Perugia/Shandar/comebackNight" + FORMAT; break;
 			case SHANDAR_STAT_CHOICE2_ANSWER_TALK: path = DIRECTORY + "Quest/Perugia/Shandar/choice1" + FORMAT; break;
 			case SHANDAR_STAT_CHOICE3_STRENGTH_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/choice3Lose" + FORMAT; break;
@@ -246,27 +239,27 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			case SHANDAR_STAT_REWARD: path = DIRECTORY + "Quest/Perugia/Shandar/reward" + FORMAT; break;
 			case SHANDAR_STAT_GOODBYE: path = DIRECTORY + "Quest/Perugia/Shandar/reward" + FORMAT; break;
 
-			case SHANDAR_STAT_CHOICE3_STRENGTH_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/choice3Win" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE3_CHARISMA_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/choice3Win" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/comebackNight" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/comebackNight" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE5_CHARISMA_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/choice5Charisma" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE5_CHARISMA_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/choice5Charisma" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE6_EXECUTED: path = DIRECTORY + "Quest/Perugia/Shandar/leaveLoud" + FORMAT; break; 
-			case SHANDAR_STAT_CHOICE5_FIGHT_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/lostQuest" + FORMAT; break; 
-			case SHANDAR_STAT_LOST_QUEST: path = DIRECTORY + "Quest/Perugia/Shandar/lostQuest" + FORMAT; break; 
-			case SHANDAR_STAT_LEAVE_QUIET: path = DIRECTORY + "Quest/Perugia/Shandar/enterHouse" + FORMAT; break; 
-			case SHANDAR_STAT_LEAVE_LOUD: path = DIRECTORY + "Quest/Perugia/Shandar/leaveLoud" + FORMAT; break; 
-			case SHANDAR_STAT_THANKS: path = DIRECTORY + "Quest/Perugia/Shandar/thanks" + FORMAT; break; 
-			case SHANDAR_STAT_END: path = DIRECTORY + "Quest/Perugia/Shandar/thanks" + FORMAT; break; 
+			case SHANDAR_STAT_CHOICE3_STRENGTH_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/choice3Win" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE3_CHARISMA_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/choice3Win" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/comebackNight" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/comebackNight" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE5_CHARISMA_WIN: path = DIRECTORY + "Quest/Perugia/Shandar/choice5Charisma" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE5_CHARISMA_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/choice5Charisma" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE6_EXECUTED: path = DIRECTORY + "Quest/Perugia/Shandar/leaveLoud" + FORMAT; break;
+			case SHANDAR_STAT_CHOICE5_FIGHT_LOSE: path = DIRECTORY + "Quest/Perugia/Shandar/lostQuest" + FORMAT; break;
+			case SHANDAR_STAT_LOST_QUEST: path = DIRECTORY + "Quest/Perugia/Shandar/lostQuest" + FORMAT; break;
+			case SHANDAR_STAT_LEAVE_QUIET: path = DIRECTORY + "Quest/Perugia/Shandar/enterHouse" + FORMAT; break;
+			case SHANDAR_STAT_LEAVE_LOUD: path = DIRECTORY + "Quest/Perugia/Shandar/leaveLoud" + FORMAT; break;
+			case SHANDAR_STAT_THANKS: path = DIRECTORY + "Quest/Perugia/Shandar/thanks" + FORMAT; break;
+			case SHANDAR_STAT_END: path = DIRECTORY + "Quest/Perugia/Shandar/thanks" + FORMAT; break;
 
 			default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
 			}
-		}
-		break;
+			break;
 
-		default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
-		break;
+		default:
+			path = DIRECTORY + "Story/blackScreen" + FORMAT;
+			break;
 		}
 		// Loading image
 		if (hBackgroundImage != NULL)
@@ -283,231 +276,236 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 
 void StoryScreen::resizeMenu(int cx, int cy)
 {
-	int x, y, i;
+	int x, y, i,
+		butX, butY,
+		itemHeight, itemWidth, buttonHeight, buttonWidth, distance;
 	switch (currentScreen)
 	{
 	case WELCOME_SCREEN:
-	{
 		y = cy - 120;
-		const int ITEM_HEIGHT = 45, DISTANCE = 10, ITEM_WIDTH = 300;
-		MoveWindow(hItems[WELCOME_SCREEN_STAT_DATE], cx - ITEM_WIDTH / 2, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[WELCOME_SCREEN_STAT_TEXT], cx - 250, y + ITEM_HEIGHT + DISTANCE, 500, 250, TRUE);
-	}
-	break;
+		itemHeight = 45;
+		distance = 10;
+		itemWidth = 300;
+		MoveWindow(hItems[WELCOME_SCREEN_STAT_DATE], cx - itemWidth / 2, y, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[WELCOME_SCREEN_STAT_TEXT], cx - 250, y + itemHeight + distance, 500, 250, TRUE);
+		break;
 
 	case START_GAME_SCREEN:
-	{
 		MoveWindow(hItems[0], cx - 250, cy - 120, 500, 220, TRUE);
-	}
-	break;
+		break;
 
 	case FIRST_VICTORY:
-	{
 		MoveWindow(hItems[0], cx - 250, cy - 120, 500, 150, TRUE);
-	}
-	break;
+		break;
 
 	case STOLEN_MONEY:
-	{
-		const int ITEM_HEIGHT = 280, ITEM_WIDTH = 500, BUTTON_HEIGHT = 30, BUTTON_WIDTH = 150, DISTANCE = 10;
+		itemHeight = 280;
+		itemWidth = 500;
+		buttonHeight = 30;
+		buttonWidth = 150;
+		distance = 10;
 
 		// Static windows
-		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_1], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_2], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_3], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_STAY], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_ESCAPE], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_1], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_2], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_3], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_STAY], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_STAT_ESCAPE], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
 
 		// Buttons
-		MoveWindow(hItems[STOLEN_MONEY_SCREEN_BUT_ESCAPE], cx - BUTTON_WIDTH - DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-		MoveWindow(hItems[STOLEN_MONEY_SCREEN_BUT_STAY], cx + DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-	}
-	break;
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_BUT_ESCAPE], cx - buttonWidth - distance, cy + 200, buttonWidth, buttonHeight, TRUE);
+		MoveWindow(hItems[STOLEN_MONEY_SCREEN_BUT_STAY], cx + distance, cy + 200, buttonWidth, buttonHeight, TRUE);
+		break;
 
 	case CENTURION_OFFER:
-	{
-		const int ITEM_HEIGHT = 350, ITEM_WIDTH = 500, BUTTON_HEIGHT = 30, BUTTON_WIDTH = 200, DISTANCE = 10;
+		itemHeight = 350;
+		itemWidth = 500;
+		buttonHeight = 30;
+		buttonWidth = 200;
+		distance = 10;
 
 		// Static windows
-		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_1], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_2], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_ACCEPT], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_DECLINE], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_1], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_2], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_ACCEPT], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_STAT_DECLINE], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
 
 		// Buttons
-		MoveWindow(hItems[CENTURION_OFFER_SCREEN_BUT_ACCEPT], cx - BUTTON_WIDTH - DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-		MoveWindow(hItems[CENTURION_OFFER_SCREEN_BUT_DECLINE], cx + DISTANCE, cy + 200, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-	}
-	break;
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_BUT_ACCEPT], cx - buttonWidth - distance, cy + 200, buttonWidth, buttonHeight, TRUE);
+		MoveWindow(hItems[CENTURION_OFFER_SCREEN_BUT_DECLINE], cx + distance, cy + 200, buttonWidth, buttonHeight, TRUE);
+		break;
 
 	case GAINED_FREEDOM:
-	{
-		const int ITEM_HEIGHT = 350, ITEM_WIDTH = 500, BUTTON_HEIGHT = 35, BUTTON_WIDTH = 250, DISTANCE = 20;
+		itemHeight = 350;
+		itemWidth = 500;
+		buttonHeight = 35;
+		buttonWidth = 250;
+		distance = 20;
 
 		// Static windows
-		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_1], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_2], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION], cx - 250, cy - 200, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_1], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_2], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION], cx - 250, cy - 200, itemWidth, itemHeight, TRUE);
 
 		// Buttons
-		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_REBELS], cx - BUTTON_WIDTH - DISTANCE, cy + 250, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_LEGION], cx + DISTANCE, cy + 250, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-	}
-	break;
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_REBELS], cx - buttonWidth - distance, cy + 250, buttonWidth, buttonHeight, TRUE);
+		MoveWindow(hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_LEGION], cx + distance, cy + 250, buttonWidth, buttonHeight, TRUE);
+		break;
 
 	case QUEST_PERUGIA_SHANDAR:
-	{
-		const int ITEM_HEIGHT = 200, ITEM_WIDTH = 500, BUTTON_HEIGHT = 90, BUTTON_WIDTH = 400, DISTANCE = 20;
-		int butX, butY;
-		x = cx - ITEM_WIDTH, y = cy - ITEM_HEIGHT / 2;
-		butX = cx + BUTTON_WIDTH / 2, butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
+		itemHeight = 200;
+		itemWidth = 500;
+		buttonHeight = 90;
+		buttonWidth = 400;
+		distance = 20;
+		x = cx - itemWidth, y = cy - itemHeight / 2;
+		butX = cx + buttonWidth / 2, butY = cy - (buttonHeight + distance) * 2;
 
 		// Intro
-		MoveWindow(hItems[SHANDAR_STAT_INTRO], x, y + ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[SHANDAR_BUT_INTRO], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_INTRO], x, y + itemHeight, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[SHANDAR_BUT_INTRO], butX, butY, buttonWidth, buttonHeight, TRUE);
 
 		// Choice 1 - talk with Shandar
-		MoveWindow(hItems[SHANDAR_STAT_INTRO2], x, y + ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_INTRO2], x, y + itemHeight, itemWidth, itemHeight, TRUE);
 		for (i = SHANDAR_BUT_CHOICE1_QUESTION_WHERE; i <= SHANDAR_BUT_CHOICE1_LEAVE; i++)
 		{
-			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-			butY += BUTTON_HEIGHT + DISTANCE;
+			MoveWindow(hItems[i], butX, butY, buttonWidth, buttonHeight, TRUE);
+			butY += buttonHeight + distance;
 		}
-		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
-		
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHO], x, y + ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		butY = cy - (buttonHeight + distance) * 2;
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHY], x, y + ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHO], x, y + itemHeight, itemWidth, itemHeight, TRUE);
+
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHY], x, y + itemHeight, itemWidth, itemHeight, TRUE);
 
 		// Choice 2 - guards at entrance
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHERE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE1_ANSWER_WHERE], x, y, itemWidth, itemHeight, TRUE);
 		for (i = SHANDAR_BUT_CHOICE2_TALK; i <= SHANDAR_BUT_CHOICE2_LEAVE; i++)
 		{
-			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-			butY += BUTTON_HEIGHT + DISTANCE;
+			MoveWindow(hItems[i], butX, butY, buttonWidth, buttonHeight, TRUE);
+			butY += buttonHeight + distance;
 		}
-		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
+		butY = cy - (buttonHeight + distance) * 2;
 
 		// Choice 3 - guards at entrance
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE2_ANSWER_TALK], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE2_ANSWER_TALK], x, y, itemWidth, itemHeight, TRUE);
 		for (i = SHANDAR_BUT_CHOICE3_FIGHT; i <= SHANDAR_BUT_CHOICE3_CHARISMA; i++)
 		{
-			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-			butY += BUTTON_HEIGHT + DISTANCE;
+			MoveWindow(hItems[i], butX, butY, buttonWidth, buttonHeight, TRUE);
+			butY += buttonHeight + distance;
 		}
-		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
+		butY = cy - (buttonHeight + distance) * 2;
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE3_STRENGTH_WIN], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE3_STRENGTH_WIN], x, y, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE3_STRENGTH_LOSE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE3_STRENGTH_LOSE], x, y, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE3_CHARISMA_WIN], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE3_CHARISMA_WIN], x, y, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE3_CHARISMA_LOSE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE3_CHARISMA_LOSE], x, y, itemWidth, itemHeight, TRUE);
 
 		// Comeback at night
-		MoveWindow(hItems[SHANDAR_BUT_COMEBACK_NIGHT], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_BUT_COMEBACK_NIGHT], butX, butY, buttonWidth, buttonHeight, TRUE);
 
 		// Choice 4 - enter house at night
-		MoveWindow(hItems[SHANDAR_STAT_COMEBACK_NIGHT], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_COMEBACK_NIGHT], x, y, itemWidth, itemHeight, TRUE);
 		for (i = SHANDAR_BUT_CHOICE4_NIGHT_ENTER; i <= SHANDAR_BUT_CHOICE4_NIGHT_DEXTERITY; i++)
 		{
-			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-			butY += BUTTON_HEIGHT + DISTANCE;
+			MoveWindow(hItems[i], butX, butY, buttonWidth, buttonHeight, TRUE);
+			butY += buttonHeight + distance;
 		}
-		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
+		butY = cy - (buttonHeight + distance) * 2;
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_WIN], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_WIN], x, y, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_LOSE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_LOSE], x, y, itemWidth, itemHeight, TRUE);
 
 		// Enter house
-		MoveWindow(hItems[SHANDAR_STAT_ENTER_HOUSE], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[SHANDAR_BUT_ENTER_HOUSE], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_ENTER_HOUSE], x, y - itemHeight, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[SHANDAR_BUT_ENTER_HOUSE], butX, butY, buttonWidth, buttonHeight, TRUE);
 
 		// Choice 5 - speak with Lucilius
-		MoveWindow(hItems[SHANDAR_STAT_ENTER_HOUSE2], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_ENTER_HOUSE2], x, y - itemHeight, itemWidth, itemHeight, TRUE);
 		for (i = SHANDAR_BUT_CHOICE5_FIGHT; i <= SHANDAR_BUT_CHOICE5_CHARISMA; i++)
 		{
-			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-			butY += BUTTON_HEIGHT + DISTANCE;
+			MoveWindow(hItems[i], butX, butY, buttonWidth, buttonHeight, TRUE);
+			butY += buttonHeight + distance;
 		}
-		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
+		butY = cy - (buttonHeight + distance) * 2;
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_LOSE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_LOSE], x, y, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_LOST_QUEST], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_LOST_QUEST], x, y, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_CHARISMA_WIN], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_CHARISMA_WIN], x, y - itemHeight, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_CHARISMA_LOSE], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_CHARISMA_LOSE], x, y - itemHeight, itemWidth, itemHeight, TRUE);
 
 		// Choice 6 - kill or spare Lucilius
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_WIN], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_WIN], x, y, itemWidth, itemHeight, TRUE);
 		for (i = SHANDAR_BUT_CHOICE6_SPARE; i <= SHANDAR_BUT_CHOICE6_EXILE; i++)
 		{
-			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-			butY += BUTTON_HEIGHT + DISTANCE;
+			MoveWindow(hItems[i], butX, butY, buttonWidth, buttonHeight, TRUE);
+			butY += buttonHeight + distance;
 		}
-		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
+		butY = cy - (buttonHeight + distance) * 2;
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE6_EXECUTED], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE6_EXECUTED], x, y, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE6_EXTORT], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE6_EXTORT], x, y, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_CHOICE6_EXILE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_CHOICE6_EXILE], x, y, itemWidth, itemHeight, TRUE);
 
 		for (i = SHANDAR_BUT_CHOICE6_EXTORT_EXECUTE; i <= SHANDAR_BUT_CHOICE6_WHERE_GIRL; i++)
 		{
-			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-			butY += BUTTON_HEIGHT + DISTANCE;
+			MoveWindow(hItems[i], butX, butY, buttonWidth, buttonHeight, TRUE);
+			butY += buttonHeight + distance;
 		}
-		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
+		butY = cy - (buttonHeight + distance) * 2;
 
 		// Found girl
-		MoveWindow(hItems[SHANDAR_STAT_FOUND_GIRL], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[SHANDAR_BUT_GREET_GIRL], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_FOUND_GIRL], x, y - itemHeight, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[SHANDAR_BUT_GREET_GIRL], butX, butY, buttonWidth, buttonHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_GREET_GIRL], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[SHANDAR_BUT_LETS_LEAVE], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_GREET_GIRL], x, y - itemHeight, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[SHANDAR_BUT_LETS_LEAVE], butX, butY, buttonWidth, buttonHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_LEAVE_QUIET], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_LEAVE_QUIET], x, y - itemHeight, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_LEAVE_LOUD], x, y - ITEM_HEIGHT, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_LEAVE_LOUD], x, y - itemHeight, itemWidth, itemHeight, TRUE);
 
 		// Returned girl
-		MoveWindow(hItems[SHANDAR_STAT_RETURNED_DAUGHTER], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_RETURNED_DAUGHTER], x, y, itemWidth, itemHeight, TRUE);
 		for (i = SHANDAR_BUT_ASK_REWARD; i <= SHANDAR_BUT_GOODBYE; i++)
 		{
-			MoveWindow(hItems[i], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
-			butY += BUTTON_HEIGHT + DISTANCE;
+			MoveWindow(hItems[i], butX, butY, buttonWidth, buttonHeight, TRUE);
+			butY += buttonHeight + distance;
 		}
-		butY = cy - (BUTTON_HEIGHT + DISTANCE) * 2;
-		
-		MoveWindow(hItems[SHANDAR_STAT_REWARD], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		butY = cy - (buttonHeight + distance) * 2;
 
-		MoveWindow(hItems[SHANDAR_STAT_GOODBYE], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-		MoveWindow(hItems[SHANDAR_BUT_NAME], butX, butY, BUTTON_WIDTH, BUTTON_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_REWARD], x, y, itemWidth, itemHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_THANKS], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		MoveWindow(hItems[SHANDAR_STAT_GOODBYE], x, y, itemWidth, itemHeight, TRUE);
+		MoveWindow(hItems[SHANDAR_BUT_NAME], butX, butY, buttonWidth, buttonHeight, TRUE);
 
-		MoveWindow(hItems[SHANDAR_STAT_END], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
-	}
-	break;
+		MoveWindow(hItems[SHANDAR_STAT_THANKS], x, y, itemWidth, itemHeight, TRUE);
+
+		MoveWindow(hItems[SHANDAR_STAT_END], x, y, itemWidth, itemHeight, TRUE);
+		break;
 	}
 }
 
 void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
+	FightStatus fightStatus;
+
 	switch (m)
 	{
 	case WM_COMMAND:
-	{
 		switch (currentScreen)
 		{
 		case STOLEN_MONEY:
-		{
 			if ((HWND)lp == hItems[STOLEN_MONEY_SCREEN_BUT_ESCAPE])
 			{
 				// Player escapes and becomes free
@@ -536,11 +534,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.updateBackground();
 				updateWindow(hWnd);
 			}
-		}
-		break;
+			break;
 
 		case CENTURION_OFFER:
-		{
 			if ((HWND)lp == hItems[CENTURION_OFFER_SCREEN_BUT_ACCEPT])
 			{
 				// Player joins legion
@@ -569,11 +565,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.updateBackground();
 				updateWindow(hWnd);
 			}
-		}
-		break;
+			break;
 
 		case GAINED_FREEDOM:
-		{
 			if ((HWND)lp == hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_REBELS])
 			{
 				// Player joins rebels
@@ -601,15 +595,12 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.updateBackground();
 				updateWindow(hWnd);
 			}
-		}
-		break;
+			break;
 
 		case QUEST_PERUGIA_SHANDAR:
-		{
 			switch (currentSubScreen)
 			{
 			case SHANDAR_STAT_INTRO:
-			{
 				// Meet Shandar
 				if ((HWND)lp == hItems[SHANDAR_BUT_INTRO])
 				{
@@ -631,11 +622,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_INTRO2:
-			{
 				// Who is Lucilius
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_QUESTION_WHO])
 				{
@@ -653,6 +642,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Why should I help you
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_QUESTION_WHY])
 				{
@@ -670,6 +660,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Where is Lucilius
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_QUESTION_WHERE])
 				{
@@ -692,6 +683,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Leave
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_LEAVE])
 				{
@@ -706,11 +698,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE1_ANSWER_WHO:
-			{
 				// Why should I help you
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_QUESTION_WHY])
 				{
@@ -728,6 +718,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Where is Lucilius
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_QUESTION_WHERE])
 				{
@@ -750,6 +741,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Leave
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_LEAVE])
 				{
@@ -764,11 +756,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE1_ANSWER_WHY:
-			{
 				// Who is Lucilius
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_QUESTION_WHO])
 				{
@@ -786,6 +776,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Where is Lucilius
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_QUESTION_WHERE])
 				{
@@ -808,6 +799,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Leave
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE1_LEAVE])
 				{
@@ -822,11 +814,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE1_ANSWER_WHERE:
-			{
 				// Talk with guards
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE2_TALK])
 				{
@@ -848,6 +838,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Back down
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE2_LEAVE])
 				{
@@ -866,11 +857,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_BUT_COMEBACK_NIGHT:
-			{
 				// Come back at night
 				if ((HWND)lp == hItems[SHANDAR_BUT_COMEBACK_NIGHT])
 				{
@@ -889,11 +878,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_COMEBACK_NIGHT:
-			{
 				// Enter into the house
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE4_NIGHT_ENTER])
 				{
@@ -913,6 +900,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Dexterity - Sneak into the house
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE4_NIGHT_DEXTERITY])
 				{
@@ -943,11 +931,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE2_ANSWER_TALK:
-			{
 				// Fight
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE3_FIGHT])
 				{
@@ -963,7 +949,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					updateWindow(hWnd);
 
 					// Fight
-					FightStatus fightStatus = game.getFighting().fight(
+					fightStatus = game.getFighting().fight(
 						hWnd,
 						game.getPlayer(),
 						*generateNPC()
@@ -973,45 +959,38 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					switch (fightStatus)
 					{
 					case FightStatus::OPPONENT_LOST:
-					{
 						haveWon = true;
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_ENTER_HOUSE;
-					}
-					break;
+						break;
 
 					case FightStatus::OPPONNENT_SURRENDERED:
-					{
 						haveWon = true;
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_ENTER_HOUSE;
-					}
-					break;
+						break;
 
 					case FightStatus::PLAYER_SURRENDERED:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_BUT_COMEBACK_NIGHT;
 
 						// Update window
 						game.updateBackground();
 						updateWindow(hWnd);
-					}
-					break;
+						break;
 
 					case FightStatus::PLAYER_LOST:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_BUT_COMEBACK_NIGHT;
 
 						// Update window
 						game.updateBackground();
 						updateWindow(hWnd);
-					}
-					break;
+						break;
 					}
 					return;
 				}
+
 				// Strength
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE3_STRENGTH])
 				{
@@ -1043,6 +1022,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Charisma
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE3_CHARISMA])
 				{
@@ -1074,11 +1054,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE3_STRENGTH_LOSE:
-			{
 				// Fight
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE3_FIGHT])
 				{
@@ -1094,7 +1072,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					updateWindow(hWnd);
 
 					// Fight
-					FightStatus fightStatus = game.getFighting().fight(
+					fightStatus = game.getFighting().fight(
 						hWnd,
 						game.getPlayer(),
 						*generateNPC()
@@ -1104,42 +1082,34 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					switch (fightStatus)
 					{
 					case FightStatus::OPPONENT_LOST:
-					{
 						haveWon = true;
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_ENTER_HOUSE;
-					}
-					break;
+						break;
 
 					case FightStatus::OPPONNENT_SURRENDERED:
-					{
 						haveWon = true;
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_ENTER_HOUSE;
-					}
-					break;
+						break;
 
 					case FightStatus::PLAYER_SURRENDERED:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_BUT_COMEBACK_NIGHT;
 
 						// Update window
 						game.updateBackground();
 						updateWindow(hWnd);
-					}
-					break;
+						break;
 
 					case FightStatus::PLAYER_LOST:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_BUT_COMEBACK_NIGHT;
 
 						// Update window
 						game.updateBackground();
 						updateWindow(hWnd);
-					}
-					break;
+						break;
 					}
 					return;
 				}
@@ -1161,11 +1131,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE3_CHARISMA_LOSE:
-			{
 				// Fight
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE3_FIGHT])
 				{
@@ -1181,7 +1149,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					updateWindow(hWnd);
 
 					// Fight
-					FightStatus fightStatus = game.getFighting().fight(
+					fightStatus = game.getFighting().fight(
 						hWnd,
 						game.getPlayer(),
 						*generateNPC()
@@ -1191,45 +1159,38 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					switch (fightStatus)
 					{
 					case FightStatus::OPPONENT_LOST:
-					{
 						haveWon = true;
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_ENTER_HOUSE;
-					}
-					break;
+						break;
 
 					case FightStatus::OPPONNENT_SURRENDERED:
-					{
 						haveWon = true;
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_ENTER_HOUSE;
-					}
-					break;
+						break;
 
 					case FightStatus::PLAYER_SURRENDERED:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_BUT_COMEBACK_NIGHT;
 
 						// Update window
 						game.updateBackground();
 						updateWindow(hWnd);
-					}
-					break;
+						break;
 
 					case FightStatus::PLAYER_LOST:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_BUT_COMEBACK_NIGHT;
 
 						// Update window
 						game.updateBackground();
 						updateWindow(hWnd);
-					}
-					break;
+						break;
 					}
 					return;
 				}
+
 				// Back down
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE2_LEAVE])
 				{
@@ -1248,11 +1209,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_ENTER_HOUSE:
-			{
 				// Talk with Lucilius
 				if ((HWND)lp == hItems[SHANDAR_BUT_ENTER_HOUSE])
 				{
@@ -1272,11 +1231,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_ENTER_HOUSE2:
-			{
 				// Fight
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE5_FIGHT])
 				{
@@ -1291,7 +1248,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					updateWindow(hWnd);
 
 					// Fight
-					FightStatus fightStatus = game.getFighting().fight(
+					fightStatus = game.getFighting().fight(
 						hWnd,
 						game.getPlayer(),
 						*generateNPC()
@@ -1301,37 +1258,30 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					switch (fightStatus)
 					{
 					case FightStatus::OPPONENT_LOST:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_WIN;
-					}
-					break;
+						break;
 
 					case FightStatus::OPPONNENT_SURRENDERED:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_WIN;
-					}
-					break;
+						break;
 
 					case FightStatus::PLAYER_SURRENDERED:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_LOSE;
 						isChoiceRequired = true;
-					}
-					break;
+						break;
 
 					case FightStatus::PLAYER_LOST:
-					{
 						// Update subscreen
 						currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_LOSE;
 						isChoiceRequired = true;
-					}
-					break;
+						break;
 					}
 					return;
 				}
+
 				// Charisma
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE5_CHARISMA])
 				{
@@ -1362,11 +1312,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE5_FIGHT_WIN:
-			{
 				// Spare
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE6_SPARE])
 				{
@@ -1388,6 +1336,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Execute
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE6_EXECUTE])
 				{
@@ -1408,6 +1357,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Extort
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE6_EXTORT])
 				{
@@ -1435,6 +1385,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Exile
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE6_EXILE])
 				{
@@ -1456,11 +1407,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE6_EXTORT:
-			{
 				// Execute Lucilius anyway
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE6_EXTORT_EXECUTE])
 				{
@@ -1479,6 +1428,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Ask about girl
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE6_WHERE_GIRL])
 				{
@@ -1498,11 +1448,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE6_EXILE:
-			{
 				// Ask about girl
 				if ((HWND)lp == hItems[SHANDAR_BUT_CHOICE6_WHERE_GIRL])
 				{
@@ -1521,11 +1469,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_FOUND_GIRL:
-			{
 				// Talk with Abhilasha
 				if ((HWND)lp == hItems[SHANDAR_BUT_GREET_GIRL])
 				{
@@ -1544,11 +1490,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_GREET_GIRL:
-			{
 				// Return to Shandar
 				if ((HWND)lp == hItems[SHANDAR_BUT_LETS_LEAVE])
 				{
@@ -1578,11 +1522,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_RETURNED_DAUGHTER:
-			{
 				// Ask for reward
 				if ((HWND)lp == hItems[SHANDAR_BUT_ASK_REWARD])
 				{
@@ -1605,6 +1547,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+
 				// Say goodbye
 				if ((HWND)lp == hItems[SHANDAR_BUT_GOODBYE])
 				{
@@ -1624,11 +1567,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_REWARD:
-			{
 				// Say goodbye
 				if ((HWND)lp == hItems[SHANDAR_BUT_GOODBYE])
 				{
@@ -1647,11 +1588,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_GOODBYE:
-			{
 				// Tell your name
 				if ((HWND)lp == hItems[SHANDAR_BUT_NAME])
 				{
@@ -1669,22 +1608,18 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
+				break;
 			}
 			break;
-			}
 		}
 		break;
-		}
-	}
-	break;
+
 	case WM_LBUTTONDOWN:
-	{
 		// Delay so player won't accidentaly skip a scene
 		Sleep(STORY_SLEEP_TIME);
 		switch (currentScreen)
 		{
 		case WELCOME_SCREEN:
-		{
 			// Destroying all windows
 			for (HWND hItem : hItems)
 				if (hItem != NULL)
@@ -1695,11 +1630,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			game.updateBackground();
 
 			updateWindow(hWnd);
-		}
-		break;
+			break;
 
 		case START_GAME_SCREEN:
-		{
 			// Destroying all windows
 			for (HWND hItem : hItems)
 				if (hItem != NULL)
@@ -1710,11 +1643,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			game.updateBackground();
 
 			updateWindow(hWnd);
-		}
-		break;
+			break;
 
 		case FIRST_VICTORY:
-		{
 			// Destroying all windows
 			for (HWND hItem : hItems)
 				if (hItem != NULL)
@@ -1725,11 +1656,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			game.updateBackground();
 
 			updateWindow(hWnd);
-		}
-		break;
+			break;
 
 		case STOLEN_MONEY:
-		{
 			if (!isChoiceRequired)
 			{
 				// Destroying all windows
@@ -1754,11 +1683,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				ShowWindow(hItems[STOLEN_MONEY_SCREEN_BUT_STAY], SW_SHOW);
 			}
 			updateWindow(hWnd);
-		}
-		break;
+			break;
 
 		case CENTURION_OFFER:
-		{
 			if (!isChoiceRequired)
 			{
 				// Destroying all windows
@@ -1783,11 +1710,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				ShowWindow(hItems[CENTURION_OFFER_SCREEN_BUT_DECLINE], SW_SHOW);
 			}
 			updateWindow(hWnd);
-		}
-		break;
+			break;
 
 		case GAINED_FREEDOM:
-		{
 			if (!isChoiceRequired)
 			{
 				// Destroying all windows
@@ -1812,17 +1737,13 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				ShowWindow(hItems[GAINED_FREEDOM_SCREEN_BUT_CHOOSE_LEGION], SW_SHOW);
 			}
 			updateWindow(hWnd);
-		}
-		break;
+			break;
 
 		case QUEST_PERUGIA_SHANDAR:
-		{
 			switch (currentSubScreen)
 			{
-			// Guards at the gate encounter
-			{
+				// Guards at the gate encounter
 			case SHANDAR_STAT_CHOICE3_STRENGTH_WIN:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_STAT_CHOICE3_STRENGTH_WIN], SW_HIDE);
 
@@ -1836,11 +1757,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE3_CHARISMA_WIN:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_STAT_CHOICE3_CHARISMA_WIN], SW_HIDE);
 
@@ -1854,25 +1773,19 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
-			}
+				break;
 
-			// Night
-			{
+				// Night
 			case SHANDAR_BUT_COMEBACK_NIGHT:
-			{
 				// Show new windows
 				ShowWindow(hItems[SHANDAR_BUT_COMEBACK_NIGHT], SW_SHOW);
 
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_WIN:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_WIN], SW_HIDE);
 
@@ -1886,11 +1799,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_LOSE:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_STAT_CHOICE4_NIGHT_DEXTERITY_LOSE], SW_HIDE);
 
@@ -1904,26 +1815,20 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
-			}
+				break;
 
-			// Lucilius encounter
-			{
+				// Lucilius encounter
 			case SHANDAR_STAT_ENTER_HOUSE:
-			{
 				// Show new windows
 				ShowWindow(hItems[SHANDAR_STAT_ENTER_HOUSE], SW_SHOW);
 				ShowWindow(hItems[SHANDAR_BUT_ENTER_HOUSE], SW_SHOW);
-				
+
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE5_CHARISMA_WIN:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_STAT_CHOICE5_CHARISMA_WIN], SW_HIDE);
 
@@ -1937,11 +1842,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE5_CHARISMA_LOSE:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_BUT_CHOICE5_CHARISMA], SW_HIDE);
 
@@ -1951,7 +1854,7 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 
 				// Fight
-				FightStatus fightStatus = game.getFighting().fight(
+				fightStatus = game.getFighting().fight(
 					hWnd,
 					game.getPlayer(),
 					*generateNPC()
@@ -1961,41 +1864,30 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				switch (fightStatus)
 				{
 				case FightStatus::OPPONENT_LOST:
-				{
 					// Update subscreen
 					currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_WIN;
-				}
-				break;
+					break;
 
 				case FightStatus::OPPONNENT_SURRENDERED:
-				{
 					// Update subscreen
 					currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_WIN;
-				}
-				break;
+					break;
 
 				case FightStatus::PLAYER_SURRENDERED:
-				{
 					// Update subscreen
 					currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_LOSE;
 					isChoiceRequired = true;
-				}
-				break;
+					break;
 
 				case FightStatus::PLAYER_LOST:
-				{
 					// Update subscreen
 					currentSubScreen = SHANDAR_STAT_CHOICE5_FIGHT_LOSE;
 					isChoiceRequired = true;
-				}
-				break;
+					break;
 				}
 				return;
-			}
-			break;
 
 			case SHANDAR_STAT_CHOICE6_EXECUTED:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_STAT_CHOICE6_EXECUTED], SW_HIDE);
 
@@ -2009,11 +1901,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE5_FIGHT_WIN:
-			{
 				// Show new windows
 				ShowWindow(hItems[SHANDAR_STAT_CHOICE5_FIGHT_WIN], SW_SHOW);
 				ShowWindow(hItems[SHANDAR_BUT_CHOICE6_SPARE], SW_SHOW);
@@ -2024,11 +1914,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_CHOICE5_FIGHT_LOSE:
-			{
 				if (!isChoiceRequired)
 				{
 					// Hide previous windows
@@ -2053,11 +1941,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					game.updateBackground();
 					updateWindow(hWnd);
 				}
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_LOST_QUEST:
-			{
 				// Destroying all windows
 				for (HWND hItem : hItems)
 					if (hItem != NULL)
@@ -2068,14 +1954,10 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.updateBackground();
 
 				updateWindow(hWnd);
-			}
-			break;
-			}
+				break;
 
-			// Return to Shandar
-			{
+				// Return to Shandar
 			case SHANDAR_STAT_LEAVE_QUIET:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_STAT_LEAVE_QUIET], SW_HIDE);
 
@@ -2090,11 +1972,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_LEAVE_LOUD:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_STAT_LEAVE_LOUD], SW_HIDE);
 
@@ -2109,14 +1989,10 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
-			}
+				break;
 
-			// End
-			{
+				// End
 			case SHANDAR_STAT_THANKS:
-			{
 				// Hide previous windows
 				ShowWindow(hItems[SHANDAR_STAT_THANKS], SW_HIDE);
 
@@ -2129,11 +2005,9 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Update window
 				game.updateBackground();
 				updateWindow(hWnd);
-			}
-			break;
+				break;
 
 			case SHANDAR_STAT_END:
-			{
 				// Destroying all windows
 				for (HWND hItem : hItems)
 					if (hItem != NULL)
@@ -2164,26 +2038,25 @@ void StoryScreen::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				// If autosave is enabled - save game
 				game.saveToFile(game.getAutoSaveStatus());
+				break;
 			}
 			break;
-			}
-			}
 		}
 		break;
-		}
-	}
-	break;
 	}
 }
 
 bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& result)
 {
+	LPDRAWITEMSTRUCT item;
+	HDC hdc;
+	RECT rect;
+	int len;
 	switch (m)
 	{
 	case WM_DRAWITEM:
-	{
-		LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
-		HDC hdc = item->hDC;
+		item = (LPDRAWITEMSTRUCT)lp;
+		hdc = item->hDC;
 
 		GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
 
@@ -2191,7 +2064,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 		SetBkMode(hdc, TRANSPARENT);
 
 		// Get text
-		int len = GetWindowTextLength(item->hwndItem);
+		len = GetWindowTextLength(item->hwndItem);
 		buf.resize(len + 1); // Resize buffer to contain button text
 		GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
 
@@ -2200,7 +2073,6 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 		switch (currentScreen)
 		{
 		case WELCOME_SCREEN:
-		{
 			if (item->hwndItem == hItems[WELCOME_SCREEN_STAT_DATE])
 			{
 				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
@@ -2209,7 +2081,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
 				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
-				
+
 				return true;
 			}
 			if (item->hwndItem == hItems[WELCOME_SCREEN_STAT_TEXT])
@@ -2219,7 +2091,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
 				// Text padding
-				RECT rect = item->rcItem;
+				rect = item->rcItem;
 				int padding = 10;
 				rect.left += padding;
 				rect.top += padding;
@@ -2230,11 +2102,9 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 				return true;
 			}
-		}
-		break;
+			break;
 
 		case START_GAME_SCREEN:
-		{
 			if (item->hwndItem == hItems[0])
 			{
 				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
@@ -2242,7 +2112,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
 				// Text padding
-				RECT rect = item->rcItem;
+				rect = item->rcItem;
 				int padding = 10;
 				rect.left += padding;
 				rect.top += padding;
@@ -2253,11 +2123,9 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 				return true;
 			}
-		}
-		break;
+			break;
 
 		case FIRST_VICTORY:
-		{
 			if (item->hwndItem == hItems[0])
 			{
 				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
@@ -2265,7 +2133,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
 				// Text padding
-				RECT rect = item->rcItem;
+				rect = item->rcItem;
 				int padding = 10;
 				rect.left += padding;
 				rect.top += padding;
@@ -2276,13 +2144,10 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 				return true;
 			}
-		}
-		break;
+			break;
 
 		case STOLEN_MONEY:
-		{
 			for (int i = STOLEN_MONEY_SCREEN_STAT_1; i <= STOLEN_MONEY_SCREEN_STAT_STAY; i++)
-			{
 				if (item->hwndItem == hItems[i])
 				{
 					SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
@@ -2290,7 +2155,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 
 					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
 					// Text padding
-					RECT rect = item->rcItem;
+					rect = item->rcItem;
 					int padding = 10;
 					rect.left += padding;
 					rect.top += padding;
@@ -2301,14 +2166,10 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 					return true;
 				}
-			}
-		}
-		break;
+			break;
 
 		case CENTURION_OFFER:
-		{
 			for (int i = CENTURION_OFFER_SCREEN_STAT_1; i <= CENTURION_OFFER_SCREEN_STAT_DECLINE; i++)
-			{
 				if (item->hwndItem == hItems[i])
 				{
 					SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
@@ -2316,7 +2177,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 
 					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
 					// Text padding
-					RECT rect = item->rcItem;
+					rect = item->rcItem;
 					int padding = 10;
 					rect.left += padding;
 					rect.top += padding;
@@ -2327,14 +2188,10 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 					return true;
 				}
-			}
-		}
-		break;
+			break;
 
 		case GAINED_FREEDOM:
-		{
 			for (int i = GAINED_FREEDOM_SCREEN_STAT_1; i <= GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION; i++)
-			{
 				if (item->hwndItem == hItems[i])
 				{
 					SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
@@ -2342,7 +2199,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 
 					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE)); // Fill background
 					// Text padding
-					RECT rect = item->rcItem;
+					rect = item->rcItem;
 					int padding = 10;
 					rect.left += padding;
 					rect.top += padding;
@@ -2353,12 +2210,9 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 					DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 					return true;
 				}
-			}
-		}
-		break;
+			break;
 
 		case QUEST_PERUGIA_SHANDAR:
-		{
 			SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
 			SetBkMode(hdc, TRANSPARENT);
 
@@ -2379,7 +2233,7 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE));
 
 			// Text padding
-			RECT rect = item->rcItem;
+			rect = item->rcItem;
 			int padding = 10;
 			rect.left += padding;
 			rect.top += padding;
@@ -2390,10 +2244,6 @@ bool StoryScreen::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT
 			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
 			return true;
 		}
-		break;
-		}
-	}
-	break;
 	}
 	return false;
 }
@@ -2415,32 +2265,25 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 	switch (screen)
 	{
 	case WELCOME_SCREEN:
-	{
 		hItems.resize(WELCOME_SCREEN_ITEM_NUMBER);
 
 		hItems[WELCOME_SCREEN_STAT_DATE] = CreateWindow("STATIC", l.getMessage(Localized::STORY_WELCOME_SCREEN_DATE).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 		hItems[WELCOME_SCREEN_STAT_TEXT] = CreateWindow("STATIC", l.getMessage(Localized::STORY_WELCOME_SCREEN_TEXT).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-	}
-	break;
+		break;
 
 	case START_GAME_SCREEN:
-	{
 		hItems.resize(1);
 
 		hItems[0] = CreateWindow("STATIC", l.getMessage(Localized::STORY_START_GAME_TEXT).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-	}
-	break;
+		break;
 
 	case FIRST_VICTORY:
-	{
 		hItems.resize(1);
 
 		hItems[0] = CreateWindow("STATIC", l.getMessage(Localized::STORY_FIRST_VICTORY_TEXT).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-	}
-	break;
+		break;
 
 	case STOLEN_MONEY:
-	{
 		hItems.resize(STOLEN_MONEY_SCREEN_ITEM_NUMBER);
 
 		hItems[STOLEN_MONEY_SCREEN_STAT_1] = CreateWindow("STATIC", l.getMessage(Localized::STORY_STOLEN_MONEY_TEXT1).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -2453,11 +2296,9 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 
 		isChoiceRequired = true;
 		currentSubScreen = STOLEN_MONEY_SCREEN_STAT_1;
-	}
-	break;
+		break;
 
 	case CENTURION_OFFER:
-	{
 		hItems.resize(CENTURION_OFFER_SCREEN_ITEM_NUMBER);
 
 		hItems[CENTURION_OFFER_SCREEN_STAT_1] = CreateWindow("STATIC", l.getMessage(Localized::STORY_CENTURION_OFFER_TEXT1).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -2469,11 +2310,9 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 
 		isChoiceRequired = true;
 		currentSubScreen = CENTURION_OFFER_SCREEN_STAT_1;
-	}
-	break;
+		break;
 
 	case GAINED_FREEDOM:
-	{
 		hItems.resize(CENTURION_OFFER_SCREEN_ITEM_NUMBER);
 
 		hItems[GAINED_FREEDOM_SCREEN_STAT_1] = CreateWindow("STATIC", l.getMessage(Localized::STORY_GAINED_FREEDOM_TEXT1).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -2485,11 +2324,9 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 
 		isChoiceRequired = true;
 		currentSubScreen = GAINED_FREEDOM_SCREEN_STAT_1;
-	}
-	break;
+		break;
 
 	case QUEST_PERUGIA_SHANDAR:
-	{
 		hItems.resize(SHANDAR_ITEM_NUMBER);
 
 		// Intro
@@ -2577,8 +2414,7 @@ void StoryScreen::displayScreen(HWND hWnd, Screen screen)
 
 		isChoiceRequired = true;
 		currentSubScreen = SHANDAR_STAT_INTRO;
-	}
-	break;
+		break;
 	}
 	currentScreen = screen;
 	game.updateBackground();

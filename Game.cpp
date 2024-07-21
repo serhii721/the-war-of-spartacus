@@ -322,7 +322,7 @@ void Game::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 {
 	switch (displayState)
 	{
-	default:case DisplayState::MENU:
+	default: case DisplayState::MENU:
 		menuManager.drawMenu(hWnd, hdc, cx, cy);
 		break;
 
@@ -343,7 +343,7 @@ void Game::resizeWindow(int cx, int cy)
 {
 	switch (displayState)
 	{
-	default:case DisplayState::MENU:
+	default: case DisplayState::MENU:
 		menuManager.resizeMenu(cx, cy);
 		break;
 
@@ -364,7 +364,7 @@ void Game::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 {
 	switch (displayState)
 	{
-	default:case DisplayState::MENU:
+	default: case DisplayState::MENU:
 		menuManager.handleInput(hWnd, m, wp, lp);
 		break;
 
@@ -385,9 +385,9 @@ bool Game::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& resul
 {
 	switch (displayState)
 	{
-	default:case DisplayState::MENU: return menuManager.stylizeWindow(hWnd, m, wp, lp, result); 
-	case DisplayState::WORLD_MAP: return pWorldMap->stylizeWindow(hWnd, m, wp, lp, result); 
-	case DisplayState::FIGHTING: return pFighting->stylizeWindow(hWnd, m, wp, lp, result); 
+	default: case DisplayState::MENU: return menuManager.stylizeWindow(hWnd, m, wp, lp, result);
+	case DisplayState::WORLD_MAP: return pWorldMap->stylizeWindow(hWnd, m, wp, lp, result);
+	case DisplayState::FIGHTING: return pFighting->stylizeWindow(hWnd, m, wp, lp, result);
 	case DisplayState::STORY_SCREEN: return pStoryScreen->stylizeWindow(hWnd, m, wp, lp, result);
 	}
 }
@@ -422,7 +422,7 @@ void Game::saveToFile(bool isAutoSave)
 {
 	string path = "";
 	const string FOLDER_SAVES = "Saves/", PLAYER_FOLDER = "Player/", WORLD_FOLDER = "World/", GAME_DATA_FILE = "Game", FORMAT = ".sav";
-	
+
 	// Creating the folder of saved games if it doesn't exist
 	BOOL success = CreateDirectory(FOLDER_SAVES.c_str(), NULL);
 	if (!success && GetLastError() != ERROR_ALREADY_EXISTS)
@@ -434,7 +434,7 @@ void Game::saveToFile(bool isAutoSave)
 	tm* now_tm = localtime(&now);
 	char buffer[256];
 	strftime(buffer, sizeof(buffer), "%d%m%y_%H%M%S", now_tm);
-	
+
 	// Name for save folder -- Player's name + Player's level + current date and time
 	if (isAutoSave)
 	{

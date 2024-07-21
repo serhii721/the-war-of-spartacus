@@ -2,9 +2,9 @@
 // GladiatorGame.pch will be the pre-compiled header
 // stdafx.obj will contain the pre-compiled type information
 /*
- * It is the game about gladiators in the Rome.
- * ...
- */
+* It is the game about gladiators in the Rome.
+* ...
+*/
 
 #include "stdafx.h"
 
@@ -587,8 +587,8 @@ int getArmourScaleLimit(Armour::ArmourType ttype, Armour::Stat sstat, Limit llim
 			}
 			break;
 		case Armour::STUN_PROB_SUBSTRACTION:
-			switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
-			break;
+		switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
+		break;
 		}
 		break;
 
@@ -610,8 +610,8 @@ int getArmourScaleLimit(Armour::ArmourType ttype, Armour::Stat sstat, Limit llim
 			}
 			break;
 		case Armour::EVASION_PROB_ADDITION:
-			switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
-			break;
+		switch (llimit) { case Limit::MIN: case Limit::MAX: return 0; }
+		break;
 		case Armour::STUN_PROB_SUBSTRACTION:
 			switch (llimit)
 			{
@@ -841,7 +841,7 @@ void playSound(SoundEnum soundEnum)
 
 	switch (soundEnum)
 	{
-	default:case SoundEnum::SOUND_BUTTON_CLICK: path = DIRECTORY + "buttonClick" + FORMAT; break;
+	default: case SoundEnum::SOUND_BUTTON_CLICK: path = DIRECTORY + "buttonClick" + FORMAT; break;
 	case SoundEnum::SOUND_FIGHT_HIT: path = DIRECTORY + "fightHit" + FORMAT; break;
 	case SoundEnum::SOUND_FIGHT_DODGED: path = DIRECTORY + "fightDodge" + FORMAT; break;
 	case SoundEnum::SOUND_FIGHT_BLOCKED: path = DIRECTORY + "fightBlock" + FORMAT; break;
@@ -1008,7 +1008,7 @@ LRESULT CALLBACK WFunc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 				ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rect, NULL, 0, NULL);
 				DrawText(hdc, str, -1, &rectPadding, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
 				// Draw edge
-				DrawEdge(hdc, &rect, EDGE_RAISED, BF_RECT); 
+				DrawEdge(hdc, &rect, EDGE_RAISED, BF_RECT);
 			}
 			else if (item->CtlType == ODT_COMBOBOX)
 			{

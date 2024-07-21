@@ -203,7 +203,7 @@ void GameMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Composing path based on current menu
 		switch (game.getBackground())
 		{
-		default:case Game::Background::GAME_MENU: path = DIRECTORY + "menuBackground" + FORMAT; break;
+		default: case Game::Background::GAME_MENU: path = DIRECTORY + "menuBackground" + FORMAT; break;
 		case Game::Background::GAME_MENU_SAVE: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
 		case Game::Background::GAME_MENU_LOAD: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
 		case Game::Background::GAME_MENU_SETTINGS: path = DIRECTORY + "menuBackground" + FORMAT; break; // TODO: background
@@ -232,7 +232,7 @@ void GameMenu::resizeMenu(int cx, int cy)
 
 	switch (game.getBackground())
 	{
-	default:case Game::Background::GAME_MENU:
+	default: case Game::Background::GAME_MENU:
 	{
 		const int ITEM_HEIGHT = 45, DISTANCE = 10, ITEM_WIDTH = 300;
 		sz = hItems.size();
@@ -247,10 +247,8 @@ void GameMenu::resizeMenu(int cx, int cy)
 	break;
 
 	case Game::Background::GAME_MENU_SAVE:
-	{
 		// TODO
-	}
-	break;
+		break;
 
 	case Game::Background::GAME_MENU_LOAD:
 	{
@@ -290,7 +288,6 @@ void GameMenu::resizeMenu(int cx, int cy)
 		MoveWindow(hSubItems[SETTINGS_BUT_AUTOSAVE], x + ITEM_WIDTH - BUT_SIZE, y, BUT_SIZE, BUT_SIZE, TRUE);
 		y += ITEM_HEIGHT + DISTANCE;
 
-
 		// Back
 		MoveWindow(hSubItems[SETTINGS_BUT_BACK], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 	}
@@ -308,8 +305,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	case WM_COMMAND:
 		switch (game.getBackground())
 		{
-		default:case Game::Background::GAME_MENU:
-		{
+		default: case Game::Background::GAME_MENU:
 			if ((HWND)lp == hItems[BUT_RESUME] || LOWORD(wp) == IDCANCEL)
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -395,11 +391,9 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::GAME_MENU_LOAD:
-		{
 			if (HIWORD(wp) == LBN_SELCHANGE)
 			{
 				if (selected != SendMessage(hSubItems[LOADING_LISTBOX_SAVES], LB_GETCURSEL, 0, 0))
@@ -468,11 +462,9 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::GAME_MENU_SETTINGS:
-		{
 			if ((HWND)lp == hSubItems[SETTINGS_BUT_SOUND])
 			{
 				game.setSoundStatus(!game.getSoundStatus());
@@ -521,106 +513,96 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				game.setBackground(Game::Background::GAME_MENU);
 
 				updateWindow(hWnd);
-				break;
 			}
+			break;
 		}
 		break;
-		}
-	break;
 	}
 }
 
 bool GameMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& result)
 {
+	LPDRAWITEMSTRUCT item;
+	HDC hdc;
+	int len;
+
 	switch (m)
 	{
-		case WM_DRAWITEM:
+	case WM_DRAWITEM:
+		item = (LPDRAWITEMSTRUCT)lp;
+		hdc = item->hDC;
+
+		GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+		SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
+		SetBkMode(hdc, TRANSPARENT);
+
+		// Get text
+		len = GetWindowTextLength(item->hwndItem);
+		buf.resize(len + 1); // Resize buffer to contain button text
+		GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+
+		SetTextColor(hdc, COLOR_WHITE); // Set basic text color
+		if (game.getBackground() == Game::Background::GAME_MENU_SETTINGS)
 		{
-			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
-			HDC hdc = item->hDC;
-
-			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
-
-			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
-			SetBkMode(hdc, TRANSPARENT);
-
-			// Get text
-			int len = GetWindowTextLength(item->hwndItem);
-			buf.resize(len + 1); // Resize buffer to contain button text
-			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-
-			SetTextColor(hdc, COLOR_WHITE); // Set basic text color
-			if (game.getBackground() == Game::Background::GAME_MENU_SETTINGS)
+			if (item->hwndItem == hSubItems[SETTINGS_BUT_SOUND])
 			{
-				if (item->hwndItem == hSubItems[SETTINGS_BUT_SOUND])
-				{
-					if (game.getSoundStatus())
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-					else
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+				if (game.getSoundStatus())
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+				else
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
 
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-					return true;
-				}
-				if (item->hwndItem == hSubItems[SETTINGS_BUT_AUTOSAVE])
-				{
-					if (game.getAutoSaveStatus())
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-					else
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-
-					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-					return true;
-				}
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				return true;
 			}
-			return false;
+			if (item->hwndItem == hSubItems[SETTINGS_BUT_AUTOSAVE])
+			{
+				if (game.getAutoSaveStatus())
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+				else
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+				return true;
+			}
 		}
-		break;
+		return false;
 
-		case WM_CTLCOLORSTATIC:
-		{
-			HDC hdc = (HDC)wp;
-			SetTextColor(hdc, COLOR_WHITE);
-			SetBkMode(hdc, TRANSPARENT);
+	case WM_CTLCOLORSTATIC:
+		hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
 
-			if (hBackgroundBrush != NULL)
-				DeleteObject(hBackgroundBrush);
-			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
 
-			result = (LRESULT)hBackgroundBrush;
-			return true;
-		}
-		break;
+		result = (LRESULT)hBackgroundBrush;
+		return true;
 
-		case WM_CTLCOLOREDIT:
-		{
-			HDC hdc = (HDC)wp;
-			SetTextColor(hdc, COLOR_WHITE);
-			SetBkMode(hdc, TRANSPARENT);
+	case WM_CTLCOLOREDIT:
+		hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
 
-			if (hBackgroundBrush != NULL)
-				DeleteObject(hBackgroundBrush);
-			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
 
-			result = (LRESULT)hBackgroundBrush;
-			return true;
-		}
-		break;
+		result = (LRESULT)hBackgroundBrush;
+		return true;
 
-		case WM_CTLCOLORLISTBOX:
-		{
-			HDC hdc = (HDC)wp;
-			SetTextColor(hdc, COLOR_WHITE);
-			SetBkMode(hdc, TRANSPARENT);
+	case WM_CTLCOLORLISTBOX:
+		hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
 
-			if (hBackgroundBrush != NULL)
-				DeleteObject(hBackgroundBrush);
-			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
 
-			result = (LRESULT)hBackgroundBrush;
-			return true;
-		}
-		break;
+		result = (LRESULT)hBackgroundBrush;
+		return true;
 	}
 	return false;
 }

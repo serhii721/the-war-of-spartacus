@@ -266,7 +266,7 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 		// Composing path based on current menu
 		switch (game.getBackground())
 		{
-		default:case Game::Background::WORLD_MAP:
+		default: case Game::Background::WORLD_MAP:
 			path = DIRECTORY + "mapBackground" + FORMAT;
 			for (HWND hItem : hItems)
 				ShowWindow(hItem, SW_SHOW);
@@ -287,23 +287,21 @@ void WorldMap::drawWindow(HWND hWnd, HDC hdc, int cx, int cy)
 	// 2. Text
 	switch (game.getBackground())
 	{
-		default:case Game::Background::WORLD_MAP:
+	default: case Game::Background::WORLD_MAP:
+		for (int i = BUT_ROME_MAP; i <= BUT_MILAN_LIST; i++)
+			ShowWindow(hItems[i], SW_SHOW);
+
+		if (currentCity == selectedCity)
+			SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
+		else
+			SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::TRAVEL).c_str());
+
+		for (int i = BUT_ROME_MAP; i <= BUT_MILAN_MAP; i++)
 		{
-			for (int i = BUT_ROME_MAP; i <= BUT_MILAN_LIST; i++)
-				ShowWindow(hItems[i], SW_SHOW);
-
-			if (currentCity == selectedCity)
-				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::ENTER).c_str());
-			else
-				SendMessage(hItems[BUT_TRAVEL_LIST], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::TRAVEL).c_str());
-
-			for (int i = BUT_ROME_MAP; i <= BUT_MILAN_MAP; i++)
-			{
-				buf = l.getCityName(cities[i]);
-				SendMessage(hItems[i], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-				buf = l.getCityName(cities[i]) + "   (" + to_string(cities[i].getLevel()) + " " + l.getMessage(Localized::LVL) + ")";
-				SendMessage(hItems[i + 11], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-			}
+			buf = l.getCityName(cities[i]);
+			SendMessage(hItems[i], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+			buf = l.getCityName(cities[i]) + "   (" + to_string(cities[i].getLevel()) + " " + l.getMessage(Localized::LVL) + ")";
+			SendMessage(hItems[i + 11], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		}
 		break;
 	}
@@ -320,8 +318,7 @@ void WorldMap::resizeWindow(int cx, int cy)
 
 	switch (game.getBackground())
 	{
-	default:case Game::Background::WORLD_MAP:
-	{
+	default: case Game::Background::WORLD_MAP:
 		const int ITEM_HEIGHT = 40, ITEM_WIDTH = 300, WINDOW_WIDTH = 336, BUT_WIDTH = 300, DISTANCE = 3;
 		const int FRAME_HEIGHT = 28, FRAME_WIDTH = 110;
 
@@ -406,8 +403,7 @@ void WorldMap::resizeWindow(int cx, int cy)
 			MoveWindow(hItems[BUT_PLAYER_ICON_MAP], 89, 91, FRAME_HEIGHT, FRAME_HEIGHT, TRUE);
 			break;
 		}
-	}
-	break;
+		break;
 	}
 }
 
@@ -418,50 +414,47 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	case WM_COMMAND:
 		switch (game.getBackground())
 		{
-		default:case Game::Background::WORLD_MAP:
-		{
+		default: case Game::Background::WORLD_MAP:
 			// Selecting city
-			{
-				if ((HWND)lp == hItems[BUT_PLAYER_ICON_LIST])
-					selectCity(hWnd, static_cast<WorldMap::Item>(currentCity));
+			if ((HWND)lp == hItems[BUT_PLAYER_ICON_LIST])
+				selectCity(hWnd, static_cast<WorldMap::Item>(currentCity));
 
-				if ((HWND)lp == hItems[BUT_PLAYER_ICON_MAP])
-					selectCity(hWnd, static_cast<WorldMap::Item>(currentCity));
+			if ((HWND)lp == hItems[BUT_PLAYER_ICON_MAP])
+				selectCity(hWnd, static_cast<WorldMap::Item>(currentCity));
 
-				if ((HWND)lp == hItems[BUT_ROME_LIST] || (HWND)lp == hItems[BUT_ROME_MAP])
-					selectCity(hWnd, BUT_ROME_MAP);
+			if ((HWND)lp == hItems[BUT_ROME_LIST] || (HWND)lp == hItems[BUT_ROME_MAP])
+				selectCity(hWnd, BUT_ROME_MAP);
 
-				if ((HWND)lp == hItems[BUT_NAPLES_LIST] || (HWND)lp == hItems[BUT_NAPLES_MAP])
-					selectCity(hWnd, BUT_NAPLES_MAP);
+			if ((HWND)lp == hItems[BUT_NAPLES_LIST] || (HWND)lp == hItems[BUT_NAPLES_MAP])
+				selectCity(hWnd, BUT_NAPLES_MAP);
 
-				if ((HWND)lp == hItems[BUT_METAPONTO_LIST] || (HWND)lp == hItems[BUT_METAPONTO_MAP])
-					selectCity(hWnd, BUT_METAPONTO_MAP);
+			if ((HWND)lp == hItems[BUT_METAPONTO_LIST] || (HWND)lp == hItems[BUT_METAPONTO_MAP])
+				selectCity(hWnd, BUT_METAPONTO_MAP);
 
-				if ((HWND)lp == hItems[BUT_BOJANO_LIST] || (HWND)lp == hItems[BUT_BOJANO_MAP])
-					selectCity(hWnd, BUT_BOJANO_MAP);
+			if ((HWND)lp == hItems[BUT_BOJANO_LIST] || (HWND)lp == hItems[BUT_BOJANO_MAP])
+				selectCity(hWnd, BUT_BOJANO_MAP);
 
-				if ((HWND)lp == hItems[BUT_ANCONA_LIST] || (HWND)lp == hItems[BUT_ANCONA_MAP])
-					selectCity(hWnd, BUT_ANCONA_MAP);
+			if ((HWND)lp == hItems[BUT_ANCONA_LIST] || (HWND)lp == hItems[BUT_ANCONA_MAP])
+				selectCity(hWnd, BUT_ANCONA_MAP);
 
-				if ((HWND)lp == hItems[BUT_PERUGIA_LIST] || (HWND)lp == hItems[BUT_PERUGIA_MAP])
-					selectCity(hWnd, BUT_PERUGIA_MAP);
+			if ((HWND)lp == hItems[BUT_PERUGIA_LIST] || (HWND)lp == hItems[BUT_PERUGIA_MAP])
+				selectCity(hWnd, BUT_PERUGIA_MAP);
 
-				if ((HWND)lp == hItems[BUT_FLORENCE_LIST] || (HWND)lp == hItems[BUT_FLORENCE_MAP])
-					selectCity(hWnd, BUT_FLORENCE_MAP);
+			if ((HWND)lp == hItems[BUT_FLORENCE_LIST] || (HWND)lp == hItems[BUT_FLORENCE_MAP])
+				selectCity(hWnd, BUT_FLORENCE_MAP);
 
-				if ((HWND)lp == hItems[BUT_BOLOGNA_LIST] || (HWND)lp == hItems[BUT_BOLOGNA_MAP])
-					selectCity(hWnd, BUT_BOLOGNA_MAP);
+			if ((HWND)lp == hItems[BUT_BOLOGNA_LIST] || (HWND)lp == hItems[BUT_BOLOGNA_MAP])
+				selectCity(hWnd, BUT_BOLOGNA_MAP);
 
-				if ((HWND)lp == hItems[BUT_GENOA_LIST] || (HWND)lp == hItems[BUT_GENOA_MAP])
-					selectCity(hWnd, BUT_GENOA_MAP);
+			if ((HWND)lp == hItems[BUT_GENOA_LIST] || (HWND)lp == hItems[BUT_GENOA_MAP])
+				selectCity(hWnd, BUT_GENOA_MAP);
 
-				if ((HWND)lp == hItems[BUT_AQUILEIA_LIST] || (HWND)lp == hItems[BUT_AQUILEIA_MAP])
-					selectCity(hWnd, BUT_AQUILEIA_MAP);
+			if ((HWND)lp == hItems[BUT_AQUILEIA_LIST] || (HWND)lp == hItems[BUT_AQUILEIA_MAP])
+				selectCity(hWnd, BUT_AQUILEIA_MAP);
 
-				if ((HWND)lp == hItems[BUT_MILAN_LIST] || (HWND)lp == hItems[BUT_MILAN_MAP])
-					selectCity(hWnd, BUT_MILAN_MAP);
+			if ((HWND)lp == hItems[BUT_MILAN_LIST] || (HWND)lp == hItems[BUT_MILAN_MAP])
+				selectCity(hWnd, BUT_MILAN_MAP);
 
-			}
 			if ((HWND)lp == hItems[BUT_TRAVEL_LIST])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -498,80 +491,79 @@ void WorldMap::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					updateWindow(hWnd);
 				}
 			}
+			break;
 		}
 		break;
-		}
-	break;
 	}
 }
 
 bool WorldMap::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& result)
 {
+	LPDRAWITEMSTRUCT item;
+	HDC hdc;
+	int len;
 	switch (m)
 	{
-		case WM_DRAWITEM:
+	case WM_DRAWITEM:
+		item = (LPDRAWITEMSTRUCT)lp;
+		hdc = item->hDC;
+
+		GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+		// Set text font and background
+		SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
+		SetBkMode(hdc, TRANSPARENT);
+
+		// Assing background and text color
+		SetTextColor(hdc, COLOR_WHITE);
+		FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+
+		// Draw text
+		len = GetWindowTextLength(item->hwndItem);
+		buf.resize(len + 1); // Resize buffer to contain button text
+		GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+		DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
+
+		// Checking window to draw it using correct styles
+
+		if (item->hwndItem == hItems[selectedCity] || item->hwndItem == hItems[selectedCity + 11])
 		{
-			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
-			HDC hdc = item->hDC;
-
-			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
-
+			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+			DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+			return true;
+		}
+		if (item->hwndItem == hItems[STAT_MAP])
+		{
 			// Set text font and background
-			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
+			SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
 			SetBkMode(hdc, TRANSPARENT);
 
 			// Assing background and text color
 			SetTextColor(hdc, COLOR_WHITE);
-			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
 
 			// Draw text
 			int len = GetWindowTextLength(item->hwndItem);
 			buf.resize(len + 1); // Resize buffer to contain button text
 			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text on button
 
-			// Checking window to draw it using correct styles
-
-			if (item->hwndItem == hItems[selectedCity] || item->hwndItem == hItems[selectedCity + 11])
-			{
-				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-				return true;
-			}
-			if (item->hwndItem == hItems[STAT_MAP])
-			{
-				// Set text font and background
-				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
-				SetBkMode(hdc, TRANSPARENT);
-
-				// Assing background and text color
-				SetTextColor(hdc, COLOR_WHITE);
-
-				// Draw text
-				int len = GetWindowTextLength(item->hwndItem);
-				buf.resize(len + 1); // Resize buffer to contain button text
-				GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-
-				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE));
-				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-				DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-				return true;
-			}
-			if (item->hwndItem == hItems[BUT_PLAYER_ICON_LIST] || item->hwndItem == hItems[BUT_PLAYER_ICON_MAP])
-			{
-				// Select image
-				hBackgroundImage = (HBITMAP)LoadImage(0, "Data/Image/smallIcon.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-				// Filling background with selected image
-				hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
-				FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
-				// Drawing edge
-				DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
-				return true;
-			}
-			return false;
+			FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_DARK_BLUE));
+			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+			DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+			return true;
 		}
-		break;
+		if (item->hwndItem == hItems[BUT_PLAYER_ICON_LIST] || item->hwndItem == hItems[BUT_PLAYER_ICON_MAP])
+		{
+			// Select image
+			hBackgroundImage = (HBITMAP)LoadImage(0, "Data/Image/smallIcon.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+			// Filling background with selected image
+			hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+			FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
+			// Drawing edge
+			DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
+			return true;
+		}
+		return false;
 	}
 	return false;
 }

@@ -245,7 +245,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		// Composing path based on current menu
 		switch (game.getBackground())
 		{
-		default:case Game::Background::CITY_MENU:
+		default: case Game::Background::CITY_MENU:
 			switch (game.getWorldMap().getCurrentCity().getNameIndex())
 			{
 			case ROME: path = DIRECTORY + "Cities/RomeBackground" + FORMAT; break;
@@ -285,118 +285,111 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 	switch (game.getBackground())
 	{
 	case Game::Background::CITY_MENU:
-	{
 		for (HWND hItem : hItems)
-					ShowWindow(hItem, SW_SHOW);
+			ShowWindow(hItem, SW_SHOW);
 		buf = l.getMessage(Localized::CITY) + " " + l.getCityName(game.getWorldMap().getCurrentCity());
 		SendMessage(hItems[STAT_CITY_NAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 		// Updating log
 		SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
 		SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
-	}
-	break;
+		break;
 
 	case Game::Background::CITY_MENU_ARENA:
-	{
 		// Updating log
 		SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
 		SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
-	}
-	break;
+		break;
 
 	case Game::Background::CITY_MENU_ARENA_FIGHT:
-	{
 		if (game.isBackgroundChanged())
 		{
 			// # 1. Player
+			Player& rPlayer = game.getPlayer();
+			// Name
+			buf = rPlayer.getName();
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_NAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			// Level
+			buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rPlayer.getLevel());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEVEL], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			// Right hand
+			if (rPlayer.getRightHand())
 			{
-				Player& rPlayer = game.getPlayer();
-				// Name
-				buf = rPlayer.getName();
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_NAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getRightHand()).c_str());
 
-				// Level
-				buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rPlayer.getLevel());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEVEL], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-				// Right hand
-				if (rPlayer.getRightHand())
-				{
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getRightHand()).c_str());
-
-					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-				}
-				else
-				{
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
-
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)"");
-				}
-
-				// Left hand
-				if (rPlayer.getLeftHand())
-				{
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getLeftHand()).c_str());
-
-					if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
-					{
-						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-					}
-					else
-					{
-						buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(rPlayer.getLeftHand()->getShieldDefPercentAddition()) + "%";
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-						buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(rPlayer.getLeftHand()->getShieldProbAddition()) + "%";
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-					}
-				}
-				else
-				{
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
-
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)"");
-				}
-
-				// Health
-				buf = l.getMessage(Localized::HEALTH) + ": " + to_string(rPlayer.getHP());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_HEALTH], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-				// Armour
-				if (rPlayer.getArmour())
-				{
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
-
-					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-				}
-
-				// Stats
-				buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(rPlayer.getStrength());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_STRENGTH], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-				buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(rPlayer.getConstitution());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-				buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(rPlayer.getDexterity());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_DEXTERITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-				buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(rPlayer.getIntelligence());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-				buf = l.getMessage(Localized::WISDOM) + ": " + to_string(rPlayer.getWisdom());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_WISDOM], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-				buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(rPlayer.getCharisma());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CHARISMA], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-				buf = l.getMessage(Localized::AGE) + ": " + to_string(rPlayer.getAge());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_AGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-				buf = l.getMessage(Localized::FAME) + ": " + to_string(rPlayer.getFame());
-				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_FAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 			}
+			else
+			{
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
+
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)"");
+			}
+
+			// Left hand
+			if (rPlayer.getLeftHand())
+			{
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getLeftHand()).c_str());
+
+				if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
+				{
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				}
+				else
+				{
+					buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(rPlayer.getLeftHand()->getShieldDefPercentAddition()) + "%";
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(rPlayer.getLeftHand()->getShieldProbAddition()) + "%";
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				}
+			}
+			else
+			{
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
+
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)"");
+			}
+
+			// Health
+			buf = l.getMessage(Localized::HEALTH) + ": " + to_string(rPlayer.getHP());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_HEALTH], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			// Armour
+			if (rPlayer.getArmour())
+			{
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
+
+				buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+			}
+
+			// Stats
+			buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(rPlayer.getStrength());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_STRENGTH], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(rPlayer.getConstitution());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(rPlayer.getDexterity());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_DEXTERITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(rPlayer.getIntelligence());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			buf = l.getMessage(Localized::WISDOM) + ": " + to_string(rPlayer.getWisdom());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_WISDOM], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(rPlayer.getCharisma());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CHARISMA], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			buf = l.getMessage(Localized::AGE) + ": " + to_string(rPlayer.getAge());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_AGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+			buf = l.getMessage(Localized::FAME) + ": " + to_string(rPlayer.getFame());
+			SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_FAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 			// # 2. Opponent
 			if (selectedOpponent != -1)
@@ -419,8 +412,7 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 					ShowWindow(hSubMenuItems[i], SW_SHOW);
 			}
 		}
-	}
-	break;
+		break;
 
 	case Game::Background::CITY_MENU_MARKET:
 	{
@@ -644,7 +636,8 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			ShowWindow(hSubItems[CHARACTER_BUT_CHARISMA_MINUS], SW_HIDE);
 
 		// Apply changes, reset changes
-		if (pas.strength > rPlayer.getStrength() ||
+		if (
+			pas.strength > rPlayer.getStrength() ||
 			pas.constitution > rPlayer.getConstitution() ||
 			pas.dexterity > rPlayer.getDexterity() ||
 			pas.intelligence > rPlayer.getIntelligence() ||
@@ -811,8 +804,8 @@ void CityMenu::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 		SendMessage(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EQUIP_ITEM).c_str());
 		SendMessage(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::INSPECT_ITEM).c_str());
 		SendMessage(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::DESTROY_ITEM).c_str());
+		break;
 	}
-	break;
 	}
 	game.backgroundChangeCompleted();
 }
@@ -994,19 +987,16 @@ void CityMenu::resizeMenu(int cx, int cy)
 	break;
 
 	case Game::Background::CITY_MENU_ARENA_BET:
-	{
 		// TODO
-	}
-	break;
+		break;
 
 	case Game::Background::CITY_MENU_MARKET:
 	{
-		const int BIG_STAT_WIDTH = 478, STAT_HEIGHT = 30,
-				  STAT_WIDTH = 278,
-				  DISTANCE = 9,
-				  ITEMS_DISTANCE = 0,
-				  ITEM_BUT_WIDTH = 120, ITEM_BUT_HEIGHT = 97,
-				  ITEM_STAT_WIDTH = 120, ITEM_STAT_HEIGHT = 20;
+		const int BIG_STAT_WIDTH = 478,
+			STAT_HEIGHT = 30, STAT_WIDTH = 278,
+			DISTANCE = 9, ITEMS_DISTANCE = 0,
+			ITEM_BUT_WIDTH = 120, ITEM_BUT_HEIGHT = 97,
+			ITEM_STAT_WIDTH = 120, ITEM_STAT_HEIGHT = 20;
 
 		MoveWindow(hSubItems[MARKET_STAT_MARKET], cx - BIG_STAT_WIDTH / 2, DISTANCE, BIG_STAT_WIDTH, STAT_HEIGHT, TRUE);
 
@@ -1078,7 +1068,7 @@ void CityMenu::resizeMenu(int cx, int cy)
 
 		MoveWindow(hSubItems[MARKET_STAT_ITEM_DEXTERITY_SCALE], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
 		y += STAT_HEIGHT + DISTANCE;
-		
+
 		MoveWindow(hSubItems[MARKET_STAT_ITEM_ARMOUR_ABILITY], x, y, STAT_WIDTH, STAT_HEIGHT, TRUE);
 		y += STAT_HEIGHT + DISTANCE;
 
@@ -1106,9 +1096,9 @@ void CityMenu::resizeMenu(int cx, int cy)
 	case Game::Background::CITY_MENU_CHARACTER:
 	{
 		const int BIG_STAT_WIDTH = 250, BIG_STAT_HEIGHT = 30,
-				SMALL_STAT_WIDTH = 180, SMALL_STAT_HEIGHT = 20,
-				BIG_DISTANCE = 9, SMALL_DISTANCE = 4,
-				BUT_SIZE = 20;
+			SMALL_STAT_WIDTH = 180, SMALL_STAT_HEIGHT = 20,
+			BIG_DISTANCE = 9, SMALL_DISTANCE = 4,
+			BUT_SIZE = 20;
 
 		// 1. Player's stats
 		x = 87, y = 68;
@@ -1282,8 +1272,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 	case WM_COMMAND:
 		switch (game.getBackground())
 		{
-		default:case Game::Background::CITY_MENU:
-		{
+		default: case Game::Background::CITY_MENU:
 			if ((HWND)lp == hItems[BUT_ARENA])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1322,6 +1311,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				updateWindow(hWnd);
 			}
+
 			if ((HWND)lp == hItems[BUT_QUEST])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1360,6 +1350,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				updateWindow(hWnd);
 			}
+
 			if ((HWND)lp == hItems[BUT_MARKET])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1402,6 +1393,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				updateWindow(hWnd);
 			}
+
 			if ((HWND)lp == hItems[BUT_CHARACTER])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1423,12 +1415,12 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				for (i = CHARACTER_BUT_STRENGTH_PLUS; i <= CHARACTER_BUT_BACK; i++)
 					hSubItems[i] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
-				
+
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE);
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_INSPECT_ITEM], SW_HIDE);
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
-				
+
 				Player& rPlayer = game.getPlayer();
 				pas.hp = rPlayer.getHP();
 				pas.fullHP = rPlayer.getFullHP();
@@ -1445,6 +1437,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				game.updateBackground();
 			}
+
 			if ((HWND)lp == hItems[BUT_REST])
 			{
 				Player& rPlayer = game.getPlayer();
@@ -1497,6 +1490,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SendMessage(hItems[EDIT_MESSAGES_LOG], WM_SETTEXT, 0, (LPARAM)logStr.c_str());
 				SendMessage(hItems[EDIT_MESSAGES_LOG], EM_SCROLL, SB_BOTTOM, 0);
 			}
+
 			if ((HWND)lp == hItems[BUT_MAP])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1514,6 +1508,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
+
 			if ((HWND)lp == hItems[BUT_MENU] || LOWORD(wp) == IDCANCEL)
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1522,11 +1517,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::CITY_MENU_ARENA:
-		{
 			if ((HWND)lp == hSubItems[ARENA_BUT_FIGHT])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1546,116 +1539,112 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				hSubMenuItems[ARENA_FIGHT_STATIC_OPPONENTS] = CreateWindow("STATIC", l.getMessage(Localized::CHOOSE_OPPONENT).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
 				// Outputing player
-				{
-					for (i = ARENA_FIGHT_STATIC_NAME; i <= ARENA_FIGHT_STATIC_PLAYER_FAME; i++)
-						hSubMenuItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
+				for (i = ARENA_FIGHT_STATIC_NAME; i <= ARENA_FIGHT_STATIC_PLAYER_FAME; i++)
+					hSubMenuItems[i] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 
-					Player& rPlayer = game.getPlayer();
-					
-					if (rPlayer.getLeftHand())
+				Player& rPlayer = game.getPlayer();
+
+				if (rPlayer.getLeftHand())
+					if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
 					{
-						if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
-						{
-							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_SHOW);
-							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], SW_HIDE);
-							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], SW_HIDE);
-						}
-						else
-						{
-							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_HIDE);
-							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], SW_SHOW);
-							ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], SW_SHOW);
-						}
-					}
-
-					// Name
-					buf = rPlayer.getName();
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_NAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-					// Level
-					buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rPlayer.getLevel());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEVEL], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-					// Right hand
-					if (rPlayer.getRightHand())
-					{
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getRightHand()).c_str());
-
-						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-					}
-					else
-					{
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
-
-						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], SW_HIDE);
-					}
-
-					// Left hand
-					if (rPlayer.getLeftHand())
-					{
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getLeftHand()).c_str());
-
-						if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
-						{
-							buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
-							SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-						}
-						else
-						{
-							buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(rPlayer.getLeftHand()->getShieldDefPercentAddition());
-							SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-							buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(rPlayer.getLeftHand()->getShieldProbAddition());
-							SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-						}
-					}
-					else
-					{
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
-
-						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_HIDE);
+						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_SHOW);
 						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], SW_HIDE);
 						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], SW_HIDE);
 					}
-
-					// Health
-					buf = l.getMessage(Localized::HEALTH) + ": " + to_string(rPlayer.getHP());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_HEALTH], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-					// Armour
-					if (rPlayer.getArmour())
+					else
 					{
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
-
-						buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
-						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_HIDE);
+						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], SW_SHOW);
+						ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], SW_SHOW);
 					}
 
-					// Stats
-					buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(rPlayer.getStrength());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_STRENGTH], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				// Name
+				buf = rPlayer.getName();
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_NAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
-					buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(rPlayer.getConstitution());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				// Level
+				buf = l.getMessage(Localized::LEVEL) + ": " + to_string(rPlayer.getLevel());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEVEL], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
-					buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(rPlayer.getDexterity());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_DEXTERITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				// Right hand
+				if (rPlayer.getRightHand())
+				{
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getRightHand()).c_str());
 
-					buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(rPlayer.getIntelligence());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-					buf = l.getMessage(Localized::WISDOM) + ": " + to_string(rPlayer.getWisdom());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_WISDOM], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-					buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(rPlayer.getCharisma());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CHARISMA], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-					buf = l.getMessage(Localized::AGE) + ": " + to_string(rPlayer.getAge());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_AGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
-
-					buf = l.getMessage(Localized::FAME) + ": " + to_string(rPlayer.getFame());
-					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_FAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getRightHand()->getDamage()) + " (+" + to_string(rPlayer.getRightHand()->getDamageAddition()) + ")";
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 				}
+				else
+				{
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
+
+					ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_RIGHT_HAND_DAMAGE], SW_HIDE);
+				}
+
+				// Left hand
+				if (rPlayer.getLeftHand())
+				{
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getWeaponTypeName(*rPlayer.getLeftHand()).c_str());
+
+					if (rPlayer.getLeftHand()->getWeaponType() != Weapon::WeaponType::SHIELD)
+					{
+						buf = l.getMessage(Localized::DAMAGE) + ": " + to_string(rPlayer.getLeftHand()->getDamage()) + " (+" + to_string(rPlayer.getLeftHand()->getDamageAddition()) + ")";
+						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					}
+					else
+					{
+						buf = l.getMessage(Localized::BLOCK_DEFENSE) + ": " + to_string(rPlayer.getLeftHand()->getShieldDefPercentAddition());
+						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+						buf = l.getMessage(Localized::BLOCK_CHANCE) + ": " + to_string(rPlayer.getLeftHand()->getShieldProbAddition());
+						SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+					}
+				}
+				else
+				{
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_TYPE], WM_SETTEXT, 0, (LPARAM)l.getMessage(Localized::EMPTY_HAND).c_str());
+
+					ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_LEFT_HAND_DAMAGE], SW_HIDE);
+					ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_DEFENSE], SW_HIDE);
+					ShowWindow(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_SHIELD_BLOCK_CHANCE], SW_HIDE);
+				}
+
+				// Health
+				buf = l.getMessage(Localized::HEALTH) + ": " + to_string(rPlayer.getHP());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_HEALTH], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				// Armour
+				if (rPlayer.getArmour())
+				{
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_TYPE], WM_SETTEXT, 0, (LPARAM)l.getArmourTypeName(*rPlayer.getArmour()).c_str());
+
+					buf = l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(rPlayer.getArmour()->getDefense()) + " (+" + to_string(rPlayer.getArmour()->getDefAddition()) + ")";
+					SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_ARMOUR_DEFENSE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+				}
+
+				// Stats
+				buf = l.getMessage(Localized::STRENGTH) + ": " + to_string(rPlayer.getStrength());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_STRENGTH], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::CONSTITUTION) + ": " + to_string(rPlayer.getConstitution());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CONSTITUTION], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::DEXTERITY) + ": " + to_string(rPlayer.getDexterity());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_DEXTERITY], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::INTELLIGENCE) + ": " + to_string(rPlayer.getIntelligence());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_INTELLIGENCE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::WISDOM) + ": " + to_string(rPlayer.getWisdom());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_WISDOM], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::CHARISMA) + ": " + to_string(rPlayer.getCharisma());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_CHARISMA], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::AGE) + ": " + to_string(rPlayer.getAge());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_AGE], WM_SETTEXT, 0, (LPARAM)buf.c_str());
+
+				buf = l.getMessage(Localized::FAME) + ": " + to_string(rPlayer.getFame());
+				SendMessage(hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_FAME], WM_SETTEXT, 0, (LPARAM)buf.c_str());
 
 				// Outputing opponents
 				Arena& rArena = game.getWorldMap().getCurrentCity().getArena();
@@ -1679,6 +1668,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				updateWindow(hWnd);
 			}
+
 			if ((HWND)lp == hSubItems[ARENA_BUT_BET])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1733,11 +1723,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::CITY_MENU_QUEST:
-		{
 			if ((HWND)lp == hSubItems[QUEST_BUT_LANISTA])
 			{
 				playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -1793,8 +1781,10 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			if ((HWND)lp == hSubItems[QUEST_BUT_TALK_TO_PEOPLE])
 			{
 				// If quest wasn completed before and player has high enough level - start Shandar and Abhilasha quest
-				if (!game.getWorldMap().getCurrentCity().getQuestCompletion() &&
-					game.getPlayer().getLevel() >= game.getWorldMap().getCurrentCity().getLevel())
+				if (
+					!game.getWorldMap().getCurrentCity().getQuestCompletion() &&
+					game.getPlayer().getLevel() >= game.getWorldMap().getCurrentCity().getLevel()
+					)
 				{
 					playSound(SoundEnum::SOUND_BUTTON_CLICK);
 					// Destroying all windows
@@ -1839,11 +1829,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::CITY_MENU_LANISTA:
-		{
 			if ((HWND)lp == hSubMenuItems[LANISTA_BUT_BUY_FREEDOM])
 			{
 				Player& rPlayer = game.getPlayer();
@@ -1963,19 +1951,13 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				updateWindow(hWnd);
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::CITY_MENU_ARENA_FIGHT:
-		{
 			// Selecting opponent
-			{
-				for (i = ARENA_FIGHT_BUT_OPPONENT1; i <= ARENA_FIGHT_BUT_OPPONENT15; i++)
-				{
-					if ((HWND)lp == hSubMenuItems[i])
-						outputOpponent(hWnd, i);
-				}
-			}
+			for (i = ARENA_FIGHT_BUT_OPPONENT1; i <= ARENA_FIGHT_BUT_OPPONENT15; i++)
+				if ((HWND)lp == hSubMenuItems[i])
+					outputOpponent(hWnd, i);
 
 			// Starting fight
 			if ((HWND)lp == hSubMenuItems[ARENA_FIGHT_BUT_FIGHT])
@@ -2006,8 +1988,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					// Fight result
 					switch (fightStatus)
 					{
-					// In case of opponent's death he's replaced on arena with new gladiator
 					case FightStatus::OPPONENT_LOST:
+						// In case of opponent's death he's replaced on arena with new gladiator
+
 						currentArena.changeGladiator(selectedOpponent, currentCity.getLevel());
 						// Sort NPCs by level and fame
 						sort(currentArena.getGladiators().begin(), currentArena.getGladiators().end(), compareNPC);
@@ -2054,17 +2037,13 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 				updateWindow(hWnd);
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::CITY_MENU_ARENA_BET:
-		{
 			// TODO
-		}
-		break;
+			break;
 
 		case Game::Background::CITY_MENU_MARKET:
-		{
 			// Player's items buttons
 			for (i = MARKET_BUT_INVENTORY_ITEM1; i <= MARKET_BUT_INVENTORY_ITEM14; i++)
 			{
@@ -2233,7 +2212,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 				else
 					MessageBox(hWnd, l.getMessage(Localized::PLAYER_DOESNT_HAVE_STORAGE).c_str(), l.getMessage(Localized::CANT_BUY_ITEM).c_str(), MB_OK | MB_ICONINFORMATION);
-				
 			}
 
 			// Button sell
@@ -2274,8 +2252,10 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					ShowWindow(hSubItems[MARKET_STAT_INVENTORY_ITEM1 + rPlayerInventory.size()], SW_HIDE);
 					game.updateBackground();
 
-					if (game.getProgressionStage() == Game::Progression::FIRST_VICTORY && // If current story stage is that player's saving up money for freedom
-						game.getPlayer().getInventory()->getItemQuantity(0) >= MONEY_NEEDED_FOR_FREEDOM) // If player has enough money for freedom
+					if (
+						game.getProgressionStage() == Game::Progression::FIRST_VICTORY && // If current story stage is that player's saving up money for freedom
+						game.getPlayer().getInventory()->getItemQuantity(0) >= MONEY_NEEDED_FOR_FREEDOM // If player has enough money for freedom
+						)
 					{
 						// Destroying all buttons
 						for (HWND hItem : hSubItems)
@@ -2349,9 +2329,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				int itemID;
 				switch (selectedItem)
 				{
-				case 0: itemID = rPlayer.getRightHand()->getID(); break; 
-				case 1: itemID = rPlayer.getLeftHand()->getID(); break; 
-				case 2: itemID = rPlayer.getArmour()->getID(); break; 
+				case 0: itemID = rPlayer.getRightHand()->getID(); break;
+				case 1: itemID = rPlayer.getLeftHand()->getID(); break;
+				case 2: itemID = rPlayer.getArmour()->getID(); break;
 				default: throw out_of_range("Wrong item ID"); break;
 				}
 
@@ -2427,11 +2407,9 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
-		}
-		break;
+			break;
 
 		case Game::Background::CITY_MENU_CHARACTER:
-		{
 			Player& rPlayer = game.getPlayer();
 			int i;
 			double average = ATTRIBUTE_MAX_DIFFERENCE;
@@ -2857,7 +2835,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Apply changes, reset changes
-				if (pas.strength == rPlayer.getStrength() &&
+				if (
+					pas.strength == rPlayer.getStrength() &&
 					pas.constitution == rPlayer.getConstitution() &&
 					pas.dexterity == rPlayer.getDexterity() &&
 					pas.intelligence == rPlayer.getIntelligence() &&
@@ -2943,7 +2922,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Apply changes, reset changes
-				if (pas.strength == rPlayer.getStrength() &&
+				if (
+					pas.strength == rPlayer.getStrength() &&
 					pas.constitution == rPlayer.getConstitution() &&
 					pas.dexterity == rPlayer.getDexterity() &&
 					pas.intelligence == rPlayer.getIntelligence() &&
@@ -3007,7 +2987,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Apply changes, reset changes
-				if (pas.strength == rPlayer.getStrength() &&
+				if (
+					pas.strength == rPlayer.getStrength() &&
 					pas.constitution == rPlayer.getConstitution() &&
 					pas.dexterity == rPlayer.getDexterity() &&
 					pas.intelligence == rPlayer.getIntelligence() &&
@@ -3090,7 +3071,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Apply changes, reset changes
-				if (pas.strength == rPlayer.getStrength() &&
+				if (
+					pas.strength == rPlayer.getStrength() &&
 					pas.constitution == rPlayer.getConstitution() &&
 					pas.dexterity == rPlayer.getDexterity() &&
 					pas.intelligence == rPlayer.getIntelligence() &&
@@ -3152,7 +3134,8 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				}
 
 				// Apply changes, reset changes
-				if (pas.strength == rPlayer.getStrength() &&
+				if (
+					pas.strength == rPlayer.getStrength() &&
 					pas.constitution == rPlayer.getConstitution() &&
 					pas.dexterity == rPlayer.getDexterity() &&
 					pas.intelligence == rPlayer.getIntelligence() &&
@@ -3371,7 +3354,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 
 			// 2. Inventory
 			for (i = CHARACTER_BUT_INVENTORY_ITEM1; i <= CHARACTER_BUT_ARMOUR; i++)
-			{
 				if ((HWND)lp == hSubItems[i])
 				{
 					playSound(SoundEnum::SOUND_BUTTON_CLICK);
@@ -3379,7 +3361,6 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					manageInventory(hWnd, i);
 					break;
 				}
-			}
 
 			// Unequip item
 			if ((HWND)lp == hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM])
@@ -3507,18 +3488,24 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 					break;
 
 				default: // item from inventory
-					
+				{
 					auto itemPair = (*game.getPlayer().getInventory())[selectedItem - CHARACTER_BUT_INVENTORY_ITEM1];
 
-					if (auto weapon = dynamic_cast<Weapon*>(itemPair.first.get()))
+					Weapon* weapon = dynamic_cast<Weapon*>(itemPair.first.get());
+					if (weapon != nullptr)
 						pItem = make_unique<Weapon>(*weapon);
-					else if (auto armour = dynamic_cast<Armour*>(itemPair.first.get()))
-						pItem = make_unique<Armour>(*armour);
 					else
-						pItem = make_unique<Item>(*itemPair.first);
+					{
+						Armour* armour = dynamic_cast<Armour*>(itemPair.first.get());
+						if (armour != nullptr)
+							pItem = make_unique<Armour>(*armour);
+						else
+							pItem = make_unique<Item>(*itemPair.first);
+					}
 
 					quantity = (*game.getPlayer().getInventory()).getItemQuantity(pItem->getID());
-					break;
+				}
+				break;
 				}
 				// 2. Output item based on type
 				inspectItem(hWnd, move(pItem), quantity);
@@ -3583,14 +3570,12 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				updateWindow(hWnd);
 				break;
 			}
+			break;
 		}
 		break;
-		}
-	break;
 
 	case WM_LBUTTONDOWN:
 		if (game.getBackground() == Game::Background::CITY_MENU_CHARACTER)
-		{
 			if (
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_UNEQUIP_ITEM], SW_HIDE) ||
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE) ||
@@ -3604,9 +3589,7 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_DESTROY_ITEM], SW_HIDE);
 				game.updateBackground();
 			}
-		}
 		if (game.getBackground() == Game::Background::CITY_MENU_MARKET)
-		{
 			if (
 				ShowWindow(hSubItems[MARKET_BUT_UNEQUIP_ITEM], SW_HIDE) ||
 				ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE) ||
@@ -3618,130 +3601,114 @@ void CityMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				ShowWindow(hSubItems[MARKET_BUT_DESTROY_ITEM], SW_HIDE);
 				game.updateBackground();
 			}
-		}
 		break;
-	}	
+	}
 }
 
 bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& result)
 {
+	LPDRAWITEMSTRUCT item;
+	HDC hdc;
+	int len;
 	switch (m)
 	{
-		case WM_DRAWITEM:
+	case WM_DRAWITEM:
+		item = (LPDRAWITEMSTRUCT)lp;
+		hdc = item->hDC;
+
+		GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
+
+		// Set text font and background
+		SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
+		SetBkMode(hdc, TRANSPARENT);
+
+		// Get text
+		len = GetWindowTextLength(item->hwndItem);
+		buf.resize(len + 1); // Resize buffer to contain button text
+		GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
+
+		SetTextColor(hdc, COLOR_WHITE); // Set basic text color
+
+		// Checking window type to draw it using correct styles
+		if (game.getBackground() == Game::Background::CITY_MENU)
 		{
-			LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lp;
-			HDC hdc = item->hDC;
-
-			GetClassName(item->hwndItem, str, sizeof(str) / sizeof(str[0]));
-
-			// Set text font and background
-			SelectObject(hdc, game.getFont(Game::FontSize::MEDIUM));
-			SetBkMode(hdc, TRANSPARENT);
-
-			// Get text
-			int len = GetWindowTextLength(item->hwndItem);
-			buf.resize(len + 1); // Resize buffer to contain button text
-			GetWindowTextA(item->hwndItem, &buf[0], len + 1); // Write text into buffer
-
-			SetTextColor(hdc, COLOR_WHITE); // Set basic text color
-
-			// Checking window type to draw it using correct styles
-			if (game.getBackground() == Game::Background::CITY_MENU)
+			// Fill background
+			if (item->hwndItem == hItems[STAT_CITY_NAME])
+				FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+			else
 			{
-				// Fill background
-				if (item->hwndItem == hItems[STAT_CITY_NAME])
+				if (item->itemState & ODS_SELECTED)
 					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
 				else
-				{
-					if (item->itemState & ODS_SELECTED)
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED)); 
-					else
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
-				}
-				SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
-				DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
-				DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED));
+			}
+			SelectObject(hdc, game.getFont(Game::FontSize::LARGE));
+			DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER); // Display text
+			DrawEdge(hdc, &item->rcItem, EDGE_SUNKEN, BF_RECT); // Draw edge
+			return true;
+		}
+		else if (game.getBackground() == Game::Background::CITY_MENU_CHARACTER)
+		{
+			// Portrait
+			if (item->hwndItem == hSubItems[CHARACTER_STAT_PORTRAIT])
+			{
+				// Selecting image for button based on item type
+				const string DIRECTORY = "Data/Image/Portrait/Player/",
+					FORMAT = ".bmp";
+				string path = DIRECTORY + to_string(game.getPlayer().getPortaitIndex()) + FORMAT;
+
+				// Select image
+				hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+				// Filling background with selected image
+				hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+				FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
+				// Drawing edge
+				DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
 				return true;
 			}
-			else if (game.getBackground() == Game::Background::CITY_MENU_CHARACTER)
+			// Equipment
+			if (item->hwndItem == hSubItems[CHARACTER_BUT_RIGHT_HAND])
 			{
-				// Portrait
-				if (item->hwndItem == hSubItems[CHARACTER_STAT_PORTRAIT])
+				drawEquippedItem(hWnd, item, 0); // 0 -- right hand
+				return true;
+			}
+			if (item->hwndItem == hSubItems[CHARACTER_BUT_LEFT_HAND])
+			{
+				drawEquippedItem(hWnd, item, 1); // 1 -- left hand
+				return true;
+			}
+			if (item->hwndItem == hSubItems[CHARACTER_BUT_ARMOUR])
+			{
+				drawEquippedItem(hWnd, item, 2); // 2 -- armour
+				return true;
+			}
+			// Inventory
+			for (int i = CHARACTER_BUT_INVENTORY_ITEM1; i <= CHARACTER_BUT_INVENTORY_ITEM14; i++)
+			{
+				if (item->hwndItem == hSubItems[i])
 				{
-					// Selecting image for button based on item type
-					const string DIRECTORY = "Data/Image/Portrait/Player/",
-						FORMAT = ".bmp";
-					string path = DIRECTORY + to_string(game.getPlayer().getPortaitIndex()) + FORMAT;
-
-					// Select image
-					hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-					// Filling background with selected image
-					hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
-					FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
-					// Drawing edge
-					DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
+					drawInventoryItem(hWnd, item, *game.getPlayer().getInventory(), i - CHARACTER_BUT_INVENTORY_ITEM1);
 					return true;
-				}
-				// Equipment
-				if (item->hwndItem == hSubItems[CHARACTER_BUT_RIGHT_HAND])
-				{
-					drawEquippedItem(hWnd, item, 0); // 0 -- right hand
-					return true;
-				}
-				if (item->hwndItem == hSubItems[CHARACTER_BUT_LEFT_HAND])
-				{
-					drawEquippedItem(hWnd, item, 1); // 1 -- left hand
-					return true;
-				}
-				if (item->hwndItem == hSubItems[CHARACTER_BUT_ARMOUR])
-				{
-					drawEquippedItem(hWnd, item, 2); // 2 -- armour
-					return true;
-				}
-				// Inventory
-				for (int i = CHARACTER_BUT_INVENTORY_ITEM1; i <= CHARACTER_BUT_INVENTORY_ITEM14; i++)
-				{
-					if (item->hwndItem == hSubItems[i])
-					{
-						drawInventoryItem(hWnd, item, *game.getPlayer().getInventory(), i - CHARACTER_BUT_INVENTORY_ITEM1);
-						return true;
-					}
 				}
 			}
-			else if (game.getBackground() == Game::Background::CITY_MENU_ARENA_FIGHT)
+		}
+		else if (game.getBackground() == Game::Background::CITY_MENU_ARENA_FIGHT)
+		{
+			if (selectedOpponent != -1)
 			{
-				if (selectedOpponent != -1)
+				if (item->hwndItem == hSubMenuItems[selectedOpponent])
 				{
-					if (item->hwndItem == hSubMenuItems[selectedOpponent])
-					{
-						FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
-						DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
-						DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
-						return true;
-					}
-					if (item->hwndItem == hSubMenuItems[ARENA_FIGHT_STATIC_PORTRAIT])
-					{
-						// Selecting image for button based on item type
-						const string DIRECTORY = "Data/Image/Portrait/Gladiator/",
-							FORMAT = ".bmp";
-						string path = DIRECTORY + to_string(game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent)->getPortraitIndex()) + FORMAT;
-
-						// Select image
-						hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-						// Filling background with selected image
-						hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
-						FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
-						// Drawing edge
-						DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
-						return true;
-					}
+					FillRect(hdc, &item->rcItem, CreateSolidBrush(COLOR_ROMAN_RED_PUSHED));
+					DrawTextA(item->hDC, buf.c_str(), len, &item->rcItem, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+					DrawEdge(hdc, &item->rcItem, EDGE_RAISED, BF_RECT);
+					return true;
 				}
-				if (item->hwndItem == hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_PORTRAIT])
+				if (item->hwndItem == hSubMenuItems[ARENA_FIGHT_STATIC_PORTRAIT])
 				{
 					// Selecting image for button based on item type
-					const string DIRECTORY = "Data/Image/Portrait/Player/",
+					const string DIRECTORY = "Data/Image/Portrait/Gladiator/",
 						FORMAT = ".bmp";
-					string path = DIRECTORY + to_string(game.getPlayer().getPortaitIndex()) + "_small" + FORMAT;
+					string path = DIRECTORY + to_string(game.getWorldMap().getCurrentCity().getArena().getGladiator(selectedOpponent)->getPortraitIndex()) + FORMAT;
 
 					// Select image
 					hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
@@ -3753,95 +3720,101 @@ bool CityMenu::stylizeWindow(HWND hWnd, UINT m, WPARAM wp, LPARAM lp, LRESULT& r
 					return true;
 				}
 			}
-			else if (game.getBackground() == Game::Background::CITY_MENU_MARKET)
+			if (item->hwndItem == hSubMenuItems[ARENA_FIGHT_STATIC_PLAYER_PORTRAIT])
 			{
-				int i;
-				bool isPushed = false;
-				// Player inventory
-				for (i = MARKET_BUT_INVENTORY_ITEM1; i <= MARKET_BUT_INVENTORY_ITEM14; i++)
-				{
-					if (item->hwndItem == hSubItems[i])
-					{
-						if (selectedItem != -1 && item->hwndItem == hSubItems[selectedItem])
-							isPushed = true;
+				// Selecting image for button based on item type
+				const string DIRECTORY = "Data/Image/Portrait/Player/",
+					FORMAT = ".bmp";
+				string path = DIRECTORY + to_string(game.getPlayer().getPortaitIndex()) + "_small" + FORMAT;
 
-						drawInventoryItem(hWnd, item, *game.getPlayer().getInventory(), i - MARKET_BUT_INVENTORY_ITEM1, isPushed);
-						return true;
-					}
-				}
-				// Equipment
-				for (i = MARKET_BUT_RIGHT_HAND; i <= MARKET_BUT_ARMOUR; i++)
+				// Select image
+				hBackgroundImage = (HBITMAP)LoadImage(0, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+				// Filling background with selected image
+				hBackgroundBrush = CreatePatternBrush(hBackgroundImage);
+				FillRect(item->hDC, &item->rcItem, hBackgroundBrush);
+				// Drawing edge
+				DrawEdge(item->hDC, &item->rcItem, EDGE_RAISED, BF_RECT);
+				return true;
+			}
+		}
+		else if (game.getBackground() == Game::Background::CITY_MENU_MARKET)
+		{
+			int i;
+			bool isPushed = false;
+			// Player inventory
+			for (i = MARKET_BUT_INVENTORY_ITEM1; i <= MARKET_BUT_INVENTORY_ITEM14; i++)
+			{
+				if (item->hwndItem == hSubItems[i])
 				{
-					if (item->hwndItem == hSubItems[i])
-					{
-						if (selectedItem != -1 && item->hwndItem == hSubItems[selectedItem])
-							isPushed = true;
+					if (selectedItem != -1 && item->hwndItem == hSubItems[selectedItem])
+						isPushed = true;
 
-						drawEquippedItem(hWnd, item, i - MARKET_BUT_RIGHT_HAND, isPushed);
-						return true;
-					}
-				}
-				// Trader inventory
-				for (i = MARKET_BUT_TRADER_ITEM1; i <= MARKET_BUT_TRADER_ITEM14; i++)
-				{
-					if (item->hwndItem == hSubItems[i])
-					{
-						if (selectedItem != -1 && item->hwndItem == hSubItems[selectedItem])
-							isPushed = true;
-						
-						drawInventoryItem(hWnd, item, *game.getWorldMap().getCurrentCity().getTrader().getInventory(), i - MARKET_BUT_TRADER_ITEM1, isPushed);
-						return true;
-					}
+					drawInventoryItem(hWnd, item, *game.getPlayer().getInventory(), i - MARKET_BUT_INVENTORY_ITEM1, isPushed);
+					return true;
 				}
 			}
-			return false;
+			// Equipment
+			for (i = MARKET_BUT_RIGHT_HAND; i <= MARKET_BUT_ARMOUR; i++)
+			{
+				if (item->hwndItem == hSubItems[i])
+				{
+					if (selectedItem != -1 && item->hwndItem == hSubItems[selectedItem])
+						isPushed = true;
+
+					drawEquippedItem(hWnd, item, i - MARKET_BUT_RIGHT_HAND, isPushed);
+					return true;
+				}
+			}
+			// Trader inventory
+			for (i = MARKET_BUT_TRADER_ITEM1; i <= MARKET_BUT_TRADER_ITEM14; i++)
+			{
+				if (item->hwndItem == hSubItems[i])
+				{
+					if (selectedItem != -1 && item->hwndItem == hSubItems[selectedItem])
+						isPushed = true;
+
+					drawInventoryItem(hWnd, item, *game.getWorldMap().getCurrentCity().getTrader().getInventory(), i - MARKET_BUT_TRADER_ITEM1, isPushed);
+					return true;
+				}
+			}
 		}
-		break;
+		return false;
 
-		case WM_CTLCOLORSTATIC:
-		{
-			HDC hdc = (HDC)wp;
-			SetTextColor(hdc, COLOR_WHITE);
-			SetBkMode(hdc, TRANSPARENT);
+	case WM_CTLCOLORSTATIC:
+		hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
 
-			if (hBackgroundBrush != NULL)
-				DeleteObject(hBackgroundBrush);
-			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
 
-			result = (LRESULT)hBackgroundBrush;
-			return true;
-		}
-		break;
+		result = (LRESULT)hBackgroundBrush;
+		return true;
 
-		case WM_CTLCOLOREDIT:
-		{
-			HDC hdc = (HDC)wp;
-			SetTextColor(hdc, COLOR_WHITE);
-			SetBkMode(hdc, TRANSPARENT);
+	case WM_CTLCOLOREDIT:
+		hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
 
-			if (hBackgroundBrush != NULL)
-				DeleteObject(hBackgroundBrush);
-			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
 
-			result = (LRESULT)hBackgroundBrush;
-			return true;
-		}
-		break;
+		result = (LRESULT)hBackgroundBrush;
+		return true;
 
-		case WM_CTLCOLORLISTBOX:
-		{
-			HDC hdc = (HDC)wp;
-			SetTextColor(hdc, COLOR_WHITE);
-			SetBkMode(hdc, TRANSPARENT);
+	case WM_CTLCOLORLISTBOX:
+		hdc = (HDC)wp;
+		SetTextColor(hdc, COLOR_WHITE);
+		SetBkMode(hdc, TRANSPARENT);
 
-			if (hBackgroundBrush != NULL)
-				DeleteObject(hBackgroundBrush);
-			hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
+		if (hBackgroundBrush != NULL)
+			DeleteObject(hBackgroundBrush);
+		hBackgroundBrush = CreateSolidBrush(COLOR_DARK_BLUE);
 
-			result = (LRESULT)hBackgroundBrush;
-			return true;
-		}
-		break;
+		result = (LRESULT)hBackgroundBrush;
+		return true;
 	}
 	return false;
 }
@@ -3856,10 +3829,14 @@ void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity
 	// Item type
 	ShowWindow(hSubItems[MARKET_STAT_ITEM_TYPE], SW_SHOW);
 	SendMessage(hSubItems[MARKET_STAT_ITEM_TYPE], WM_SETTEXT, 0, (LPARAM)l.getItemTypeName(*rItem).c_str());
+
+	Weapon* weapon;
+	Armour* armour;
 	switch (rItem->getItemType())
 	{
 	case Item::ItemType::WEAPON:
-		if (auto weapon = dynamic_cast<Weapon*>(rItem.get()))
+		weapon = dynamic_cast<Weapon*>(rItem.get());
+		if (weapon != nullptr)
 		{
 			// Update weapon for player's stats
 			weapon->update(rPlayer.getStrength(), rPlayer.getDexterity());
@@ -3902,7 +3879,8 @@ void CityMenu::outputMarketItem(HWND hWnd, unique_ptr<Item>& rItem, int quantity
 		break;
 
 	case Item::ItemType::ARMOUR:
-		if (auto armour = dynamic_cast<Armour*>(rItem.get()))
+		armour = dynamic_cast<Armour*>(rItem.get());
+		if (armour != nullptr)
 		{
 			// Update armour for player's stats
 			armour->update(rPlayer.getStrength(), rPlayer.getDexterity());
@@ -4093,17 +4071,20 @@ void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, Inventory& rI
 {
 	// Selecting image for button based on item type
 	const string DIRECTORY = "Data/Image/Items/",
-				 FORMAT = ".bmp";
+		FORMAT = ".bmp";
 	string path = "";
 
 	// Getting item represented by button
 	auto itemPair = rInventory[buttonIndex];
 	unique_ptr<Item>& rItem = itemPair.first;
 
+	Weapon* weapon;
+	Armour* armour;
 	switch (rItem->getItemType())
 	{
 	case Item::ItemType::WEAPON:
-		if (auto weapon = dynamic_cast<Weapon*>(rItem.get()))
+		weapon = dynamic_cast<Weapon*>(rItem.get());
+		if (weapon != nullptr)
 		{
 			switch (weapon->getWeaponType())
 			{
@@ -4121,7 +4102,8 @@ void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, Inventory& rI
 		break;
 
 	case Item::ItemType::ARMOUR:
-		if (auto armour = dynamic_cast<Armour*>(rItem.get()))
+		armour = dynamic_cast<Armour*>(rItem.get());
+		if (armour != nullptr)
 		{
 			switch (armour->getArmourType())
 			{
@@ -4134,8 +4116,13 @@ void CityMenu::drawInventoryItem(HWND hWnd, LPDRAWITEMSTRUCT item, Inventory& rI
 			path = DIRECTORY + "error";
 		break;
 
-	case Item::ItemType::GOLD: path = DIRECTORY + "gold"; break;
-	default: path = DIRECTORY + "error"; break;
+	case Item::ItemType::GOLD:
+		path = DIRECTORY + "gold";
+		break;
+
+	default:
+		path = DIRECTORY + "error";
+		break;
 	}
 
 	if (item->itemState & ODS_SELECTED || isPushed) // Pushed button
@@ -4170,7 +4157,6 @@ void CityMenu::drawEquippedItem(HWND hWnd, LPDRAWITEMSTRUCT item, int itemIndex,
 	{
 	case 0:
 		if (rPlayer.getRightHand())
-		{
 			switch (rPlayer.getRightHand()->getWeaponType())
 			{
 			case Weapon::WeaponType::SWORD: path = DIRECTORY + "sword"; break;
@@ -4181,13 +4167,12 @@ void CityMenu::drawEquippedItem(HWND hWnd, LPDRAWITEMSTRUCT item, int itemIndex,
 			case Weapon::WeaponType::SHIELD: path = DIRECTORY + "shield"; break;
 			default: path = DIRECTORY + "error"; break;
 			}
-		}
 		else
 			path = DIRECTORY + "emptyHand"; break;
 		break;
+
 	case 1:
 		if (rPlayer.getLeftHand())
-		{
 			switch (rPlayer.getLeftHand()->getWeaponType())
 			{
 			case Weapon::WeaponType::SWORD: path = DIRECTORY + "sword"; break;
@@ -4198,24 +4183,25 @@ void CityMenu::drawEquippedItem(HWND hWnd, LPDRAWITEMSTRUCT item, int itemIndex,
 			case Weapon::WeaponType::SHIELD: path = DIRECTORY + "shield"; break;
 			default: path = DIRECTORY + "error"; break;
 			}
-		}
 		else
 			path = DIRECTORY + "emptyHand"; break;
 		break;
+
 	case 2:
 		if (rPlayer.getArmour())
-		{
 			switch (rPlayer.getArmour()->getArmourType())
 			{
 			case Armour::ArmourType::LIGHT: path = DIRECTORY + "lightArmour"; break;
 			case Armour::ArmourType::HEAVY: path = DIRECTORY + "heavyArmour"; break;
 			default: path = DIRECTORY + "error"; break;
 			}
-		}
 		else
 			path = DIRECTORY + "noArmour"; break;
 		break;
-	default: path = DIRECTORY + "error"; break;
+
+	default:
+		path = DIRECTORY + "error";
+		break;
 	}
 
 	if (item->itemState & ODS_SELECTED || isPushed) // Pushed button
@@ -4236,10 +4222,14 @@ void CityMenu::inspectItem(HWND hWnd, unique_ptr<Item> pItem, int quantity)
 {
 	string MBName = "";
 	string MBDescription = "";
+
+	Weapon* weapon;
+	Armour* armour;
 	switch (pItem->getItemType())
 	{
 	case Item::ItemType::WEAPON:
-		if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
+		weapon = dynamic_cast<Weapon*>(pItem.get());
+		if (weapon != nullptr)
 		{
 			MBName += l.getWeaponTypeName(*weapon) + " (" + l.getMessage(Localized::ITEM_TIER) + "  " + to_string(weapon->getTier()) + ")";
 			if (weapon->getWeaponType() == Weapon::WeaponType::SHIELD)
@@ -4257,7 +4247,8 @@ void CityMenu::inspectItem(HWND hWnd, unique_ptr<Item> pItem, int quantity)
 		break;
 
 	case Item::ItemType::ARMOUR:
-		if (auto armour = dynamic_cast<Armour*>(pItem.get()))
+		armour = dynamic_cast<Armour*>(pItem.get());
+		if (armour != nullptr)
 		{
 			MBName += l.getArmourTypeName(*armour) + " (" + l.getMessage(Localized::ITEM_TIER) + "  " + to_string(armour->getTier()) + ")";
 			MBDescription += l.getMessage(Localized::ARMOUR_DEFENSE) + ": " + to_string(armour->getDefense()) + " (+" + to_string(armour->getDefAddition()) + ")\n";
@@ -4270,8 +4261,10 @@ void CityMenu::inspectItem(HWND hWnd, unique_ptr<Item> pItem, int quantity)
 				MBDescription += l.getMessage(Localized::STUN_RESISTANCE_CHANCE) + ": " + to_string(armour->getStunProbSubtraction()) + "%" + "\n";
 		}
 		break;
+
 	default:
 		MBName += l.getItemTypeName(*pItem);
+		break;
 	}
 
 	MBDescription += l.getMessage(Localized::VALUE) + ": " + to_string(pItem->getValue()) + "\n";
@@ -4289,10 +4282,9 @@ void CityMenu::manageInventory(HWND hWnd, int selectedItemm)
 	ScreenToClient(hWnd, &pt);
 
 	Player& rPlayer = game.getPlayer();
-	if (selectedItemm  == CHARACTER_BUT_RIGHT_HAND) // Right hand weapon
+	if (selectedItemm == CHARACTER_BUT_RIGHT_HAND) // Right hand weapon
 	{
-		if (!rPlayer.getRightHand())
-			return;
+		if (!rPlayer.getRightHand()) return;
 
 		// Hide unrelated buttons
 		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
@@ -4315,8 +4307,7 @@ void CityMenu::manageInventory(HWND hWnd, int selectedItemm)
 	}
 	else if (selectedItem == CHARACTER_BUT_LEFT_HAND) // Left hand weapon
 	{
-		if (!rPlayer.getLeftHand())
-			return;
+		if (!rPlayer.getLeftHand()) return;
 
 		// Hide unrelated buttons
 		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
@@ -4339,8 +4330,7 @@ void CityMenu::manageInventory(HWND hWnd, int selectedItemm)
 	}
 	else if (selectedItem == CHARACTER_BUT_ARMOUR) // Armour
 	{
-		if (!rPlayer.getArmour())
-			return;
+		if (!rPlayer.getArmour()) return;
 
 		// Hide unrelated buttons
 		ShowWindow(hSubItems[CHARACTER_BUT_INVENTORY_EQUIP_ITEM], SW_HIDE);
@@ -4375,28 +4365,26 @@ void CityMenu::manageInventory(HWND hWnd, int selectedItemm)
 		unique_ptr<Item>& pItem = itemPair.first;
 
 		bool isEquippable = false;
+		Weapon* weapon;
+		Armour* armour;
 		switch (pItem->getItemType())
 		{
 		case Item::ItemType::WEAPON:
-			if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
+			weapon = dynamic_cast<Weapon*>(pItem.get());
+			if (weapon != nullptr)
 			{
 				switch (weapon->getWeaponType())
 				{
 				default:
-					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
-						isEquippable = true;
-					else if (rPlayer.getRightHand() && rPlayer.getRightHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getLeftHand())
-						isEquippable = true;
-					else if (rPlayer.getLeftHand() && rPlayer.getLeftHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getRightHand())
-						isEquippable = true;
-					break;
-
-				case Weapon::WeaponType::AXE:
-					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
+					if (
+						(!rPlayer.getRightHand() && !rPlayer.getLeftHand()) ||
+						(rPlayer.getRightHand() && rPlayer.getRightHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getLeftHand()) ||
+						(rPlayer.getLeftHand() && rPlayer.getLeftHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getRightHand())
+						)
 						isEquippable = true;
 					break;
 
-				case Weapon::WeaponType::SPEAR:
+				case Weapon::WeaponType::AXE: case Weapon::WeaponType::SPEAR:
 					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
 						isEquippable = true;
 					break;
@@ -4405,13 +4393,16 @@ void CityMenu::manageInventory(HWND hWnd, int selectedItemm)
 			break;
 
 		case Item::ItemType::ARMOUR:
-			if (auto armour = dynamic_cast<Armour*>(pItem.get()))
-				if (!rPlayer.getArmour())
-					isEquippable = true;
+			armour = dynamic_cast<Armour*>(pItem.get());
+			if (armour != nullptr && !rPlayer.getArmour())
+				isEquippable = true;
 			break;
 
-		case Item::ItemType::GOLD: break;
-		default: break;
+		case Item::ItemType::GOLD:
+			break;
+
+		default:
+			break;
 		}
 
 		if (isEquippable)
@@ -4439,7 +4430,7 @@ void CityMenu::manageInventory(HWND hWnd, int selectedItemm)
 		}
 		else
 			RedrawWindow(hSubItems[CHARACTER_BUT_BACK], NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN);
-		
+
 		game.updateBackground();
 	}
 }
@@ -4454,8 +4445,7 @@ void CityMenu::manageMarketItems(HWND hWnd, int selectedItemm)
 	Player& rPlayer = game.getPlayer();
 	if (selectedItemm == MARKET_BUT_RIGHT_HAND) // Right hand weapon
 	{
-		if (!rPlayer.getRightHand())
-			return;
+		if (!rPlayer.getRightHand()) return;
 
 		// Hide unrelated buttons
 		ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
@@ -4476,8 +4466,7 @@ void CityMenu::manageMarketItems(HWND hWnd, int selectedItemm)
 	}
 	else if (selectedItem == MARKET_BUT_LEFT_HAND) // Left hand weapon
 	{
-		if (!rPlayer.getLeftHand())
-			return;
+		if (!rPlayer.getLeftHand()) return;
 
 		// Hide unrelated buttons
 		ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
@@ -4498,8 +4487,7 @@ void CityMenu::manageMarketItems(HWND hWnd, int selectedItemm)
 	}
 	else if (selectedItem == MARKET_BUT_ARMOUR) // Armour
 	{
-		if (!rPlayer.getArmour())
-			return;
+		if (!rPlayer.getArmour()) return;
 
 		// Hide unrelated buttons
 		ShowWindow(hSubItems[MARKET_BUT_EQUIP_ITEM], SW_HIDE);
@@ -4529,28 +4517,26 @@ void CityMenu::manageMarketItems(HWND hWnd, int selectedItemm)
 		unique_ptr<Item>& pItem = itemPair.first;
 
 		bool isEquippable = false;
+		Weapon* weapon;
+		Armour* armour;
 		switch (pItem->getItemType())
 		{
 		case Item::ItemType::WEAPON:
-			if (auto weapon = dynamic_cast<Weapon*>(pItem.get()))
+			weapon = dynamic_cast<Weapon*>(pItem.get());
+			if (weapon != nullptr)
 			{
 				switch (weapon->getWeaponType())
 				{
 				default:
-					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
-						isEquippable = true;
-					else if (rPlayer.getRightHand() && rPlayer.getRightHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getLeftHand())
-						isEquippable = true;
-					else if (rPlayer.getLeftHand() && rPlayer.getLeftHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getRightHand())
-						isEquippable = true;
-					break;
-
-				case Weapon::WeaponType::AXE:
-					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
+					if (
+						(!rPlayer.getRightHand() && !rPlayer.getLeftHand()) ||
+						(rPlayer.getRightHand() && rPlayer.getRightHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getLeftHand()) ||
+						(rPlayer.getLeftHand() && rPlayer.getLeftHand()->isCompatibleWith(weapon->getWeaponType()) && !rPlayer.getRightHand())
+						)
 						isEquippable = true;
 					break;
 
-				case Weapon::WeaponType::SPEAR:
+				case Weapon::WeaponType::AXE: case Weapon::WeaponType::SPEAR:
 					if (!rPlayer.getRightHand() && !rPlayer.getLeftHand())
 						isEquippable = true;
 					break;
@@ -4559,13 +4545,16 @@ void CityMenu::manageMarketItems(HWND hWnd, int selectedItemm)
 			break;
 
 		case Item::ItemType::ARMOUR:
-			if (auto armour = dynamic_cast<Armour*>(pItem.get()))
-				if (!rPlayer.getArmour())
-					isEquippable = true;
+			armour = dynamic_cast<Armour*>(pItem.get());
+			if (armour != nullptr && !rPlayer.getArmour())
+				isEquippable = true;
 			break;
 
-		case Item::ItemType::GOLD: break;
-		default: break;
+		case Item::ItemType::GOLD:
+			break;
+
+		default:
+			break;
 		}
 
 		if (isEquippable)

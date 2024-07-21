@@ -3,9 +3,9 @@
 
 Arena::Arena() : gladiators() { }
 
-Arena::Arena(const vector<unique_ptr<NPC>>& G)
+Arena::Arena(const vector<unique_ptr<NPC>>& GLADIATORS)
 {
-	for (const auto& gladiator : G)
+	for (const auto& gladiator : GLADIATORS)
 		gladiators.push_back(gladiator->clone());
 }
 
