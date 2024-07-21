@@ -397,5 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-Saves/
-Data/Settings.conf
+The_War_of_Spartacus/Saves/
+The_War_of_Spartacus/Data/Settings.conf
