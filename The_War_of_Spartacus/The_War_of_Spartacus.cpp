@@ -10,7 +10,7 @@ HINSTANCE hInst;
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdShow)
 {
 	hInst = hInstance;
-	// 1. Создание внешнего вида окна.
+	// 1. Creating the window appearance.
 	WNDCLASS win;
 	win.style = CS_HREDRAW | CS_VREDRAW;
 	win.lpfnWndProc = WFunc;
@@ -22,20 +22,20 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE , LPSTR lpCmdLine, int nCmdS
 	win.lpszMenuName = NULL;
 	win.lpszClassName = name;
 
-	// 2. Регистрация окна в операционной системе.
+	// 2. Registering the window with the operating system.
 	if (!RegisterClass(&win))
 	{
 		MessageBox(NULL, "Window is not registered", "Error", MB_OK);
 		return -1;
 	}
 
-	// 3. Создание окна.
+	// 3. Creating the window.
 	HWND hwnd;
 	hwnd = CreateWindow(name, "The War of Spartacus",
 						WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX | WS_VISIBLE,
 						50, 50, 1366, 768, HWND_DESKTOP, NULL, hInstance, NULL);
 
-	// 4. Создание насоса сообщений.
+	// 4. Creating the message pump.
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
