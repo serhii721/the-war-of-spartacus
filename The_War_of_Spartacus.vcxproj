@@ -22,9 +22,9 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{0C2DECB9-7DBC-4BEB-8F30-130794B83D40}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GladiatorGame</RootNamespace>
+    <RootNamespace>The_War_of_Spartacus</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>GladiatorGame</ProjectName>
+    <ProjectName>The_War_of_Spartacus</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -160,7 +160,7 @@
     <ClInclude Include="FolderInfo.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameMenu.h" />
-    <ClInclude Include="GladiatorGame.h" />
+    <ClInclude Include="The_War_of_Spartacus.h" />
     <ClInclude Include="HarmlessNPC.h" />
     <ClInclude Include="IMenu.h" />
     <ClInclude Include="Inventory.h" />
@@ -195,7 +195,7 @@
     <ClCompile Include="FolderInfo.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMenu.cpp" />
-    <ClCompile Include="GladiatorGame.cpp" />
+    <ClCompile Include="The_War_of_Spartacus.cpp" />
     <ClCompile Include="HarmlessNPC.cpp" />
     <ClCompile Include="IMenu.cpp" />
     <ClCompile Include="Inventory.cpp" />
@@ -222,7 +222,7 @@
     <ClCompile Include="WorldMap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="GladiatorGame.rc" />
+    <ResourceCompile Include="The_War_of_Spartacus.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Data\Image\Icon.ico" />

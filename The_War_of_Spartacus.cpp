@@ -1,4 +1,4 @@
-// GladiatorGame.cpp : Defines the entry point for the application.
+// The_War_of_Spartacus.cpp : Defines the entry point for the application.
 //
 
 #include "stdafx.h"

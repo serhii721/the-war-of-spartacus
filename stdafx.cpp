@@ -1,5 +1,5 @@
 // stdafx.cpp : source file that includes just the standard includes
-// GladiatorGame.pch will be the pre-compiled header
+// The_War_of_Spartacus.pch will be the pre-compiled header
 // stdafx.obj will contain the pre-compiled type information
 /*
 * It is the game about gladiators in the Rome.

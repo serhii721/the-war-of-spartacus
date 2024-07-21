@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by GladiatorGame.rc
+// Used by The_War_of_Spartacus.rc
 //
 #define IDI_ICON1                       101
 
