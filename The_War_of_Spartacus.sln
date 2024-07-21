@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "The_War_of_Spartacus", "The_War_of_Spartacus\The_War_of_Spartacus.vcxproj", "{0C2DECB9-7DBC-4BEB-8F30-130794B83D40}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{FF102D3C-965A-4B00-90EE-54D28AC44339}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -15,6 +17,8 @@ Global
 		{0C2DECB9-7DBC-4BEB-8F30-130794B83D40}.Debug|x86.Build.0 = Debug|Win32
 		{0C2DECB9-7DBC-4BEB-8F30-130794B83D40}.Release|x86.ActiveCfg = Release|Win32
 		{0C2DECB9-7DBC-4BEB-8F30-130794B83D40}.Release|x86.Build.0 = Release|Win32
+		{FF102D3C-965A-4B00-90EE-54D28AC44339}.Debug|x86.ActiveCfg = Debug
+		{FF102D3C-965A-4B00-90EE-54D28AC44339}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
