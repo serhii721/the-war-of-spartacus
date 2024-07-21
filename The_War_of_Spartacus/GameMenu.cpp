@@ -44,6 +44,14 @@ GameMenu::GameMenu(HWND hWnd) :
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, 0, hInst, 0
 	);
+
+	// Check if at least one save is available
+	bool hasSavedGames = hasSubdirectory("Saves/") ? true : false;
+	// If yes - show 'Load' button
+	if (hasSavedGames)
+		ShowWindow(hItems[BUT_LOAD], SW_SHOW);
+	else
+		ShowWindow(hItems[BUT_LOAD], SW_HIDE);
 }
 
 GameMenu::GameMenu(const GameMenu& GM) : hSubItems()
@@ -234,12 +242,17 @@ void GameMenu::resizeMenu(int cx, int cy)
 	{
 	default: case Game::Background::GAME_MENU:
 	{
+		// Check if at least one save is available
+		bool hasSavedGames = hasSubdirectory("Saves/") ? true : false;
+
 		const int ITEM_HEIGHT = 45, DISTANCE = 10, ITEM_WIDTH = 300;
 		sz = hItems.size();
 		x = cx - ITEM_WIDTH / 2;
 		y = cy - sz / 2 * (ITEM_HEIGHT + DISTANCE);
 		for (HWND hItem : hItems)
 		{
+			if (hItem == hItems[BUT_LOAD] && !hasSavedGames) continue;
+
 			y += ITEM_HEIGHT + DISTANCE;
 			MoveWindow(hItem, x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
 		}
