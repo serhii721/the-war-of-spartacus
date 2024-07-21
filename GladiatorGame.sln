@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GladiatorGame", "GladiatorGame.vcxproj", "{0C2DECB9-7DBC-4BEB-8F30-130794B83D40}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "GladiatorGameSetup", "..\GladiatorGameSetup\GladiatorGameSetup.vdproj", "{FFC1F6CA-9A8E-4364-BF3C-AB4441CFD382}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -17,8 +15,6 @@ Global
 		{0C2DECB9-7DBC-4BEB-8F30-130794B83D40}.Debug|x86.Build.0 = Debug|Win32
 		{0C2DECB9-7DBC-4BEB-8F30-130794B83D40}.Release|x86.ActiveCfg = Release|Win32
 		{0C2DECB9-7DBC-4BEB-8F30-130794B83D40}.Release|x86.Build.0 = Release|Win32
-		{FFC1F6CA-9A8E-4364-BF3C-AB4441CFD382}.Debug|x86.ActiveCfg = Debug
-		{FFC1F6CA-9A8E-4364-BF3C-AB4441CFD382}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
