@@ -281,6 +281,11 @@ void GameMenu::resizeMenu(int cx, int cy)
 		x = cx - ITEM_WIDTH / 2;
 		y = cy - sz / 2 * (ITEM_HEIGHT + DISTANCE);
 
+		// Video settings
+		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		y += ITEM_HEIGHT + DISTANCE;
+
+
 		// Sound settings
 		MoveWindow(hSubItems[SETTINGS_STAT_SOUND], x, y, ITEM_WIDTH - BUT_SIZE - DISTANCE, ITEM_HEIGHT, TRUE);
 
@@ -379,6 +384,7 @@ void GameMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(SETTINGS_ITEM_NUMBER);
 
+				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", l.getMessage(Localized::VIDEO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", l.getMessage(Localized::AUDIO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_AUTOSAVE] = CreateWindow("STATIC", l.getMessage(Localized::AUTOSAVE_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_BUT_SOUND] = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);

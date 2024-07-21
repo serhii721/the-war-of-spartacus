@@ -708,12 +708,24 @@ FightStatus Fighting::checkFightStatus(const Player & rPlayer, const NPC & rOppo
 			isPlayerWon = true;
 			return FightStatus::OPPONENT_LOST;
 		}
+
+		// Offer to surrender to the opponent
+		// TODO: if (yes)
+		//ShowWindow(hItems[Item::BUT_SPARE_OPPONENT], SW_SHOW);
+		//ShowWindow(hItems[Item::BUT_EXECUTE_OPPONENT], SW_SHOW);
+		// return FightStatus::OPPONNENT_SURRENDERED;
 	}
 
 	if (rPlayer.getHP() < 10)
 	{
 		if (!rPlayer.isAlive())
 			return FightStatus::PLAYER_LOST;
+
+		// Offer to surrender to the player
+		// TODO: if (yes)
+		//ShowWindow(hItems[Item::BUT_SURRENDER], SW_SHOW);
+		//ShowWindow(hItems[Item::BUT_CONTINUE], SW_SHOW);
+		// return FightStatus::PLAYER_SURRENDERED;
 	}
 
 	return FightStatus::CONTINUE;

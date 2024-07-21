@@ -805,6 +805,11 @@ void MainMenu::resizeMenu(int cx, int cy)
 		x = cx - ITEM_WIDTH / 2;
 		y = cy - sz / 2 * (ITEM_HEIGHT + DISTANCE);
 
+		// Video settings (in progress)
+		MoveWindow(hSubItems[SETTINGS_STAT_VIDEO], x, y, ITEM_WIDTH, ITEM_HEIGHT, TRUE);
+		y += ITEM_HEIGHT + DISTANCE;
+
+
 		// Sound settings
 		MoveWindow(hSubItems[SETTINGS_STAT_SOUND], x, y, ITEM_WIDTH - BUT_SIZE - DISTANCE, ITEM_HEIGHT, TRUE);
 
@@ -1013,6 +1018,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				// Creating new sub menu items
 				hSubItems.resize(SettingsItem::SETTINGS_ITEM_NUMBER);
 
+				hSubItems[SETTINGS_STAT_VIDEO] = CreateWindow("STATIC", l.getMessage(Localized::VIDEO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_SOUND] = CreateWindow("STATIC", l.getMessage(Localized::AUDIO_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_AUTOSAVE] = CreateWindow("STATIC", l.getMessage(Localized::AUTOSAVE_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
 				hSubItems[SETTINGS_STAT_LANGUAGE] = CreateWindow("STATIC", l.getMessage(Localized::LANGUAGE_SETTINGS).c_str(), WS_CHILD | WS_VISIBLE | SS_CENTER | SS_OWNERDRAW, 0, 0, 0, 0, hWnd, 0, hInst, 0);
@@ -1709,6 +1715,7 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 				SetWindowText(hItems[BUT_SPECIALS], l.getMessage(Localized::SPECIALS).c_str());
 				SetWindowText(hItems[BUT_EXIT], l.getMessage(Localized::EXIT).c_str());
 
+				SetWindowText(hSubItems[SETTINGS_STAT_VIDEO], l.getMessage(Localized::VIDEO_SETTINGS).c_str());
 				SetWindowText(hSubItems[SETTINGS_STAT_SOUND], l.getMessage(Localized::AUDIO_SETTINGS).c_str());
 				SetWindowText(hSubItems[SETTINGS_STAT_LANGUAGE], l.getMessage(Localized::LANGUAGE_SETTINGS).c_str());
 				SetWindowText(hSubItems[SETTINGS_STAT_AUTOSAVE], l.getMessage(Localized::AUTOSAVE_SETTINGS).c_str());
@@ -1762,6 +1769,96 @@ void MainMenu::handleInput(HWND hWnd, UINT m, WPARAM wp, LPARAM lp)
 			break;
 		}
 		break;
+
+		//case WM_MOUSEMOVE:
+		//{
+		//	static int i;
+		//	// First method
+		//	RECT rect;
+		//	POINT pt;
+		//	// Get cursor position
+		//	GetCursorPos(&pt);
+		//	ScreenToClient(hWnd, &pt);
+
+		//	// Test
+		//	HDC hdc;
+		//	PAINTSTRUCT ps;
+		//	buf = to_string(pt.x) + " " + to_string(pt.y);
+		//	for (HWND hItem : hItems)
+		//		if ((HWND)lp == hItem)
+		//			SetWindowText(hWnd, buf.c_str());
+
+		//	// Second method
+		//	// Get cursor position
+		//	TRACKMOUSEEVENT tme;
+		//	tme.cbSize = sizeof(TRACKMOUSEEVENT);
+		//	tme.dwFlags = TME_HOVER | TME_LEAVE;
+		//	tme.dwHoverTime = HOVER_DEFAULT;
+
+		//	switch (game.getBackground())
+		//	{
+		//	case Game::Background::MAIN_MENU:
+		//	{
+		//		for (HWND hItem : hItems)
+		//		{
+		//			// Get button position
+		//			GetWindowRect(hItem, &rect);
+		//			MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rect, 2);
+		//			//InvalidateRect(hWnd, &rect, 1);
+
+		//			if (PtInRect(&rect, pt))
+		//			{
+		//				HBRUSH hBrush = CreateSolidBrush(COLOR_ROMAN_RED);
+		//				SetWindowText(hItem, to_string(i).c_str());
+		//				i++;
+		//				hdc = BeginPaint(hWnd, &ps);
+		//				DrawText(hdc, "Test", -1, &rect, DT_LEFT);
+		//				FillRect(hdc, &rect, hBrush);
+		//				EndPaint(hWnd, &ps);
+		//				DeleteObject(hBrush);
+		//			}
+		//		}
+		//	}
+		//	break;
+
+		//	case Game::Background::MAIN_MENU_LOAD:
+		//	{
+		//		// TODO
+		//	}
+		//	break;
+
+		//	case Game::Background::MAIN_MENU_NEW_GAME:
+		//	{
+		//		// TODO
+		//	}
+		//	break;
+
+		//	case Game::Background::MAIN_MENU_SETTINGS:
+		//	{
+		//		// TODO
+		//	}
+		//	break;
+
+		//	case Game::Background::MAIN_MENU_SPECIALS:
+		//	{
+		//		// TODO
+		//	}
+		//	break;
+		//	}
+		//}
+		//break;
+
+		//case WM_MOUSEHOVER:
+		//{
+		//	SetWindowText(hWnd, "First stage succesful");
+		//}
+		//break;
+
+		//case WM_MOUSELEAVE:
+		//{
+		//	SetWindowText(hWnd, "Second stage succesful");
+		//}
+		//break;
 	}
 }
 

@@ -22,12 +22,39 @@ Game game;
 
 void updateWindow(HWND hWnd)
 {
+	//if (!game.isBackgroundChanged())
+	//	return;
 	RECT windowRect;
 	GetWindowRect(hWnd, &windowRect);
 	SendMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top));
 	InvalidateRect(hWnd, 0, 1);
 	UpdateWindow(hWnd);
+	//RedrawWindow(hWnd, 0, 0, RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN);
 }
+
+//void adjustStaticControlHeight(HWND hStatic, const string& text)
+//{
+//	HDC hdc = GetDC(hStatic);
+//
+//	// Get current size and position for window
+//	RECT staticRect;
+//	GetWindowRect(hStatic, &staticRect);
+//
+//	// Calculate new height for text
+//	DrawText(hdc, text.c_str(), -1, &staticRect, DT_CALCRECT | DT_WORDBREAK);
+//
+//	ReleaseDC(hStatic, hdc);
+//
+//	// Apply padding
+//	int padding = 10;
+//	staticRect.left -= padding;
+//	staticRect.top -= padding;
+//	staticRect.right += padding;
+//	staticRect.bottom += padding;
+//
+//	// Set new window height
+//	SetWindowPos(hStatic, nullptr, 0, 0, staticRect.right - staticRect.left, staticRect.bottom - staticRect.top, SWP_NOMOVE | SWP_NOZORDER);
+//}
 
 // TODO: think about move to Converter
 string toStringPrecision(double n, int precision)
@@ -827,6 +854,34 @@ void playSound(SoundEnum soundEnum)
 
 	// 2. Play selected sound
 	PlaySound(path.c_str(), 0, SND_ASYNC | SND_NOSTOP);
+
+	// TODO: remake function using MCI
+	// 2. Compose full command string
+	//buf = "open \"" + path + "\" type mpegvideo alias sound";
+	//// Create command string
+	//const char* command = buf.c_str();
+	//MCIERROR error = mciSendString(command, NULL, 0, NULL);
+
+	//// TODO: handle error
+	//if (error)
+	//{
+	//	char errorText[128];
+	//	mciGetErrorString(error, errorText, sizeof(errorText));
+	//	return;
+	//}
+
+	//// 3. Play selected sound
+	//command = "play sound";
+
+	//error = mciSendString(command, NULL, 0, NULL);
+
+	//// TODO: jandle error
+	//if (error)
+	//{
+	//	char errorText[128];
+	//	mciGetErrorString(error, errorText, sizeof(errorText));
+	//	return;
+	//}
 }
 
 // __________ Game process __________
