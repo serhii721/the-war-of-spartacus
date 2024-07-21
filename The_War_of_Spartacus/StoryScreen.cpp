@@ -196,10 +196,6 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			switch (currentSubScreen)
 			{
 			case STOLEN_MONEY_SCREEN_STAT_1: path = DIRECTORY + "Story/blackScreen" + FORMAT; break; // TODO
-			//case STOLEN_MONEY_SCREEN_STAT_2: break; TODO
-			//case STOLEN_MONEY_SCREEN_STAT_3: break; TODO
-			//case STOLEN_MONEY_SCREEN_STAT_ESCAPE: break; TODO
-			//case STOLEN_MONEY_SCREEN_STAT_STAY: break; TODO
 			default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
 			}
 			break;
@@ -208,9 +204,6 @@ void StoryScreen::drawMenu(HWND hWnd, HDC hdc, int cx, int cy)
 			switch (currentSubScreen)
 			{
 			case GAINED_FREEDOM_SCREEN_STAT_1: path = DIRECTORY + "Story/gainedFreedom" + FORMAT; break;
-				//case GAINED_FREEDOM_SCREEN_STAT_2: break; TODO
-				//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_REBELS: break; TODO 
-				//case GAINED_FREEDOM_SCREEN_STAT_CHOSE_LEGION: break; TODO
 			default: path = DIRECTORY + "Story/blackScreen" + FORMAT; break;
 			}
 			break;
