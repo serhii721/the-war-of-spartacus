@@ -1,92 +1,240 @@
-Ita
-Non
+Mandata log
+Permanere ludum
+Proin ludum
+Salvum ludum
+Ludus onus
+Incipit novum ludum
+Occasus
+Speciales
+Ludus hic factus est a discipulo in Centro pro Educatione Computer (c.Dnipro, Ucraina). Hoc consilium scholasticum creatum est ut pars disciplinae et ut amabam personalem. Idea ludi suggerebatur amicus meus, qui ab alio ludo de gladiatoribus incitabatur. Primum ludum consolatorium fuit, sed usus WinAPI reformatus est ut didici. Meam programmandi artes monstrat. In momento, functiones aequationum characterum, circa tabulam, inventarium, mercaturam, pugnam, salvificam et oneraturam currendo, ac localizationes hic adducuntur. Insidiae lusus adhuc in evolutione est, sed actus primus iam in promptu est, ut parva quaestio in prima urbe. Tempor melius sit et.
+Exit ad elencho
+Exitus
+Mores creaturae
+Nomen
+Aevum
+Unnassigned attributa
 Fortitudo
 Constitutio
 Dexteritas
-Intelligentia
+intelligentia
 Sapientia
-Carisma
-Incipe novam ludum
-Ludum excipe
-Ludus feliciter excussus est!
-Error: Non potuit aperire peritia aut inanis est
-Lingua muta
-Exitus
-Gratias tibi ago pro ludendo!
-Elige optionem tuam:
-Numerus falsus. Iterum tempta!
-Commence pugnam
-Visa persona
-Visa adversarios
-Serva
-Ludus feliciter servatus est!
-Error: Non potuit aperire limam ad servandum
-Gladiator:
-Telum:
-Tuus gladiator:
-Tuus telum:
-Eius telum:
-Nomen:
-Aetas:
-Sanitas:
-Fama:
-Fatigatio:
-Fortitudo:
-Constitutio:
-Dexteritas:
-Intelligentia:
-Sapientia:
-Carisma:
-Opponentes tui:
-Crea characterem!
-Nomen:
-Aetas:
-Puncti attributi non assignati:
-Habes 6 statisticas cum basi valore 10
-Elige quot adicere ad singulas statisticas
-Tibi puncti non sufficiunt
-Fortitudo:
-Constitutio:
-Dexteritas:
-Intelligentia:
-Sapientia:
-Carisma:
-Statisticae tuae
-Omniane recta sunt?
-Characterus feliciter creatus est
-Error: Ignotus genus telorum!
-Error: Non potuit aperire limam continens nomina
-Genus:
-Vulnera:
-Longitudo:
-Pondus:
-Celeritas:
-Durabilitas:
-Tu vulneratus es! Non potes pugnare! (HP < 30%)
-Elige adversarium:
-Hic gladiator vulneratus est
-Pugna coepta est!
-Victoriam reportavisti!
-Victoriam amisisti!
-Tu impugnas!
-Hostem impinges!
-Hostis impugnat!
-Hostis te impingit!
-Evadis!
-Hostis evadit!
-Tu in stuporem venis!
-Hostis in stuporem venit!
-Collem gravem effecisti!
-Collem gravem accepisti!
-Sanitas tua:
-Sanitas hostis:
-Ex hoc certamine adquisuisti:
-Pecunia:
-Experientia:
-Fama:
-Exspecta diem
-Diem exspectas
-Sanitatem tuam recuperas per
-Sanitas praesens:
-Plene sanatus es
-Nihil evenit
+Charisma
+vi
+constitutione
+sollertia
+intelligentia
+sapientia
+charisma
+Retro
+Proximum
+Video occasus
+Audio
+Autosave
+Linguae
+Gladiator
+City of *
+Arena
+Ambulare vias
+Market
+View character
+Requiem
+Map
+Travel
+Vos iter ad
+Intra
+Menu
+Pugnare
+Fac bet
+Train
+Lanista
+Taberna
+Loqui ad populum
+Buy libertatem
+Accipies assignationem
+Petere promotionem
+Elige adversario
+Level
+Usus
+Damnum
+Obstructionum defensionis
+Obstructionum forte
+manus vacua
+Salus
+Fama
+Fortitudo scala
+Dexteritas scalae
+Armorum defensio
+Casus elabi
+Stupefaciunt forte reductionem
+Non armis
+Reset
+Applicare
+Quievisti et restituisti
+Tu es plene sanatus
+Plene sanatus es et non opus est quieti
+sanitas
+hp
+lvl
+Tu erudisti et lucratus es
+Habes requiem antequam instituendi
+Adaequasti usque ad planum
+experientia
+Adversarium eligendum habes quod pugnare vis.
+Adversarius non electus
+Requiem tibi prius quam pugnare potes.
+Vos graviter laedi
+Parce adversario
+Fac adversario
+Deditionem
+continue
+Finis pugna
+versus
+Adversarius altiorem habet sapientiam sic primum impugnat
+Habes superiorem sapientiam sic primum oppugnas
+Pugnavisti cum
+Vicisti
+Perdidisti
+Tu potitus es
+fame
+Fecisti
+Stupefactus adversarius et fecit
+Vos perdidisti
+Opponentes obstruxerunt capta
+perdidisti. Adversarius counterattacked et egit
+Adversarius fecerunt
+Adversarius obstupuit et fecit
+Adversarius desiderari
+Vos clausus atque capta
+Adversarius omisit. Tu resisti fecitque
+damnum
+discrimine damnum
+Vicisti. Contrarium supplicium est
+Vicisti. Adversarius puncta salutis dediderunt in
+Dedisti in salutem puncta of
+Perdidisti
+Inventarium
+Dextra manus
+Sinistra manu
+Armor
+Unequip
+Equip
+Inspice
+Perdere
+Precium
+quantitas
+Totalis pretium
+Tier
+Sell
+Buy
+Item non potest vendere
+Mercator non habet satis aurum
+Non emere item
+Non habes satis aurum
+Non satis inventarii spatium
+aurum
+Character
+Apparatus
+Elige incipiens apparatu
+Set
+Lego
+electus
+Opus est eligere apparatu
+Apparatu Unselected
+Ludus bene salvus erit
+Elige nisi
+Nisi unselected
+Roma antiqua (74 BC).
+Tempora seditionis Spartaci sunt tempora cum fabulis referta inter servitutem et cupiditatem libertatis acta est. In medio chao huius es tu, Gladiator, cuius fatum late ex tuis iudiciis determinabitur...
+His diebus unius gladiatoris temporis historiam contexuit. Initium itineris compede servitutis. Erat unus e multis gladiatoribus captivorum, quorum vita libertasque in discrimine belli peritia pendebat. Prope cotidie in arenam venit, ubi non ad salutem modo, sed etiam ad liberationem forte pugnavit. In oppido Perusino, in media Italia, iter suum incipiet.
+unnassigned attributa
+Servus es. Opus est ut libertatem adipiscaris ut libere iter facias.
+Non iter
+Primam victoriam tuam. At turpis non. Ut servus gladiator pro vita tua pugnaturus est. Et fortasse aliquando, cum auri satis amplam summam nancisceris, immunem te ab lanista emere poteris.
+Tandem Gladiator satis pecuniae quaesivit ut libertatem se emeret. Cum dormiret, spei plenus est, cogitabat hoc ultimo tempore ut servus obdormivit. Cras ad lanista ibit et se emet. Sed non erat dictum. Postero die evigilans aurum accepturum se liberavit. Sed pretium nulla erat. Furto factum. Probabiliter factum est ab uno confratribus suis. Sed quis fecit? Nullus erat sensus aut spes ad omnia retrahenda. Gladiator iterum summa cum labore totam summam accumulare debebat.
+Iram in ima cordis tumuit, ardentior igne arenae. Non poterat modo convenire cum amissione cum proditione quae ei acciderat. Omnia tam gravia, omnia patrata vana videbantur. Sensus impotentiae et falsitatis ardebat in oculis eius, ignem destinandi ad reddendam ius suum ac sitim mutandi.
+et nunc, sicut novissimus in tenebris radius, ante illum occasio aperit. Unus e confratribus suis loquebatur de hospite cum Spartaco, servili quondam gladiatoris, qui nunc seditionem pro libertate ducit. Quo facto conantur evadere et rebellionem facere, ubi pro libertate et iustitia pugnare possunt. Gladiator hanc electionem perspicit ut occasionem inveniendi significationem in eius detrimento, vocem attollere et esse partem motus quaerentis mutationem.
+In hoc tempore passionis et angoris ex nova sententia nata est, quae non solum fatum suum, sed etiam fortunam multorum aliorum mutabit. Gladiator fugere et rebellionem statuit. Nunc eius proelium non solum in arena erit, sed etiam pro libertate, iustitia et futuro, quod ipse creare potest.
+At gladiator, quamquam multum amisit, ante hoc experimentum non omisit. Libertatis somnium, quod tamdiu insecutus fuerat, dimittere non potuit, et propositum firmavit ut iter in arena pergeret. Iterum repetat, nomen et famam inter aemulos restituat ac pecuniam pro libertate servet ut antea laboret. Utraque pugna in arena facta est nova provocatio ei et occasio suam potentiam et artem probandi.
+Effugere
+manete
+Fortasse via Gladiatoris difficilis et exhausta fuit, sed omnis victoria eum propius adduxit ut suum somnium animadverteret. Vires ac voluntates invenit, etsi non solum ad libertatem, sed etiam ad salutem dimicandum voluit. Nec fata diu se expectant. Proximo proelio centurio legionis Romanae in arena spectatoribus interfuit. Oculi eius in Gladiatorem ceciderunt, viditque in eo plus minus pugnantem denarium. In oculis gladiatoris centurio scintillam libertatis, potentiae et fortitudinis excepit.
+Centurio insidiator hunc fortem bellatorem melius cognoscere constituit. Post pugnam Gladiatorem ad se vocat, admirans artes animique. Centurio in hoc Gladiatore potentiam fortissimi militis vidit et opportunitatem ingenii sui ad utilitatem rei publicae Romanae vidit. Oblatum a servitute missum et adiunctis legionis ex improviso fati gladiatorio. Centurio non solum libertatem, sed etiam fines novos ei pollicitus est potestatem serviendi Romae et rerum historicarum interesse. Gladiator per artem pugnandi libertatem consequi poterat, legionarius factus, magnam fortunam mereri.
+Gladiator, quamquam omnes difficultates ac deceptiones quas in arena expertus est, hanc novam occasionem recusare non potuit. Statuit in manibus suis fatum capere et legionem ordines iungere ut iterum libertati viam sterneret. Id certamen in quacumque re facturus erat. Ita, Gladiator, arenam relictis, novo itinere profectus est, parti fortitudinis Romanae legionis factus. nec latuit eius virtus, ratio et cupiditas libertatis non tacuit, et cum periculosissimis ac superbis proeliis rem publicam defendebat.
+At Gladiator, quamquam bonae vitae pollicetur, legioni coniungendae non studuit. Ceterum cur cellam suam currentem in aliam, licet leviter meliorem, mutaret? Servientes opulenti et potentes, qui eum hominem ne putamus quidem? Instrumentum esse in manibus ad comprimendos confratres pro libertate pugnantes? Hoc eius iter non fuit. Gladiator oblato centurione recusans in harenam reducitur, ubi pro libertate pugnaturus est.
+Accipere offer
+Decline offer
+Post multa dura proelia et inestimabiles conatus necessitatem redimendae libertatis servavit. Quo die liber homo factus est, mixtis gaudio et sollicitudine affectus est. Accepit libertatem, sed quid faceret? Postquam extra arenam, Gladiator intellexit mundum ei apertum esse. Novae provocationes et occasiones eum antecedebant.
+Audivit meridionalem in urbe Metaponto rebelles consedisse, pro suis iuribus et libertatibus pugnare. Quae cogitatio ejus imaginationem cepit. Sciebat uti pugnae artes et usus in pugna adiuvaret. Ibi fortasse inveniet unanimes homines et pro iustitia et libertate pugnare poterit. In oriente vero in civitate Piceno castra legionis erant. Via ad vitam stabilem, fortasse etiam ad opes et honorem. Militiae legioni patefecit aditum, sed pristinae inhibitionis centurioni recordatus est. Poteritne accommodare disciplinae et hierarchiae Legionis, ut iterum pars machinae militaris tamdiu pugnaverit?
+Postrema sententia, Gladiator urbe excessit et Metapontum meridiem versus petivit. Volebat se ad rebelles coniungi et pro libertate pugnare, non pro se solum, sed pro omnibus, qui sub iugo Romano essent. Praemisit eum nova proelia et novae provocationes, sed paratus erat illis. Gladiator ad fatum suum ambulavit, sciens semitam suam procul esse, sed omnes gradus propius ad veram libertatem pervenerunt.
+Hac sententia constituto, Gladiator urbe excessit et Anconam orientem versus contendit. Quae quamquam oblatio quondam catenae ei visa est, opportunitatem nunc obtinendae rei et bellicae artes usui rei Romanae videbat. Intellegebat in legione non solum tuto, sed etiam cum facultate corrigendi et fortasse magnos ordines facere.
+Iungere rebelles
+Iungere legionem
+Liber homo factus es
+Lanista consentit te promoveri. Posthac praemia tua in arena augebuntur
+Lanista non consentit te promoveri. Tua verba non impressit
+Desine eam vel tu demoted
+Vos iam promotus
+Iam promotus es. Quid, consulem esse vis?
+Non satis aurum
+Vos aurum in via
+Gladiator per vias urbis Romanae Perusiae ambulavit, raro pacis momento fruens. Animadvertit aroma Indicum mercatorem extra stallum sedentem. Facies mercatoris lassa et tristis erat, oculique dolore et desperatione pleni erant. Gladiator prope stetit, susurrans preces audiebat.
+Quid factum est, senex? Cur tristis es?
+Mercator aspiciens, Gladiatorem videns, statim loqui non audebat. Sed tunc quasi vires invenientes, respondit: Shadar nomen meum est. Abhilasha filia mea a Lucilio rapta est. Et abduxerunt eam, et non potui facere quidquam. Nullam ut mi velit. Quaeso me reducere.
+Quis est hic Lucilius?
+Quid opus est?
+Ostende ubi hic Lucilius habitat.
+(Recede) Ignosce, alia mihi nunc ut facias.
+- Hic est homo terribilis. Patricius localis qui statuit quod vellet. Filiam meam amavit et accepit eam ut serviret ei.
+"Non sum ditissimus, sed filia mea mihi res est pretiosissima." Si me adiuvas, non ero alieno.
+Shandar viam monstravit, et Gladiator ad patricii aedes abiit. Cum ad portam accederet, custodes occurrit. Unus autem ex illis retardavit ei: "Quis es?" Hic est ager privatus. Relinque dum vivis.
+Veni pro puella herus tuus illicite detinet. Da illum, et nemo te laedet.
+Ok, Ibo.
+Custodes ridebant: "Longum est tempus cum ex rubigine aliqua lutum verberavi."
+(pugna) Bene, videamus qui vincit.
+(Virtus) Gladiator sum et homines edo sicut te ad ientaculum.
+(Charisma) In nomine legis iubeo te recipere, aliter cum magistratu agere debebis.
+(Success) Age, mox cognati sumus. Age porro.
+(Defectum) Sola res habebis prandium tuum dentes.
+(Success) Mitescere, non opus est quaestionibus. Age intro, mox festina.
+(Defectum) Ita credidi te magistratum novisse.
+(Redi ad noctem)
+Nocte regrediens Gladiator deprehendit nullas esse custodias in introitu.
+Intra domum
+(Dexterity) Try ut intus latuit
+(Success) gladiator per saepem scandit, per postica ambulat et ianuam reseratam intrat.
+Gladiator satis non tacuit
+Cum domum intrasset, Gladiator Lucilium in aula luxuriosa sedentem invenit. Consurrexit patricius, videns Gladiatorem, et cum contemptu interrogavit: "Quis es, qui audes in domum meam irrumpere?"
+Veni ad virginem nomine Abhilasha, quam tu illicite detines. Redde, et ego discedam.
+Lucilius renidens plaudit custodes: "Mirat me tua rusticitas".
+(Pugna) Quando disces?
+(Charisma) Solus es rusticus si putas populum meum foris non expectasse imperium ut ab oppugnatione in hoc loco incipias.
+- Quaeso ne me occidas! Potes eam accipere!
+Custodes Gladitorem caedebant et eum in viam eiecerunt.
+Infeliciter, Gladiator etiam bonos homines adiuvare non potuit. Solus suspicari potest quid Abhilasha exspectaverit et quomodo pater eius Shandar amissam filiam obiret.
+(Successus) Bene propono prudentiam ostendere, et nomine communis boni sanguinem vitare. Taedet me puellae usquam. Potes eam accipere.
+Quomodo imperabis, si mortuus es?
+(Parce) Ego vitae tuae parcam. Sed si sensero te iterum bonorum vitam perdere, tunc revertar.
+(Executio) Ut pergas dolorem et dolorem facere? Non puto.
+Quantum vis vitam tuam?
+Una tantum optione habes ut vivas. Egredere ex urbe et numquam redi.
+Lucilii corpus exanime praeteriens, Gladiator puellam quaesivit.
+Lucilius orabat: "Quaeso, sume aurum quod vis, sed me desere." Arcam aperuit cum clave quae prope stabat. Inde gladiator auream statuam protulit et in sacculo suo posuit.
+(Executio) Et dixisti me rusticum esse?
+Ita sit, ego relinquam. Villa usquam insanus est.
+Nunc ubi est puella?
+gladiator Abhilasha in una cubiculi spatiosae domus clausum invenit. Accessit ad eam diligenter.
+Veni ad liberandum te. Pater tuus Shandar me misit.
+Oculi eius lacrimis repleti sunt, et tacite respondit: "Tanta gaudeo". Verebar ne quid mihi terribile accideret.
+Exeamus hinc.
+Sic Lucilii domum taciti profecti sunt.
+Lucilii domo relictis chao et exitio.
+Gladiator ad Shandar regrediens vidit mercatoris faciem gaudio illuminatam. Pater et filia inter se amplexati sunt et lacrimae in ora profluebant. Shandar Gladiatorem intuens dixit: "Gratias tibi, vir benignissime." Familiam nostram servasti. Numquam hoc obliviscemur.
+(Praemium posco) laetus sum tibi, sed non laboro gratis.
+- Utique praemio dignus es. Hunc sacculum aureum serva. Plura darem si possem. Di tibi benedicant.
+Curam habe inter se.
+Abhilasha abeunti Gladiatorem grato animo intuens quaesivit: - Quod nomen est tibi, bellator?
+Meum nomen est
+- Gratias tibi ago;
+His verbis Gladiator discessit. Perusia ad communem vitam rediit, sed ad unam familiam omnia in perpetuum mutata sunt.
+Tu ambulas vias, sed nihil fit
+MESSAGE_NUMBER
