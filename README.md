@@ -25,6 +25,14 @@ Download and install [the latest release](https://github.com/serhii721/the-war-o
 
 To run the application it is necessary to install [Microsoft Visual C++ 2017 Redistributable packages (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe).
 
+## Screenshots
+
+![Main menu](https://raw.github.com/serhii721/the-war-of-spartacus/screenshots/Screenshots/MainMenu.jpg "Main menu")
+![Arena](https://raw.github.com/serhii721/the-war-of-spartacus/screenshots/Screenshots/ArenaFight.jpg "Arena")
+![Character screen](https://raw.github.com/serhii721/the-war-of-spartacus/screenshots/Screenshots/CharacterScreen.jpg "Character screen")
+![Lucilius](https://raw.github.com/serhii721/the-war-of-spartacus/screenshots/Screenshots/Lucilius.jpg "Lucilius")
+![City of Perugia](https://raw.github.com/serhii721/the-war-of-spartacus/screenshots/Screenshots/CityOfPerugia.jpg "City of Perugia")
+
 ## Configuration
 
 In the settings, a user can:
